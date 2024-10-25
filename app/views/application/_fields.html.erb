@@ -1,0 +1,7 @@
+<% policy(record).editable_attributes.each do |c| %>
+  <%= f.input c %>
+<% end %>
+
+<% policy(record).reflect_on_editable_associations.each do |a| %>
+  <%= f.association a.name %>
+<% end %>

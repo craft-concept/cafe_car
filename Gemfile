@@ -1,12 +1,10 @@
 source "https://rubygems.org"
-git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-# Specify your gem's dependencies in cafe_car.gemspec.
 gemspec
 
+gem "better_errors"
+gem "binding_of_caller"
+gem "cnc", path: "../cnc"
 gem "puma"
-
+gem "pundit"
 gem "sqlite3"
-
-# Start debugger with binding.b [https://github.com/ruby/debug]
-# gem "debug", ">= 1.0.0"
