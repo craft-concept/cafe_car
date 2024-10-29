@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include Pundit::Authorization
+  include CafeCar::Controller
 
   def current_user
     @current_user ||= User.new(username: 'bob')

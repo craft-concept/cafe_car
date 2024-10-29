@@ -1,18 +1,26 @@
 module CafeCar
   module Controller
     extend ActiveSupport::Concern
+    include CafeCar::UI::Controller
 
     class_methods do
       def model(model)
-        define_method(:record_model) { @record_model ||= model }
+        define_method(:model) { @model ||= model }
       end
     end
 
     included do
-      helper_method :record_model, :record_name, :records_name, :record, :records
+      default_form_builder CafeCar::FormBuilder
       rescue_from ActiveRecord::RecordInvalid, with: :render_invalid_record
-      prepend_view_path CafeCar::Engine.root.join('app/views/cafe_car')
-      prepend_view_path 'app/views/cafe_car'
+      define_callbacks :render, :update, :create, :destroy
+      helper_method :model, :model_name, :record, :records, :plural?, :singular?
+
+      # prepend_view_path CafeCar::Engine.root.join('app/views/cafe_car')
+      # prepend_view_path 'app/views/cafe_car'
+      before_action(only: %i[show edit update destroy]) { self.record = record! }
+      before_action(only: %i[new create])               { self.record = model.new }
+      before_action(if: :singular?) { authorize record }
+      before_action :assign_attributes, only: %i[create update]
     end
 
     def index
@@ -25,28 +33,12 @@ module CafeCar
       authorize records
     end
 
-    def show
-      self.record = record!
-      authorize record
-    end
-
-    def new
-      self.record = new_record
-      authorize record
-    end
-
-    def edit
-      self.record = record!
-      authorize record
-    end
+    def show; end
+    def new; end
+    def edit; end
 
     def create
-      self.record = new_record
-      authorize record
-      record.assign_attributes(permitted_attributes(record))
-
-      record.save!
-      created
+      run_callbacks(:create) { record.save! }
 
       respond_to do |f|
         f.js { created_js }
@@ -56,11 +48,8 @@ module CafeCar
     end
 
     def update
-      self.record = record!
-      authorize record
+      run_callbacks(:update) { record.save! }
 
-      record.update!(permitted_attributes(record))
-      updated
       respond_to do |f|
         f.js { updated_js }
         f.html { updated_redirect }
@@ -69,12 +58,8 @@ module CafeCar
     end
 
     def destroy
-      self.record = record!
-      authorize record
+      run_callbacks(:destroy) { record.destroy }
 
-      destroy_record
-
-      destroyed
       respond_to do |f|
         f.js { destroyed_js }
         f.html { destroyed_redirect }
@@ -82,71 +67,42 @@ module CafeCar
       end
     end
 
-    def alter_tags
-      self.record = record!
-      authorize record
-      # tag_list compares tags case-insensitively when adding, but not when removing
-      remove      = [*params[:remove]].map {|t| record.tag_list.find {|t2| t.casecmp(t2).zero? } }
-      tags        = record.tag_list.remove(*remove).add(*params[:add])
-      if record.save
-        render json: {tags:}
-      else
-        render json: {errors: record.errors.full_messages}, status: :bad_request
-      end
-    end
-
     private
 
-    def new_record
-      record_scope.new
-    end
+    def assign_attributes = record.assign_attributes(permitted_attributes(record))
 
-    def record!
-      if record_model.respond_to?(:[])
-        record_scope[params[:id]]
-      else
-        record_scope.find(params[:id])
-      end
-    end
+    def plural?   = action_name == "index"
+    def singular? = not plural?
 
-    def record_scope
-      record_model.all
-    end
-
-    def destroy_record
-      record.destroy
-    end
-
-    def records!
-      policy_scope(record_scope.all)
-    end
+    def scope    = model
+    def record!  = scope.find(params[:id])
+    def records! = policy_scope(scope.all)
 
     def records
-      instance_variable_get("@#{records_name}") || (self.records = records!)
+      instance_variable_get("@#{model_name.plural}") || (self.records = records!)
     end
 
     def records=(value)
-      instance_variable_set("@#{records_name}", value)
+      instance_variable_set("@#{model_name.plural}", value)
     end
 
     def record
-      instance_variable_get("@#{record_name}") || (self.record = record!)
+      instance_variable_get("@#{model_name.singular}")
     end
 
     def record=(value)
-      instance_variable_set("@#{record_name}", value)
+      instance_variable_set("@#{model_name.singular}", value)
     end
 
-    def record_model
-      @record_model ||= self.class.name.gsub(/.*::|Controller$/, '').singularize.constantize
+    def model_name = model.model_name
+
+    def model
+      @model ||= self.class.name.gsub(/.*::|Controller$/, '').singularize.constantize
     end
 
-    def record_name           = record_model.model_name.singular
-    def records_name          = record_model.model_name.plural
-    def render_invalid_record = render record.persisted? ? 'edit' : 'new'
 
-    def created_redirect   = redirect_back fallback_location: [records_name.to_sym]
-    def destroyed_redirect = redirect_to [records_name.to_sym]
+    def created_redirect   = redirect_back fallback_location: [model_name.plural.to_sym]
+    def destroyed_redirect = redirect_to [model_name.plural.to_sym]
 
     def updated_redirect
       return destroyed_redirect if record.destroyed?
@@ -170,9 +126,11 @@ module CafeCar
     rescue ActionView::MissingTemplate
       destroyed_redirect
     end
+  end
 
-    def created   = nil
-    def updated   = nil
-    def destroyed = nil
+  def render_invalid_record = render record.persisted? ? 'edit' : 'new'
+
+  def default_render(*args, **opts, &block)
+    run_callbacks(:render) { super(*args, **opts, &block) }
   end
 end

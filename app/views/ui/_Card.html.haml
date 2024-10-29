@@ -1,0 +1,8 @@
+- title, _ = options.slice!(:title)
+
+%div{class: ui_class(:Card, **options)}
+  - if title.present?
+    = card.head do
+      %h2= title
+
+  = yield

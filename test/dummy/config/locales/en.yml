@@ -28,4 +28,8 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  helpers:
+    hint:
+      post:
+        title: the title of your post
+        body: your blog post goes here

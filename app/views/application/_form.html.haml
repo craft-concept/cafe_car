@@ -1,16 +1,16 @@
 - remote ||= false
 - title ||= nil
 
-= form_for record, url: polymorphic_path(record), remote:, builder: CafeCar::FormBuilder do |f|
-  = render "card", title: do
-    = render "card_section", class: "row" do
+= form_with model: record, remote: do |f|
+  = ui.card title: do |card|
+    = card.section class: 'row' do
       - f.object.errors.full_messages.each do |message|
         = render "error", message:
       = render "fields", f:
 
-    - if extra = render("extra_fields", f:).presence
-      = render "card_section", class: "row" do
+    - if extra = ui.extra_fields(f:).presence
+      = card.section class: "row" do
         = extra
 
-    = render "card_section" do
+    = card.section do
       = f.submit class: 'button button-primary', data: { disable_with: "Updating..." }
