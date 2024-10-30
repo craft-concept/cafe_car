@@ -1,28 +1,53 @@
 module CafeCar
   class FormBuilder < ActionView::Helpers::FormBuilder
     delegate :ui, :render, :partial?, to: :@template
-    def h = @template
 
-    def field_type(method) = @object.type_for_attribute(method)&.type
-
-    def field(method, as: field_type(method), **options, &block)
-      field = FieldBuilder.new(method:, ui: ui.field.context, form: self)
-      render("field", f: self, method:, as:, field:, **options)
+    def initialize(...)
+      super
+      @info   = {}
+      @fields = {}
     end
 
-    def error_for(method) = object.errors[method].presence
+    def h      = @template
+    def policy = h.policy(@object)
 
-    def hint_for(method) =
-      I18n.t(method, scope: [:helpers, :hint, @object_name]).presence
+    def association(method, collection: nil, **options)
+      info         = info(method)
+      collection ||= info.collection
+      # input(info)
+      # collection_select()
+    end
+
+    def field(method, **options, &block)
+      @fields[method] ||= FieldBuilder.new(method:, form: self, **options, &block)
+    end
+
+    def info(method)
+      @info[method] ||= FieldInfo.new(method:, object:)
+    end
+
+    def input(method, as: nil, **options)
+      as                  ||= info(method).input
+      options[:placeholder] = info(method).placeholder unless options.key?(:placeholder)
+      public_send(as, method, **options)
+    end
 
     def hint(method, **options)
-      return unless (hint = hint_for method)
-      h.tag.span(hint, **options)
+      return unless (hint = info(method).hint)
+      h.tag.small(hint, **options)
     end
 
     def error(method, **options)
-      return unless (errors = error_for method)
-      h.tag.span(errors.to_sentence, **options)
+      return unless (error = info(method).error)
+      h.tag.span(error, **options)
+    end
+
+    def remaining_attributes = policy.editable_attributes - @info.keys
+
+    def remaining_fields(**options, &block)
+      block  ||= proc { field(_1, **options) }
+      fields   = remaining_attributes.map(&block)
+      h.safe_join(fields)
     end
   end
 end

@@ -1,3 +1,25 @@
-.Field_Label, .Field_Error, .Field_Hint {
-    display: block;
+@import url("ui/Card.css");
+@import url("ui/Error.css");
+@import url("ui/Field.css");
+@import url("ui/Page.css");
+
+:root {
+    color-scheme: light dark;
+
+    --font: -apple-system, menu, sans-serif;
+
+    --red: #CC4B00;
+    --error: var(--red);
+    --border: rgba(50, 50, 93, 0.1);
+
+    --bg: #F6F8FA;
+    --card: white;
+
+    --gap: 1rem;
+    --radius: 1rem;
+}
+
+body {
+    background-color: var(--bg);
+    font-family: var(--font), sans-serif;
 }

@@ -1,0 +1,16 @@
+.Page {
+    display: grid;
+    grid:
+        "Head Head Head"
+        "Left Body Right"
+        "Foot Foot Foot" / auto 1fr auto;
+    gap: var(--gap);
+}
+
+.Page_Left {
+    grid-area: Left;
+}
+
+.Page_Body {
+    grid-area: Body;
+}

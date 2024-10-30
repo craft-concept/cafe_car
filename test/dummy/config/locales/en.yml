@@ -30,6 +30,10 @@
 en:
   helpers:
     hint:
-      post:
-        title: the title of your post
-        body: your blog post goes here
+      article:
+        title: Make it something memorable!
+        body: Supports markdown syntax.
+
+    placeholder:
+      article:
+        title: My New Article

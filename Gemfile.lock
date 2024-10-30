@@ -12,7 +12,6 @@ PATH
     cafe_car (0.1.0)
       haml-rails
       rails
-      zeitwerk
 
 GEM
   remote: https://rubygems.org/
@@ -163,6 +162,11 @@ GEM
     parser (3.3.5.0)
       ast (~> 2.4.1)
       racc
+    propshaft (1.1.0)
+      actionpack (>= 7.0.0)
+      activesupport (>= 7.0.0)
+      rack
+      railties (>= 7.0.0)
     psych (5.1.2)
       stringio
     puma (6.4.3)
@@ -284,6 +288,7 @@ DEPENDENCIES
   binding_of_caller
   cafe_car!
   cnc!
+  propshaft
   puma
   pundit
   sqlite3

@@ -1,14 +1,12 @@
-class PostPolicy < ApplicationPolicy
+class ArticlePolicy < ApplicationPolicy
   def index?  = true
   def create? = true
 
   def permitted_attributes
-    [:title, :body]
+    [:title, :body, :author_id]
   end
 
   class Scope < Scope
-    def resolve
-      Post.all
-    end
+    def resolve = scope.all
   end
 end

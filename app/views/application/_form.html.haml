@@ -3,14 +3,15 @@
 
 = form_with model: record, remote: do |f|
   = ui.card title: do |card|
-    = card.section class: 'row' do
-      - f.object.errors.full_messages.each do |message|
-        = render "error", message:
+    - if (errors = render("errors", f:))
+      = card.section { errors }
+
+    = card.section do
       = render "fields", f:
 
-    - if extra = ui.extra_fields(f:).presence
+    - if extra = render("extra_fields", f:).presence
       = card.section class: "row" do
         = extra
 
     = card.section do
-      = f.submit class: 'button button-primary', data: { disable_with: "Updating..." }
+      = f.submit class: ui_class(:button, :primary), data: { disable_with: "Updating..." }

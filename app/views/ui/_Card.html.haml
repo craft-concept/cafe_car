@@ -1,4 +1,4 @@
-- title, _ = options.slice!(:title)
+- title ||= nil
 
 %div{class: ui_class(:Card, **options)}
   - if title.present?

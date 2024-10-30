@@ -1,0 +1,8 @@
+- return unless (errors = f.object.errors.full_messages.presence)
+
+= ui.error do
+  Correct the errors below:
+
+-# %ul
+-#   - errors.each do |message|
+-#     %li= ui.error { message }
