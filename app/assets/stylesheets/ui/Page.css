@@ -1,10 +1,14 @@
 .Page {
     display: grid;
     grid:
-        "Head Head Head"
+        ".    Head ."
         "Left Body Right"
-        "Foot Foot Foot" / auto 1fr auto;
+        ".    Foot ." / auto 1fr auto;
     gap: var(--gap);
+}
+
+.Page_Head {
+    grid-area: Head;
 }
 
 .Page_Left {
@@ -13,4 +17,16 @@
 
 .Page_Body {
     grid-area: Body;
+}
+
+.Page-left {
+    grid-column-start: 1;
+}
+
+.Page-head {
+    grid-row-start: 1;
+}
+
+.Page_Right {
+    grid-area: Right;
 }

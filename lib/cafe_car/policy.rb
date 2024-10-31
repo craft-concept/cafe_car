@@ -14,7 +14,7 @@ module CafeCar::Policy
   end
 
   def editable_attributes
-    permitted_attribute_keys.grep_v(/_ids?$/) - %i[created_at updated_at deleted_at]
+    permitted_attribute_keys.grep_v(/_ids?$/)
   end
 
   def displayable_associations

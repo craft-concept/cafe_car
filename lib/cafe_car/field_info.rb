@@ -1,4 +1,5 @@
 module CafeCar
+  #
   class FieldInfo
     attr_reader :method, :object
 
@@ -7,13 +8,18 @@ module CafeCar
       @object = object
     end
 
+    def i18n_key = @object.model_name.i18n_key
     def i18n(key)
       I18n.t(@method, scope: [:helpers, key, i18n_key], raise: true)
     rescue I18n::MissingTranslationData => _
     end
 
-    def i18n_key = @object.model_name.i18n_key
-    def type     = @object.type_for_attribute(@method)&.type || reflection&.macro
+    def type
+      @type ||=
+        @object.type_for_attribute(@method)&.type ||
+          reflection&.macro ||
+          raise(NoMethodError, "Can't find method #{@object.model_name}##{@method}")
+    end
 
     def errors = @object.errors[@method]
     def error  = errors.to_sentence.presence
@@ -23,18 +29,19 @@ module CafeCar
 
     def input
       case type
-      when :string then :text_field
-      when :text then :text_area
-      when :belongs_to, :has_many then :association
-      else raise "Missing information about on #{@object.model_name}##{@method} of type #{type}"
+      when :string   then :text_field
+      when :text     then :text_area
+      when :integer  then :number_field
+      when :datetime then :datetime_field
+      when :belongs_to, :has_many then type
+      else raise "Missing FieldInfo for #{@object.model_name}##{@method} of type :#{type}"
       end
     end
 
-    def association = @object.association(@method)
-    def reflection  = association&.reflection
+    def reflection = @object.class.reflect_on_association(@method)
 
     def collection
-      association&.klass&.all
+      reflection&.klass&.all
     end
   end
 end

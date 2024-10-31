@@ -1,9 +1,10 @@
-class ArticlePolicy < ApplicationPolicy
+class UserPolicy < ApplicationPolicy
   def index?  = true
   def create? = true
+  def update? = user.id == record.id
 
   def permitted_attributes
-    [:title, :author, :published_at, :body]
+    [:title, :body, :author_id]
   end
 
   class Scope < Scope

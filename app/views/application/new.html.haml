@@ -1,5 +1,5 @@
 = ui.page do |page|
-  = page.title do
+  = page.head do
     %h1= title "New #{model_name.human}"
 
   = page.left do
@@ -10,4 +10,4 @@
       %p Creating new #{model_name.human}
 
   = page.body do
-    = render "form"
+    = render "form", title: "New #{model_name.human}"

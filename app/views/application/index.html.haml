@@ -1,18 +1,18 @@
 = ui.page do |page|
-  = page.head :left, class: "row" do
+  = page.head do
     %h1= title model.model_name.plural.titleize
     -# %div= format_numbers page_entries_info(records)
 
+    = render "index_actions"
+
+  = page.left do
     - if policy(model).new?
       = link_to "New #{model_name.human}", [model, action: :new]
 
-    = render "index_actions"
-
-  = page.body :left do
     - if params.key?(:debug)
-      = ui.debug
+      = render "debug"
 
-    = ui.filters
+    = render "filters"
 
-  = page.body :right do
-    = render "table"
+  = page.body do
+    = render("table").presence or render("empty")

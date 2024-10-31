@@ -1,0 +1,25 @@
+:root {
+    color-scheme: light dark;
+
+    --font: -apple-system, menu, sans-serif;
+
+    --red: #CC4B00;
+    --error: var(--red);
+    --border: rgba(50 50 93 / 0.1);
+    --color: black;
+
+    /*--background: #F6F8FA;*/
+    --background: hsl(44 100% 95%);
+    --card: white;
+
+    --gap: 1rem;
+    --radius: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #222;
+        --color: white;
+        --card: black;
+    }
+}

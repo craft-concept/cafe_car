@@ -1,6 +1,6 @@
 - title ||= nil
 
-%div{class: ui_class(:Card, **options)}
+%div{class: ui_class(:Card, flags)}
   - if title.present?
     = card.head do
       %h2= title

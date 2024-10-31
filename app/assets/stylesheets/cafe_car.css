@@ -1,25 +1,16 @@
-@import url("ui/Card.css");
-@import url("ui/Error.css");
-@import url("ui/Field.css");
-@import url("ui/Page.css");
+@import url("ui/theme.css");
+@import url("ui/components.css");
 
-:root {
-    color-scheme: light dark;
-
-    --font: -apple-system, menu, sans-serif;
-
-    --red: #CC4B00;
-    --error: var(--red);
-    --border: rgba(50, 50, 93, 0.1);
-
-    --bg: #F6F8FA;
-    --card: white;
-
-    --gap: 1rem;
-    --radius: 1rem;
+* {
+    box-sizing: border-box;
 }
 
 body {
-    background-color: var(--bg);
+    color: var(--color);
+    background: var(--background);
     font-family: var(--font), sans-serif;
+}
+
+textarea {
+    max-width: 100%;
 }

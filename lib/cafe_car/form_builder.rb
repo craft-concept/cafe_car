@@ -14,8 +14,7 @@ module CafeCar
     def association(method, collection: nil, **options)
       info         = info(method)
       collection ||= info.collection
-      # input(info)
-      # collection_select()
+      input(method, collection, :id, :name, as: :collection_select)
     end
 
     def field(method, **options, &block)
@@ -26,10 +25,10 @@ module CafeCar
       @info[method] ||= FieldInfo.new(method:, object:)
     end
 
-    def input(method, as: nil, **options)
+    def input(method, *args, as: nil, **options)
       as                  ||= info(method).input
       options[:placeholder] = info(method).placeholder unless options.key?(:placeholder)
-      public_send(as, method, **options)
+      public_send(as, method, *args, **options)
     end
 
     def hint(method, **options)
