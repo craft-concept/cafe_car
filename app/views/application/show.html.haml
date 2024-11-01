@@ -1,0 +1,36 @@
+- title record
+
+= ui.page :full do |page|
+  = page.left :flex do
+    - action = capture do
+      = link_to "← All #{model_name.human}", [model]
+
+    .Card.Card-sticky
+    = ui.card :sticky do |card|
+      = card.section { action }
+      = card.section do
+        %h3 #{model_name.singular.titleize} ##{record.id}
+        -# = ui(record).show(:updated_at, :created_at, try: true)
+        -# = display_attributes record, :updated_at, :created_at, try: true
+
+      = card.section do
+        -# = controls_for record
+
+    - if actions = render('actions').presence
+      = ui.card do
+        %h2 Actions
+        = actions
+
+  = page.body do
+    - if tab = params[:tab]
+      - title tab.humanize
+      = row bottom: true do
+        = page_title record.try(:name).fmap {|name| "#{name}'s #{tab.humanize(capitalize: false)}" }.felse { tab.humanize }
+        = link "← Back to #{model_name.human}", link: path_super(record)
+
+      = render "tab_#{tab}"
+    - else
+      = render "show"
+
+  = page.right :flex do
+    = render "aside"

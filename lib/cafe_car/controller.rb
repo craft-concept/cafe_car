@@ -135,6 +135,10 @@ module CafeCar
       run_callbacks(:render) { super(*args, **opts, &block) }
     end
 
+    def default_url_options
+      {} # { locale: I18n.locale }
+    end
+
     def partial?(path)
       prefixes = path.include?(?/) ? [] : lookup_context.prefixes
       lookup_context.any?(path, prefixes, true)
@@ -155,7 +159,7 @@ module CafeCar
     end
 
     def title(title)
-      @title = title
+      @title = title.to_s.presence
     end
   end
 end

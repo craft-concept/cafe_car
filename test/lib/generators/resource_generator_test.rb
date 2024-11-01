@@ -1,5 +1,5 @@
 require "test_helper"
-require "generators/resource/resource_generator"
+require "generators/cafe_car/resource/resource_generator"
 
 class ResourceGeneratorTest < Rails::Generators::TestCase
   tests ResourceGenerator

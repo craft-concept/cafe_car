@@ -9,5 +9,7 @@ module CafeCar
       # `= controller.view_context.capture do`; the latter outputs the content twice.
       @ui ||= CafeCar::Context.new(self)
     end
+
+    def present(...) = CafeCar[:Presenter].present(self, ...)
   end
 end

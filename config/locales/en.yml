@@ -1,0 +1,19 @@
+en:
+  "true": "Yes"
+  "false": "No"
+
+  application:
+    create:
+      success: "#{record.model_name.singular} created!"
+    update:
+      success: "#{record.model_name.singular} updated!"
+
+  activerecord:
+    models:
+      application_record: Record # .model_name.human
+      person:
+        one: Person
+        other: People
+    attributes:
+      application:
+        title: Title # .human_attribute_name("title")

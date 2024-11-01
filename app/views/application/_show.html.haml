@@ -1,0 +1,11 @@
+= ui.card do |card|
+  - if title = record.try(:title).presence
+    = card.section :flex, :row, :center do
+      = render "logo", width: 100
+      %h1= title
+
+  = card.section :slim do
+    = display_attributes record, except: %i{title updated_at created_at}
+  - if associations = display_associations(record).presence
+    = card.section :slim do
+      = associations

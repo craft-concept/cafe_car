@@ -1,10 +1,11 @@
 class UserPolicy < ApplicationPolicy
+  def show?   = true
   def index?  = true
   def create? = true
   def update? = user.id == record.id
 
   def permitted_attributes
-    [:title, :body, :author_id]
+    [:username]
   end
 
   class Scope < Scope
