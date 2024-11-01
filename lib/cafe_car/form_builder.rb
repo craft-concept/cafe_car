@@ -1,6 +1,6 @@
 module CafeCar
   class FormBuilder < ActionView::Helpers::FormBuilder
-    delegate :ui, :render, :partial?, to: :@template
+    delegate :ui, :tag, :render, :partial?, to: :@template
 
     def initialize(...)
       super
@@ -14,7 +14,7 @@ module CafeCar
     def association(method, collection: nil, **options)
       info         = info(method)
       collection ||= info.collection
-      input(method, collection, :id, :name, as: :collection_select)
+      input(info.input_key, collection, :id, :to_s, as: :collection_select)
     end
 
     def field(method, **options, &block)
@@ -26,19 +26,20 @@ module CafeCar
     end
 
     def input(method, *args, as: nil, **options)
-      as                  ||= info(method).input
-      options[:placeholder] = info(method).placeholder unless options.key?(:placeholder)
+      info                  = info(method)
+      as                  ||= info.input
+      options[:placeholder] = info.placeholder unless options.key?(:placeholder)
       public_send(as, method, *args, **options)
     end
 
     def hint(method, **options)
       return unless (hint = info(method).hint)
-      h.tag.small(hint, **options)
+      tag.small(hint, **options)
     end
 
     def error(method, **options)
       return unless (error = info(method).error)
-      h.tag.span(error, **options)
+      tag.span(error, **options)
     end
 
     def remaining_attributes = policy.editable_attributes - @info.keys

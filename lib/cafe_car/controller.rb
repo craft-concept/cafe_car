@@ -10,9 +10,9 @@ module CafeCar
 
     included do
       default_form_builder FormBuilder
-      rescue_from ActiveRecord::RecordInvalid, with: :render_invalid_record
+      rescue_from ::ActiveRecord::RecordInvalid, with: :render_invalid_record
       define_callbacks :render, :update, :create, :destroy
-      helper_method :model, :model_name, :record, :records, :plural?, :singular?
+      helper_method :model, :model_name, :object, :objects, :record, :records, :plural?, :singular?
       helper_method :title, :ui_class, :partial?
 
       helper Helpers
@@ -80,18 +80,14 @@ module CafeCar
     def record!  = scope.find(params[:id])
     def records! = policy_scope(scope.all)
 
-    def records
-      instance_variable_get("@#{model_name.plural}") || (self.records = records!)
-    end
-
+    def objects = records
+    def records = instance_variable_get("@#{model_name.plural}") || (self.records = records!)
     def records=(value)
       instance_variable_set("@#{model_name.plural}", value)
     end
 
-    def record
-      instance_variable_get("@#{model_name.singular}")
-    end
-
+    def object = record
+    def record = instance_variable_get("@#{model_name.singular}")
     def record=(value)
       instance_variable_set("@#{model_name.singular}", value)
     end
@@ -131,9 +127,7 @@ module CafeCar
 
     def render_invalid_record = render(record.persisted? ? 'edit' : 'new')
 
-    def default_render(*args, **opts, &block)
-      run_callbacks(:render) { super(*args, **opts, &block) }
-    end
+    # def default_render(...) = run_callbacks(:render) { super }
 
     def default_url_options
       {} # { locale: I18n.locale }

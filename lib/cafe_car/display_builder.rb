@@ -19,54 +19,6 @@ module CafeCar
     def show(*methods, try: false)
       # methods.filter_map { @object.public_send(_1) }.map { show _1 }.try { @template.safe_join(}
     end
-
-    def to_s
-      case object
-
-      when Symbol
-        object.to_s.humanize
-      when Integer
-        object.to_s
-      when Range
-
-      when ApplicationRecord
-        begin
-          @template.link_to object
-        rescue StandardError
-          object.to_s
-        end
-      when Time
-        tag.span object.to_formatted_s, title: object.to_formatted_s(:long_ordinal)
-      when Date
-        tag.span object.to_formatted_s
-      when ActiveRecord::Relation
-        object = object.to_a.uniq
-        object = object.sort_by(&:sort_key) if object.first.respond_to?(:sort_key)
-        show object, **options
-      when Set
-        object.map {|x| show(x) }.join(', ')
-      when Hash
-        tag.code object.pretty_inspect, class: 'pretty_inspect'
-      when Array
-        return options[:empty] || '(none)' if object.empty?
-
-        safe_join [
-          *([object.size, ' total: '] if options[:count]),
-          safe_join(object.map {|v| show(v, **options) }, ', ')
-        ].compact
-
-      when %r{^https?://.+\.(png|jpe?g|svg)$}
-        image_tag object, style: 'width: 1em'
-      when %r{^https?://}
-        link_to object, object, target: '_blank', rel: 'noopener'
-      else
-        if (max_length = options[:truncate]).present?
-          tag.span truncated(object, max_length), class: 'tt', title: object
-        else
-          object
-        end
-      end
-    end
   end
 end
 

@@ -5,7 +5,6 @@
     - action = capture do
       = link_to "← All #{model_name.human}", [model]
 
-    .Card.Card-sticky
     = ui.card :sticky do |card|
       = card.section { action }
       = card.section do
@@ -16,19 +15,18 @@
       = card.section do
         -# = controls_for record
 
-    - if actions = render('actions').presence
-      = ui.card do
-        %h2 Actions
-        = actions
+      = ui.card title: "Actions" do
+        = render('actions')
 
   = page.body do
     - if tab = params[:tab]
-      - title tab.humanize
-      = row bottom: true do
-        = page_title record.try(:name).fmap {|name| "#{name}'s #{tab.humanize(capitalize: false)}" }.felse { tab.humanize }
-        = link "← Back to #{model_name.human}", link: path_super(record)
-
-      = render "tab_#{tab}"
+      -# - title tab.humanize
+      -# = row bottom: true do
+      -#   = page.head
+      -#     %h1 record.try(:name).fmap {|name| "#{name}'s #{tab.humanize(capitalize: false)}" }.felse { tab.humanize }
+      -#   = link "← Back to #{model_name.human}", link: path_super(record)
+      -#
+      -# = render "tab_#{tab}"
     - else
       = render "show"
 

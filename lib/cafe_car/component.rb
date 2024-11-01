@@ -28,7 +28,7 @@ module CafeCar
 
       contents = h.safe_join(@args)
       contents << capture(context, &@block) if @block
-      return if @block and contents.blank?
+      return "" if @block and contents.blank?
 
       if h.partial?(partial)
         render(partial, *@args, options:, flags:, [*@name].last => context, **options) { contents }

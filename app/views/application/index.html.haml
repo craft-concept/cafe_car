@@ -1,6 +1,6 @@
 = ui.page do |page|
   = page.head do
-    %h1= title model.model_name.plural.titleize
+    %h1= title model.model_name.human(count: :all)
     -# %div= format_numbers page_entries_info(records)
 
     = render "index_actions"
@@ -9,8 +9,7 @@
     - if policy(model).new?
       = link_to "New #{model_name.human}", [model, action: :new]
 
-    - if params.key?(:debug)
-      = render "debug"
+    = render "debug" if params.key?(:debug)
 
     = render "filters"
 

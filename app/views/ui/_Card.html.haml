@@ -1,8 +1,7 @@
 - title ||= nil
 
 %div{class: ui_class(:Card, flags)}
-  - if title.present?
-    = card.head do
-      %h2= title
+  = card.head do
+    = card.title(tag: :h2) { title }
 
   = yield

@@ -2,10 +2,14 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "better_errors"
-gem "binding_of_caller"
 gem "cnc", path: "../cnc"
 gem "propshaft"
 gem "puma"
 gem "pundit"
 gem "sqlite3"
+
+group :development do
+  gem "better_errors"
+  gem "binding_of_caller"
+  gem "i18n-debug"
+end

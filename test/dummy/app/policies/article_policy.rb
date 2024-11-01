@@ -5,7 +5,7 @@ class ArticlePolicy < ApplicationPolicy
   def show? = record.published? || record.author == user
 
   def permitted_attributes
-    [:title, :author, :published_at, :body]
+    [:title, :author_id, :published_at, :body]
   end
 
   class Scope < Scope

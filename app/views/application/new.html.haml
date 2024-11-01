@@ -1,11 +1,11 @@
 = ui.page do |page|
-  = page.head do
-    %h1= title "New #{model_name.human}"
+  -# = page.head do
+  -#   = page.title title("New #{model_name.human}")
 
   = page.left do
     = ui.card do |card|
       - begin
-        %p= link_to "← All #{model_name.human.pluralize}", [model]
+        %p= link_to "← All #{model_name.human(count: :all)}", [model]
       - rescue
       %p Creating new #{model_name.human}
 

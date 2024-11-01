@@ -6,9 +6,18 @@
 }
 
 .Card_Head {
-    padding: calc(var(--gap) / 2) var(--gap);
+    /*padding: calc(var(--gap) / 2) calc(var(--gap) * 2);*/
+    display: flex;
+    align-items: center;
 }
 
+.Card_Title {
+    flex-grow: 1;
+    margin: 0;
+}
+
+.Card_Head,
+.Card_Foot,
 .Card_Section {
     padding: var(--gap);
 }
