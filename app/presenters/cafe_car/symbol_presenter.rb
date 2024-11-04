@@ -1,5 +1,5 @@
 module CafeCar
   class SymbolPresenter < CafeCar[:Presenter]
-    def to_s = object.to_s.humanize
+    def to_html = object.to_s.humanize
   end
 end

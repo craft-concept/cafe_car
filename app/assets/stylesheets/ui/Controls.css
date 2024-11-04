@@ -1,0 +1,9 @@
+.Controls {
+    display: inline-flex;
+}
+
+.Controls_Link + .Controls_Link::before {
+    display: inline;
+    content: "·";
+    padding: 0 0.3em;
+}

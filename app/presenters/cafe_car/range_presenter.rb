@@ -1,6 +1,6 @@
 module CafeCar
   class RangePresenter < CafeCar[:Presenter]
-    def to_s
+    def to_html
       min, max = object.begin, object.end
       if min.blank? && max.blank?
         ""

@@ -1,0 +1,12 @@
+- title "Edit #{model_name.human}"
+
+= ui.page do |page|
+  = page.left do
+    - if object.persisted?
+      = ui.card do |card|
+        %p= link(object).index
+        %p Editing #{model_name.human} ##{object.id}
+        = ui(object).controls
+
+  = page.body do
+    = render 'form'

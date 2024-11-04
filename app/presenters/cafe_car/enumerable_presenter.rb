@@ -1,6 +1,6 @@
 module CafeCar
   class EnumerablePresenter < self[:Presenter]
-    def to_s
+    def to_html
       out = safe_join(object.map { show(_1) }, ', ')
       return options[:empty] || '(none)' if out.blank?
       out

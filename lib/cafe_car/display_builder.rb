@@ -22,42 +22,6 @@ module CafeCar
   end
 end
 
-def display(*vals, **options)
-  capture do
-    vals.each do |object|
-      concat display_value(object, **options)
-    end
-  end
-end
-
-def display_attributes(record, *methods, **options, &)
-  methods = methods.presence
-
-  methods ||=
-    case record
-    when ApplicationRecord
-      policy(record).displayable_attributes
-    else
-      record.instance_values.keys
-    end
-
-  methods -= options[:except] if options[:except]
-
-  capture do
-    methods.each do |method|
-      concat display_attribute(record, method, **options, &)
-    end
-  end
-end
-
-def display_associations(record)
-  case record
-  when ApplicationRecord
-    attributes = policy(record).displayable_associations.presence
-    display_attributes record, *attributes if attributes
-  end
-end
-
 def display_attribute(record, method, **options, &)
   label   = options.delete(:label) { method.to_s.chomp('_at').humanize }
   map     = options.delete(:map) { :itself }
@@ -98,16 +62,5 @@ def display_attribute(record, method, **options, &)
       end
       concat value
     end
-  end
-end
-
-private
-
-def truncated(val, max_length)
-  case val
-  when Numeric
-    format("%.#{max_length}f", val)
-  else
-    val.to_s.truncate(max_length)
   end
 end

@@ -1,5 +1,5 @@
 module CafeCar
   class TrueClassPresenter < CafeCar[:Presenter]
-    def to_s = t(object)
+    def to_html = t(object)
   end
 end

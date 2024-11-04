@@ -3,7 +3,7 @@ module CafeCar
   class FieldInfo
     attr_reader :method, :object
 
-    def initialize(method:, object:)
+    def initialize(object:, method:)
       @method = method
       @object = object
     end

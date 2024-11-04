@@ -22,7 +22,8 @@ module CafeCar
       @options  = options
     end
 
-    def to_s         = raise("to_s unimplemented on this Presenter")
+    def to_s         = to_html
+    def to_html      = raise("to_s unimplemented on this Presenter")
     def present(...) = @template.present(...)
 
     def human(attribute, **options)
@@ -42,10 +43,16 @@ module CafeCar
       content = show(method, **options, &block).to_s
       return "" if content.blank?
 
-      ui.pair do |pair|
-        concat pair.label(human(method), tag: :strong)
-        concat pair.body(content)
+      ui.field do |field|
+        concat field.label(safe_join([human(method), *info_circle(method)], " "), tag: :strong)
+        concat field.content(content)
       end
+    end
+
+    def info_circle(method, *args, **opts, &block)
+      title = FieldInfo.new(object:, method:).hint
+      return unless title
+      ui.info_circle(*args, title:, **opts, &block)
     end
 
     def show(method, **options, &block)

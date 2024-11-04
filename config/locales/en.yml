@@ -2,6 +2,22 @@ en:
   "true": "Yes"
   "false": "No"
 
+  controls:
+    show: View
+    edit: Edit
+    destroy: Delete
+
+  time:
+    formats:
+      default: "%b %{ordinal}, %Y at %-l:%M%p"
+      long:    "%A, %B %{ordinal}, %Y at %-l:%M:%S%p %Z"
+
+  attributes:
+    created_at:   Created
+    updated_at:   Updated
+    deleted_at:   Deleted
+    published_at: Published
+
   application:
     create:
       success: "%{model_name} created!"
@@ -12,8 +28,8 @@ en:
     models:
       application_record: Record # .model_name.human
       person:
-        one: Person
+        one:   Person
         other: People
     attributes:
-      application:
+      article:
         title: Title # .human_attribute_name("title")

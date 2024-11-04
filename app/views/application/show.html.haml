@@ -3,17 +3,16 @@
 = ui.page :full do |page|
   = page.left :flex do
     - action = capture do
-      = link_to "← All #{model_name.human}", [model]
+      = link_to "← All #{model_name.human(count: 2)}", [model]
 
     = ui.card :sticky do |card|
       = card.section { action }
       = card.section do
         %h3 #{model_name.singular.titleize} ##{record.id}
-        -# = ui(record).show(:updated_at, :created_at, try: true)
-        -# = display_attributes record, :updated_at, :created_at, try: true
+        =  ui(record).attributes :updated_at, :created_at, try: true
 
       = card.section do
-        -# = controls_for record
+        = ui(record).controls
 
       = ui.card title: "Actions" do
         = render('actions')

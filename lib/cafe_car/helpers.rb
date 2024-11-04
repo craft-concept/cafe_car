@@ -18,5 +18,10 @@ module CafeCar
       @presenters                  ||= {}
       @presenters[[args, options]] ||= CafeCar[:Presenter].present(self, *args, **options)
     end
+
+    def link(object)
+      @links         ||= {}
+      @links[object] ||= CafeCar[:LinkBuilder].new(self, object)
+    end
   end
 end

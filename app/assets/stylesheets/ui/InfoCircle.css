@@ -1,0 +1,9 @@
+.InfoCircle {
+    display: inline-block;
+    cursor: help;
+}
+
+.InfoCircle::before {
+    display: inline;
+    content: "ⓘ";
+}

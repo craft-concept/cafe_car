@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gemspec
 
 gem "cnc", path: "../cnc"
+gem "importmap-rails"
 gem "propshaft"
 gem "puma"
 gem "pundit"

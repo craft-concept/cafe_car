@@ -1,0 +1,26 @@
+- show   = options.delete(:show)   { true }
+- edit   = options.delete(:edit)   { true }
+- destroy = options.delete(:destroy) { true }
+- remote = options.delete(:remote) { true }
+
+- scope      = [:controls]
+- model_name = object.class.model_name
+- policy     = policy(object)
+
+= ui.controls tag: :span, **options do |controls|
+  - if show and policy.show?
+    = controls.link do
+      - if request.format.html?
+        = link_to_unless_current(t(:show, scope:), [object])
+      - else
+        = link_to(t(:show, scope:), [object])
+
+  - if edit && policy.edit?
+    - begin
+      = controls.link do
+        = link_to_unless_current t(:edit, scope:), [object, action: :edit], remote:
+    - rescue StandardError => _
+
+  - if destroy && policy.destroy?
+    = controls.link do
+      = link_to t(:destroy, scope:), [object], method: :delete, data: { confirm: "This #{model_name.human.downcase} will be PERMANENTLY deleted. Are you sure?" }

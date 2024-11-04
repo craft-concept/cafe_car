@@ -1,6 +1,6 @@
 - title ||= nil
 
-%div{class: ui_class(:Card, flags)}
+= card.wrapper do
   = card.head do
     = card.title(tag: :h2) { title }
 

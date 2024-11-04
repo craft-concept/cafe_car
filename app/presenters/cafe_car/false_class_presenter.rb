@@ -1,5 +1,5 @@
 module CafeCar
   class FalseClassPresenter < CafeCar[:Presenter]
-    def to_s = "No"
+    def to_html = t(object)
   end
 end

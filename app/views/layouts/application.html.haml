@@ -1,0 +1,14 @@
+!!!
+%html
+  %head
+    %title= @title
+    %meta{name: "viewport", content: "width=device-width,initial-scale=1"}
+    = csrf_meta_tags
+    = csp_meta_tag
+    = stylesheet_link_tag "cafe_car"
+    = javascript_importmap_tags "cafe_car"
+    = yield(:head)
+
+  %body
+    = render "nav"
+    = yield

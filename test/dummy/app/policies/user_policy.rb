@@ -2,7 +2,7 @@ class UserPolicy < ApplicationPolicy
   def show?   = true
   def index?  = true
   def create? = true
-  def update? = user.id == record.id
+  def update? = user.id == object.id
 
   def permitted_attributes
     [:username]

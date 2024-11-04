@@ -3,7 +3,7 @@
     grid:
         ".    Head ."
         "Left Body Right"
-        ".    Foot ." / auto 1fr auto;
+        ".    Foot ." / minmax(20vw, auto) 1fr minmax(20vw, auto);
     gap: var(--gap);
 }
 

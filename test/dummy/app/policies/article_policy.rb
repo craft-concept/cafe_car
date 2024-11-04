@@ -2,7 +2,8 @@ class ArticlePolicy < ApplicationPolicy
   def index?  = true
   def create? = true
 
-  def show? = record.published? || record.author == user
+  def show?   = object.published? || edit?
+  def update? = object.author == user
 
   def permitted_attributes
     [:title, :author_id, :published_at, :body]
