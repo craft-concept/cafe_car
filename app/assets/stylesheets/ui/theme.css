@@ -5,12 +5,12 @@
 
     --red: #CC4B00;
     --error: var(--red);
-    /*--border: rgba(50 50 93 / 0.1);*/
-    --border: rgba(0 0 0 / 0.1);
+    --border: rgba(50 50 93 / .15);
+    /*--border: rgba(0 0 0 / .1);*/
     --color: black;
 
-    /*--background: #F6F8FA;*/
-    --background: hsl(44 100% 95%);
+    --background: #F6F8FA;
+    /*--background: hsl(44 100% 95%);*/
     --card: rgba(255 255 255 / 0.9);
 
     --gap: 1rem;

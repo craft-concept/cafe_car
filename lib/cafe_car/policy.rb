@@ -2,19 +2,22 @@ module CafeCar::Policy
   extend ActiveSupport::Concern
 
   def model
-    record.try(:model) or record.is_a?(Class) ? record : record.class
+    @model ||= object.is_a?(Class) ? object : object.class
+  end
+
+  def info(method)
+    @info         ||= {}
+    @info[method] ||= CafeCar[:FieldInfo].new(object:, method:)
   end
 
   def displayable_attributes
-    ids = %w[id]
-    model.columns.
-      map(&:name).
-      reject {|c| ids.include?(c) || c.ends_with?('_id') }.
-      map(&:to_sym)
+    permitted_attribute_keys
+      .union(model.columns.map(&:name).map(&:to_sym))
+      .map { association_for_attribute(_1) || _1 } - %i[id]
   end
 
   def editable_attributes
-    permitted_attribute_keys.grep_v(/_ids?$/)
+    permitted_attribute_keys.map { association_for_attribute(_1) || _1 }
   end
 
   def displayable_associations
@@ -46,5 +49,9 @@ module CafeCar::Policy
 
   def permitted_attribute?(attribute)
     permitted_attribute_keys.include?(attribute.to_sym)
+  end
+
+  def association_for_attribute(attribute)
+    info(attribute).reflection&.name
   end
 end

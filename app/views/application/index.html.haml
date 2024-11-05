@@ -1,9 +1,8 @@
-= ui.page do |page|
-  = page.head do
-    %h1= title model.model_name.human(count: :all)
-    -# %div= format_numbers page_entries_info(records)
+- title = title model.model_name.human(count: :all)
+- actions = render "index_actions"
 
-    = render "index_actions"
+= ui.page title:, actions: do |page|
+  -# %div= format_numbers page_entries_info(records)
 
   = page.left do
     - if policy(model).new?

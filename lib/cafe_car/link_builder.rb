@@ -9,7 +9,7 @@ module CafeCar
       @object   = object
     end
 
-    def model      = object.is_a?(Class) ? object.class : object
+    def model      = object.is_a?(Class) ? object : object.class
     def model_name = model.model_name
     def policy     = @template.policy(object)
 

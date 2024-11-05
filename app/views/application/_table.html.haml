@@ -1,10 +1,10 @@
-= ui.card do |card|
-  - objects.each do |object|
-    = card.section do
-      = link_to object
-      |
-      = ui(object).controls#(show: false)
+-# = ui.card do |card|
+-#   - objects.each do |object|
+-#     = card.section do
+-#       = link_to object
+-#       |
+-#       = ui(object).controls(show: false)
 
--# = table_for records do |t|
--#   = t.cell :title, link: true
--#   = t.controls
+= table_for records do |t|
+  = t.cell :title, link: true
+  = t.controls

@@ -23,5 +23,9 @@ module CafeCar
       @links         ||= {}
       @links[object] ||= CafeCar[:LinkBuilder].new(self, object)
     end
+
+    def table_for(objects, **options, &block)
+      CafeCar[:TableBuilder].new(self, objects, **options, &block)
+    end
   end
 end

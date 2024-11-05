@@ -17,13 +17,14 @@ module CafeCar
     end
 
     def initialize(template, object, **options)
-      @template = template
-      @object   = object
-      @options  = options
+      @template         = template
+      @object           = object
+      @options          = options
+      @shown_attributes = {}
     end
 
     def to_s         = to_html
-    def to_html      = raise("to_s unimplemented on this Presenter")
+    def to_html      = raise NoMethodError.new("Must implement to_html on this Presenter")
     def present(...) = @template.present(...)
 
     def human(attribute, **options)
@@ -40,7 +41,8 @@ module CafeCar
     end
 
     def attribute(method, **options, &block)
-      content = show(method, **options, &block).to_s
+      @shown_attributes[method] = true
+      content                   = show(method, **options, &block).to_s
       return "" if content.blank?
 
       ui.field do |field|

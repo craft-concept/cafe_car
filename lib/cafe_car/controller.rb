@@ -1,6 +1,7 @@
 module CafeCar
   module Controller
     extend ActiveSupport::Concern
+    include Pundit::Authorization
 
     class_methods do
       def model(model)
@@ -19,9 +20,13 @@ module CafeCar
 
       # prepend_view_path CafeCar::Engine.root.join('app/views/cafe_car')
       # prepend_view_path 'app/views/cafe_car'
+
+      after_action :verify_authorized
+
+      before_action :set_current_attributes
       before_action(only: %i[show edit update destroy]) { self.record = record! }
       before_action(only: %i[new create])               { self.record = model.new }
-      before_action(if: :singular?) { authorize record }
+      before_action(if: :singular?) { authorize object }
       before_action :assign_attributes, only: %i[create update]
     end
 
@@ -70,6 +75,8 @@ module CafeCar
     end
 
     private
+
+    def current_user = CafeCar[:Current].user
 
     def assign_attributes = record.assign_attributes(permitted_attributes(record))
 
@@ -154,6 +161,12 @@ module CafeCar
 
     def title(title)
       @title = title.to_s.presence
+    end
+
+    def set_current_attributes
+      CafeCar[:Current].request_id = request.uuid
+      CafeCar[:Current].user_agent = request.user_agent
+      CafeCar[:Current].ip_address = request.ip
     end
   end
 end

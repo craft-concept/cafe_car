@@ -12,9 +12,11 @@ module CafeCar
     def policy = h.policy(@object)
 
     def association(method, collection: nil, **options)
-      info         = info(method)
-      collection ||= info.collection
-      input(info.input_key, collection, :id, :to_s, as: :collection_select)
+      info                      = info(method)
+      collection              ||= info.collection
+      # options[:prompt]        ||= info.prompt
+      options[:include_blank] ||= info.prompt
+      input(info.input_key, collection, :id, :to_s, as: :collection_select, **options)
     end
 
     def field(method, **options, &block)
@@ -33,12 +35,12 @@ module CafeCar
     end
 
     def hint(method, **options)
-      return unless (hint = info(method).hint)
+      return unless hint = info(method).hint
       tag.small(hint, **options)
     end
 
     def error(method, **options)
-      return unless (error = info(method).error)
+      return unless error = info(method).error
       tag.span(error, **options)
     end
 

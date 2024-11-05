@@ -1,12 +1,12 @@
 .Card:not(.Card-blank) {
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
-                rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    box-shadow: rgba(50 50 93 / .25) 0 2px 5px -1px,
+                rgba(0 0 0 / .3) 0 1px 3px -1px;
     border-radius: var(--radius);
     background: var(--card);
 }
 
 .Card_Head {
-    /*padding: calc(var(--gap) / 2) calc(var(--gap) * 2);*/
+    gap: var(--gap);
     display: flex;
     align-items: center;
 }

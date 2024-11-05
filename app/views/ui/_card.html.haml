@@ -1,7 +1,9 @@
 - title ||= nil
+- actions ||= nil
 
 = card.wrapper do
   = card.head do
     = card.title(tag: :h2) { title }
+    = card.actions { actions }
 
   = yield

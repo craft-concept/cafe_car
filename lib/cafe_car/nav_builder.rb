@@ -1,6 +1,6 @@
 module CafeCar
   class NavBuilder
-    delegate :ui, :ui_class, :link_to, to: :@template
+    delegate :ui, :ui_class, to: :@template
 
     def initialize(template, **options)
       @template = template
@@ -18,10 +18,8 @@ module CafeCar
                     .uniq { _1.requirements }
     end
 
-    def link(*args, **opts, &block)
-      ui.nav.context.link do
-        link_to(*args, class: ui_class(:nav), **opts, &block)
-      end
+    def link_to(*args, **opts, &block)
+      @template.link_to(*args, class: ui_class([:nav, :link]), **opts, &block)
     end
   end
 end

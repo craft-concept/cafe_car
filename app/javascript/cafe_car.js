@@ -1,1 +1,4 @@
-console.log("HI there")
+
+function tooltip(selector) {
+
+}

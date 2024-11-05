@@ -1,6 +1,10 @@
 @import url("ui/theme.css");
 @import url("ui/components.css");
 
+:root {
+    --half-gap: calc(var(--gap) / 2);
+}
+
 * {
     box-sizing: border-box;
 }

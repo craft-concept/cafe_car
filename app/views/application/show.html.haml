@@ -1,14 +1,13 @@
-- title record
+- title = title record
 
-= ui.page :full do |page|
+= ui.page :full, title: do |page|
   = page.left :flex do
-    - action = capture do
+    - title = "#{model_name.singular.titleize} ##{record.id}"
+    - actions = capture do
       = link_to "← All #{model_name.human(count: 2)}", [model]
 
-    = ui.card :sticky do |card|
-      = card.section { action }
+    = ui.card :sticky, title:, actions: do |card|
       = card.section do
-        %h3 #{model_name.singular.titleize} ##{record.id}
         =  ui(record).attributes :updated_at, :created_at, try: true
 
       = card.section do
