@@ -4,6 +4,11 @@
     rgba(0 0 0 / .3) 0 1px 3px -1px;
     border-radius: var(--radius);
     background: var(--card);
+    width: 100%;
+}
+
+.Table-shrink {
+    width: 1px;
 }
 
 .Table_Head,
@@ -18,6 +23,10 @@
 
 .Table_Row {
     display: table-row;
+}
+
+.Table_Row:not(:hover) .Table-shy > * {
+    visibility: hidden;
 }
 
 .Table_Row + .Table_Row > .Table_Cell {

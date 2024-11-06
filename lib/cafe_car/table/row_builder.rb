@@ -13,8 +13,8 @@ module CafeCar
         end
       end
 
-      def controls(...)
-        ui.cell(present(@object).controls(...))
+      def controls(*args, shy: true, **options, &block)
+        ui.cell(:shrink, shy && :shy, present(@object).controls(*args, **options, &block))
       end
 
       def to_html

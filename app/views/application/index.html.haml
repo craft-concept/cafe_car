@@ -5,9 +5,6 @@
   -# %div= format_numbers page_entries_info(records)
 
   = page.left do
-    - if policy(model).new?
-      = link_to "New #{model_name.human}", [model, action: :new]
-
     = render "debug" if params.key?(:debug)
 
     = render "filters"

@@ -9,6 +9,13 @@
 
 .Page_Head {
     grid-area: Head;
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+}
+
+.Page_Title {
+    flex-grow: 1;
 }
 
 .Page_Left {
