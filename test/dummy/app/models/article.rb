@@ -5,7 +5,6 @@ class Article < ApplicationRecord
 
   after_initialize :set_defaults
 
-  def to_s       = title
   def published? = published_at && published_at < Time.zone.now
 
   private

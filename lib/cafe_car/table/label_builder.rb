@@ -1,8 +1,7 @@
 module CafeCar::Table
-  class LabelBuilder < Builder
+  class LabelBuilder < ObjectsBuilder
     def initialize(...)
       super
-      @objects = @options.delete(:objects) { raise }
       @method  = @options.delete(:method) { raise }
       @key     = @method.to_s
     end

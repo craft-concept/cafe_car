@@ -1,10 +1,6 @@
 module CafeCar
   module ActiveRecord
     class BasePresenter < CafeCar[:Presenter]
-      def policy = @policy ||= @template.policy(object)
-
-      def title(...) = %w[title name to_s].lazy.filter_map { object.try(_1) }.map { present(_1, ...) }.first.to_s
-
       def attributes(*attrs, **options, &block)
         attrs = policy.displayable_attributes if attrs.empty?
         super(*attrs, **options, &block)

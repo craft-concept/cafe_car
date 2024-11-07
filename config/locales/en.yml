@@ -18,6 +18,7 @@ en:
       long:    "%A, %B %{ordinal}, %Y at %-l:%M:%S%p %Z"
 
   attributes:
+    to_s:         Item
     created_at:   Created
     updated_at:   Updated
     deleted_at:   Deleted

@@ -4,6 +4,8 @@ class UserPolicy < ApplicationPolicy
   def create? = true
   def update? = user.id == object.id
 
+  def title_attribute = :username
+
   def permitted_attributes
     [:username]
   end

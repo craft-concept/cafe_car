@@ -9,6 +9,7 @@
     /*--border: rgba(0 0 0 / .1);*/
     --color: black;
     --dim: rgba(50 50 93 / .1);
+    --link: blue;
 
     --background: #F6F8FA;
     --card: rgba(255 255 255 / .95);
@@ -19,6 +20,8 @@
 
     --box-shadow: rgba(50 50 93 / .25) 0 2px 5px -1px,
                   rgba(0 0 0 / .3) 0 1px 3px -1px;
+
+    --mobile: 720px;
 }
 
 @media (prefers-color-scheme: dark) {

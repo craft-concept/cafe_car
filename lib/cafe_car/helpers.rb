@@ -28,6 +28,10 @@ module CafeCar
       [*name, *flags, *args, *opts.keys].join(" ")
     end
 
+    def title(title)
+      @title = present(title).title.presence
+    end
+
     def present(*args, **options)
       @presenters                  ||= {}
       @presenters[[args, options]] ||= CafeCar[:Presenter].present(self, *args, **options)

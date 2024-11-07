@@ -6,6 +6,7 @@ module CafeCar
       def datetime = object.iso8601
       def title    = l(object, format: :long)
 
+      def string  = words
       def to_html = tag.time words, datetime:, title:
     end
   end

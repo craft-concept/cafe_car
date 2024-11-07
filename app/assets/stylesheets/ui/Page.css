@@ -1,9 +1,8 @@
 .Page {
     display: grid;
-    grid:
-        ".    Head ."
-        "Left Body Right"
-        ".    Foot ." / minmax(20vw, auto) 1fr minmax(20vw, auto);
+    grid: ".    Head ."
+          "Left Body Right"
+          ".    Foot ." / minmax(20vw, auto) 1fr minmax(20vw, auto);
     gap: var(--gap);
 }
 
@@ -39,4 +38,14 @@
 
 .Page_Right {
     grid-area: Right;
+}
+
+@media (max-width: 720px) {
+    .Page {
+        grid: "Head"
+              "Left"
+              "Body"
+              "Right"
+              "Foot" / 1fr;
+    }
 }

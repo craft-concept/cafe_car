@@ -16,7 +16,7 @@ module CafeCar
       collection              ||= info.collection
       # options[:prompt]        ||= info.prompt
       options[:include_blank] ||= info.prompt
-      input(info.input_key, collection, :id, :to_s, as: :collection_select, **options)
+      input(info.input_key, collection, :id, -> { h.present(_1).title }, as: :collection_select, **options)
     end
 
     def field(method, **options, &block)

@@ -14,7 +14,7 @@ module CafeCar
       rescue_from ::ActiveRecord::RecordInvalid, with: :render_invalid_record
       define_callbacks :render, :update, :create, :destroy
       helper_method :model, :model_name, :object, :objects, :record, :records, :plural?, :singular?
-      helper_method :title, :partial?
+      helper_method :partial?
 
       helper Helpers
 
@@ -149,10 +149,6 @@ module CafeCar
     def partial?(path)
       prefixes = path.include?(?/) ? [] : lookup_context.prefixes
       lookup_context.any?(path, prefixes, true)
-    end
-
-    def title(title)
-      @title = title.to_s.presence
     end
 
     def set_current_attributes

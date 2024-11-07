@@ -10,7 +10,7 @@ module CafeCar
 
     def id?         = method =~ /_ids?$/
     def value       = @object.public_send(@method)
-    def model       = @object.class
+    def model       = @object.try(:klass) || @object.class
     def model_name  = @object.model_name
     def associated? = reflection.present?
     def foreign_key = reflection.foreign_key

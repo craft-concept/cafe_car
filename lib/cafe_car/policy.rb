@@ -2,12 +2,22 @@ module CafeCar::Policy
   extend ActiveSupport::Concern
 
   def model
-    @model ||= object.is_a?(Class) ? object : object.class
+    @model ||= object.try(:klass) or object.is_a?(Class) ? object : object.class
   end
 
   def info(method)
     @info         ||= {}
     @info[method] ||= CafeCar[:FieldInfo].new(object:, method:)
+  end
+
+  def title_attributes = %i[title name to_s]
+
+  def title_attribute
+    @title_attribute ||=
+      title_attributes.lazy
+                      .select { model.method_defined? _1 }
+                      .select { displayable_attribute? _1 }
+                      .first || :to_s
   end
 
   def displayable_attributes
@@ -49,6 +59,10 @@ module CafeCar::Policy
 
   def permitted_attribute?(attribute)
     permitted_attribute_keys.include?(attribute.to_sym)
+  end
+
+  def displayable_attribute?(attribute)
+    displayable_attributes.include?(attribute.to_sym)
   end
 
   def association_for_attribute(attribute)

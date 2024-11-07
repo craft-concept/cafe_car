@@ -24,9 +24,15 @@ module CafeCar
       @shown_attributes = {}
     end
 
+    def model  = @object.class
+    def policy = @policy ||= @template.policy(object)
+
     def to_s         = to_html.to_s
     def to_html      = raise NoMethodError.new("Must implement to_html on this Presenter")
     def present(...) = @template.present(...)
+
+    def title_attribute = policy.title_attribute rescue :to_s
+    def title(...)      = show(title_attribute, ...)
 
     def human(attribute, **options)
       object.class.human_attribute_name(attribute, options)

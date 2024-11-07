@@ -8,3 +8,7 @@
     padding: 0 0.3em;
     opacity: .3;
 }
+
+.Controls_Link a {
+    color: var(--link);
+}

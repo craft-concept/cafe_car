@@ -1,10 +1,5 @@
 module CafeCar::Table
-  class BodyBuilder < Builder
-    def initialize(...)
-      super
-      @objects = @options.delete(:objects) { raise }
-    end
-
+  class BodyBuilder < ObjectsBuilder
     def to_html
       ui.body do |body|
         @objects.each do |object|
