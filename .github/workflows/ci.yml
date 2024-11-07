@@ -60,6 +60,11 @@ jobs:
       - run: bin/rails db:setup
       - run: bin/rails server &
       - name: Screenshot articles
-        uses: flameddd/screenshots-ci-action@master
+        uses: flameddd/screenshots-ci-action@v2.1.0
         with:
           url: http://localhost:3000/articles
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: Article Screenshots
+          path: screenshots
