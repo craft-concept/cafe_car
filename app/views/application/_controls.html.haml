@@ -1,9 +1,11 @@
+- index    = options.delete(:index)    { false }
 - show    = options.delete(:show)    { false }
 - edit    = options.delete(:edit)    { true }
 - destroy = options.delete(:destroy) { true }
 - links   = link(object)
 
 = ui.controls tag: :span, **options do |controls|
+  = controls.link links.index   if index
   = controls.link links.show    if show
   = controls.link links.edit    if edit
   = controls.link links.destroy if destroy

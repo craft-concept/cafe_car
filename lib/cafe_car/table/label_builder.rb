@@ -6,7 +6,9 @@ module CafeCar::Table
       @key     = @method.to_s
     end
 
-    def sortable? = @objects.columns_hash.key? @key
+    def sortable?    = @objects.columns_hash.key? @key
+    def reflection   = @objects.klass.reflect_on_association(@method)
+    def association? = reflection.present?
 
     def sort
       @sort ||=

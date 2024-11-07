@@ -1,18 +1,13 @@
-- title = title record
+- title = title(object)
+- actions = ui(object).controls(index: true)
 
-= ui.page :full, title: do |page|
-  = page.left :head do
-    %p= link(model).index
-
+= ui.page :full, title:, actions: do |page|
   = page.left do
     - title = "#{model_name.singular.titleize} ##{record.id}"
 
     = ui.card :sticky, title: do |card|
       = card.section do
         =  ui(record).attributes :updated_at, :created_at, try: true
-
-      = card.section do
-        = ui(record).controls
 
       = ui.card title: "Actions" do
         = render('actions')

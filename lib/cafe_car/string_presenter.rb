@@ -1,5 +1,7 @@
 module CafeCar
   class StringPresenter < self[:Presenter]
+    def title = to_s
+
     def to_s
       length = @options[:truncate]
       txt    = object

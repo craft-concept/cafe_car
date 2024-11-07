@@ -2,7 +2,7 @@ module CafeCar
   class LinkBuilder
     attr_reader :object
 
-    delegate :link_to, :current_page?, to: :@template
+    delegate :link_to, :link_to_unless, :current_page?, to: :@template
 
     def initialize(template, object)
       @template = template
@@ -31,19 +31,19 @@ module CafeCar
 
     def show(disabled: false)
       disabled ||= !policy.show? || current_page?([@object])
-      @template.link_to_unless(disabled, i18n(:show), [@object]) { disable _1 }
+      link_to_unless(disabled, i18n(:show), [@object]) { disable _1 }
     end
 
     def edit(disabled: false)
       disabled ||= !policy.edit? || current_page?([@object, action: :edit])
-      @template.link_to_unless(disabled, i18n(:edit), [@object, action: :edit]) { disable _1 }
+      link_to_unless(disabled, i18n(:edit), [@object, action: :edit]) { disable _1 }
     end
 
     def destroy(disabled: false)
       disabled ||= !policy.destroy?
-      @template.link_to_unless(disabled, i18n(:destroy), [@object],
-                               method: :delete,
-                               data: {confirm: i18n(:destroy, scope: :confirm, model: model_name.human.downcase)}) { disable _1 }
+      link_to_unless(disabled, i18n(:destroy), [@object],
+                     method: :delete,
+                     data: {confirm: i18n(:destroy, scope: :confirm, model: model_name.human.downcase)}) { disable _1 }
     end
   end
 end

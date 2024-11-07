@@ -16,10 +16,6 @@ module CafeCar
         attributes(*names, **options, &block)
       end
 
-      def controls(**options, &block)
-        render("controls", object:, options:, &block)
-      end
-
       def to_model = object
       def to_html  = link_to title, [self] rescue title
     end

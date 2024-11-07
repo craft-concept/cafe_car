@@ -13,11 +13,7 @@ module CafeCar::Policy
   def title_attributes = %i[title name to_s]
 
   def title_attribute
-    @title_attribute ||=
-      title_attributes.lazy
-                      .select { model.method_defined? _1 }
-                      .select { displayable_attribute? _1 }
-                      .first || :to_s
+    @title_attribute ||= model.tap(&:define_attribute_methods) && title_attributes.find { model.method_defined? _1 }
   end
 
   def displayable_attributes

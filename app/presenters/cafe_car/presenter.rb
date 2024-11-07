@@ -31,7 +31,7 @@ module CafeCar
     def to_html      = raise NoMethodError.new("Must implement to_html on this Presenter")
     def present(...) = @template.present(...)
 
-    def title_attribute = policy.title_attribute rescue :to_s
+    def title_attribute = policy.title_attribute
     def title(...)      = show(title_attribute, ...)
 
     def human(attribute, **options)
@@ -62,6 +62,10 @@ module CafeCar
       title = FieldInfo.new(object:, method:).hint
       return unless title
       ui.info_circle(*args, title:, **opts, &block)
+    end
+
+    def controls(**options, &block)
+      render("controls", object:, options:, &block)
     end
 
     def show(method, **options, &block)

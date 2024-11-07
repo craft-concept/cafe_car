@@ -40,12 +40,22 @@
     grid-area: Right;
 }
 
-@media (max-width: 720px) {
+@media (width < 720px) {
     .Page {
         grid: "Head"
               "Left"
               "Body"
               "Right"
               "Foot" / 1fr;
+        justify-items: stretch;
+
+    }
+
+    .Page_Left,
+    .Page_Head,
+    .Page_Body,
+    .Page_Right,
+    .Page_Foot {
+        justify-self: stretch;
     }
 }

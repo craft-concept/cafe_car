@@ -28,8 +28,8 @@ module CafeCar
       [*name, *flags, *args, *opts.keys].join(" ")
     end
 
-    def title(title)
-      @title = present(title).title.presence
+    def title(object)
+      @title = present(object).title.presence
     end
 
     def present(*args, **options)

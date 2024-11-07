@@ -1,7 +1,7 @@
-= ui.page title: title("Edit #{model_name.human}") do |page|
-  = page.left :head do
-    %p= link(model).index
+- title = title("Edit #{model_name.human}")
+- actions = ui(object).controls(index: true)
 
+= ui.page title:, actions: do |page|
   = page.left do
     - title = "#{model_name.singular.titleize} ##{record.id}"
 
@@ -9,9 +9,6 @@
       - if object.persisted?
         = card.section do
           =  ui(record).attributes :updated_at, :created_at, try: true
-
-        = card.section do
-          = ui(record).controls show: true
 
       = ui.card title: "Actions" do
         = render('actions')

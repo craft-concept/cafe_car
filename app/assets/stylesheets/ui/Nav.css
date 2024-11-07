@@ -1,5 +1,5 @@
 .Nav {
     display: flex;
     gap: var(--gap);
-    padding: var(--half-gap);
+    margin: var(--gap);
 }
