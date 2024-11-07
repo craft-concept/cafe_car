@@ -14,7 +14,7 @@ module CafeCar
       rescue_from ::ActiveRecord::RecordInvalid, with: :render_invalid_record
       define_callbacks :render, :update, :create, :destroy
       helper_method :model, :model_name, :object, :objects, :record, :records, :plural?, :singular?
-      helper_method :title, :ui_class, :partial?
+      helper_method :title, :partial?
 
       helper Helpers
 
@@ -31,10 +31,9 @@ module CafeCar
     end
 
     def index
-      self.records = records.page(params[:page]).per(params[:per] || 100) if records.respond_to?(:page)
-      self.records = filtered(records) if respond_to?(:filtered, true)
-      self.records = paginated(records) if respond_to?(:paginated, true)
-      self.records = sorted(records) if respond_to?(:sorted, true)
+      self.records = records.page(params[:page]).per(params[:per]) if records.respond_to?(:page)
+      self.records = filter(records) if respond_to?(:filter, true)
+      self.records = sorted(records)
       self.records = records.includes(*includes) if respond_to?(:includes, true)
 
       authorize records
@@ -77,6 +76,13 @@ module CafeCar
     private
 
     def current_user = CafeCar[:Current].user
+
+    def sorted(scope)
+      if scope.respond_to?(:sorted)
+        scope.sorted(*params[:sort].presence)
+      else scope
+      end
+    end
 
     def assign_attributes = record.assign_attributes(permitted_attributes(record))
 
@@ -143,20 +149,6 @@ module CafeCar
     def partial?(path)
       prefixes = path.include?(?/) ? [] : lookup_context.prefixes
       lookup_context.any?(path, prefixes, true)
-    end
-
-    def ui_class(names, *args, **opts)
-      names  = [*names].map(&:to_s).map(&:camelize)
-      name   = names.join("_")
-      parent = names.first
-      args.flatten!
-      args.compact_blank!
-      opts.compact_blank!
-
-      flags = args.extract! { _1.is_a? Symbol } | opts.extract! { _1.is_a? Symbol }.keys
-      flags.map! { [*parent, _1].join("-") }
-
-      [*name, *flags, *args, *opts.keys].join(" ")
     end
 
     def title(title)

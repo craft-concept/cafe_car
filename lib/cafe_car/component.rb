@@ -2,7 +2,7 @@ module CafeCar
   class Component
     attr_reader :flags, :options
 
-    delegate :tag, :render, :capture, :ui_class, to: :@template
+    delegate :tag, :render, :capture, :safe_join, :ui_class, to: :@template
 
     def initialize(template, name, *args, tag: :div, **options, &block)
       @template = template
@@ -10,13 +10,14 @@ module CafeCar
       @tag      = tag
       @flags    = args.extract! { _1.is_a? Symbol }
       @args     = args
-      @options  = @flags.to_h { [_1, true] }.merge!(options)
+      @options  = options
       @block    = block
     end
 
     def name     = @names.last
     def context  = @context ||= Context.new(@template, prefix: @names)
     def partial? = @template.partial?(partial_name)
+    def tag_name = options[:href] ? :a : @tag
 
     def partial_name = 'ui/' + @names.join('_')
 
@@ -28,7 +29,7 @@ module CafeCar
     end
 
     def wrapper(*args, **opts, &block)
-      @template.content_tag(@tag, *args, class: class_name(*opts.delete(:class)), **opts) do
+      @template.content_tag(tag_name, safe_join([*args]), class: class_name(*opts.delete(:class)), **opts) do
         capture(context, &block)
       end
     end
@@ -38,7 +39,7 @@ module CafeCar
       return "" if @block and contents.blank?
 
       if partial?
-        render(partial_name, options:, flags:, name => context, **options) { contents }
+        render(partial_name, options:, flags:, c: self, component: self, name => context, **options) { contents }
       else
         wrapper(*@args, **@options) { contents }
       end

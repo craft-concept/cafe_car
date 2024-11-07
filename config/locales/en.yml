@@ -3,9 +3,14 @@ en:
   "false": "No"
 
   controls:
+    new: New %{model}
+    index: ← All %{model}
     show: View
     edit: Edit
     destroy: Delete
+    archive: Archive
+    confirm:
+      destroy: This %{model} will be PERMANENTLY deleted. Are you sure?
 
   time:
     formats:

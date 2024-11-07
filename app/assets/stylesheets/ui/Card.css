@@ -1,6 +1,5 @@
 .Card:not(.Card-blank) {
-    box-shadow: rgba(50 50 93 / .25) 0 2px 5px -1px,
-                rgba(0 0 0 / .3) 0 1px 3px -1px;
+    box-shadow: var(--box-shadow);
     border-radius: var(--radius);
     background: var(--card);
 }
@@ -28,6 +27,11 @@
 
 .Card:not(:has(.Card_Section)) {
     padding: var(--gap);
+}
+
+.Card-sticky {
+    position: sticky;
+    top: var(--gap);
 }
 
 .Card + .Card {

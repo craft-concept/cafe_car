@@ -1,12 +1,20 @@
-- title "Edit #{model_name.human}"
+= ui.page title: title("Edit #{model_name.human}") do |page|
+  = page.left :head do
+    %p= link(model).index
 
-= ui.page do |page|
   = page.left do
-    - if object.persisted?
-      = ui.card do |card|
-        %p= link(object).index
-        %p Editing #{model_name.human} ##{object.id}
-        = ui(object).controls
+    - title = "#{model_name.singular.titleize} ##{record.id}"
+
+    = ui.card :sticky, title: do |card|
+      - if object.persisted?
+        = card.section do
+          =  ui(record).attributes :updated_at, :created_at, try: true
+
+        = card.section do
+          = ui(record).controls show: true
+
+      = ui.card title: "Actions" do
+        = render('actions')
 
   = page.body do
     = render 'form'

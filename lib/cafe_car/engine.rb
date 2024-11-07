@@ -14,5 +14,11 @@ module CafeCar
     initializer "cafe_car.assets" do |app|
       app.config.assets.paths << root.join("app/javascript")
     end
+
+    initializer "cafe_car.active_record" do |app|
+      app.reloader.to_prepare do
+        ::ActiveRecord::Base.include(CafeCar::Model)
+      end
+    end
   end
 end

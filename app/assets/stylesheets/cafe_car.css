@@ -1,5 +1,7 @@
 @import url("ui/theme.css");
 @import url("ui/components.css");
+@import url("pagination.css");
+@import url("utility.css");
 
 :root {
     --half-gap: calc(var(--gap) / 2);
@@ -17,4 +19,9 @@ body {
 
 textarea {
     max-width: 100%;
+}
+
+time {
+    text-decoration: dotted underline;
+    text-decoration-color: var(--dim);
 }

@@ -1,9 +1,12 @@
 module CafeCar
   module DateAndTime
     class CompatibilityPresenter < Presenter
-      def to_html
-        tag.time l(object), datetime: object.iso8601, title: l(object, format: :long)
-      end
+      def distance = @template.time_ago_in_words(object)
+      def words    = object.past? ? "#{distance} ago" : "in #{distance}"
+      def datetime = object.iso8601
+      def title    = l(object, format: :long)
+
+      def to_html = tag.time words, datetime:, title:
     end
   end
 end

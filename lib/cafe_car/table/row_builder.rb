@@ -1,25 +1,31 @@
-module CafeCar
-  module Table
-    class RowBuilder < Builder
-      def value(method) = present(@object).public_send(method)
+module CafeCar::Table
+  class RowBuilder < Builder
+    def initialize(...)
+      super
+      @object = @options.delete(:object) { raise }
+    end
 
-      def cell(method, **options, &block)
-        ui.cell do
-          if block
-            ui << capture(value(method), &block)
-          else
-            ui << present(value(method))
-          end
-        end
-      end
+    def value(method) = present(@object).try(method) || @object.public_send(method)
 
-      def controls(*args, shy: true, **options, &block)
-        ui.cell(:shrink, shy && :shy, present(@object).controls(*args, **options, &block))
-      end
+    def cell(method, *flags, href: nil, **options, &block)
+      href = @template.url_for(@object) if href == true
+      href = href.to_proc.(@object) if href.respond_to?(:to_proc)
 
-      def to_html
-        ui.row(capture(self, &@block))
-      end
+      content = block ? capture(value(method), &block) : present(value(method))
+
+      ui.cell(content, *flags, href:, **options)
+    end
+
+    def timestamps(**options)
+      cell(:updated_at, :shrink, title: value(:created_at), **options)
+    end
+
+    def controls(*args, **options)
+      ui.cell(:shrink, :shy, *args, present(@object).controls(*args, **options))
+    end
+
+    def to_html
+      ui.row(capture(self, &@block))
     end
   end
 end

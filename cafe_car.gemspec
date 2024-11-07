@@ -20,4 +20,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "rails"
   spec.add_dependency "haml-rails"
+  spec.add_dependency "kaminari"
 end

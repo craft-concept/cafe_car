@@ -6,4 +6,5 @@
     display: inline;
     content: "·";
     padding: 0 0.3em;
+    opacity: .3;
 }

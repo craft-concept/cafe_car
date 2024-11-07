@@ -5,6 +5,7 @@ module CafeCar
     delegate *%w[l t capture concat link_to render safe_join tag ui], to: :@template
 
     def self.present(template, object, **options)
+      object = object.object if object.is_a?(Presenter)
       find(object.class).new(template, object, **options)
     end
 
@@ -23,7 +24,7 @@ module CafeCar
       @shown_attributes = {}
     end
 
-    def to_s         = to_html
+    def to_s         = to_html.to_s
     def to_html      = raise NoMethodError.new("Must implement to_html on this Presenter")
     def present(...) = @template.present(...)
 

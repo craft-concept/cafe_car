@@ -14,6 +14,20 @@ module CafeCar
       end
     end
 
+    def ui_class(names, *args, **opts)
+      names  = [*names].map(&:to_s).map(&:camelize)
+      name   = names.join("_")
+      parent = names.first
+      args.flatten!
+      args.compact_blank!
+      opts.compact_blank!
+
+      flags = args.extract! { _1.is_a? Symbol } | opts.extract! { _1.is_a? Symbol }.keys
+      flags.map! { [*parent, _1].join("-") }
+
+      [*name, *flags, *args, *opts.keys].join(" ")
+    end
+
     def present(*args, **options)
       @presenters                  ||= {}
       @presenters[[args, options]] ||= CafeCar[:Presenter].present(self, *args, **options)
@@ -25,7 +39,7 @@ module CafeCar
     end
 
     def table_for(objects, **options, &block)
-      CafeCar[:TableBuilder].new(self, objects, **options, &block)
+      CafeCar[:TableBuilder].new(self, objects:, **options, &block)
     end
   end
 end

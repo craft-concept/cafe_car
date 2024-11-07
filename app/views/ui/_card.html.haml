@@ -1,7 +1,7 @@
-- title ||= nil
-- actions ||= nil
+- title   = options.delete(:title)
+- actions = options.delete(:actions)
 
-= card.wrapper do
+= card.wrapper(*flags, **options) do
   = card.head do
     = card.title(tag: :h2) { title }
     = card.actions { actions }

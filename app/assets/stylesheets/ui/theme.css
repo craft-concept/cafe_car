@@ -8,20 +8,24 @@
     --border: rgba(50 50 93 / .15);
     /*--border: rgba(0 0 0 / .1);*/
     --color: black;
+    --dim: rgba(50 50 93 / .1);
 
     --background: #F6F8FA;
-    /*--background: hsl(44 100% 95%);*/
-    --card: rgba(255 255 255 / 0.9);
+    --card: rgba(255 255 255 / .95);
+    --hover: rgba(50 50 93 / .03);
 
     --gap: 1rem;
     --radius: 1rem;
+
+    --box-shadow: rgba(50 50 93 / .25) 0 2px 5px -1px,
+                  rgba(0 0 0 / .3) 0 1px 3px -1px;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
         --background: #222;
         --color: white;
-        --card: rgba(0 0 0 / 0.5);
-        --border: rgba(255 255 255 / 0.1);
+        --card: rgba(20 20 20 / .95);
+        --border: rgba(255 255 255 / .1);
     }
 }

@@ -11,6 +11,7 @@ PATH
   specs:
     cafe_car (0.1.0)
       haml-rails
+      kaminari
       rails
 
 GEM
@@ -104,6 +105,8 @@ GEM
     drb (2.2.1)
     dry-cli (1.2.0)
     erubi (1.13.0)
+    faker (3.5.1)
+      i18n (>= 1.8.11, < 2)
     globalid (1.2.1)
       activesupport (>= 6.1)
     haml (6.3.0)
@@ -119,11 +122,27 @@ GEM
       concurrent-ruby (~> 1.0)
     i18n-debug (1.2.0)
       i18n (< 2)
+    importmap-rails (2.0.3)
+      actionpack (>= 6.0.0)
+      activesupport (>= 6.0.0)
+      railties (>= 6.0.0)
     io-console (0.7.2)
     irb (1.14.1)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.7.4)
+    kaminari (1.2.2)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.2.2)
+      kaminari-activerecord (= 1.2.2)
+      kaminari-core (= 1.2.2)
+    kaminari-actionview (1.2.2)
+      actionview
+      kaminari-core (= 1.2.2)
+    kaminari-activerecord (1.2.2)
+      activerecord
+      kaminari-core (= 1.2.2)
+    kaminari-core (1.2.2)
     language_server-protocol (3.17.0.3)
     logger (1.6.1)
     loofah (2.23.1)
@@ -299,7 +318,10 @@ DEPENDENCIES
   binding_of_caller
   cafe_car!
   cnc!
+  faker
   i18n-debug
+  importmap-rails
+  kaminari
   propshaft
   puma
   pundit

@@ -1,0 +1,8 @@
+.disabled, [disabled] {
+    opacity: .1;
+    cursor: not-allowed;
+}
+
+.center {
+    text-align: center;
+}

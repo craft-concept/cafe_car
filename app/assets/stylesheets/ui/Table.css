@@ -1,31 +1,79 @@
 .Table {
     display: table;
-    box-shadow: rgba(50 50 93 / .25) 0 2px 5px -1px,
-    rgba(0 0 0 / .3) 0 1px 3px -1px;
+    box-shadow: var(--box-shadow);
     border-radius: var(--radius);
     background: var(--card);
     width: 100%;
 }
 
+.Table-sticky {
+    position: sticky;
+    top: 0;
+}
+
 .Table-shrink {
     width: 1px;
+    white-space: nowrap;
 }
 
 .Table_Head,
-.Table_Body {
+.Table_Body,
+.Table_Foot {
     display: table-row-group;
+}
+
+.Table_Head {
+    overflow: hidden;
+    z-index: 1;
+    /*box-shadow: var(--box-shadow);*/
 }
 
 .Table_Head .Table_Cell {
     font-weight: bold;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
+    position: relative;
+    background: var(--card);
+}
+
+.Table_Head .Table_Cell:first-child {
+    border-top-left-radius: var(--radius);
+}
+
+.Table_Head .Table_Cell:last-child {
+    border-top-right-radius: var(--radius);
+}
+
+.Table_Head a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.Table_Head .Table_Cell + .Table_Cell::before {
+    display: block;
+    cursor: col-resize;
+    content: '';
+    inset: var(--gap) auto var(--gap) 0;
+    position: absolute;
+    border-left: 1px solid var(--border);
 }
 
 .Table_Row {
     display: table-row;
 }
 
-.Table_Row:not(:hover) .Table-shy > * {
+.Table_Row:hover {
+    background-color: var(--hover);
+}
+
+.Table_Controls {
+    background: var(--card);
+    position: absolute;
+    inset: 0 0 auto auto;
+    padding: var(--gap);
+    white-space: nowrap;
+}
+
+.Table_Row:not(:hover) .Table-shy > *{
     visibility: hidden;
 }
 
@@ -33,13 +81,11 @@
     border-top: 1px solid var(--border);
 }
 
-.Table_Foot {
-    display: flex;
-    justify-content: center;
-    border-top: 1px solid var(--border);
-}
-
 .Table_Cell {
     display: table-cell;
     padding: 1em;
+}
+
+.Table_Body .Table_Cell {
+    position: relative;
 }
