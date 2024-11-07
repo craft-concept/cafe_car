@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "cnc", path: "../cnc"
+gem "cnc", github: "craft-concept/cnc"
 gem "brakeman"
 gem "importmap-rails"
 gem "kaminari"
