@@ -19,7 +19,7 @@ module CafeCar::Table
     end
 
     def href
-      @template.url_for(**params.permit!.merge(sort:)) if sortable?
+      @template.url_for(**request.params.merge(sort:)) if sortable?
    end
 
     def label_sort

@@ -1,7 +1,7 @@
 module CafeCar::Table
   class Builder
     attr_reader :ui
-    delegate :capture, :link_to, :params, :present, :safe_join, to: :@template
+    delegate :capture, :link_to, :params, :present, :request, :safe_join, to: :@template
 
     def initialize(template, **options, &block)
       @template = template

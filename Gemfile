@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gemspec
 
 gem "cnc", path: "../cnc"
+gem "brakeman"
 gem "importmap-rails"
 gem "kaminari"
 gem "propshaft"

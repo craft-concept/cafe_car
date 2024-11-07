@@ -87,7 +87,7 @@ module CafeCar
     def assign_attributes = record.assign_attributes(permitted_attributes(record))
 
     def plural?   = action_name == "index"
-    def singular? = not plural?
+    def singular? = !plural?
 
     def scope    = model
     def record!  = scope.find(params[:id])
