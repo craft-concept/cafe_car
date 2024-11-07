@@ -1,7 +1,6 @@
-- remote ||= false
 - title ||= nil
 
-= form_with model: record, remote: do |f|
+= form_with model: record do |f|
   = ui.card title: do |card|
     = card.section do
       = render("errors", f:)

@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require_relative "../test/dummy/config/application"
+require "cafe_car/engine"
+require "importmap/commands"

@@ -12,7 +12,9 @@ PATH
   specs:
     cafe_car (0.1.0)
       haml-rails
+      importmap-rails
       kaminari
+      propshaft
       pundit
       rails
       turbo-rails
@@ -323,11 +325,7 @@ DEPENDENCIES
   cafe_car!
   cnc!
   faker
-  importmap-rails
-  kaminari
-  propshaft
   puma
-  pundit
   sqlite3
 
 BUNDLED WITH
