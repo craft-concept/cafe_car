@@ -13,7 +13,9 @@ PATH
     cafe_car (0.1.0)
       haml-rails
       kaminari
+      pundit
       rails
+      turbo-rails
 
 GEM
   remote: https://rubygems.org/
@@ -327,7 +329,6 @@ DEPENDENCIES
   puma
   pundit
   sqlite3
-  turbo-rails
 
 BUNDLED WITH
    2.5.3

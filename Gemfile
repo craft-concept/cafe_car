@@ -10,7 +10,6 @@ gem "propshaft"
 gem "puma"
 gem "pundit"
 gem "sqlite3"
-gem "turbo-rails"
 
 group :development do
   gem "better_errors"
