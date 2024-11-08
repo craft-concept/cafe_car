@@ -23,7 +23,7 @@ module CafeCar::Table
    end
 
     def label_sort
-      @template.tag.small(symbol) if sortable?
+      @template.tag.span(symbol) if sortable?
     end
 
     def symbol
@@ -35,7 +35,7 @@ module CafeCar::Table
     end
 
     def label   = present(@objects).human(@method)
-    def content = @template.safe_join([label, label_sort], " ")
+    def content = @template.safe_join([label, label_sort], "&nbsp;".html_safe)
     def to_html = @template.link_to_unless(!sortable?, content, href)
   end
 end

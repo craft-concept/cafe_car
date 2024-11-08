@@ -5,30 +5,33 @@
 
     --red: #CC4B00;
     --error: var(--red);
-    --border: rgba(50 50 93 / .15);
+    --border: rgb(50 50 93 / .15);
     /*--border: rgba(0 0 0 / .1);*/
     --color: black;
-    --dim: rgba(50 50 93 / .1);
+    --dim: rgb(50 50 93 / .1);
     --link: blue;
 
     --background: #F6F8FA;
-    --card: rgba(255 255 255 / .95);
-    --hover: rgba(50 50 93 / .03);
+    --card: rgb(255 255 255);
+    --hover: rgb(50 50 93 / .03);
 
     --gap: 1rem;
     --radius: 1rem;
 
-    --box-shadow: rgba(50 50 93 / .25) 0 2px 5px -1px,
-                  rgba(0 0 0 / .3) 0 1px 3px -1px;
+    --box-shadow: rgb(50 50 93 / .25) 0 2px 5px -1px,
+                  rgb(0 0 0 / .3) 0 1px 3px -1px;
 
-    --mobile: 720px;
+    --backdrop: rgb(0 0 0 / .5);
+
+    --max-width: 720px;
+    --mobile: var(--max-width);
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
         --background: #222;
         --color: white;
-        --card: rgba(20 20 20 / .95);
-        --border: rgba(255 255 255 / .1);
+        --card: rgb(20 20 20);
+        --border: rgb(255 255 255 / .1);
     }
 }

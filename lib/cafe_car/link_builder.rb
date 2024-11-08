@@ -27,6 +27,10 @@ module CafeCar
       @template.tag.span(label, class: "disabled", disabled: true, **opts)
     end
 
+    def turbo(opts)
+      {data: opts.delete(:data) { {} }.with_defaults(turbo_stream: true)}
+    end
+
     def index(text = i18n(:index), **opts)
       return "" unless policy.index?
       link_to(text, [model], **opts)
@@ -34,7 +38,7 @@ module CafeCar
 
     def new(text = i18n(:new), **opts)
       return "" unless policy.index?
-      link_to(text, [model, action: :new], **opts)
+      link_to(text, [model, action: :new], **turbo(opts), **opts)
     end
 
     def show(disabled: false, **opts)
@@ -44,7 +48,7 @@ module CafeCar
 
     def edit(disabled: false, **opts)
       disabled ||= !policy.edit? || current_page?([@object, action: :edit])
-      link_to_unless(disabled, i18n(:edit), [@object, action: :edit], **opts) { disable _1 }
+      link_to_unless(disabled, i18n(:edit), [@object, action: :edit], **turbo(opts), **opts) { disable _1 }
     end
 
     def destroy(disabled: false, **opts)

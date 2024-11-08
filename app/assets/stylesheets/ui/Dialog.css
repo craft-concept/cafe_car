@@ -1,0 +1,13 @@
+.Dialog {
+    border: none;
+    background: none;
+    padding: var(--gap) 0;
+    max-width: var(--max-width);
+    max-height: 100%;
+    overscroll-behavior: contain;
+}
+
+.Dialog::backdrop {
+    background: var(--backdrop);
+    overscroll-behavior: contain;
+}

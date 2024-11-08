@@ -45,5 +45,10 @@ module CafeCar
     def table_for(objects, **options, &block)
       CafeCar[:TableBuilder].new(self, objects:, **options, &block)
     end
+
+    def dialog_close(text = "✕")
+      # link_to text, "#", class: "close"
+      tag.form(method: :dialog) { button_tag text, class: "reset dialog-close" }
+    end
   end
 end

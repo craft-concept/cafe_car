@@ -26,3 +26,7 @@ time {
     text-decoration: dotted underline;
     text-decoration-color: var(--dim);
 }
+
+body:has(dialog[open]) {
+    overflow: hidden;
+}

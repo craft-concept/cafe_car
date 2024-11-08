@@ -1,7 +1,8 @@
-- title ||= nil
+- title   ||= nil
+- actions ||= nil
 
 = form_with model: record do |f|
-  = ui.card title: do |card|
+  = ui.card title:, actions: do |card|
     = card.section do
       = render("errors", f:)
 

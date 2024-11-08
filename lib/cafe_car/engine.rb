@@ -23,12 +23,18 @@ module CafeCar
 
     initializer "cafe_car.importmap", before: "importmap" do |app|
       app.config.importmap.paths << root.join("config/importmap.rb")
-      app.config.importmap.cache_sweepers << root.join("app/assets/javascripts")
+      app.config.importmap.cache_sweepers << root.join("app/javascript")
     end
 
     initializer "cafe_car.active_record" do |app|
       app.reloader.to_prepare do
         ::ActiveRecord::Base.include(CafeCar::Model)
+      end
+    end
+
+    initializer "cafe_car.turbo" do
+      ActiveSupport.on_load :turbo_streams_tag_builder do
+        include CafeCar::TurboTagBuilder
       end
     end
   end
