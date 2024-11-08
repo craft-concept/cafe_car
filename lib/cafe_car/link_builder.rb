@@ -13,18 +13,26 @@ module CafeCar
     def model_name = model.model_name
     def policy     = @template.policy(@object)
 
-    def i18n(key, scope: nil, **opt) = @template.t(key, scope: [:controls, *scope], **opt)
+    def i18n(key, scope: nil, **opt)
+      @template.t(key, scope: [:controls, *scope],
+                  Model:  model_name.human,
+                  Models: model_name.human(count: 2),
+                  model:  model_name.human.downcase,
+                  models: model_name.human(count: 2).downcase, **opt)
+    end
+
+    def confirm(key) = i18n(key, scope: :confirm)
 
     def disable(label)
       @template.tag.span(label, class: "disabled", disabled: true)
     end
 
-    def index(text = i18n(:index, model: model_name.human(count: 2)))
+    def index(text = i18n(:index))
       return "" unless policy.index?
       link_to text, [model]
     end
 
-    def new(text = i18n(:new, model: model_name.human))
+    def new(text = i18n(:new))
       return "" unless policy.index?
       link_to text, [model, action: :new]
     end
@@ -42,8 +50,7 @@ module CafeCar
     def destroy(disabled: false)
       disabled ||= !policy.destroy?
       link_to_unless(disabled, i18n(:destroy), [@object],
-                     method: :delete,
-                     data: {confirm: i18n(:destroy, scope: :confirm, model: model_name.human.downcase)}) { disable _1 }
+                     data: {turbo_method: :delete, turbo_confirm: confirm(:destroy)}) { disable _1 }
     end
   end
 end

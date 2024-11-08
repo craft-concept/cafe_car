@@ -1,16 +1,16 @@
 en:
-  "true": "Yes"
+  "true":  "Yes"
   "false": "No"
 
   controls:
-    new: New %{model}
-    index: ← All %{model}
-    show: View
-    edit: Edit
+    new:     New %{Model}
+    index:   ← All %{Models}
+    show:    View
+    edit:    Edit
     destroy: Delete
     archive: Archive
     confirm:
-      destroy: This %{model} will be PERMANENTLY deleted. Are you sure?
+      destroy: This %{Model} will be PERMANENTLY deleted. Are you sure?
 
   time:
     formats:
@@ -26,9 +26,9 @@ en:
 
   application:
     create:
-      success: "%{model_name} created!"
+      success: "%{Model} created!"
     update:
-      success: "%{model_name} updated!"
+      success: "%{Model} updated!"
 
   activerecord:
     models:

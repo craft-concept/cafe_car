@@ -1,3 +1,4 @@
+pin "application"
 pin "cafe_car"
 
 pin "@hotwired/turbo-rails", to: "turbo.min.js"
