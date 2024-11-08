@@ -96,6 +96,7 @@ GEM
       tzinfo (~> 2.0, >= 2.0.5)
     ast (2.4.2)
     base64 (0.2.0)
+    bcrypt (3.1.20)
     benchmark (0.3.0)
     better_errors (2.10.1)
       erubi (>= 1.0.0)
@@ -337,6 +338,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  bcrypt
   better_errors
   binding_of_caller
   brakeman

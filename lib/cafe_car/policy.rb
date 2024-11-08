@@ -19,7 +19,8 @@ module CafeCar::Policy
   def displayable_attributes
     permitted_attribute_keys
       .union(model.columns.map(&:name).map(&:to_sym))
-      .map { association_for_attribute(_1) || _1 } - %i[id]
+      .map { association_for_attribute(_1) || _1 }
+      .reject { filtered_attribute? _1 } - %i[id]
   end
 
   def editable_attributes
@@ -51,6 +52,10 @@ module CafeCar::Policy
     return permitted_attribute?(ref.foreign_key) if ref.belongs_to?
 
     permitted_attribute?("#{ref.name.to_s.singularize}_ids")
+  end
+
+  def filtered_attribute?(attribute)
+    model.inspection_filter.filter_param(attribute, nil).present?
   end
 
   def permitted_attribute?(attribute)

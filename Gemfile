@@ -2,6 +2,7 @@ source "https://rubygems.org"
 
 gemspec
 
+gem 'bcrypt'
 gem "cnc", github: "craft-concept/cnc"
 gem "brakeman"
 gem "puma"

@@ -7,6 +7,8 @@ module CafeCar
       @object = object
     end
 
+    def info(method) = FieldInfo.new(object:, method:)
+
     def id?         = method =~ /_ids?$/
     def value       = @object.public_send(@method)
     def model       = @object.try(:klass) || @object.class
@@ -18,6 +20,11 @@ module CafeCar
 
     def reflection_type = reflection&.macro
     def attribute_type  = @object.type_for_attribute(@method)&.type
+    def digest_type
+      if @method =~ /^(\w+)(_confirmation)?$/
+        @object.type_for_attribute(@method) && :password
+      end
+    end
 
     def errors      = @object.errors[@method] || @object.errors[reflection.name]
     def error       = errors.to_sentence.presence
@@ -39,8 +46,8 @@ module CafeCar
     end
 
     def type
-      @type ||= reflection_type || attribute_type ||
-        raise(NoMethodError.new "Can't find method #{model_name}##{@method}", @method)
+      @type ||= reflection_type || attribute_type || digest_type ||
+        raise(NoMethodError.new "Can't find attribute :#{@method} on #{model_name}", @method)
     end
 
     def input
@@ -49,10 +56,11 @@ module CafeCar
       when :text     then :text_area
       when :integer  then :number_field
       when :datetime then :datetime_field
+      when :password then :password_field
       when :belongs_to, :has_many then :association
       when :has_one
         rich_text? ? :rich_text_area : nil
-      else raise "Missing FieldInfo for #{model_name}##{@method} of type :#{type}"
+      else raise "Missing input type for #{model_name}##{@method} of type :#{type}"
       end
     end
 

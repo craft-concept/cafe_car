@@ -7,7 +7,7 @@ class UserPolicy < ApplicationPolicy
   def title_attribute = :username
 
   def permitted_attributes
-    [:username]
+    [:username, :password, :password_confirmation]
   end
 
   class Scope < Scope

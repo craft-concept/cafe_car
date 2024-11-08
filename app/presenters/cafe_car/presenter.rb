@@ -10,11 +10,11 @@ module CafeCar
     end
 
     def self.find(klass)
-      candidates(klass).filter_map { CafeCar[_1] }.first
+      candidates(klass).filter_map { CafeCar[_1] }.first or raise "Could not find presenter"
     end
 
     def self.candidates(klass)
-      klass.ancestors.lazy.map { "#{_1.name}Presenter" }
+      klass.ancestors.lazy.map(&:name).compact.map { "#{_1}Presenter" }
     end
 
     def initialize(template, object, **options)
@@ -68,8 +68,13 @@ module CafeCar
       render("controls", object:, options:, &block)
     end
 
+    def value(method, ...)
+      value = object.public_send(method, ...)
+      model.inspection_filter.filter_param(method, value)
+    end
+
     def show(method, **options, &block)
-      p = present(object.public_send(method, **@options), **options)
+      p     = present(value(method, **@options), **options)
       block ? capture(p, method, options, &block) : p.to_s
     end
   end

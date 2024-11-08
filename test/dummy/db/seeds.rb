@@ -1,6 +1,8 @@
 print "Creating users... "
 30.times do
-  User.create(username: Faker::Religion::Bible.unique.character)
+  User.create username: Faker::Religion::Bible.unique.character,
+              password: pw = Faker::Internet.password,
+              password_confirmation: pw
 end
 puts "Done."
 
