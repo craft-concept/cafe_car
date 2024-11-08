@@ -1,5 +1,6 @@
 require "haml"
 require "kaminari"
+require "image_processing"
 require "propshaft"
 require "pundit"
 require "importmap-rails"

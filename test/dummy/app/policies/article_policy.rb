@@ -3,11 +3,11 @@ class ArticlePolicy < ApplicationPolicy
   def create? = true
 
   def show?    = object.published? || edit?
-  def update?  = object.author == user
+  def update?  = true # object.author_id == user.id
   def destroy? = update?
 
   def permitted_attributes
-    [:title, :author_id, :published_at, :body]
+    [:title, :author_id, :published_at, :summary, :body]
   end
 
   class Scope < Scope

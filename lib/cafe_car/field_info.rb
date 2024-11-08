@@ -1,5 +1,4 @@
 module CafeCar
-  #
   class FieldInfo
     attr_reader :method, :object
 
@@ -13,9 +12,12 @@ module CafeCar
     def model       = @object.try(:klass) || @object.class
     def model_name  = @object.model_name
     def associated? = reflection.present?
-    def foreign_key = reflection.foreign_key
+    def rich_text?  = reflection&.name =~ /^rich_text_(\w+)$/
     def collection  = reflection.klass.all
     def reflection  = model.reflect_on_association(@method) || reflections_by_attribute[@method]
+
+    def reflection_type = reflection&.macro
+    def attribute_type  = @object.type_for_attribute(@method)&.type
 
     def errors      = @object.errors[@method] || @object.errors[reflection.name]
     def error       = errors.to_sentence.presence
@@ -37,10 +39,8 @@ module CafeCar
     end
 
     def type
-      @type ||=
-        reflection&.macro ||
-          @object.type_for_attribute(@method)&.type ||
-          raise(NoMethodError.new "Can't find method #{model_name}##{@method}", @method)
+      @type ||= reflection_type || attribute_type ||
+        raise(NoMethodError.new "Can't find method #{model_name}##{@method}", @method)
     end
 
     def input
@@ -50,13 +50,15 @@ module CafeCar
       when :integer  then :number_field
       when :datetime then :datetime_field
       when :belongs_to, :has_many then :association
+      when :has_one
+        rich_text? ? :rich_text_area : nil
       else raise "Missing FieldInfo for #{model_name}##{@method} of type :#{type}"
       end
     end
 
     def input_key
       case type
-      when :belongs_to then foreign_key
+      when :belongs_to then reflection.foreign_key
       when :has_many then raise "implement foreign_key_ids or w/e"
       else method
       end
@@ -66,9 +68,11 @@ module CafeCar
     def reflections_by_attribute
       @@reflections_by_attribute[model] ||=
         model.reflections.values.index_by do |r|
-          case r.macro
-          when :belongs_to then r.foreign_key
-          when :has_many   then "#{r.name.to_s.singularize}_ids"
+          case [r.macro, r.name]
+          in [:belongs_to, *]                then r.foreign_key
+          in [:has_many, *]                  then "#{r.name.to_s.singularize}_ids"
+          in [:has_one, /^rich_text_(\w+)$/] then $1
+          in [:has_one, *]                   then r.name
           else raise NoMethodError.new("Not yet implemented :#{r.macro}")
           end
         end.with_indifferent_access

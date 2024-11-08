@@ -1,6 +1,7 @@
+@import url("trix.css");
+@import url("pagination.css");
 @import url("ui/theme.css");
 @import url("ui/components.css");
-@import url("pagination.css");
 @import url("utility.css");
 
 :root {

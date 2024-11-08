@@ -12,6 +12,7 @@ PATH
   specs:
     cafe_car (0.1.0)
       haml-rails
+      image_processing
       importmap-rails
       kaminari
       propshaft
@@ -116,6 +117,16 @@ GEM
     erubi (1.13.0)
     faker (3.5.1)
       i18n (>= 1.8.11, < 2)
+    ffi (1.17.0-aarch64-linux-gnu)
+    ffi (1.17.0-aarch64-linux-musl)
+    ffi (1.17.0-arm-linux-gnu)
+    ffi (1.17.0-arm-linux-musl)
+    ffi (1.17.0-arm64-darwin)
+    ffi (1.17.0-x86-linux-gnu)
+    ffi (1.17.0-x86-linux-musl)
+    ffi (1.17.0-x86_64-darwin)
+    ffi (1.17.0-x86_64-linux-gnu)
+    ffi (1.17.0-x86_64-linux-musl)
     globalid (1.2.1)
       activesupport (>= 6.1)
     haml (6.3.0)
@@ -129,6 +140,9 @@ GEM
       railties (>= 5.1)
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
+    image_processing (1.13.0)
+      mini_magick (>= 4.9.5, < 5)
+      ruby-vips (>= 2.0.17, < 3)
     importmap-rails (2.0.3)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -161,6 +175,7 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.4)
+    mini_magick (4.13.2)
     mini_mime (1.1.5)
     minitest (5.25.1)
     net-imap (0.5.0)
@@ -274,6 +289,9 @@ GEM
       rubocop-performance
       rubocop-rails
     ruby-progressbar (1.13.0)
+    ruby-vips (2.2.2)
+      ffi (~> 1.12)
+      logger
     securerandom (0.3.1)
     sqlite3 (2.1.1-aarch64-linux-gnu)
     sqlite3 (2.1.1-aarch64-linux-musl)
@@ -325,6 +343,7 @@ DEPENDENCIES
   cafe_car!
   cnc!
   faker
+  image_processing (~> 1.13)
   puma
   sqlite3
 

@@ -23,34 +23,34 @@ module CafeCar
 
     def confirm(key) = i18n(key, scope: :confirm)
 
-    def disable(label)
-      @template.tag.span(label, class: "disabled", disabled: true)
+    def disable(label, **opts)
+      @template.tag.span(label, class: "disabled", disabled: true, **opts)
     end
 
-    def index(text = i18n(:index))
+    def index(text = i18n(:index), **opts)
       return "" unless policy.index?
-      link_to text, [model]
+      link_to(text, [model], **opts)
     end
 
-    def new(text = i18n(:new))
+    def new(text = i18n(:new), **opts)
       return "" unless policy.index?
-      link_to text, [model, action: :new]
+      link_to(text, [model, action: :new], **opts)
     end
 
-    def show(disabled: false)
+    def show(disabled: false, **opts)
       disabled ||= !policy.show? || current_page?([@object])
-      link_to_unless(disabled, i18n(:show), [@object]) { disable _1 }
+      link_to_unless(disabled, i18n(:show), [@object], **opts) { disable _1 }
     end
 
-    def edit(disabled: false)
+    def edit(disabled: false, **opts)
       disabled ||= !policy.edit? || current_page?([@object, action: :edit])
-      link_to_unless(disabled, i18n(:edit), [@object, action: :edit]) { disable _1 }
+      link_to_unless(disabled, i18n(:edit), [@object, action: :edit], **opts) { disable _1 }
     end
 
-    def destroy(disabled: false)
+    def destroy(disabled: false, **opts)
       disabled ||= !policy.destroy?
       link_to_unless(disabled, i18n(:destroy), [@object],
-                     data: {turbo_method: :delete, turbo_confirm: confirm(:destroy)}) { disable _1 }
+                     data: {turbo_method: :delete, turbo_confirm: confirm(:destroy)}, **opts) { disable _1 }
     end
   end
 end

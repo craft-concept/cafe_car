@@ -13,3 +13,5 @@ group :development do
   gem "faker"
   # gem "i18n-debug"
 end
+
+gem "image_processing", "~> 1.13"

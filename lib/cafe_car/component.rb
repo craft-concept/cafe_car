@@ -28,9 +28,9 @@ module CafeCar
       @contents ||= @template.safe_join([*@args, *(capture(context, &@block) if @block)])
     end
 
-    def wrapper(*args, **opts, &block)
+    def wrapper(*args, **opts, &)
       @template.content_tag(tag_name, safe_join([*args]), class: class_name(*opts.delete(:class)), **opts) do
-        capture(context, &block)
+        capture(context, &)
       end
     end
 
