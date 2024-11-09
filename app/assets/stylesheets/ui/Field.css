@@ -8,6 +8,7 @@
 
 .Field_Label {
     font-weight: bold;
+    line-height: 1.5;
 }
 
 .Field_Error {
@@ -20,7 +21,7 @@
 
 textarea.Field_Input {
     width: 100%;
-    min-height: 10em;
+    min-height: 5em;
 }
 
 .Field_Hint {

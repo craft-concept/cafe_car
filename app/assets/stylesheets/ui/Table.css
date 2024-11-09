@@ -89,3 +89,9 @@
 .Table_Body .Table_Cell {
     position: relative;
 }
+
+@media (prefers-color-scheme: dark) {
+    .Table {
+        border: 1px solid var(--border);
+    }
+}

@@ -1,4 +1,4 @@
-.Card:not(.Card-blank) {
+.Card {
     box-shadow: var(--box-shadow);
     border-radius: var(--radius);
     background: var(--card);
@@ -36,4 +36,10 @@
 
 .Card + .Card {
     margin-top: var(--gap);
+}
+
+@media (prefers-color-scheme: dark) {
+    .Card {
+        border: 1px solid var(--border);
+    }
 }

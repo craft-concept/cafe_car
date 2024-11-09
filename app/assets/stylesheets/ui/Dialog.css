@@ -10,4 +10,5 @@
 .Dialog::backdrop {
     background: var(--backdrop);
     overscroll-behavior: contain;
+    backdrop-filter: blur(4px);
 }

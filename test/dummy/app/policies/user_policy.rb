@@ -2,12 +2,14 @@ class UserPolicy < ApplicationPolicy
   def show?   = true
   def index?  = true
   def create? = true
-  def update? = user.id == object.id
+  def update? = true
 
   def title_attribute = :username
 
   def permitted_attributes
-    [:username, :password, :password_confirmation]
+    [:username,
+     *(%i[password password_confirmation] if object == user)
+    ]
   end
 
   class Scope < Scope

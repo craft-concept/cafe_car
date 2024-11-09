@@ -8,6 +8,15 @@
     --half-gap: calc(var(--gap) / 2);
 }
 
+a {
+    color: var(--link);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -18,8 +27,15 @@ body {
     font-family: var(--font), sans-serif;
 }
 
-textarea {
+input:not([type="button"]),
+textarea,
+select {
+    background: var(--input);
+    border: 1px solid var(--border);
     max-width: 100%;
+    border-radius: 4px;
+    padding: 8px;
+    font: inherit;
 }
 
 time {
@@ -29,4 +45,28 @@ time {
 
 body:has(dialog[open]) {
     overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+    trix-editor {
+        background: var(--input);
+    }
+
+    trix-editor,
+    trix-toolbar .trix-button-group {
+        border: 1px solid var(--border);
+    }
+
+    trix-toolbar .trix-button {
+        border: none;
+    }
+
+    trix-toolbar .trix-button:not(:first-child) {
+        border-left: 1px solid var(--border);
+    }
+
+    trix-toolbar .trix-button--icon::before {
+        opacity: 1;
+        filter: invert(100%);
+    }
 }

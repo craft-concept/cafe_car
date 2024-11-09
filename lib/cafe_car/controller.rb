@@ -47,7 +47,6 @@ module CafeCar
       run_callbacks(:create) { record.save! }
 
       respond_to do |f|
-        f.js { created_js }
         f.html { created_redirect }
         f.json { }
       end
@@ -57,7 +56,6 @@ module CafeCar
       run_callbacks(:update) { record.save! }
 
       respond_to do |f|
-        f.js { updated_js }
         f.html { updated_redirect }
         f.json { }
       end
@@ -67,7 +65,6 @@ module CafeCar
       run_callbacks(:destroy) { record.destroy }
 
       respond_to do |f|
-        f.js { destroyed_js }
         f.html { destroyed_redirect }
         f.json { }
       end
@@ -118,24 +115,6 @@ module CafeCar
     def updated_redirect
       return destroyed_redirect if record.destroyed?
       redirect_to record
-    end
-
-    def created_js
-      render 'create'
-    rescue ActionView::MissingTemplate
-      created_redirect
-    end
-
-    def updated_js
-      render 'update'
-    rescue ActionView::MissingTemplate
-      updated_redirect
-    end
-
-    def destroyed_js
-      render 'destroy'
-    rescue ActionView::MissingTemplate
-      destroyed_redirect
     end
 
     def render_invalid_record = render(record.persisted? ? 'edit' : 'new')

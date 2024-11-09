@@ -2,11 +2,9 @@
 - actions = render "index_actions"
 
 = ui.page title:, actions: do |page|
-  -# %div= format_numbers page_entries_info(records)
-
   = page.left do
     = render "debug" if params.key?(:debug)
     = render "filters"
 
   = page.body do
-    = render("index")
+    = render "index"

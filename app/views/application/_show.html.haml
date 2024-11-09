@@ -1,8 +1,7 @@
-- p = ui(record)
-= ui.card do |card|
-  = card.head do
-    = p.try(:logo, width: 100)
+:ruby
+  p = ui(record)
 
+= ui.card do |card|
   = card.section do
     = p.remaining_attributes
 
