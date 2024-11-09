@@ -1,0 +1,32 @@
+
+trix-editor {
+    & .trix-button {
+        border-bottom: none;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    trix-editor {
+        background: var(--input);
+        border: 1px solid var(--border);
+    }
+
+    trix-toolbar {
+        & .trix-button-group {
+            border: 1px solid var(--border);
+        }
+    }
+
+    trix-toolbar .trix-button {
+        border: none;
+    }
+
+    trix-toolbar .trix-button:not(:first-child) {
+        border-left: 1px solid var(--border);
+    }
+
+    trix-toolbar .trix-button--icon::before {
+        opacity: 1;
+        filter: invert(100%);
+    }
+}

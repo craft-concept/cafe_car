@@ -12,8 +12,8 @@
     --link: rgb(6, 111, 209);
     --border: #e6e8ec;/*rgb(50 50 93 / .15); */
     --background: #f6f8fa;
+    --input: #f6f8fa;
     --card: rgb(255 255 255);
-    --input: #151f2c;
     --hover: rgb(50 50 93 / .03);
 
     --box-shadow: rgb(50 50 93 / .25) 0 2px 5px -1px,
@@ -29,6 +29,7 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
+        --input: #151f2c;
         --background: #151f2c;
         --color: #dce1e7;
         --card: #192433;
