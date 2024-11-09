@@ -1,7 +1,7 @@
 - title   ||= nil
 - actions ||= nil
 
-= form_with model: record do |f|
+= form_for object do |f|
   = ui.card title:, actions: do |card|
     = card.section do
       = render("errors", f:)

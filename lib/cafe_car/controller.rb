@@ -7,13 +7,26 @@ module CafeCar
       def model(model)
         define_method(:model) { @model ||= model }
       end
+
+      def recline_in_the_cafe_car
+        before_action :set_current_attributes
+
+        before_action :find_object, only: %i[show edit update destroy]
+        before_action :build_object, only: %i[new create]
+        before_action :find_objects, only: %i[index]
+
+        before_action :assign_attributes, only: %i[create update]
+        before_action :authorize!
+      end
     end
 
     included do
       default_form_builder FormBuilder
       rescue_from ::ActiveRecord::RecordInvalid, with: :render_invalid_record
+
       define_callbacks :render, :update, :create, :destroy
-      helper_method :model, :model_name, :object, :objects, :record, :records, :plural?, :singular?
+
+      helper_method :model, :model_name, :object, :objects
       helper_method :partial?
 
       helper Helpers
@@ -21,30 +34,16 @@ module CafeCar
       # prepend_view_path CafeCar::Engine.root.join('app/views/cafe_car')
       # prepend_view_path 'app/views/cafe_car'
 
-      after_action :verify_authorized
-
-      before_action :set_current_attributes
-      before_action(only: %i[show edit update destroy]) { self.record = record! }
-      before_action(only: %i[new create])               { self.record = model.new }
-      before_action(if: :singular?) { authorize object }
-      before_action :assign_attributes, only: %i[create update]
+      after_action :verify_authorized, :verify_policy_scoped
     end
 
-    def index
-      self.records = records.page(params[:page]).per(params[:per]) if records.respond_to?(:page)
-      self.records = filter(records) if respond_to?(:filter, true)
-      self.records = sorted(records)
-      self.records = records.includes(*includes) if respond_to?(:includes, true)
-
-      authorize records
-    end
-
-    def show; end
-    def new; end
-    def edit; end
+    def index = nil
+    def show  = nil
+    def new   = nil
+    def edit  = nil
 
     def create
-      run_callbacks(:create) { record.save! }
+      run_callbacks(:create) { object.save! }
 
       respond_to do |f|
         f.html { created_redirect }
@@ -53,7 +52,7 @@ module CafeCar
     end
 
     def update
-      run_callbacks(:update) { record.save! }
+      run_callbacks(:update) { object.save! }
 
       respond_to do |f|
         f.html { updated_redirect }
@@ -62,7 +61,7 @@ module CafeCar
     end
 
     def destroy
-      run_callbacks(:destroy) { record.destroy }
+      run_callbacks(:destroy) { object.destroy }
 
       respond_to do |f|
         f.html { destroyed_redirect }
@@ -72,33 +71,49 @@ module CafeCar
 
     private
 
-    def current_user = CafeCar[:Current].user
-
-    def sorted(scope)
-      if scope.respond_to?(:sorted)
-        scope.sorted(*params[:sort].presence)
-      else scope
-      end
+    def authorize!
+      return authorize object if object
+      return authorize objects if objects
+      raise "nothing to authorize! Define self.object or self.objects"
     end
 
-    def assign_attributes = record.assign_attributes(permitted_attributes(record))
+    def current_user = CafeCar[:Current].user
 
-    def plural?   = action_name == "index"
-    def singular? = !plural?
+    def filtered(scope) = scope
+    def sorted(scope)
+      scope.sorted(*params[:sort].presence)
+    end
 
-    def scope    = model
-    def record!  = scope.find(params[:id])
-    def records! = policy_scope(scope.all)
+    def paginated(scope, page: params[:page], per: params[:per])
+      scope.page(page).per(per)
+    end
 
-    def objects = records
-    def records = instance_variable_get("@#{model_name.plural}") || (self.records = records!)
-    def records=(value)
+    def build_object
+      self.object = scope.new
+    end
+
+    def find_object
+      self.object = scope.find(params[:id])
+    end
+
+    def find_objects
+      self.objects = scope.try { sorted _1 }
+                          .try { filtered _1 }
+                          .try { paginated _1 }
+    end
+
+    def assign_attributes
+      object.assign_attributes(permitted_attributes(object))
+    end
+
+    def scope   = policy_scope(model.all)
+    def objects = instance_variable_get("@#{model_name.plural}")
+    def objects=(value)
       instance_variable_set("@#{model_name.plural}", value)
     end
 
-    def object = record
-    def record = instance_variable_get("@#{model_name.singular}")
-    def record=(value)
+    def object = instance_variable_get("@#{model_name.singular}")
+    def object=(value)
       instance_variable_set("@#{model_name.singular}", value)
     end
 
@@ -113,11 +128,11 @@ module CafeCar
     def destroyed_redirect = redirect_to [model_name.plural.to_sym]
 
     def updated_redirect
-      return destroyed_redirect if record.destroyed?
-      redirect_to record
+      return destroyed_redirect if object.destroyed?
+      redirect_to object
     end
 
-    def render_invalid_record = render(record.persisted? ? 'edit' : 'new')
+    def render_invalid_record = render(object.persisted? ? 'edit' : 'new')
 
     # def default_render(...) = run_callbacks(:render) { super }
 

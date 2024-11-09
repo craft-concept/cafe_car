@@ -4,7 +4,6 @@ class CafeCar::BasePolicy
   include CafeCar::Policy
 
   attr_reader :user, :object
-  alias_method :record, :object
 
   def initialize(user, object)
     @user   = user

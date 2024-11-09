@@ -3,11 +3,11 @@
 
 = ui.page :full, title:, actions: do |page|
   = page.left do
-    - title = "#{model_name.singular.titleize} ##{record.id}"
+    - title = "#{model_name.singular.titleize} ##{object.id}"
 
     = ui.card :sticky, title: do |card|
       = card.section do
-        =  ui(record).attributes :updated_at, :created_at, try: true
+        =  ui(object).attributes :updated_at, :created_at, try: true
 
       = ui.card title: "Actions" do
         = render("actions")
@@ -19,8 +19,8 @@
       -# - title tab.humanize
       -# = row bottom: true do
       -#   = page.head
-      -#     %h1 record.try(:name).fmap {|name| "#{name}'s #{tab.humanize(capitalize: false)}" }.felse { tab.humanize }
-      -#   = link "← Back to #{model_name.human}", link: path_super(record)
+      -#     %h1 object.try(:name).fmap {|name| "#{name}'s #{tab.humanize(capitalize: false)}" }.felse { tab.humanize }
+      -#   = link "← Back to #{model_name.human}", link: path_super(object)
       -#
       -# = render "tab_#{tab}"
     - else
