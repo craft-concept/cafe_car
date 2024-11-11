@@ -19,8 +19,12 @@ module CafeCar
       input(info.input_key, collection, :id, -> { h.present(_1).title }, as: :collection_select, **options)
     end
 
-    def field(method, **options, &block)
-      @fields[method] ||= FieldBuilder.new(method:, form: self, **options, &block)
+    def field(method, **, &)
+      @fields[method] ||= FieldBuilder.new(method:, form: self, **, &)
+    end
+
+    def label(method, text = info(method).label, required: info(method).required?, **, &)
+      super(method, text, required:, **, &)
     end
 
     def info(method)
@@ -34,20 +38,20 @@ module CafeCar
       public_send(as, method, *args, **options)
     end
 
-    def hint(method, **options)
+    def hint(method, **)
       return unless hint = info(method).hint
-      tag.small(hint, **options)
+      tag.small(hint, **)
     end
 
-    def error(method, **options)
+    def error(method, **)
       return unless error = info(method).error
-      tag.span(error, **options)
+      tag.span(error, **)
     end
 
     def remaining_attributes = policy.editable_attributes - @info.keys
 
-    def remaining_fields(**options, &block)
-      block  ||= proc { field(_1, **options) }
+    def remaining_fields(**, &block)
+      block  ||= proc { field(_1, **) }
       fields   = remaining_attributes.map(&block)
       h.safe_join(fields)
     end

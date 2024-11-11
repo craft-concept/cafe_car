@@ -25,7 +25,6 @@
 .Table_Head {
     overflow: hidden;
     z-index: 1;
-    /*box-shadow: var(--box-shadow);*/
 }
 
 .Table_Head .Table_Cell {

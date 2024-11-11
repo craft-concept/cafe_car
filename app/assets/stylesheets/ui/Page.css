@@ -1,13 +1,12 @@
 .Page {
     display: grid;
-    grid: ".    Head ."
-          "Left Body Right"
-          ".    Foot ." / minmax(20vw, auto) 1fr minmax(20vw, auto);
+    grid: auto-flow / auto minmax(auto, var(--page-width)) auto;
     gap: var(--gap);
+    margin: var(--gap);
 }
 
 .Page_Head {
-    grid-area: Head;
+    grid-column: 2;
     display: flex;
     align-items: center;
     gap: var(--gap);
@@ -20,35 +19,22 @@
 }
 
 .Page_Left {
-    grid-area: Left;
-    justify-self: end;
+    grid-column: 1;
 }
 
 .Page_Body {
-    grid-area: Body;
-}
-
-.Page-left {
-    grid-column-start: 1;
-}
-
-.Page-head {
-    grid-row-start: 1;
+    grid-column: 2;
+    display: grid;
 }
 
 .Page_Right {
-    grid-area: Right;
+    grid-column: 3;
 }
 
 @media (width < 720px) {
     .Page {
-        grid: "Head"
-              "Left"
-              "Body"
-              "Right"
-              "Foot" / 1fr;
+        grid: auto-flow / 1fr;
         justify-items: stretch;
-
     }
 
     .Page_Left,
@@ -56,6 +42,7 @@
     .Page_Body,
     .Page_Right,
     .Page_Foot {
+        grid-area: auto/1;
         justify-self: stretch;
     }
 }

@@ -1,6 +1,7 @@
 .disabled, [disabled] {
-    opacity: .1;
+    opacity: .3;
     cursor: not-allowed;
+    text-decoration: line-through;
 }
 
 .center {

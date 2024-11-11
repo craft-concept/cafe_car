@@ -37,5 +37,9 @@ module CafeCar
         include CafeCar::TurboTagBuilder
       end
     end
+
+    initializer "cafe_car.field_with_errors" do
+      ActionView::Base.field_error_proc = proc { _1.html_safe }
+    end
   end
 end

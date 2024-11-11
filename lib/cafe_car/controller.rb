@@ -21,7 +21,7 @@ module CafeCar
     end
 
     included do
-      default_form_builder FormBuilder
+      default_form_builder CafeCar[:FormBuilder]
       rescue_from ::ActiveRecord::RecordInvalid, with: :render_invalid_record
 
       define_callbacks :render, :update, :create, :destroy

@@ -1,8 +1,3 @@
-@keyframes fade-in {
-    from { opacity: 0 }
-    to   { opacity: 1 }
-}
-
 .Dialog {
     border: none;
     background: none;
@@ -10,12 +5,11 @@
     max-width: var(--max-width);
     max-height: 100%;
     overscroll-behavior: contain;
-    animation: fade-in 100ms;
+    min-width: 30vw;
 }
 
 .Dialog::backdrop {
     background: var(--backdrop);
     overscroll-behavior: contain;
     backdrop-filter: blur(8px);
-    animation: fade-in 500ms;
 }

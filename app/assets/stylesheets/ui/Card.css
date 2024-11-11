@@ -4,7 +4,8 @@
     background: var(--card);
 }
 
-.Card_Head {
+.Card_Head,
+.Card_Foot {
     gap: var(--gap);
     display: flex;
     align-items: center;
@@ -21,7 +22,12 @@
     padding: var(--gap);
 }
 
-:is(.Card_Head, .Card_Section) + .Card_Section {
+.Card_Section {
+    display: grid;
+    gap: var(--gap);
+}
+
+:is(.Card_Head, .Card_Section) + :is(.Card_Section, .Card_Foot) {
     border-top: 1px solid var(--border);
 }
 

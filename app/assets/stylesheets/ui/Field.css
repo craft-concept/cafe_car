@@ -1,9 +1,12 @@
-.Field {}
+.Field {
+    display: grid;
+    grid: auto / auto 1fr;
+    gap: .1em .5em;
+    align-items: baseline;
+}
 
-.Field_Label,
-.Field_Error,
-.Field_Hint {
-    display: block;
+.Field > :not(.Field_Label, .Field_Error) {
+    grid-column: span 2;
 }
 
 .Field_Label {
@@ -12,11 +15,17 @@
 }
 
 .Field_Error {
+    grid-column: 2;
     color: var(--error);
 }
 
 .Field_Input {
     font: inherit;
+}
+
+.Field_Error + .Field_Input:not(:focus) {
+    background: var(--invalid);
+    border-color: #E68788;
 }
 
 textarea.Field_Input {
@@ -25,9 +34,5 @@ textarea.Field_Input {
 }
 
 .Field_Hint {
-    color: #888;
-}
-
-.Field + .Field {
-    margin-top: 20px;
+    color: var(--dim);
 }

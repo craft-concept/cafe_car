@@ -1,0 +1,21 @@
+:root {
+    color-scheme: light dark;
+
+    --font: -apple-system, menu, sans-serif;
+    --error: var(--red);
+    --invalid: #f6f8fa;
+    --card: rgb(255 255 255);
+    --hover: rgb(50 50 93 / .03);
+
+    --shadow: rgb(50 50 93 / .25);
+    --box-shadow: var(--shadow) 0 2px 5px -1px,
+                  var(--shadow) 0 1px 3px -1px;
+    --backdrop: rgb(0 0 0 / .5);
+
+    --gap: 1em;
+    --radius: 12px;
+
+    --max-width: 720px;
+    --page-width: 1024px;
+    --modal-width: 720px;
+}

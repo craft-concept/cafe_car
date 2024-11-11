@@ -1,5 +1,15 @@
 .Nav {
     display: flex;
-    gap: var(--gap);
-    margin: var(--gap);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--gap);
+    width: 100%;
+}
+
+.Nav_Link {
+    padding: var(--gap);
+}
+
+.Nav-current {
+    border-bottom: 1px solid var(--link);
+    margin-bottom: -1px;
 }

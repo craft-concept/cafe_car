@@ -2,7 +2,7 @@ module CafeCar
   class LinkBuilder
     attr_reader :object
 
-    delegate :link_to, :link_to_unless, :current_page?, to: :@template
+    delegate :link_to, :link_to_unless, :current_page?, :href_for, to: :@template
 
     def initialize(template, object)
       @template = template
@@ -28,33 +28,25 @@ module CafeCar
     end
 
     def turbo(opts)
-      {data: opts.delete(:data) { {} }.with_defaults(turbo_stream: true)}
+      {data: opts.delete(:data) { {} }.with_defaults(
+        turbo_stream: true,
+        turbo_method: opts.delete(:method),
+        turbo_confirm: opts.delete(:confirm),
+      )}
     end
 
-    def index(text = i18n(:index), **opts)
-      return "" unless policy.index?
-      link_to(text, [model], **opts)
+    def link(action, target, label = i18n(action), disabled: false, hide: false, **opts)
+      href       = href_for(*target, action:)
+      disabled ||= !policy.public_send("#{action}?")
+      return "" if disabled and hide
+      disabled ||= current_page?(href)
+      link_to_unless(disabled, label, href, **turbo(opts), **opts) { disable _1 }
     end
 
-    def new(text = i18n(:new), **opts)
-      return "" unless policy.index?
-      link_to(text, [model, action: :new], **turbo(opts), **opts)
-    end
-
-    def show(disabled: false, **opts)
-      disabled ||= !policy.show? || current_page?([@object])
-      link_to_unless(disabled, i18n(:show), [@object], **opts) { disable _1 }
-    end
-
-    def edit(disabled: false, **opts)
-      disabled ||= !policy.edit? || current_page?([@object, action: :edit])
-      link_to_unless(disabled, i18n(:edit), [@object, action: :edit], **turbo(opts), **opts) { disable _1 }
-    end
-
-    def destroy(disabled: false, **opts)
-      disabled ||= !policy.destroy?
-      link_to_unless(disabled, i18n(:destroy), [@object],
-                     data: {turbo_method: :delete, turbo_confirm: confirm(:destroy)}, **opts) { disable _1 }
-    end
+    def show(...)      = link(:show, @object, ...)
+    def edit(...)      = link(:edit, @object, ...)
+    def destroy(*, **) = link(:destroy, @object, *, method: :delete, confirm: confirm(:destroy), **)
+    def index(*, **)   = link(:index, model, *, hide: true, **)
+    def new(*, **)     = link(:new, model, *, hide: true, **)
   end
 end

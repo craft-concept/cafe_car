@@ -37,6 +37,14 @@ module CafeCar
       @presenters[[args, options]] ||= CafeCar[:Presenter].present(self, *args, **options)
     end
 
+    def current_href?(...) = current_page? href_for(...)
+
+    def href_for(*parts, **params)
+      params.merge! parts.extract_options!
+      params.delete(:action) if %i[show destroy index].include? params[:action]
+      url_for([*parts, params])
+    end
+
     def link(object)
       @links         ||= {}
       @links[object] ||= CafeCar[:LinkBuilder].new(self, object)

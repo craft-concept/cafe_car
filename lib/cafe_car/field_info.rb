@@ -30,13 +30,13 @@ module CafeCar
     def error       = errors.to_sentence.presence
     def placeholder = i18n(:placeholder)
     def hint        = i18n(:hint)
-    def label       = i18n(:label)
+    def label       = i18n(:label, default: human)
     def prompt      = i18n(:prompt, default: "Select #{human.downcase}...")
     def human(...)  = model.human_attribute_name(@method, ...)
     def required?   = validator?(:presence)
 
     def validator?(kind, **options)
-      @object.validators_on(@method).any? { _1.kind == kind and _1.options >= options }
+      model.validators_on(@method).any? { _1.kind == kind and _1.options >= options }
     end
 
     def i18n_key = model_name.i18n_key

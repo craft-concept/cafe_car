@@ -1,7 +1,7 @@
 @import url("trix.css");
 @import url("cafe_car/trix.css");
 @import url("pagination.css");
-@import url("ui/theme.css");
+@import url("cafe_car/themes/cool.css");
 @import url("ui/components.css");
 @import url("utility.css");
 
@@ -26,6 +26,7 @@ body {
     color: var(--color);
     background: var(--background);
     font-family: var(--font), sans-serif;
+    margin: 0;
 }
 
 input:not([type="button"]),
@@ -37,6 +38,11 @@ select {
     border-radius: 4px;
     padding: 8px;
     font: inherit;
+}
+
+::placeholder {
+    color: inherit;
+    opacity: .3;
 }
 
 time {

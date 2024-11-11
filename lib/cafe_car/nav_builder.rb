@@ -16,6 +16,7 @@ module CafeCar
     end
 
     def link_to(*args, **opts, &block)
+      block ||= -> { @template.tag.span(_1, class: ui_class([:nav, :link], :current)) }
       @template.link_to_unless_current(*args, class: ui_class([:nav, :link]), **opts, &block)
     end
   end
