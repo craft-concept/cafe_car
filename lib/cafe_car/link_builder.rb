@@ -12,20 +12,20 @@ module CafeCar
     def model      = @object.is_a?(Class) ? @object : @object.class
     def model_name = model.model_name
     def policy     = @template.policy(@object)
+    def var(names) = names.merge! *names.map { {_1.to_s.downcase.intern => _2.downcase} }
 
-    def i18n(key, scope: nil, **opt)
-      @template.t(key, scope: [:controls, *scope],
-                  Model:  model_name.human,
-                  Models: model_name.human(count: 2),
-                  model:  model_name.human.downcase,
-                  models: model_name.human(count: 2).downcase, **opt)
+    def i18n(action, scope: nil, default: :default, **opt)
+      @template.t action, scope: [:controls, *scope], default:,
+                  **var(
+                    Action: @template.t(action, default: action.to_s.humanize),
+                    Model:  model_name.human,
+                    Models: model_name.human(count: 2),
+                  ),
+                  **opt
     end
 
-    def confirm(key) = i18n(key, scope: :confirm)
-
-    def disable(label, **opts)
-      @template.tag.span(label, class: "disabled", disabled: true, **opts)
-    end
+    def confirm(key)             = i18n(key, scope: :confirm)
+    def disabled(action, reason) = i18n(action, scope: [:disabled, reason])
 
     def turbo(opts)
       {data: opts.delete(:data) { {} }.with_defaults(
@@ -37,10 +37,12 @@ module CafeCar
 
     def link(action, target, label = i18n(action), disabled: false, hide: false, **opts)
       href       = href_for(*target, action:)
-      disabled ||= !policy.public_send("#{action}?")
+      disabled ||= !policy.public_send("#{action}?") && disabled(action, :policy)
       return "" if disabled and hide
-      disabled ||= current_page?(href)
-      link_to_unless(disabled, label, href, **turbo(opts), **opts) { disable _1 }
+      disabled ||= current_page?(href) && ""
+      link_to_unless(disabled, label, href, **turbo(opts), **opts) do
+        @template.tag.span(label, class: "disabled", disabled: true, title: disabled)
+      end
     end
 
     def show(...)      = link(:show, @object, ...)

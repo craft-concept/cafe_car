@@ -2,7 +2,7 @@ class UserPolicy < ApplicationPolicy
   def show?   = true
   def index?  = true
   def create? = true
-  def update? = true
+  def update? = object == user
 
   def title_attribute = :username
 

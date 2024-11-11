@@ -2,15 +2,20 @@ en:
   "true":  "Yes"
   "false": "No"
 
+  index:   List
+  show:    View
+  destroy: Delete
+
   controls:
+    default: "%{Action}"
     new:     New %{Model}
     index:   ← All %{Models}
-    show:    View
-    edit:    Edit
-    destroy: Delete
-    archive: Archive
     confirm:
       destroy: This %{Model} will be PERMANENTLY deleted. Are you sure?
+    disabled:
+      policy:
+        default: You don't have permission to %{action} this %{model}.
+        index:   You don't have permission to %{action} %{models}.
 
   time:
     formats:
