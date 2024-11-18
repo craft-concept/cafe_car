@@ -8,7 +8,7 @@ class UserPolicy < ApplicationPolicy
 
   def permitted_attributes
     [:username,
-     *(%i[password password_confirmation] if object == user)
+     *(%i[password password_confirmation] if object.new_record? or object == user)
     ]
   end
 
