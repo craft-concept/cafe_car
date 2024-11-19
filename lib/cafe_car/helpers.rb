@@ -54,9 +54,14 @@ module CafeCar
       CafeCar[:TableBuilder].new(self, objects:, **options, &block)
     end
 
-    def dialog_close(text = "✕")
-      # link_to text, "#", class: "close"
-      tag.form(method: :dialog) { button_tag text, class: "reset dialog-close" }
+    def partial?(path)
+      prefixes = path.include?(?/) ? [] : lookup_context.prefixes
+      lookup_context.any?(path, prefixes, true)
+    end
+
+    def get_partial(path)
+      prefixes = path.include?(?/) ? [] : lookup_context.prefixes
+      lookup_context.find(path, prefixes, true)
     end
   end
 end

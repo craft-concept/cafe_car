@@ -1,0 +1,6 @@
+= stylesheet_link_tag 'ui/Example'
+
+- %w[card controls error field info_circle modal nav page table].each do |name|
+  - partial = "cafe_car/examples/#{name}"
+  = render "cafe_car/examples/example", name:, partial: do
+    = render partial

@@ -1,2 +1,2 @@
 - nav.routes.each do |r|
-  = nav.link_to r.name.humanize, r.requirements
+  = nav.link_to r.name.humanize, r.requirements.clone.tap { _1[:controller] = "/" + _1[:controller]}

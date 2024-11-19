@@ -9,44 +9,46 @@ module CafeCar
       @object   = object
     end
 
-    def model      = @object.is_a?(Class) ? @object : @object.class
-    def model_name = model.model_name
-    def policy     = @template.policy(@object)
-    def var(names) = names.merge! *names.map { {_1.to_s.downcase.intern => _2.downcase} }
+    def model         = @object.is_a?(Class) ? @object : @object.class
+    def model_name    = model.model_name
+    def policy        = @template.policy(@object)
+    def var(names)    = names.merge! *names.map { {_1.to_s.downcase.intern => _2.downcase} }
+    def can?(action)  = policy.public_send("#{action}?")
+    def cant?(action) = !can?(action) && disabled(action, :policy)
 
-    def i18n(action, scope: nil, default: :default, **opt)
-      @template.t action, scope: [:controls, *scope], default:,
-                  **var(
-                    Action: @template.t(action, default: action.to_s.humanize),
-                    Model:  model_name.human,
-                    Models: model_name.human(count: 2),
-                  ),
-                  **opt
+    def i18n(action, scope: nil, default: :default, **)
+      vars = var Action: @template.t(action, default: action.to_s.humanize),
+                 Model:  model_name.human,
+                 Models: model_name.human(count: 2)
+      @template.t(action, scope: [:controls, *scope], default:, **vars, **)
     end
 
     def confirm(key)             = i18n(key, scope: :confirm)
     def disabled(action, reason) = i18n(action, scope: [:disabled, reason])
 
-    def turbo(opts)
-      {data: opts.delete(:data) { {} }.with_defaults(
-        turbo_stream: true,
-        turbo_method: opts.delete(:method),
-        turbo_confirm: opts.delete(:confirm),
-      )}
+    def turbo!(opts)
+      opts.replace({
+        data: {turbo_stream: true,
+               turbo_method: opts.delete(:method),
+               turbo_confirm: opts.delete(:confirm)
+        }
+      }.deep_merge(opts))
     end
 
     def link(action, target, label = i18n(action), disabled: false, hide: false, **opts)
-      href       = href_for(*target, action:)
-      disabled ||= !policy.public_send("#{action}?") && disabled(action, :policy)
+      disabled ||= cant?(action)
       return "" if disabled and hide
-      disabled ||= current_page?(href) && ""
-      link_to_unless(disabled, label, href, **turbo(opts), **opts) do
+
+      href    = href_for(*target, action:)
+      current = current_page?(href)
+
+      link_to_unless(disabled || current, label, href, **turbo!(opts)) do
         @template.tag.span(label, class: "disabled", disabled: true, title: disabled)
       end
     end
 
     def show(...)      = link(:show, @object, ...)
-    def edit(...)      = link(:edit, @object, ...)
+    def edit(*, **)    = link(:edit, @object, *, **)
     def destroy(*, **) = link(:destroy, @object, *, method: :delete, confirm: confirm(:destroy), **)
     def index(*, **)   = link(:index, model, *, hide: true, **)
     def new(*, **)     = link(:new, model, *, hide: true, **)

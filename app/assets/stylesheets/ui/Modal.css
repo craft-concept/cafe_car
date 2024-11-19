@@ -1,15 +1,33 @@
-.Dialog {
-    border: none;
-    background: none;
-    padding: var(--gap) 0;
-    max-width: var(--max-width);
-    max-height: 100%;
-    overscroll-behavior: contain;
-    min-width: 30vw;
-}
-
-.Dialog::backdrop {
+.Modal {
+    inset: 0;
+    display: flex;
     background: var(--backdrop);
     overscroll-behavior: contain;
     backdrop-filter: blur(8px);
+    padding: var(--gap);
+}
+
+.Modal_Body {
+    margin: auto;
+    padding: var(--gap) 0;
+    max-width: var(--max-width);
+}
+
+.Modal_Close {
+    font-size: 150%;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.Modal_Close:hover {
+    opacity: .8;
+    text-decoration: none;
+}
+
+.Modal-fixed {
+    position: fixed;
+}
+
+body:has(> .Modal-fixed) {
+    overflow: hidden;
 }

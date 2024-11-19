@@ -10,3 +10,9 @@ Object.assign(Turbo.StreamActions, {
         dialog.showModal()
     }
 })
+
+document.addEventListener("click", event => {
+    if (!event.target.matches(".Modal_Close")) return
+    event.preventDefault()
+    event.target.closest(".Modal").remove()
+})

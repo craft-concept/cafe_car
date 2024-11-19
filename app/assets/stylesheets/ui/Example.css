@@ -1,0 +1,40 @@
+.Example {
+    position: relative;
+    display: grid;
+    grid: auto 1fr / auto auto;
+    height: 80vh;
+    border-bottom: 1px solid var(--border);
+    clip-path: rect(0 auto auto 0);
+}
+
+.Example_Head {
+    position: sticky;
+    grid-column: span 2;
+    top: 0;
+    z-index: 1;
+    padding: 0 var(--gap);
+}
+
+.Example_Title {
+    color: inherit;
+}
+
+.Example_Body {
+    align-self: center;
+    grid-column: 1;
+    justify-self: center;
+    position: relative;
+    border: 1px dashed var(--border);
+    padding: var(--gap);
+    display: grid;
+    gap: var(--gap);
+}
+
+.Example_Source {
+    grid-column: 2;
+    align-self: center;
+    /*justify-self: center;*/
+    position: relative;
+    padding: var(--gap);
+    overflow: auto;
+}

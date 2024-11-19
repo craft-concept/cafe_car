@@ -72,7 +72,7 @@
     white-space: nowrap;
 }
 
-.Table_Row:not(:hover) .Table-shy > *{
+.Table_Row:not(:hover) .Table-shy > * {
     visibility: hidden;
 }
 

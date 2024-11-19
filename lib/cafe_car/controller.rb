@@ -27,7 +27,7 @@ module CafeCar
       define_callbacks :render, :update, :create, :destroy
 
       helper_method :model, :model_name, :object, :objects
-      helper_method :partial?
+      helper_method :action
 
       helper Helpers
 
@@ -53,11 +53,6 @@ module CafeCar
 
     def update
       run_callbacks(:update) { object.save! }
-
-      respond_to do |f|
-        f.html { updated_redirect }
-        f.json { }
-      end
     end
 
     def destroy
@@ -140,9 +135,8 @@ module CafeCar
       {} # { locale: I18n.locale }
     end
 
-    def partial?(path)
-      prefixes = path.include?(?/) ? [] : lookup_context.prefixes
-      lookup_context.any?(path, prefixes, true)
+    def action
+      @action ||= ActiveSupport::StringInquirer.new(action_name)
     end
 
     def set_current_attributes

@@ -1,0 +1,9 @@
+= ui.example id: name do |ex|
+  = ex.head do
+    = ex.title ui_class(name), tag: :h2, href: "##{name}"
+
+  = ex.body do
+    = yield
+
+  = ex.source tag: :pre do
+    = get_partial(partial).encode!

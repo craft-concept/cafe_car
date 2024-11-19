@@ -16,12 +16,16 @@
     text-decoration: none;
 }
 
-.dialog-close {
-    font-size: 150%;
-    cursor: pointer;
-    line-height: 1;
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    display: block;
 }
 
-.dialog-close:hover {
-    opacity: .8;
+h1, .h1 {
+    font-size: 2em;
+    margin: .67em 0;
+}
+
+h2, .h2 {
+    font-size: 1.5em;
+    margin: .83em 0;
 }

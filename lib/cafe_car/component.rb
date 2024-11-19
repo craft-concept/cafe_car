@@ -17,12 +17,13 @@ module CafeCar
     def name     = @names.last
     def context  = @context ||= Context.new(@template, prefix: @names)
     def partial? = @template.partial?(partial_name)
-    def tag_name = options[:href] ? :a : @tag
+    def href?    = options[:href].present?
+    def tag_name = href? ? :a : @tag
 
     def partial_name = 'ui/' + @names.join('_')
 
     def class_names     = @names.map(&:to_s).map(&:camelize)
-    def class_name(...) = ui_class(class_names, *@flags, ...)
+    def class_name(...) = ui_class(class_names, *@flags, *(@tag.to_s if href?), ...)
 
     def contents
       @contents ||= @template.safe_join([*@args, *(capture(context, &@block) if @block)])
