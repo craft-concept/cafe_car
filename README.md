@@ -1,8 +1,12 @@
 # CafeCar
-Short description and motivation.
+
+CafeCar is an expansion of the Rails "view" layer of MVC. Its philosophy is rooted in the idea that, by default, Rails
+should render _something_ that represents the CRUD operations of your models. These defaults can then be expanded
+or overridden. This can be done on either application-wide or for specific models.
 
 ## Usage
-How to use my plugin.
+
+
 
 ## Installation
 Add this line to your application's Gemfile:
@@ -14,11 +18,6 @@ gem "cafe_car"
 And then execute:
 ```bash
 $ bundle
-```
-
-Or install it yourself as:
-```bash
-$ gem install cafe_car
 ```
 
 ## Contributing
