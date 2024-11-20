@@ -295,6 +295,11 @@ GEM
       ffi (~> 1.12)
       logger
     securerandom (0.3.1)
+    solid_cable (3.0.2)
+      actioncable (>= 7.2)
+      activejob (>= 7.2)
+      activerecord (>= 7.2)
+      railties (>= 7.2)
     sqlite3 (2.1.1-aarch64-linux-gnu)
     sqlite3 (2.1.1-aarch64-linux-musl)
     sqlite3 (2.1.1-arm-linux-gnu)
@@ -353,6 +358,7 @@ DEPENDENCIES
   faker
   image_processing (~> 1.13)
   puma
+  solid_cable
   sqlite3
   web-console
 

@@ -7,6 +7,7 @@ gem "cnc", github: "craft-concept/cnc"
 gem "brakeman"
 gem "puma"
 gem "sqlite3"
+gem "solid_cable"
 
 group :development do
   gem "web-console"
