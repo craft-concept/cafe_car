@@ -1,6 +1,8 @@
 module CafeCar::Model
   extend ActiveSupport::Concern
 
+  include CafeCar::Filterable
+
   class_methods do
     def sorted(*args)
       return all if args.compact_blank!.empty?

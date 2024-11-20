@@ -2,6 +2,8 @@ source "https://rubygems.org"
 
 gemspec
 
+gem "mutex_m"
+
 gem "bcrypt"
 gem "cnc", github: "craft-concept/cnc"
 gem "brakeman"

@@ -1,7 +1,9 @@
 module CafeCar
   module Controller
     extend ActiveSupport::Concern
+
     include Pundit::Authorization
+    include Filtering
 
     class_methods do
       def model(model)
