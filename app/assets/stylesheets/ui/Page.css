@@ -1,6 +1,10 @@
+.Page-wide {
+    /*--page-width: 80vw;*/
+}
+
 .Page {
     display: grid;
-    grid: auto-flow / auto minmax(auto, var(--page-width)) auto;
+    grid: auto-flow / var(--aside-width) minmax(auto, var(--page-width)) var(--aside-width);
     gap: var(--gap);
     margin: var(--gap);
 }

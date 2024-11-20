@@ -1,18 +1,22 @@
-Object.assign(Turbo.StreamActions, {
-    dialog() {
-        this.removeDuplicateTargetChildren();
-        this.targetElements.forEach(e => e.remove())
+function last(arr) {
+    return arr[arr.length - 1];
+}
 
-        let content = this.templateContent
-        let dialog = content.querySelector('dialog')
-        dialog.onclose = dialog.oncancel = () => dialog.remove()
-        this.ownerDocument.body.append(dialog)
-        dialog.showModal()
+document.addEventListener("click", event => {
+    if (event.target.matches(".Modal_Close")) {
+        event.preventDefault()
+        event.target.closest(".Modal").remove()
+    } else if (event.target.matches(".Modal")) {
+        event.preventDefault()
+        event.target.remove()
     }
 })
 
-document.addEventListener("click", event => {
-    if (!event.target.matches(".Modal_Close")) return
-    event.preventDefault()
-    event.target.closest(".Modal").remove()
+document.addEventListener("keydown", event => {
+    switch (event.key) {
+        case "Escape":
+            let modal = event.target.closest(".Modal") ||
+                last(document.querySelectorAll(".Modal-fixed"))
+            modal?.remove()
+    }
 })

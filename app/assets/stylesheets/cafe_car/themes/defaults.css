@@ -1,5 +1,8 @@
 :root {
     color-scheme: light dark;
+    accent-color: var(--accent);
+
+    --link: var(--accent);
 
     --font: -apple-system, menu, sans-serif;
     --error: var(--red);
@@ -17,5 +20,6 @@
 
     --max-width: 720px;
     --page-width: 1024px;
+    --aside-width: 20vw;
     --modal-width: 720px;
 }

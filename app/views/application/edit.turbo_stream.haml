@@ -1,2 +1,8 @@
-= turbo_stream.dialog_for object, :edit do
-  = render "form", title: "Edit #{model_name.human}", actions: dialog_close
+- if action.edit?
+  = turbo_stream.append_all("body") do
+    = ui.modal :fixed do |m|
+      = ui.card title: "Edit #{model_name.human}", actions: m.close("✕") do |card|
+        = render "form", card:
+- else
+  = turbo_stream.replace(dom_id(object, :edit)) do
+    = render "form", card: ui.card.context

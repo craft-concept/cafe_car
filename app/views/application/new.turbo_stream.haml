@@ -1,2 +1,8 @@
-= turbo_stream.dialog_for object, :new do
-  = render "form", title: "New #{model_name.human}", actions: dialog_close
+- if action.new?
+  = turbo_stream.append_all("body") do
+    = ui.modal :fixed do |m|
+      = ui.card title: "New #{model_name.human}", actions: m.close("✕") do |card|
+        = render "form", card:
+- else
+  = turbo_stream.replace(dom_id(object, :new)) do
+    = render "form", card: ui.card.context

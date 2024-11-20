@@ -1,10 +1,11 @@
 - title = title model_name.human(count: :all)
 - actions = render "index_actions"
 
-= ui.page title:, actions: do |page|
+= ui.page :wide, title:, actions: do |page|
   = page.left do
     = render "debug" if params.key?(:debug)
     = render "filters"
 
   = page.body do
     = render "index"
+    = yield :debug

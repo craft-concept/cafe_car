@@ -10,8 +10,9 @@
         = card.section do
           =  ui(object).attributes :updated_at, :created_at, try: true
 
-      = ui.card title: "Actions" do
-        = render('actions')
+    = ui.card title: "Actions" do
+      = render('actions')
 
   = page.body do
-    = render 'form'
+    = ui.card do |card|
+      = render 'form', card:

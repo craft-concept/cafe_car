@@ -1,16 +1,15 @@
 .Modal {
+    z-index: 1;
     inset: 0;
-    display: flex;
+    display: grid;
+    grid-template-columns: fit-content(var(--modal-width));
     background: var(--backdrop);
     overscroll-behavior: contain;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
     backdrop-filter: blur(8px);
-    padding: var(--gap);
-}
-
-.Modal_Body {
-    margin: auto;
-    padding: var(--gap) 0;
-    max-width: var(--max-width);
+    padding: calc(var(--gap) * 2);
 }
 
 .Modal_Close {

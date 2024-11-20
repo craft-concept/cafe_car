@@ -4,6 +4,6 @@
 = card.wrapper(*flags, **options) do
   = card.head do
     = card.title(tag: :h2) { title }
-    = card.actions(safe_join([*actions]))
+    = card.actions { safe_join([*actions]) }
 
   = yield

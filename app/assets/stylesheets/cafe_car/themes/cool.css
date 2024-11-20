@@ -6,7 +6,7 @@
     --color: rgb(24, 36, 51);
     --dim: #6c7a91;
 
-    --link: rgb(6, 111, 209);
+    --accent: rgb(6, 111, 209);
     --border: #e6e8ec;
     --background: #f6f8fa;
     --input: #f6f8fa;
@@ -27,6 +27,6 @@
 
         --card: #192433;
         --border: #1f2e42;
-        --link: #6aa9e3;
+        --accent: #6aa9e3;
     }
 }

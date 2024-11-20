@@ -1,2 +1,3 @@
-= ui.card do
-  %pre= parsed_params.to_unsafe_h.pretty_inspect
+= ui.card title: "Debug" do |card|
+  = card.section do
+    %pre= request.params.pretty_inspect

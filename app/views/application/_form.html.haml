@@ -1,14 +1,10 @@
-- title   ||= nil
-- actions ||= nil
-
 = form_for object do |f|
-  = ui.card title:, actions: do |card|
-    = card.section do
-      = render "fields", f:
+  = card.section do
+    = render "fields", f:
 
-    = card.section class: "row" do
-      = render("extra_fields", f:)
+  = card.section class: "row" do
+    = render("extra_fields", f:)
 
-    = card.foot do
-      = render "submit", f:
-      = render("errors", f:)
+  = card.foot do
+    = render "submit", f:
+    = render("errors", f:)

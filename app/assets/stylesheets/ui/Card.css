@@ -6,8 +6,8 @@
 
 .Card_Head,
 .Card_Foot {
-    gap: var(--gap);
     display: flex;
+    gap: var(--gap);
     align-items: center;
 }
 
@@ -31,7 +31,7 @@
     border-top: 1px solid var(--border);
 }
 
-.Card:not(:has(.Card_Section)) {
+.Card:not(:has(.Card_Section, .Card_Head, .Card_Foot)) {
     padding: var(--gap);
 }
 

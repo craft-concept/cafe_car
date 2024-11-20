@@ -10,10 +10,8 @@ module CafeCar::Policy
     @info[method] ||= CafeCar[:FieldInfo].new(object:, method:)
   end
 
-  def title_attributes = %i[title name to_s]
-
   def title_attribute
-    @title_attribute ||= model.tap(&:define_attribute_methods) && title_attributes.find { model.method_defined? _1 }
+    @title_attribute ||= displayable_attributes.first
   end
 
   def displayable_attributes
