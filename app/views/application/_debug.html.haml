@@ -1,3 +1,5 @@
+- console if Rails.env.development?
+
 = ui.card title: "Debug" do |card|
   = card.section do
     = ui.field label: "Params" do
@@ -7,4 +9,3 @@
       = ui.code scope.to_sql
 
   = yield :debug
-  = console
