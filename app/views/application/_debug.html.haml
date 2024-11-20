@@ -1,3 +1,9 @@
 = ui.card title: "Debug" do |card|
   = card.section do
-    %pre= request.params.pretty_inspect
+    = ui.field label: "Params" do
+      = ui.code request.params.pretty_inspect
+
+    = ui.field label: "Query" do
+      = ui.code scope.to_sql
+
+  = yield :debug

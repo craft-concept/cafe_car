@@ -27,7 +27,7 @@ module CafeCar
       define_callbacks :render, :update, :create, :destroy
 
       helper_method :model, :model_name, :object, :objects
-      helper_method :action
+      helper_method :action, :scope
 
       helper Helpers
 
@@ -88,20 +88,20 @@ module CafeCar
     end
 
     def find_object
-      self.object = scope.find(params[:id])
+      self.object = scope.except(:limit, :offset).find(params[:id])
     end
 
     def find_objects
-      self.objects = scope.try { sorted _1 }
-                          .try { filtered _1 }
-                          .try { paginated _1 }
+      self.objects = scope
     end
 
     def assign_attributes
       object.assign_attributes(permitted_attributes(object))
     end
 
-    def scope   = policy_scope(model.all)
+    def scope   = policy_scope(model.all).try { sorted _1 }
+                                         .try { filtered _1 }
+                                         .try { paginated _1 }
     def objects = instance_variable_get("@#{model_name.plural}")
     def objects=(value)
       instance_variable_set("@#{model_name.plural}", value)

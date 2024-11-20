@@ -1,5 +1,6 @@
-- title = title(object)
+- title   = title(object)
 - actions = ui(object).controls(index: true)
+- body    = render("show")
 
 = ui.page :full, title:, actions: do |page|
   = page.left do
@@ -12,6 +13,7 @@
     = ui.card title: "Actions" do
       = render("actions")
 
+    = render "debug" if debug?
     = yield :left
 
   = page.body do
@@ -24,6 +26,6 @@
       -#
       -# = render "tab_#{tab}"
     - else
-      = render "show"
+      = body
 
   = page.right { yield :right }

@@ -13,6 +13,8 @@
     = ui.card title: "Actions" do
       = render('actions')
 
+    = render "debug" if debug?
+
   = page.body do
     = ui.card do |card|
       = render 'form', card:

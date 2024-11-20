@@ -54,6 +54,8 @@ module CafeCar
       CafeCar[:TableBuilder].new(self, objects:, **options, &block)
     end
 
+    def debug? = params.key?(:debug)
+
     def partial?(path)
       prefixes = path.include?(?/) ? [] : lookup_context.prefixes
       lookup_context.any?(path, prefixes, true)

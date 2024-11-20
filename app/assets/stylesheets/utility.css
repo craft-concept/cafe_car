@@ -1,3 +1,16 @@
+@keyframes fade-in {
+    from { opacity: 0 }
+}
+
+@keyframes fade-out {
+    to { opacity: 0 }
+}
+
+.remove {
+    animation: fade-out 100ms;
+    pointer-events: none;
+}
+
 .disabled, [disabled] {
     opacity: .3;
     cursor: not-allowed;
@@ -20,12 +33,12 @@
     display: block;
 }
 
-h1, .h1 {
+.h1 {
     font-size: 2em;
     margin: .67em 0;
 }
 
-h2, .h2 {
+.h2 {
     font-size: 1.5em;
     margin: .83em 0;
 }

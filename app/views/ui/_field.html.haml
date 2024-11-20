@@ -1,0 +1,7 @@
+- label = options.delete(:label)
+- content = options.delete(:content)
+
+= field.wrapper(*flags, **options) do
+  = field.label { label }
+  = field.content { content }
+  = yield
