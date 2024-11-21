@@ -38,17 +38,15 @@ class CafeCar::ParamParser
     when /\.\./
       a, b = v.split('..').map(&:presence).map { value(_1) }
       a..b
-    when /\A(\d*\.)?\d+\z/
-      v.try(:to_f) || v
     when /^\$(\w+)\.(\w+)$/
       $1.constantize.arel_table[$2]
     when Array
       v.map { value(_1) }
     when Hash
-      v.reject {|k, *| k.include?('.') }.
-        transform_values { value(_1) }.
-        merge(parse(v)).
-        tap {|h| h.merge!(h.delete('')) if h.key?('') }
+      v.reject {|k, *| k.include?('.') }
+       .transform_values { value(_1) }
+       .merge(parse(v))
+       .tap {|h| h.merge!(h.delete('')) if h.key?('') }
     else
       v
     end

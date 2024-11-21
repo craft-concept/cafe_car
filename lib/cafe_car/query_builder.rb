@@ -20,8 +20,9 @@ module CafeCar
 
     def parse_value(key, value)
       case column(key)&.type
-      when :datetime
-        parse_time(value) || value
+      when :datetime then parse_time(value) || value
+      when :integer  then value.to_i
+      when :float    then value.to_f
       else value
       end
     end
