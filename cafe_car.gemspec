@@ -28,4 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "kaminari"
   spec.add_dependency "pundit"
   spec.add_dependency "chronic"
+  spec.add_dependency "web-console"
 end

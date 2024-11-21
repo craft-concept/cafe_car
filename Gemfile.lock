@@ -21,6 +21,7 @@ PATH
       pundit
       rails
       turbo-rails
+      web-console
 
 GEM
   remote: https://rubygems.org/

@@ -27,27 +27,21 @@ class CafeCar::ParamParser
 
   def value(v)
     case v
-    when '""', "''"
-      ''
-    when 'nil', ''
-      nil
-    when /[{}\[\]]/
-      JSON.parse(v)
-    when /,/
-      value v.split(',')
+    when Array      then v.map { value(_1) }
+    when '""', "''" then ''
+    when 'nil', ''  then nil
+    when /[{}\[\]]/ then JSON.parse(v)
+    when /,/        then value(v.split(','))
     when /^(.*?)\.\.(\.?)(.*)$/
       Range.new(*[$1, $3].map(&:presence).map { value(_1) }, $2.present?)
     when /^\$(\w+)\.(\w+)$/
       $1.constantize.arel_table[$2]
-    when Array
-      v.map { value(_1) }
     when Hash
       v.reject {|k, *| k.include?('.') }
        .transform_values { value(_1) }
        .merge(parse(v))
        .tap {|h| h.merge!(h.delete('')) if h.key?('') }
-    else
-      v
+    else v
     end
   end
 end
