@@ -1,16 +1,21 @@
 !!!
 %html{lang: I18n.locale}
   %head
-    %title= @title
+    %title= @title || content_for(:title)
     %meta{name: "viewport", content: "width=device-width,initial-scale=1"}
-    %meta{name: "turbo-prefetch", content: "true"}
-    %meta{name: "turbo-refresh-method", content: "morph"}
+    %meta{name: "apple-mobile-web-app-capable", content:"yes"}
+    %meta{name: "mobile-web-app-capable",       content:"yes"}
+    %meta{name: "turbo-prefetch",               content: "true"}
+    %meta{name: "turbo-refresh-method",         content: "morph"}
     = csrf_meta_tags
     = csp_meta_tag
+    -# = javascript_include_tag "cafe_car", type: :module
+
+    = render "head"
+    = yield :head
+
     = stylesheet_link_tag "cafe_car", "data-turbo-track": "reload"
     = javascript_importmap_tags
-    -# = javascript_include_tag "cafe_car", type: :module
-    = yield(:head)
 
   %body
     = render "nav"
