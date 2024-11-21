@@ -8,6 +8,8 @@ module CafeCar
       @scope = scope
     end
 
+    def arel = @scope.arel_table
+
     def update!(&)
       scope  = instance_exec(@scope, &)
       @scope = scope if scope
@@ -21,7 +23,11 @@ module CafeCar
     end
 
     def attribute!(key, value)
-      @scope.where!(key => value)
+      case value
+      when Regexp
+        @scope.where!(arel[key].matches_regexp(value.source, !value.casefold?))
+      else @scope.where!(key => value)
+      end
       self
     end
 

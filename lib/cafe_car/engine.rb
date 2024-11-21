@@ -28,13 +28,20 @@ module CafeCar
 
     initializer "cafe_car.active_record" do |app|
       app.reloader.to_prepare do
-        ::ActiveRecord::Base.include(CafeCar::Model)
+        ::ActiveRecord::Base.include(Model)
+      end
+    end
+
+    initializer "cafe_car.sqlite_regexp" do |app|
+      ActiveSupport.on_load :active_record_sqlite3adapter do
+        ::Arel::Visitors::SQLite.include(Visitors::SQLite)
+        include ActiveRecord::SQLite3Extension
       end
     end
 
     initializer "cafe_car.turbo" do
       ActiveSupport.on_load :turbo_streams_tag_builder do
-        include CafeCar::TurboTagBuilder
+        include TurboTagBuilder
       end
     end
 

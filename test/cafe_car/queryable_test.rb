@@ -8,5 +8,6 @@ class CafeCar::QueryableTest < ActiveSupport::TestCase
   test "query associations" do
     assert_includes Article.query(author: true).to_sql, %(EXISTS)
     assert_includes Article.query(author: {username: "bob"}).to_sql, %(EXISTS)
+    assert_includes Article.query(author: {username: /bob/}).to_sql, %(EXISTS)
   end
 end
