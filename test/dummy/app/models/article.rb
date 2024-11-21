@@ -5,5 +5,8 @@ class Article < ApplicationRecord
 
   validates :title, presence: true
 
+  scope :published, -> { where(published_at: ..Time.zone.now) }
+  scope :unpublished, -> { where(published_at: Time.zone.now..) }
+
   def published? = published_at && published_at < Time.zone.now
 end
