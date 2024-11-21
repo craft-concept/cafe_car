@@ -1,7 +1,7 @@
 module CafeCar::Model
   extend ActiveSupport::Concern
 
-  include CafeCar::Filterable
+  include CafeCar::Queryable
 
   class_methods do
     def sorted(*args)

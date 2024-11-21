@@ -1,13 +1,10 @@
 require "test_helper"
-# require "presenters/cafe_car/presenter"
 require "cafe_car"
 
 module CafeCar
   class PresenterTest < ActionView::TestCase
-    tests CafeCar::Presenter
-
-    def test_find
-      assert_equal SymbolPresenter, Presenter.find(:hi)
+    test "find" do
+      assert_equal SymbolPresenter, Presenter.find(Symbol)
     end
   end
 end

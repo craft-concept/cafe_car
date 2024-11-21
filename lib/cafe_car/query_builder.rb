@@ -1,5 +1,5 @@
 module CafeCar
-  class FilterBuilder
+  class QueryBuilder
     require "activerecord_where_assoc"
 
     attr_reader :scope
@@ -30,26 +30,26 @@ module CafeCar
         case value
         when true then  @scope.where_assoc_exists(name)
         when false then @scope.where_assoc_not_exists(name)
-        else            @scope.where_assoc_exists(name) { filtered(value, ...) }
+        else            @scope.where_assoc_exists(name) { query(value, ...) }
         end
       end
     end
 
-    def filter!(params = nil)
+    def query!(params = nil)
       params.each { param!(_1, _2) } if params
       self
     end
 
-    def filter(...) = update!(&:all).filter!(...)
+    def query(...) = update!(&:all).query!(...)
   end
 end
 
-# Article.filtered do
+# Article.query do
 #   published
 #   user { username(/bob/) }
 #   user.username(/bob/)
 # end
 #
-# Article.filtered(published: true, user: {username: /bob/})
+# Article.query(published: true, user: {username: /bob/})
 #
 # Article.published(true).where_assoc_exists(:user) { where(username: /bob/) }
