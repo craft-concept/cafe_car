@@ -2,7 +2,7 @@ module CafeCar::Controller::Filtering
   extend ActiveSupport::Concern
 
   included do
-    helper_method :dot_params
+    helper_method :dot_params, :parsed_params
   end
 
   private

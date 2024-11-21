@@ -3,7 +3,7 @@
 = ui.card title: "Debug" do |card|
   = card.section do
     = ui.field label: "Params" do
-      = ui.code request.params.pretty_inspect
+      = ui.code parsed_params.to_unsafe_h.pretty_inspect
 
     = ui.field label: "Query" do
       = ui.code scope.to_sql

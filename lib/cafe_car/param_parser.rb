@@ -35,9 +35,8 @@ class CafeCar::ParamParser
       JSON.parse(v)
     when /,/
       value v.split(',')
-    when /\.\./
-      a, b = v.split('..').map(&:presence).map { value(_1) }
-      a..b
+    when /^(.*?)\.\.(\.?)(.*)$/
+      Range.new(*[$1, $3].map(&:presence).map { value(_1) }, $2.present?)
     when /^\$(\w+)\.(\w+)$/
       $1.constantize.arel_table[$2]
     when Array

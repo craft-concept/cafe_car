@@ -19,10 +19,18 @@ module CafeCar
     end
 
     def parse_value(key, value)
-      case column(key)&.type
-      when :datetime then parse_time(value) || value
-      when :integer  then value.to_i
-      when :float    then value.to_f
+      case value
+      when Range
+        Range.new(parse_value(key, value.begin), parse_value(key, value.end), value.exclude_end?)
+      when Array
+        value.map { parse_value(key, _1) }
+      when String
+        case column(key)&.type
+        when :datetime then parse_time(value) || value
+        when :integer  then value.to_i
+        when :float    then value.to_f
+        else value
+        end
       else value
       end
     end
