@@ -1,3 +1,4 @@
+require "chronic"
 require "haml"
 require "kaminari"
 require "image_processing"
@@ -29,6 +30,12 @@ module CafeCar
     initializer "cafe_car.active_record" do |app|
       app.reloader.to_prepare do
         ::ActiveRecord::Base.include(Model)
+      end
+    end
+
+    initializer "cafe_car.chronic" do |app|
+      app.reloader.to_prepare do
+        Chronic.time_class = Time.zone
       end
     end
 

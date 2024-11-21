@@ -12,6 +12,20 @@ module CafeCar
 
     def arel = @scope.arel_table
 
+    def parse_time(value)
+      Chronic.parse(value, guess: false, context: :past)
+    rescue NoMethodError
+      nil
+    end
+
+    def parse_value(key, value)
+      case column(key)&.type
+      when :datetime
+        parse_time(value) || value
+      else value
+      end
+    end
+
     def update!(&)
       scope  = @scope.instance_exec(@scope, &)
       @scope = scope if scope
@@ -23,16 +37,17 @@ module CafeCar
       update! { _1.and(inverted) }
     end
 
+    def column(name)       = @scope.columns_hash[name.to_s]
     def association?(name) = @scope.reflect_on_association(name).present?
-    def attribute?(name)   = @scope.columns_hash[name.to_s].present?
+    def attribute?(name)   = column(name).present?
     def scope?(name)       = name.intern.in? @scope.local_methods
 
     def param!(key, value)
       case key
-      when /^(.*)~$/
-        param!($1, Regexp.new(value))
       when /^(.*)!$/
         not! { param!($1, value) }
+      when /^(.*)~$/
+        param!($1, Regexp.new(value, Regexp::IGNORECASE))
       when method(:association?)
         association!(key, value)
       when method(:attribute?)
@@ -48,7 +63,7 @@ module CafeCar
       case [key, value]
       in _, Regexp
         @scope.where!(arel[key].matches_regexp(value.source, !value.casefold?))
-      else @scope.where!(key => value)
+      else @scope.where!(key => parse_value(key, value))
       end
       self
     end

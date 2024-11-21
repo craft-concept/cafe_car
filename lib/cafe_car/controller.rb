@@ -76,7 +76,6 @@ module CafeCar
 
     def current_user = CafeCar[:Current].user
 
-    def filtered(scope) = scope
     def sorted(scope)
       scope.sorted(*params[:sort].presence)
     end
@@ -101,9 +100,9 @@ module CafeCar
       object.assign_attributes(permitted_attributes(object))
     end
 
-    def scope   = policy_scope(model.all).try { sorted _1 }
-                                         .try { filtered _1 }
-                                         .try { paginated _1 }
+    def scope   = policy_scope(model.all).then { sorted _1 }
+                                         .then { filtered _1 }
+                                         .then { paginated _1 }
     def objects = instance_variable_get("@#{model_name.plural}")
     def objects=(value)
       instance_variable_set("@#{model_name.plural}", value)
