@@ -29,7 +29,9 @@ module CafeCar
     end
 
     def title(object)
-      @title = present(object).title.presence
+      present(object).title.presence.tap do |title|
+        content_for(:title, title)
+      end
     end
 
     def present(*args, **options)

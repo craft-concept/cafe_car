@@ -6,7 +6,7 @@ or overridden. This can be done on either application-wide or for specific model
 
 ## Usage
 
-
+### Customizing views
 
 ## Installation
 Add this line to your application's Gemfile:

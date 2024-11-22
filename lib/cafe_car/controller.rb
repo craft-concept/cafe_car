@@ -10,21 +10,34 @@ module CafeCar
         define_method(:model) { @model ||= model }
       end
 
-      def recline_in_the_cafe_car
+      def recline_in_the_cafe_car(only: nil, except: nil)
+        _only = ->(actions) do
+          actions -= except if except
+          actions &= only if only
+          actions
+        end
+
+        rescue_from ::ActiveRecord::RecordInvalid, with: :render_invalid_record
+
+        prepend_cafe_car_views
+
         before_action :set_current_attributes
 
-        before_action :find_object, only: %i[show edit update destroy]
-        before_action :build_object, only: %i[new create]
-        before_action :find_objects, only: %i[index]
-
-        before_action :assign_attributes, only: %i[create update]
+        before_action :find_object,       only: _only.(%i[show edit update destroy])
+        before_action :build_object,      only: _only.(%i[new create])
+        before_action :find_objects,      only: _only.(%i[index])
+        before_action :assign_attributes, only: _only.(%i[create update])
         before_action :authorize!
+      end
+
+      def prepend_cafe_car_views
+        prepend_view_path CafeCar::Engine.root.join('app/views/cafe_car')
+        prepend_view_path 'app/views/cafe_car'
       end
     end
 
     included do
       default_form_builder CafeCar[:FormBuilder]
-      rescue_from ::ActiveRecord::RecordInvalid, with: :render_invalid_record
 
       define_callbacks :render, :update, :create, :destroy
 
@@ -32,9 +45,6 @@ module CafeCar
       helper_method :action, :scope
 
       helper Helpers
-
-      # prepend_view_path CafeCar::Engine.root.join('app/views/cafe_car')
-      # prepend_view_path 'app/views/cafe_car'
 
       after_action :verify_authorized, :verify_policy_scoped
     end

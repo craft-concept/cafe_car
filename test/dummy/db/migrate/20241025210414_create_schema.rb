@@ -9,6 +9,7 @@ class CreateSchema < ActiveRecord::Migration[7.2]
     create_table :articles do |t|
       t.references :author, index: true, foreign_key: {to_table: :users}
       t.string     :title, null: false
+      # t.string     :slug, null: false, index: {unique: true}
       t.datetime   :published_at
       t.text       :summary
       # action_text :body
