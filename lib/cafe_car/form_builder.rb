@@ -1,26 +1,23 @@
 module CafeCar
   class FormBuilder < ActionView::Helpers::FormBuilder
-    delegate :ui, :tag, :render, :partial?, to: :@template
-
     def initialize(...)
       super
       @info   = {}
       @fields = {}
     end
 
-    def h      = @template
-    def policy = h.policy(@object)
+    def policy = @template.policy(@object)
 
     def association(method, collection: nil, **options)
       info                      = info(method)
       collection              ||= info.collection
       # options[:prompt]        ||= info.prompt
       options[:include_blank] ||= info.prompt
-      input(info.input_key, collection, :id, -> { h.present(_1).title }, as: :collection_select, **options)
+      input(info.input_key, collection, :id, -> { @template.present(_1).title }, as: :collection_select, **options)
     end
 
     def field(method, **, &)
-      @fields[method] ||= FieldBuilder.new(method:, form: self, **, &)
+      @fields[method] ||= FieldBuilder.new(method:, form: self, template: @template, **, &)
     end
 
     def label(method, text = info(method).label, required: info(method).required?, **, &)
@@ -38,14 +35,12 @@ module CafeCar
       public_send(as, method, *args, **options)
     end
 
-    def hint(method, **)
-      return unless hint = info(method).hint
-      tag.small(hint, **)
+    def hint(method, text = info(method).hint, **)
+      @template.tag.small(text, **) if text.present?
     end
 
-    def error(method, **)
-      return unless error = info(method).error
-      tag.span(error, **)
+    def error(method, text = info(method).error, **)
+      @template.tag.span(text, **) if text.present?
     end
 
     def remaining_attributes = policy.editable_attributes - @info.keys
@@ -53,7 +48,7 @@ module CafeCar
     def remaining_fields(**, &block)
       block  ||= proc { field(_1, **) }
       fields   = remaining_attributes.map(&block)
-      h.safe_join(fields)
+      @template.safe_join(fields)
     end
   end
 end

@@ -7,11 +7,11 @@ module CafeCar
       @object = object
     end
 
-    def info(method) = FieldInfo.new(object:, method:)
+    def info(method) = self.class.new(object:, method:)
 
     def id?         = method =~ /_ids?$/
     def value       = @object.public_send(@method)
-    def model       = @object.try(:klass) || @object.class
+    def model       = @object.try(:klass) || (@object.is_a?(Class) ? @object : @object.class)
     def model_name  = @object.model_name
     def associated? = reflection.present?
     def rich_text?  = reflection&.name =~ /^rich_text_(\w+)$/
@@ -19,10 +19,10 @@ module CafeCar
     def reflection  = model.reflect_on_association(@method) || reflections_by_attribute[@method]
 
     def reflection_type = reflection&.macro
-    def attribute_type  = @object.type_for_attribute(@method)&.type
+    def attribute_type  = model.type_for_attribute(@method)&.type
     def digest_type
       if @method =~ /^(\w+)(_confirmation)?$/
-        @object.type_for_attribute(@method) && :password
+        model.type_for_attribute(@method) && :password
       end
     end
 

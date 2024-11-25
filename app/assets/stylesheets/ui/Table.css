@@ -2,13 +2,14 @@
     display: table;
     box-shadow: var(--box-shadow);
     border-radius: var(--radius);
-    background: var(--card);
     width: 100%;
+    overflow: clip;
 }
 
 .Table-sticky {
     position: sticky;
     top: 0;
+    backdrop-filter: blur(10px);
 }
 
 .Table-shrink {
@@ -25,21 +26,30 @@
 .Table_Head {
     overflow: hidden;
     z-index: 1;
-}
 
-.Table_Head .Table_Cell {
-    font-weight: bold;
-    border-bottom: 2px solid var(--border);
-    position: relative;
-    background: var(--card);
-}
+    & .Table_Cell {
+        font-weight: bold;
+        border-bottom: 2px solid var(--border);
+        position: relative;
+        background: var(--card);
 
-.Table_Head .Table_Cell:first-child {
-    border-top-left-radius: var(--radius);
-}
+        &:first-child {
+            border-top-left-radius: var(--radius);
+        }
 
-.Table_Head .Table_Cell:last-child {
-    border-top-right-radius: var(--radius);
+        &:last-child {
+            border-top-right-radius: var(--radius);
+        }
+
+        & + &::before {
+            display: block;
+            cursor: col-resize;
+            content: '';
+            inset: var(--gap) auto var(--gap) 0;
+            position: absolute;
+            border-left: 1px solid var(--border);
+        }
+    }
 }
 
 .Table_Head a {
@@ -47,20 +57,11 @@
     color: inherit;
 }
 
-.Table_Head .Table_Cell + .Table_Cell::before {
-    display: block;
-    cursor: col-resize;
-    content: '';
-    inset: var(--gap) auto var(--gap) 0;
-    position: absolute;
-    border-left: 1px solid var(--border);
-}
-
 .Table_Row {
     display: table-row;
 }
 
-.Table_Row:hover {
+.Table_Row:hover .Table_Cell {
     background-color: var(--hover);
 }
 
@@ -76,13 +77,15 @@
     visibility: hidden;
 }
 
-.Table_Row + .Table_Row > .Table_Cell {
-    border-top: 1px solid var(--border);
-}
+/*.Table_Row + .Table_Row > .Table_Cell {*/
+/*    border-top: 1px solid var(--border);*/
+/*}*/
 
 .Table_Cell {
     display: table-cell;
     padding: 1em;
+    background: var(--card);
+
 }
 
 .Table_Body .Table_Cell {

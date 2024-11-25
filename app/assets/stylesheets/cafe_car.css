@@ -3,9 +3,9 @@
 @import url("trix.css");
 @import url("cafe_car/trix.css");
 @import url("pagination.css");
-@import url("cafe_car/themes/cool.css");
 @import url("ui/components.css");
 @import url("utility.css");
+@import url("cafe_car/themes/cool.css");
 
 :root {
     --half-gap: calc(var(--gap) / 2);

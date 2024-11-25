@@ -1,0 +1,31 @@
+@import url(defaults.css);
+
+:root {
+    --red: #CC4B00;
+
+    --color: rgb(24, 36, 51);
+    --dim: #6c7a91;
+
+    --accent: rgb(6, 111, 209);
+    --card: rgb(127 127 127 / .2);
+    --background: #f6f8fa;
+    --input: #f6f8fa;
+    --invalid: #f6f8fa;
+    --border: rgb(127 127 127 / .1);
+
+    --hover: rgb(50 50 93 / .03);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --red: #d63939;
+        --input: #151f2c;
+        --invalid: #351f2c;
+        --background: #0f131e;
+
+        --color: #dce1e7;
+        --dim: #6c7a91;
+
+        --accent: #6a9ae3;
+    }
+}

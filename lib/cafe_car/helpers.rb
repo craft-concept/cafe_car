@@ -52,6 +52,16 @@ module CafeCar
       @links[object] ||= CafeCar[:LinkBuilder].new(self, object)
     end
 
+    def filter_form_for(objects, **options, &block)
+      form_for CafeCar[:FilterBuilder].new(objects, parsed_params),
+               builder: CafeCar[:FilterFormBuilder],
+               method: :get,
+               url: "",
+               as: "",
+               **options,
+               &block
+    end
+
     def table_for(objects, **options, &block)
       CafeCar[:TableBuilder].new(self, objects:, **options, &block)
     end
