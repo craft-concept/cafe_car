@@ -26,7 +26,7 @@
       -# = render "tab_#{tab}"
     - else
       = body
-
-  = page.right
-    = yield :right
     = render "debug" if debug?
+
+  = page.right do
+    = yield :right

@@ -1,5 +1,5 @@
 require "chronic"
-require "haml"
+require "haml-rails"
 require "kaminari"
 require "image_processing"
 require "propshaft"

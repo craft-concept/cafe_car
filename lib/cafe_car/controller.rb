@@ -129,7 +129,6 @@ module CafeCar
       @model ||= self.class.name.gsub(/.*::|Controller$/, '').singularize.constantize
     end
 
-
     def created_redirect   = redirect_back fallback_location: [model_name.plural.to_sym]
     def destroyed_redirect = redirect_to [model_name.plural.to_sym]
 
