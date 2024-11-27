@@ -19,11 +19,11 @@ FactoryBot.define do
     end
 
     trait :published do
-      published_at { Faker::Time.between(from: 5.years.ago, to: Time.now) }
+      published_at { Faker::Time.between(from: 5.years.ago, to: Time.current) }
     end
 
     trait :draft do
-      published_at { Faker::Time.between(from: Time.now, to: 1.month.from_now) }
+      published_at { Faker::Time.between(from: Time.current, to: 1.month.from_now) }
     end
   end
 end

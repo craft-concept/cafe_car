@@ -29,5 +29,9 @@ module CafeCar
       assert_empty User.query(articles: 99)
       refute_empty User.query(articles!: 99)
     end
+
+    # test "time spans" do
+    #   assert_empty User.query("created_at >": "today")
+    # end
   end
 end

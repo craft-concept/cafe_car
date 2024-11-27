@@ -3,8 +3,11 @@ module CafeCar
     require "activerecord_where_assoc"
 
     Op = Struct.new(:op, :rhs) do
-      def op   = self[:op].to_sym
-      def flop = self[:op].to_s.tr("<>", "><").to_sym
+      def initialize(op, rhs)
+        super(op.to_sym, rhs)
+      end
+
+      def flop = op.to_s.tr("<>", "><").to_sym
       def map  = Op.new(op, yield(rhs))
 
       def arel(node) = node.public_send(arel_op, rhs)
@@ -37,13 +40,28 @@ module CafeCar
       nil
     end
 
+    def parse(key, value)
+      new_value = parse_value(key, value)
+      if new_value != value
+        parse(key, new_value)
+      else
+        new_value
+      end
+    end
+
     def parse_value(key, value)
       case value
       in Op(rhs: /^=(.*)$/)
-        parse_value(key, Op.new("#{value.op}=", $1))
+        Op.new("#{value.op}=", $1)
+      in Op(op: (:< | :>=), rhs: Range)
+        value.map(&:begin)
+      in Op(op: (:> | :<=), rhs: Range)
+        value.map(&:end)
       in Range
-        Range.new(parse_value(key, value.begin), parse_value(key, value.end), value.exclude_end?)
-      in Array, Op
+        Range.new(parse_value(key, value.begin),
+                  parse_value(key, value.end),
+                  value.exclude_end?)
+      in Array | Op
         value.map { parse_value(key, _1) }
       in String
         case column(key)&.type || reflection(key)&.macro
@@ -79,11 +97,11 @@ module CafeCar
 
     def param!(key, value)
       case key
-      when /^(.*)\s*!$/
+      when /^(.*?)\s*!$/
         not! { param!($1, value) }
-      when /^(.*)\s*~$/
+      when /^(.*?)\s*~$/
         param!($1, Regexp.new(value, Regexp::IGNORECASE))
-      when /^(.*)\s*([<>]=?)$/
+      when /^(.*?)\s*([<>]=?)$/
         param!($1, Op.new($2, value))
       when method(:association?)
         association!(key, value)
@@ -101,8 +119,8 @@ module CafeCar
       in _, Regexp
         @scope.where!(arel(key).matches_regexp(value.source, !value.casefold?))
       in _, Op
-        @scope.where!(parse_value(key, value).arel(arel(key)))
-      else @scope.where!(key => parse_value(key, value))
+        @scope.where!(parse(key, value).arel(arel(key)))
+      else @scope.where!(key => parse(key, value))
       end
     end
 
@@ -112,9 +130,9 @@ module CafeCar
         when true  then @scope.where_assoc_exists(name)
         when false then @scope.where_assoc_not_exists(name)
         when Integer, Range, /^\d+$/
-          @scope.where_assoc_count(parse_value(name, value), :==, name)
+          @scope.where_assoc_count(parse(name, value), :==, name)
         when Op
-          value = parse_value(name, value)
+          value = parse(name, value)
           @scope.where_assoc_count(value.rhs, value.flop, name)
         else @scope.where_assoc_exists(name) { all.query!(value, ...) }
         end
