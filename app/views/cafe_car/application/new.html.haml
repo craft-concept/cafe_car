@@ -2,9 +2,7 @@
 - actions = link(model).index
 
 = ui.page title:, actions: do |page|
-  = page.left do
-    = render "debug" if debug?
-
   = page.body do
     = ui.card do |card|
       = render "form", card:
+    = render "debug" if debug?

@@ -28,7 +28,6 @@
 
 .Page_Body {
     grid-column: 2;
-    display: grid;
 }
 
 .Page_Right {

@@ -1,5 +1,7 @@
 module CafeCar
   class FormBuilder < ActionView::Helpers::FormBuilder
+    include Resolver
+
     def initialize(...)
       super
       @info   = {}
@@ -17,7 +19,7 @@ module CafeCar
     end
 
     def field(method, **, &)
-      @fields[method] ||= FieldBuilder.new(method:, form: self, template: @template, **, &)
+      @fields[method] ||= const(:FieldBuilder).new(method:, form: self, template: @template, **, &)
     end
 
     def label(method, text = info(method).label, required: info(method).required?, **, &)
@@ -25,7 +27,7 @@ module CafeCar
     end
 
     def info(method)
-      @info[method] ||= FieldInfo.new(method:, object:)
+      @info[method] ||= const(:FieldInfo).new(method:, object:)
     end
 
     def input(method, *args, as: nil, **options)
@@ -43,7 +45,7 @@ module CafeCar
       @template.tag.span(text, **) if text.present?
     end
 
-    def remaining_attributes = policy.editable_attributes - @info.keys
+    def remaining_attributes = policy.editable_attributes - @fields.keys
 
     def remaining_fields(**, &block)
       block  ||= proc { field(_1, **) }

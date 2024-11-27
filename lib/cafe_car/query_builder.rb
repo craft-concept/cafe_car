@@ -2,15 +2,34 @@ module CafeCar
   class QueryBuilder
     require "activerecord_where_assoc"
 
+    Op = Struct.new(:op, :rhs) do
+      def op   = self[:op].to_sym
+      def flop = self[:op].to_s.tr("<>", "><").to_sym
+      def map  = Op.new(op, yield(rhs))
+
+      def arel(node) = node.public_send(arel_op, rhs)
+
+      def arel_op
+        case op
+        when :<  then :lt
+        when :>  then :gt
+        when :>= then :gteq
+        when :<= then :lteq
+        when :== then :eq
+        else op
+        end
+      end
+    end
+
     attr_reader :scope
 
     def initialize(scope)
       @scope = scope
     end
 
-    def unscoped = QueryBuilder.new(@scope.unscoped)
-
-    def arel = @scope.arel_table
+    def unscoped   = QueryBuilder.new(@scope.unscoped)
+    def arel(key)  = @scope.arel_table[chomp(key)]
+    def chomp(key) = key.to_s.sub(/\W+$/, '')
 
     def parse_time(value)
       Chronic.parse(value, guess: false, context: :past)
@@ -20,15 +39,19 @@ module CafeCar
 
     def parse_value(key, value)
       case value
-      when Range
+      in Op(rhs: /^=(.*)$/)
+        parse_value(key, Op.new("#{value.op}=", $1))
+      in Range
         Range.new(parse_value(key, value.begin), parse_value(key, value.end), value.exclude_end?)
-      when Array
+      in Array, Op
         value.map { parse_value(key, _1) }
-      when String
-        case column(key)&.type
+      in String
+        case column(key)&.type || reflection(key)&.macro
         when :datetime then parse_time(value) || value
         when :integer  then value.to_i
         when :float    then value.to_f
+        when :belongs_to, :has_many, :has_one
+          value.to_i
         else value
         end
       else value
@@ -36,27 +59,32 @@ module CafeCar
     end
 
     def update!(&)
-      scope  = @scope.instance_exec(@scope, &)
+      scope  = yield @scope
       @scope = scope if scope
       self
     end
 
     def not!(&)
-      inverted = unscoped.instance_exec(&).scope.invert_where
+      inverted = unscoped.tap { _1.instance_exec(&) }.scope.invert_where
       update! { _1.and(inverted) }
     end
 
     def column(name)       = @scope.columns_hash[name.to_s]
-    def association?(name) = @scope.reflect_on_association(name).present?
+    def reflection(name)   = @scope.reflect_on_association(name)
+    def association?(name) = reflection(name).present?
     def attribute?(name)   = column(name).present?
     def scope?(name)       = name.intern.in? @scope.local_methods
 
+    def arel!(node) = @scope.where!(node)
+
     def param!(key, value)
       case key
-      when /^(.*)!$/
+      when /^(.*)\s*!$/
         not! { param!($1, value) }
-      when /^(.*)~$/
+      when /^(.*)\s*~$/
         param!($1, Regexp.new(value, Regexp::IGNORECASE))
+      when /^(.*)\s*([<>]=?)$/
+        param!($1, Op.new($2, value))
       when method(:association?)
         association!(key, value)
       when method(:attribute?)
@@ -71,18 +99,24 @@ module CafeCar
     def attribute!(key, value)
       case [key, value]
       in _, Regexp
-        @scope.where!(arel[key].matches_regexp(value.source, !value.casefold?))
+        @scope.where!(arel(key).matches_regexp(value.source, !value.casefold?))
+      in _, Op
+        @scope.where!(parse_value(key, value).arel(arel(key)))
       else @scope.where!(key => parse_value(key, value))
       end
-      self
     end
 
     def association!(name, value, ...)
       update! do
         case value
-        when true then  where_assoc_exists(name)
-        when false then where_assoc_not_exists(name)
-        else            where_assoc_exists(name) { query(value, ...) }
+        when true  then @scope.where_assoc_exists(name)
+        when false then @scope.where_assoc_not_exists(name)
+        when Integer, Range, /^\d+$/
+          @scope.where_assoc_count(parse_value(name, value), :==, name)
+        when Op
+          value = parse_value(name, value)
+          @scope.where_assoc_count(value.rhs, value.flop, name)
+        else @scope.where_assoc_exists(name) { all.query!(value, ...) }
         end
       end
     end
@@ -91,15 +125,28 @@ module CafeCar
       arity = (@scope.scopes[name] || @scope.method(name)).arity
       value = nil if arity == 0 and value == true
 
-      update! { public_send(name, *value) }
+      update! { _1.public_send(name, *value) }
+    end
+
+    def search!(term)
+      @scope.search!(term) if @scope.respond_to?(:search!)
+      @scope.query!("body~": term) if @scope < ::ActionText::RichText
+      update! { _1.search(term) }
     end
 
     def query!(params = nil)
-      params.each { param!(_1, _2) } if params
+      case params
+      when Hash  then params.each { param!(_1, _2) }
+      when Array then params.each { query! _1 }
+      when String then search!(params)
+      # when Arel::Nodes::Node then arel!(params)
+      when nil
+      else raise ArgumentError, "cannot query on #{params}"
+      end
       self
     end
 
-    def query(...) = update!(&:all).query!(...)
+    def query(...) = clone.update!(&:all).query!(...)
   end
 end
 

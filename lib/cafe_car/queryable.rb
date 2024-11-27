@@ -11,7 +11,7 @@ module CafeCar::Queryable
     def query!(params) = query_builder.query!(params).scope
 
     def query_builder
-      CafeCar::QueryBuilder.new(self)
+      CafeCar::QueryBuilder.new(all)
     end
 
     def scopes

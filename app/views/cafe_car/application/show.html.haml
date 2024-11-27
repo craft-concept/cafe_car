@@ -13,7 +13,6 @@
     = ui.card title: "Actions" do
       = render("actions")
 
-    = render "debug" if debug?
     = yield :left
 
   = page.body do
@@ -28,4 +27,6 @@
     - else
       = body
 
-  = page.right { yield :right }
+  = page.right
+    = yield :right
+    = render "debug" if debug?

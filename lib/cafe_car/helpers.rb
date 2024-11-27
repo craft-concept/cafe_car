@@ -54,7 +54,7 @@ module CafeCar
 
     def filter_form_for(objects, **options, &block)
       form_for CafeCar[:FilterBuilder].new(objects, parsed_params),
-               builder: CafeCar[:FilterFormBuilder],
+               builder: CafeCar["Filter::FormBuilder"],
                method: :get,
                url: "",
                as: "",

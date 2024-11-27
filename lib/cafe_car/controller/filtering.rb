@@ -2,21 +2,16 @@ module CafeCar::Controller::Filtering
   extend ActiveSupport::Concern
 
   included do
-    helper_method :dot_params, :parsed_params
+    helper_method :parsed_params
   end
 
   private
 
   def filtered(scope)
-    scope.query(dot_params[""])
+    scope.query(parsed_params[""])
   end
 
   def parsed_params
-    @parsed_params ||= params.reject {|k, *| k.include?('.') }.
-      merge(dot_params)
-  end
-
-  def dot_params
-    @dot_params ||= CafeCar::ParamParser.new(request.params).parsed
+    @parsed_params ||= CafeCar::ParamParser.new(request.params).parsed
   end
 end

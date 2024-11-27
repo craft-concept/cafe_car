@@ -3,21 +3,18 @@ class CafeCar::ParamParser
     @params = params
   end
 
-  def params = parsed
-
   def parsed
-    @parsed ||= parse(@params)
+    @parsed ||= @params.compact_blank
+                       .then { params _1 }
   end
 
-  def parse(params)
-    params.then { _1.try(:to_unsafe_h) || _1 }
-          .select {|k, *| k.include?('.') }
-          .map {|k, v| k.split('.').reverse.reduce(value(v)) { {_2 => _1} } }
-          .reduce({}) {|prms, p| prms.deep_merge(p, &method(:merge)) }
+  def params(params)
+    params.map {|k, v| k.split('.').reverse.reduce(value(v)) { {_2 => _1} } }
+          .reduce({}) { _1.deep_merge(_2, &method(:merge)) }
           .with_indifferent_access
   end
 
-  def merge(_key, a, b)
+  def merge(_, a, b)
     if a.is_a?(Array) || b.is_a?(Array)
       [*Array.wrap(a), *Array.wrap(b)]
     else
@@ -28,19 +25,16 @@ class CafeCar::ParamParser
   def value(v)
     case v
     when Array      then v.map { value(_1) }
+    when Hash       then params(v).tap { _1.merge!(_1.delete("")) if _1[""] }
     when '""', "''" then ''
     when 'nil', ''  then nil
-    when /[{}\[\]]/ then JSON.parse(v)
+    when /[{}\[\]]/ then value(JSON.parse(v))
     when /,/        then value(v.split(','))
     when /^(.*?)\.\.(\.?)(.*)$/
-      Range.new(*[$1, $3].map(&:presence).map { value(_1) }, $2.present?)
+      Range.new(value($1), value($3), $2.present?)
     when /^\$(\w+)\.(\w+)$/
+      # TODO: make less scary
       $1.constantize.arel_table[$2]
-    when Hash
-      v.reject {|k, *| k.include?('.') }
-       .transform_values { value(_1) }
-       .merge(parse(v))
-       .tap {|h| h.merge!(h.delete('')) if h.key?('') }
     else v
     end
   end

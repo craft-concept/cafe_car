@@ -5,6 +5,7 @@
 = ui.page :wide, title:, actions: do |page|
   = page.left do
     = render "filters"
-    = render "debug" if debug?
 
-  = page.body { body }
+  = page.body do
+    = body
+    = render "debug" if debug?

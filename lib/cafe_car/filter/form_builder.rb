@@ -1,20 +1,21 @@
-module CafeCar
-  class FilterFormBuilder < CafeCar[:FormBuilder]
-    def self.fix_name(method)
+module CafeCar::Filter
+  class FormBuilder < CafeCar[:FormBuilder]
+    def self.dotted_name(method)
       define_method method do |key, *args, **opts, &block|
         super(key, *args, name: field_name(key), **opts, &block)
       end
     end
 
-    fix_name :text_field
+    instance_methods.grep(/_field$/).each do |method|
+      dotted_name method
+    end
+
+    def clean(method) = method.to_s.sub(/[~!><]+$/, '')
+    def info(method)  = super(clean(method))
 
     def field_name(*methods, multiple: false, index: @options[:index])
       # TODO: handle multiple/index
       ["", *methods].join(".")
-    end
-
-    def info(method)
-      super(method.to_s.sub(/[~!><]$/, ''))
     end
   end
 end
