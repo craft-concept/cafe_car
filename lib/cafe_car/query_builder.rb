@@ -63,6 +63,8 @@ module CafeCar
                   value.exclude_end?)
       in Array | Op
         value.map { parse_value(key, _1) }
+      in "true" then true
+      in "false" then false
       in String
         case column(key)&.type || reflection(key)&.macro
         when :datetime then parse_time(value) || value
@@ -140,6 +142,7 @@ module CafeCar
     end
 
     def scope!(name, value)
+      value = parse_value(name, value)
       arity = (@scope.scopes[name] || @scope.method(name)).arity
       value = nil if arity == 0 and value == true
 

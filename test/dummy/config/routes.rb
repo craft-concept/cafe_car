@@ -1,9 +1,13 @@
 Rails.application.routes.draw do
-  mount CafeCar::Engine => "/admin"
   get "up" => "rails/health#show", as: :rails_health_check
 
   resources :articles
-  resources :users
+
+  namespace :admin do
+    mount CafeCar::Engine => "/"
+    resources :articles
+    resources :users
+  end
 
   get "*path", to: "pages#show", as: :page
   root "pages#show"

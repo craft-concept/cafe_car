@@ -1,4 +1,4 @@
-= form_for object do |f|
+= form_for [*namespace, object] do |f|
   = card.section do
     = render "fields", f:
 

@@ -2,7 +2,7 @@ module CafeCar
   class Presenter
     attr_reader :object, :options
 
-    delegate *%w[l t capture concat link_to render safe_join tag ui], to: :@template
+    delegate *%w[l t capture concat link_to partial? render safe_join tag ui], to: :@template
 
     def self.present(template, object, **options)
       object = object.object if object.is_a?(Presenter)
@@ -48,6 +48,7 @@ module CafeCar
     end
 
     def attribute(method, **options, &block)
+      # TODO: rescue from missing attribute errors and suggest checking the policy
       @shown_attributes[method] = true
       content                   = show(method, **options, &block).to_s
       return "" if content.blank?

@@ -17,7 +17,13 @@ module CafeCar
       end
 
       def to_model = object
-      def to_html  = link_to title, [self] rescue title
+      def to_html
+        if partial? object.to_partial_path
+          render object
+        else
+          link_to title, [self] rescue title
+        end
+      end
     end
   end
 end

@@ -126,7 +126,7 @@ module CafeCar
     def model_name = model.model_name
 
     def model
-      @model ||= self.class.name.gsub(/.*::|Controller$/, '').singularize.constantize
+      @model ||= self.class.name.gsub(/.*::|Controller$/, '').classify.then { self.class.module_parent.const_get _1 }
     end
 
     def created_redirect   = redirect_back fallback_location: [model_name.plural.to_sym]

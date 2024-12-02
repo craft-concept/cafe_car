@@ -4,9 +4,10 @@ module CafeCar
 
     delegate :link_to, :link_to_unless, :current_page?, :href_for, to: :@template
 
-    def initialize(template, object)
-      @template = template
-      @object   = object
+    def initialize(template, object, namespace: template.namespace)
+      @template  = template
+      @object    = object
+      @namespace = namespace
     end
 
     def model         = @object.is_a?(Class) ? @object : @object.class
@@ -28,8 +29,8 @@ module CafeCar
 
     def turbo!(opts)
       opts.replace({
-        data: {turbo_stream: true,
-               turbo_method: opts.delete(:method),
+        data: {turbo_stream:  true,
+               turbo_method:  opts.delete(:method),
                turbo_confirm: opts.delete(:confirm)
         }
       }.deep_merge(opts))
@@ -39,7 +40,7 @@ module CafeCar
       disabled ||= cant?(action)
       return "" if disabled and hide
 
-      href    = href_for(*target, action:)
+      href    = href_for(*target, action:, namespace: @namespace)
       current = current_page?(href)
 
       link_to_unless(disabled || current, label, href, **turbo!(opts)) do

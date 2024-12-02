@@ -11,7 +11,7 @@ module CafeCar::Table
     def value(method) = present(@object.public_send(method))
 
     def cell(method, *flags, href: nil, **options, &block)
-      href = @template.url_for(@object) if href == true
+      href = @template.href_for(@object) if href == true
       href = href.to_proc.(@object) if href.respond_to?(:to_proc)
 
       content = block ? capture(value(method), &block) : value(method)

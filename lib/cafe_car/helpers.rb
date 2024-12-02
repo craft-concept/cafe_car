@@ -41,10 +41,10 @@ module CafeCar
 
     def current_href?(...) = current_page? href_for(...)
 
-    def href_for(*parts, **params)
+    def href_for(*parts, namespace: self.namespace, **params)
       params.merge! parts.extract_options!
       params.delete(:action) if %i[show destroy index].include? params[:action]
-      url_for([*parts, params])
+      url_for([*namespace, *parts, params])
     end
 
     def link(object)
@@ -77,6 +77,10 @@ module CafeCar
     def get_partial(path)
       prefixes = path.include?(?/) ? [] : lookup_context.prefixes
       lookup_context.find(path, prefixes, true)
+    end
+
+    def namespace
+      @namespace ||= controller_path.split("/").tap(&:pop).map(&:to_sym)
     end
   end
 end
