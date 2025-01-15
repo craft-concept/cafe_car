@@ -1,0 +1,27 @@
+.Navigation {
+    position: sticky;
+    top: 0;
+    display: grid;
+    align-content: start;
+    border-right: 1px solid var(--border);
+    padding-top: var(--gap);
+}
+
+.Navigation_Link {
+    padding: var(--gap) calc(var(--gap) * 2);
+    position: relative;
+
+    &:is(a):hover::before {
+        content: '';
+        display: block;
+        position: absolute;
+        inset: 5px 10px;
+        border-radius: var(--radius);
+        background: var(--hover);
+    }
+}
+
+.Navigation-current {
+    border-right: 1px solid var(--link);
+    margin-right: -1px;
+}

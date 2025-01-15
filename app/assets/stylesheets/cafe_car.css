@@ -2,10 +2,12 @@
 
 @import url("trix.css");
 @import url("cafe_car/trix.css");
-@import url("pagination.css");
-@import url("ui/components.css");
-@import url("utility.css");
+
 @import url("cafe_car/themes/cool.css");
+@import url("cafe_car/pagination.css");
+@import url("cafe_car/utility.css");
+@import url("ui/components.css");
+@import url("cafe_car/layout.css");
 
 :root {
     --half-gap: calc(var(--gap) / 2);

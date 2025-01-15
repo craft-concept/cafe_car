@@ -21,6 +21,10 @@ addEventListener("keydown", event => {
     }
 })
 
-document.addEventListener("animationend", event => {
+addEventListener("animationend", event => {
+    if (event.target.matches(".remove")) event.target.remove()
+})
+
+addEventListener("transitionend", event => {
     if (event.target.matches(".remove")) event.target.remove()
 })

@@ -1,12 +1,21 @@
 .Page-wide {
-    /*--page-width: 80vw;*/
+    --page-width: 80vw;
+}
+
+.Page-thin {
+    --page-width: 720px;
 }
 
 .Page {
     display: grid;
-    grid: auto-flow / var(--aside-width) minmax(auto, var(--page-width)) var(--aside-width);
+    grid: auto-flow / var(--aside-width) minmax(auto, var(--page-width));
+    justify-content: center;
     gap: var(--gap);
     margin: var(--gap);
+}
+
+.Page:has(.Page_right, .Page-right) {
+    grid: auto-flow / var(--aside-width) minmax(auto, var(--page-width)) var(--aside-width);
 }
 
 .Page_Head {
@@ -14,7 +23,6 @@
     display: flex;
     align-items: center;
     gap: var(--gap);
-    padding: 0 var(--gap);
 }
 
 .Page_Title {

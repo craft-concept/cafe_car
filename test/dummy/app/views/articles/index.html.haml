@@ -1,0 +1,13 @@
+= ui.page :thin do |page|
+  = page.body do
+    - @articles.includes(:author).each do |article|
+      %article
+        %h2= link(article).show(article.title)
+        %h3= article.author.username
+        %p=  article.summary
+
+    %section
+      = paginate @articles
+      %p.center= page_entries_info objects
+
+    = render "debug" if debug?

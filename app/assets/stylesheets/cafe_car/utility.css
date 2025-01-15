@@ -7,7 +7,9 @@
 }
 
 .remove {
-    animation: fade-out 100ms;
+    /*animation: fade-out 100ms;*/
+    opacity: 0;
+    transition: opacity 0.1s;
     pointer-events: none;
 }
 

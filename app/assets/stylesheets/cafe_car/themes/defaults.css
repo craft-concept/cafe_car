@@ -16,6 +16,8 @@
     --backdrop: rgb(0 0 0 / .5);
 
     --gap: 1rem;
+    --half-gap: calc(var(--gap) / 2);
+    --gap2: calc(var(--gap) * 2);
     --radius: 12px;
 
     --max-width: 720px;

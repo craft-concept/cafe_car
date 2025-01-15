@@ -2,7 +2,7 @@ module CafeCar
   class Presenter
     attr_reader :object, :options
 
-    delegate *%w[l t capture concat link_to partial? render safe_join tag ui], to: :@template
+    delegate *%w[l t capture concat link_to partial? href_for render safe_join tag ui], to: :@template
 
     def self.present(template, object, **options)
       object = object.object if object.is_a?(Presenter)

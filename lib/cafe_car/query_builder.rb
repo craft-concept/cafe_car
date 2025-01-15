@@ -40,6 +40,12 @@ module CafeCar
       nil
     end
 
+    def parse_range(key, value)
+      Range.new(parse_value(key, value.begin).then { _1.try(:begin) or _1 },
+                parse_value(key, value.end).then { value.exclude_end? ? _1.try(:begin) : _1.try(:end) or _1 },
+                value.exclude_end?)
+    end
+
     def parse(key, value)
       new_value = parse_value(key, value)
       if new_value != value
@@ -58,9 +64,7 @@ module CafeCar
       in Op(op: (:> | :<=), rhs: Range)
         value.map(&:end)
       in Range
-        Range.new(parse_value(key, value.begin),
-                  parse_value(key, value.end),
-                  value.exclude_end?)
+        parse_range(key, value)
       in Array | Op
         value.map { parse_value(key, _1) }
       in "true" then true

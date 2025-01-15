@@ -2,7 +2,7 @@
   title ||= nil
   actions ||= nil
 
-= page.wrapper do
+= page.wrapper *flags do
   = page.head do
     = page.title(tag: :h1) { title }
     = page.actions { actions }

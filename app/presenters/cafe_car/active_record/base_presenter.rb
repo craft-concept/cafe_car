@@ -21,7 +21,7 @@ module CafeCar
         if partial? object.to_partial_path
           render object
         else
-          link_to title, [self] rescue title
+          link_to title, href_for(self) rescue title
         end
       end
     end

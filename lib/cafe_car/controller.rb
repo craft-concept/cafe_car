@@ -19,7 +19,7 @@ module CafeCar
 
         rescue_from ::ActiveRecord::RecordInvalid, with: :render_invalid_record
 
-        prepend_cafe_car_views
+        append_cafe_car_views
 
         before_action :set_current_attributes
 
@@ -30,9 +30,9 @@ module CafeCar
         before_action :authorize!
       end
 
-      def prepend_cafe_car_views
-        prepend_view_path CafeCar::Engine.root.join('app/views/cafe_car')
-        prepend_view_path 'app/views/cafe_car'
+      def append_cafe_car_views
+        append_view_path CafeCar::Engine.root.join('app/views/cafe_car')
+        append_view_path 'app/views/cafe_car'
       end
     end
 
