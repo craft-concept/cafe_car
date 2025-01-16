@@ -4,10 +4,10 @@ class UserPolicy < ApplicationPolicy
   def create? = true
   def update? = object == user
 
-  def title_attribute = :username
+  def title_attribute = :name
 
   def permitted_attributes
-    [:username,
+    [:name,
      *(%i[password password_confirmation] if object.new_record? or object == user)
     ]
   end

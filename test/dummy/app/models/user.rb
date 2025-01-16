@@ -2,9 +2,9 @@ class User < ApplicationRecord
   has_many :articles, inverse_of: :author
   has_secure_password
 
-  validates :username, presence: true
+  validates :name, presence: true
 
   def self.search(query)
-    query("username~": query)
+    query("name~": query)
   end
 end

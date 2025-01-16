@@ -177,10 +177,10 @@ end
 
 # Article.query do
 #   published
-#   user { username(/bob/) }
-#   user.username(/bob/)
+#   user { name(/bob/i) }
+#   user.name(/bob/i)
 # end
 #
-# Article.query(published: true, user: {username: /bob/})
+# Article.query(published: true, user: {name: /bob/i})
 #
-# Article.published(true).where_assoc_exists(:user) { where(username: /bob/) }
+# Article.published(true).where_assoc_exists(:user) { where(name: /bob/i) }

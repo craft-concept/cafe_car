@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :user do
-    username { Faker::Religion::Bible.unique.character }
+    name     { Faker::Religion::Bible.unique.character }
     password { @pw = Faker::Internet.password }
     password_confirmation { @pw }
   end

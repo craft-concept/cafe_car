@@ -14,8 +14,8 @@ module CafeCar
 
     test "query associations" do
       assert_includes Article.query(author: true).to_sql, %(EXISTS)
-      assert_includes Article.query(author: {username: "bob"}).to_sql, %(EXISTS)
-      assert_includes Article.query(author: {username: /bob/}).to_sql, %(EXISTS)
+      assert_includes Article.query(author: {name: "bob"}).to_sql, %(EXISTS)
+      assert_includes Article.query(author: {name: /bob/i}).to_sql, %(EXISTS)
     end
 
     test "query scopes" do
