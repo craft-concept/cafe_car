@@ -1,0 +1,11 @@
+Description:
+    Generates a new controller and routes for use with CafeCar.
+
+    Pass --skip-routes to generate only the controller.
+
+Example:
+    `bin/rails generate cafe_car:controller admin/invoices`
+
+        This creates:
+            Controller: app/controllers/admin/invoices_controller.rb
+            Routes:     resources :invoices, namespace: :admin

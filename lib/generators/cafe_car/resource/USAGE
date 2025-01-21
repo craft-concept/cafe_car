@@ -1,0 +1,12 @@
+Description:
+    Generates everything need for a new resource with
+    CafeCar: model, routes, controller, policy, and a migration.
+
+Example:
+    `bin/rails generate cafe_car:resource admin/invoices`
+
+        This creates:
+            Model:      app/models/invoice.rb
+            Routes:     resources :invoices, namespace: :admin
+            Controller: app/controllers/admin/invoices_controller.rb
+            Policy:     app/policies/invoice_policy.rb

@@ -1,0 +1,8 @@
+Description:
+    Generates a new Pundit policy for use with CafeCar.
+
+Example:
+    `bin/rails generate cafe_car:policy invoice`
+
+        This creates:
+            Policy: app/policies/invoice_policy.rb
