@@ -4,7 +4,7 @@ class User < ApplicationRecord
 
   validates :name, presence: true
 
-  def self.search(query)
-    query("name~": query)
-  end
+  scope :search, -> { query("name~": _1) }
+
+  def super? = true
 end

@@ -3,17 +3,19 @@ module CafeCar
     attr_reader :method, :object
 
     def initialize(object:, method:)
-      @method = method
+      @method = method.to_sym
       @object = object
     end
 
     def info(method) = self.class.new(object:, method:)
 
     def id?         = method =~ /_ids?$/
+    def constant?   = method.in? %i[id created_at updated_at]
     def value       = @object.public_send(@method)
     def model       = @object.try(:klass) || (@object.is_a?(Class) ? @object : @object.class)
     def model_name  = @object.model_name
     def associated? = reflection.present?
+    def password?   = type == :password
     def rich_text?  = reflection&.name =~ /^rich_text_(\w+)$/
     def collection  = reflection.klass.all
     def reflection  = model.reflect_on_association(@method) || reflections_by_attribute[@method]

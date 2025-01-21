@@ -1,7 +1,7 @@
 class ArticlePolicy < ApplicationPolicy
   def index?   = true
-  def create?  = true
   def show?    = object.published? || edit?
+  def create?  = true
   def update?  = true # object.author_id == user.id
   def destroy? = update?
 
