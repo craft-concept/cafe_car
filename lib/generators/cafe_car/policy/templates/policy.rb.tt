@@ -7,7 +7,7 @@ class <%= class_name %>Policy < <%= base_policy_name %>
   def destroy? = update?
 
 
-  def title_attribute = <%= title_attribute %>
+  # def title_attribute = <%= title_attribute %>
 
   def permitted_attributes
     # [<%= permitted_attributes %>]
