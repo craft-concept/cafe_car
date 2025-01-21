@@ -1,0 +1,5 @@
+<% module_namespacing do -%>
+class <%= class_name %>Controller < <%= base_controller_name %>
+  recline_in_the_cafe_car
+end
+<% end -%>

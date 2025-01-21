@@ -1,6 +1,6 @@
-require "rails/generators/resource_helpers"
-
 class CafeCar::PolicyGenerator < Rails::Generators::NamedBase
+  include CafeCar[:Generators]
+
   source_root File.expand_path("templates", __dir__)
 
   check_class_collision suffix: "Policy"

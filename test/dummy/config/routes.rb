@@ -4,9 +4,10 @@ Rails.application.routes.draw do
   resources :articles
 
   namespace :admin do
-    mount CafeCar::Engine => "/"
     resources :articles
     resources :users
+
+    mount CafeCar::Engine => "/"
   end
 
   get "*path", to: "pages#show", as: :page
