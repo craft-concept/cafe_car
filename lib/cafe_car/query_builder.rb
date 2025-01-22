@@ -116,7 +116,7 @@ module CafeCar
       when method(:scope?)
         scope!(key, value)
       else
-        raise "what is this param? #{key.inspect}"
+        raise "can't find #{key.inspect} on #{@scope.model_name}"
       end
     end
 
