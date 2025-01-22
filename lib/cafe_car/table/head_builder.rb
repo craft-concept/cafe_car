@@ -1,12 +1,16 @@
 module CafeCar::Table
   class HeadBuilder < ObjectsBuilder
-    def cell(method, **_, &_)
-      label = LabelBuilder.new(@template, objects: @objects, method:)
-      @objects.includes!(method) if label.association?
-      ui.cell label
+    def cell(method, *flags, label: label(method), **, &)
+      ui.cell(label, *flags)
     end
 
-    def controls(...) = ui.cell
-    def to_html       = ui.head(:sticky, capture(self, &@block))
+    def label(method)
+      l = LabelBuilder.new(@template, objects: @objects, method:)
+      @objects.includes!(method) if l.association?
+      l
+    end
+
+    def controls(*, **) = ui.cell(:controls, :controls, *, **)
+    def to_html         = ui.head(:sticky, capture(self, &@block))
   end
 end

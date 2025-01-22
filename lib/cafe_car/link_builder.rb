@@ -53,5 +53,13 @@ module CafeCar
     def destroy(*, **) = link(:destroy, @object, *, method: :delete, confirm: confirm(:destroy), **)
     def index(*, **)   = link(:index, model, *, hide: true, **)
     def new(*, **)     = link(:new, model, *, hide: true, **)
+
+    def code(path = nil)
+      return unless Rails.env.development?
+      return unless @template.request.local?
+      path ||= caller_locations(1, 1).first.path
+
+      link_to "✎", "rubymine://open?file=#{path}" # &line=%{line}
+    end
   end
 end

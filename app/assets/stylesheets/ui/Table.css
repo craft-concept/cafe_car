@@ -92,6 +92,10 @@
     position: relative;
 }
 
+.Table-controls {
+    text-align: right;
+}
+
 @media (prefers-color-scheme: dark) {
     .Table {
         border: 1px solid var(--border);
