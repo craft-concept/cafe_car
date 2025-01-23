@@ -26,4 +26,12 @@ FactoryBot.define do
       published_at { Faker::Time.between(from: Time.current, to: 1.month.from_now) }
     end
   end
+
+  factory :client do
+    name { Faker::Company.unique.name }
+  end
+
+  factory :invoice do
+    line_items { build_list(:line_item, (1..10).to_a.sample) }
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_08_153309) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_16_163213) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -59,6 +59,32 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_08_153309) do
     t.index ["author_id"], name: "index_articles_on_author_id"
   end
 
+  create_table "clients", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.integer "creator_id"
+    t.integer "client_id"
+    t.decimal "total", precision: 12, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_invoices_on_client_id"
+    t.index ["creator_id"], name: "index_invoices_on_creator_id"
+  end
+
+  create_table "line_items", force: :cascade do |t|
+    t.integer "invoice_id"
+    t.decimal "amount", precision: 12, scale: 2
+    t.integer "quantity"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_line_items_on_invoice_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.string "password_digest"
@@ -69,4 +95,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_08_153309) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "articles", "users", column: "author_id"
+  add_foreign_key "invoices", "clients"
+  add_foreign_key "invoices", "users", column: "creator_id"
+  add_foreign_key "line_items", "invoices"
 end
