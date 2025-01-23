@@ -15,10 +15,13 @@ module CafeCar
     def model       = @object.try(:klass) || (@object.is_a?(Class) ? @object : @object.class)
     def model_name  = @object.model_name
     def associated? = reflection.present?
+    def digest?     = method =~ /_digest$/
     def password?   = type == :password
     def rich_text?  = reflection&.name =~ /^rich_text_(\w+)$/
     def collection  = reflection.klass.all
     def reflection  = model.reflect_on_association(@method) || reflections_by_attribute[@method]
+
+    def displayable = reflection&.name&.then { info(_1) } || self
 
     def reflection_type = reflection&.macro
     def attribute_type  = model.type_for_attribute(@method)&.type

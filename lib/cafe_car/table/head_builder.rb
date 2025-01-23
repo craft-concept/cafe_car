@@ -1,6 +1,7 @@
 module CafeCar::Table
   class HeadBuilder < ObjectsBuilder
     def cell(method, *flags, label: label(method), **, &)
+      super
       ui.cell(label, *flags)
     end
 
@@ -11,6 +12,7 @@ module CafeCar::Table
     end
 
     def controls(*, **) = ui.cell(:controls, :controls, *, **)
-    def to_html         = ui.head(:sticky, capture(self, &@block))
+
+    def to_html = ui.head(:sticky, capture(self, &@block))
   end
 end

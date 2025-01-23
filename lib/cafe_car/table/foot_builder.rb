@@ -6,7 +6,7 @@ module CafeCar::Table
     end
 
     def cell!           = (@count += 1; nil)
-    def cell(...)       = cell!
+    def cell(...)       = (super; cell!)
     def controls(...)   = cell!
 
     def to_html = ""

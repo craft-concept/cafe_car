@@ -5,6 +5,8 @@ module CafeCar::Policy
     @model ||= object.try(:klass) or object.is_a?(Class) ? object : object.class
   end
 
+  def model_info = CafeCar[:ModelInfo].find(model)
+
   def info(method)
     @info         ||= {}
     @info[method] ||= CafeCar[:FieldInfo].new(object:, method:)
@@ -12,6 +14,10 @@ module CafeCar::Policy
 
   def title_attribute
     @title_attribute ||= displayable_attributes.first
+  end
+
+  def listable_attributes
+    model_info.listable_fields.map(&:method)
   end
 
   def displayable_attributes
