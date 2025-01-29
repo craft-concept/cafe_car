@@ -1,16 +1,13 @@
 module CafeCar
   class EnumerablePresenter < self[:Presenter]
+    def count            = options[:count] || object.count
+    def with_count(list) = t(:list_html, list:, count:)
+
     def to_html
-      out = safe_join(object.map { present(_1) }, ', ')
-      return options[:empty] || '(none)' if out.blank?
-      out
+      object.map  { present(_1) }
+            .then { options[:count] == object.count ? _1 : [_1, "..."] }
+            .then { safe_join(_1, ", ") }
+            .then { with_count _1 }
     end
   end
 end
-#
-# return options[:empty] || '(none)' if object.empty?
-#
-# safe_join [
-#             *([object.size, ' total: '] if options[:count]),
-#             safe_join(object.map {|v| show(v, **options) }, ', ')
-#           ].compact

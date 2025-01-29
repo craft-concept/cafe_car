@@ -2,6 +2,11 @@ en:
   "true":  "Yes"
   "false": "No"
 
+  list_html:
+    zero: "(none)"
+    one: "%{list}"
+    other: "%{count} total: %{list}"
+
   index:   List
   show:    View
   destroy: Delete

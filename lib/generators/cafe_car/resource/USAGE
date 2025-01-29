@@ -7,6 +7,7 @@ Example:
 
         This creates:
             Model:      app/models/invoice.rb
+            Migration:  db/migrations/xxx_create_invoices.rb
             Routes:     resources :invoices, namespace: :admin
             Controller: app/controllers/admin/invoices_controller.rb
             Policy:     app/policies/invoice_policy.rb
