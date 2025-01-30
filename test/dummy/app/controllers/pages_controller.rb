@@ -5,5 +5,7 @@ class PagesController < ApplicationController
     render "/pages/#{path}"
   end
 
+  private
+
   def path = params[:path].presence || "home"
 end
