@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_16_163213) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_23_195619) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -85,6 +85,17 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_16_163213) do
     t.index ["invoice_id"], name: "index_line_items_on_invoice_id"
   end
 
+  create_table "notes", force: :cascade do |t|
+    t.string "notable_type", null: false
+    t.integer "notable_id", null: false
+    t.integer "author_id", null: false
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_notes_on_author_id"
+    t.index ["notable_type", "notable_id"], name: "index_notes_on_notable"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.string "password_digest"
@@ -98,4 +109,5 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_16_163213) do
   add_foreign_key "invoices", "clients"
   add_foreign_key "invoices", "users", column: "creator_id"
   add_foreign_key "line_items", "invoices"
+  add_foreign_key "notes", "users", column: "author_id"
 end

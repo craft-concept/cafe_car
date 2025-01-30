@@ -1,0 +1,9 @@
+- return unless object.respond_to? :notes
+
+- ui(object.notes).each do |note|
+  = card.section :block do
+    %small.shy.right= note.controls
+    = note.show :body
+    — #{note.show :author}
+
+= render "form", object: object.notes.new, card:

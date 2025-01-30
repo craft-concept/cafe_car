@@ -3,6 +3,8 @@ class CafeCar::PolicyGenerator < Rails::Generators::NamedBase
 
   source_root File.expand_path("templates", __dir__)
 
+  argument :permitted, type: :array, default: [], banner: "field [...]"
+
   check_class_collision suffix: "Policy"
 
   def create_policy
@@ -16,11 +18,14 @@ class CafeCar::PolicyGenerator < Rails::Generators::NamedBase
   def model_class = class_name.classify.safe_constantize
 
   def model  = @model ||= CafeCar[:ModelInfo].new(model_class)
-  def fields = model.editable_fields
+
+  def attribute_names
+    @attribute_names ||= permitted.presence || model.editable_fields.map(&:method)
+  end
 
   def title_attribute
     return ":could_not_find_model" if model_class.nil?
-    fields.first.try(&:method).then(&:inspect)
+    attribute_names.first.then { ":#{_1}" }
   end
 
   def permitted_attributes
@@ -28,7 +33,7 @@ class CafeCar::PolicyGenerator < Rails::Generators::NamedBase
 
     # TODO: replace *_digest with * and *_confirmation
     # TODO: handle attachments
-    params  = fields.map { ":#{_1.method}" }
+    params  = attribute_names.map { ":#{_1}" }
     params.join(", ")
   end
 end

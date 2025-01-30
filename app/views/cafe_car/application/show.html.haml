@@ -1,17 +1,18 @@
 - title   = title(object)
 - actions = ui(object).controls(index: true)
+- summary = ui(object).attributes :updated_at, :created_at, try: true
 - body    = render("show")
 
 = ui.page :full, title:, actions: do |page|
   = page.left do
-    - title = "#{model_name.singular.titleize} ##{object.id}"
+    = ui.card :sticky do
+      = summary
 
-    = ui.card :sticky, title: do |card|
-      = card.section do
-        =  ui(object).attributes :updated_at, :created_at, try: true
+    = ui.card title: "Actions" do |card|
+      = render("actions", card:)
 
-    = ui.card title: "Actions" do
-      = render("actions")
+    = ui.card title: "Notes" do |card|
+      = render("notes", card:)
 
     = yield :left
 

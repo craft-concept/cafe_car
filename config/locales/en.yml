@@ -29,6 +29,7 @@ en:
 
   attributes:
     to_s:         Item
+    id:           ID
     created_at:   Created
     updated_at:   Updated
     deleted_at:   Deleted

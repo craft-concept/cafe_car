@@ -31,13 +31,19 @@
     border-top: 1px solid var(--border);
 }
 
-.Card:not(:has(.Card_Section, .Card_Head, .Card_Foot)) {
+.Card:not(:has(.Card_Head, .Card_Foot, .Card_Section)) {
     padding: var(--gap);
+    display: grid;
+    gap: var(--gap);
 }
 
 .Card-sticky {
     position: sticky;
     top: var(--gap);
+}
+
+.Card-block {
+    display: block;
 }
 
 .Card + .Card {

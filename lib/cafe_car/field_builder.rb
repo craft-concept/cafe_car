@@ -30,6 +30,7 @@ module CafeCar
     def add_class(*args, opts) = {class: @template.ui_class([:field, *args], *opts.delete(:class)), **opts}
 
     def send_to_form_with_text(method, text = @options.delete(method), **, &)
+      return if text == false
       send_to_form(method, text, **, &)
     end
 

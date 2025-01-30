@@ -2,7 +2,7 @@ module CafeCar
   class Presenter
     attr_reader :object, :options
 
-    delegate *%w[l t capture concat link_to partial? href_for render safe_join tag ui], to: :@template
+    delegate *%w[l t capture concat link link_to partial? href_for render safe_join tag ui], to: :@template
 
     def self.present(template, object, **options)
       object = object.object if object.is_a?(Presenter)
@@ -24,8 +24,9 @@ module CafeCar
       @shown_attributes = {}
     end
 
-    def model  = @object.class
-    def policy = @policy ||= @template.policy(object)
+    def to_model = @object
+    def model    = @object.class
+    def policy   = @policy ||= @template.policy(object)
 
     def to_s         = to_html.to_s
     def to_html      = raise NoMethodError.new("Must implement to_html on this Presenter")
@@ -49,7 +50,6 @@ module CafeCar
 
     def attribute(method, **options, &block)
       # TODO: rescue from missing attribute errors and suggest checking the policy
-      @shown_attributes[method] = true
       content                   = show(method, **options, &block).to_s
       return "" if content.blank?
 
@@ -57,6 +57,11 @@ module CafeCar
         concat field.label(safe_join([human(method), *info_circle(method)], " "), tag: :strong)
         concat field.content(content)
       end
+    end
+
+    def remaining_attributes(**options, &block)
+      attrs = policy.displayable_attributes - @shown_attributes.keys
+      attributes(attrs, **options, &block)
     end
 
     def info_circle(method, *args, **opts, &block)
@@ -69,13 +74,16 @@ module CafeCar
       render("controls", object:, options:, &block)
     end
 
+    def links = link(object)
+
     def value(method, ...)
       value = object.public_send(method, ...)
       model.inspection_filter.filter_param(method, value)
     end
 
     def show(method, **options, &block)
-      p     = present(value(method, **@options), **options)
+      @shown_attributes[method] = true
+      p                         = present(value(method, **@options), **options)
       block ? capture(p, method, options, &block) : p.to_s
     end
   end

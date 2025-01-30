@@ -1,0 +1,12 @@
+Description:
+    Generates a Note resource that enables internal notes on any model with
+    `include Notable`. Permissions can be customized via the generated policy.
+
+Example:
+    bin/rails generate cafe_car:notes
+
+    This will create:
+        app/models/note.rb
+        app/models/concerns/notable.rb
+        app/policies/note_policy.rb
+        app/controllers/admin/notes_controller.rb

@@ -8,14 +8,25 @@ module CafeCar
       @fields = {}
     end
 
-    def policy = @template.policy(@object)
+    def policy    = @template.policy(@object)
+    def show(...) = @template.ui.input { @template.present(@object).show(...) }
 
     def association(method, collection: nil, **options)
-      info                      = info(method)
+      info = info(method)
+
+      return show(info.input_key) if info.polymorphic? and object.persisted?
+      return hidden(*info.polymorphic_methods) if info.polymorphic?
+
       collection              ||= info.collection
-      # options[:prompt]        ||= info.prompt
+      # options[:prompt]      ||= info.prompt
       options[:include_blank] ||= info.prompt
+
       input(info.input_key, collection, :id, -> { @template.present(_1).title }, as: :collection_select, **options)
+    end
+
+    def hidden(*methods, **, &)
+      methods.map  { input(_1, as: :hidden_field, **, &) }
+             .then { @template.safe_join(_1) }
     end
 
     def field(method, **, &)
@@ -31,8 +42,9 @@ module CafeCar
     end
 
     def input(method, *args, as: nil, **options)
-      info                  = info(method)
-      as                  ||= info.input
+      info = info(method)
+      as ||= info.input
+
       options[:placeholder] = info.placeholder unless options.key?(:placeholder)
       public_send(as, method, *args, **options)
     end

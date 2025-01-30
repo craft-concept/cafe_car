@@ -1,6 +1,8 @@
 module CafeCar::Policy
   extend ActiveSupport::Concern
 
+  def policy(object) = Pundit.policy(user, object)
+
   def model
     @model ||= object.try(:klass) or object.is_a?(Class) ? object : object.class
   end

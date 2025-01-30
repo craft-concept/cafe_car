@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :articles
     resources :users
+    resources :notes
 
     mount CafeCar::Engine => "/"
   end

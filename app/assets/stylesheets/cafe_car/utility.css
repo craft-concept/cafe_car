@@ -19,9 +19,10 @@
     text-decoration: line-through;
 }
 
-.center {
-    text-align: center;
-}
+.left { float: left; margin-right: 1em; }
+.right { float: right; margin-left: 1em; }
+
+.center {text-align: center;}
 
 .reset {
     appearance: none;
@@ -43,4 +44,13 @@
 .h2 {
     font-size: 1.5em;
     margin: .83em 0;
+}
+
+
+.shy {
+    visibility: hidden;
+}
+
+:hover > .shy {
+    visibility: visible;
 }
