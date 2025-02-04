@@ -1,16 +1,14 @@
 
 trix-editor {
+    background: var(--input);
+    border: 1px solid var(--border);
+
     & .trix-button {
         border-bottom: none;
     }
 }
 
 @media (prefers-color-scheme: dark) {
-    trix-editor {
-        background: var(--input);
-        border: 1px solid var(--border);
-    }
-
     trix-toolbar {
         & .trix-button-group {
             border: 1px solid var(--border);

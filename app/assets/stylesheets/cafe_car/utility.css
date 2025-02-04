@@ -13,7 +13,7 @@
     pointer-events: none;
 }
 
-.disabled, [disabled] {
+.disabled, [disabled]:not(input) {
     opacity: .3;
     cursor: not-allowed;
     text-decoration: line-through;

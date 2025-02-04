@@ -31,12 +31,12 @@ module CafeCar
 
     def send_to_form_with_text(method, text = @options.delete(method), **, &)
       return if text == false
-      send_to_form(method, text, **, &)
+      send_to_form(method, *text, **, &)
     end
 
-    def send_to_form(to, *, **opts, &)
-      return if @options[to] == false
-      form.public_send(to, @method, *, **add_class(*to, opts), &)
+    def send_to_form(method, *, **opts, &)
+      return if @options[method] == false
+      form.public_send(method, @method, *, **add_class(*method, opts), &)
     end
   end
 end

@@ -6,11 +6,11 @@ module CafeCar::Filter
       end
     end
 
-    instance_methods.grep(/_field$/).each do |method|
+    instance_methods.grep(/_(field|select)$/).each do |method|
       dotted_name method
     end
 
-    def clean(method) = method.to_s.sub(/[~!><]+$/, '')
+    def clean(method) = method.to_s.sub(/^\W+|\W+$/, '')
     def info(method)  = super(clean(method))
 
     def field_name(*methods, multiple: false, index: @options[:index])

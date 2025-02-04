@@ -1,10 +1,6 @@
 = ui.card :sticky do |card|
   = filter_form_for objects do |f|
-
     = card.section do
-      - if title = policy(objects).title_attribute
-        = f.field "#{title}~", label: "Search"
-
       - f.remaining_attributes.each do |attr|
         = f.field attr
 

@@ -35,7 +35,7 @@ module CafeCar
 
     def polymorphic_methods = [reflection.foreign_type, reflection.foreign_key]
 
-    def errors      = @object.errors[@method] || @object.errors[reflection.name]
+    def errors      = @object.errors[@method] | (reflection&.then { @object.errors[_1.name] } || [])
     def error       = errors.to_sentence.presence
     def placeholder = i18n(:placeholder)
     def hint        = i18n(:hint)
@@ -63,7 +63,9 @@ module CafeCar
       case type
       when :string   then :text_field
       when :text     then :text_area
+      when :decimal  then :text_field
       when :integer  then :number_field
+      when :date     then :date_field
       when :datetime then :datetime_field
       when :password then :password_field
       when :belongs_to, :has_many then :association

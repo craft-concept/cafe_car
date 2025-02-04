@@ -33,7 +33,7 @@ body {
     margin: 0;
 }
 
-input:not([type="button"]),
+input,
 textarea,
 select {
     background: var(--input);
