@@ -4,6 +4,7 @@ module CafeCar
 
     include Pundit::Authorization
     include Filtering
+    include Helpers
 
     class_methods do
       def model(model)
@@ -129,15 +130,15 @@ module CafeCar
       @model ||= self.class.name.gsub(/.*::|Controller$/, '').classify.then { self.class.module_parent.const_get _1 }
     end
 
-    def created_redirect   = redirect_back fallback_location: [model_name.plural.to_sym]
-    def destroyed_redirect = redirect_to [model_name.plural.to_sym]
+    def created_redirect   = redirect_back fallback_location: href_for(object)
+    def destroyed_redirect = redirect_to href_for(model)
 
     def updated_redirect
       return destroyed_redirect if object.destroyed?
       redirect_to object
     end
 
-    def render_invalid_record = render(object.persisted? ? 'edit' : 'new')
+    def render_invalid_record    = render(object.persisted? ? 'edit' : 'new', status: :unprocessable_entity)
 
     # def default_render(...) = run_callbacks(:render) { super }
 

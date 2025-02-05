@@ -60,24 +60,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_195619) do
   end
 
   create_table "clients", force: :cascade do |t|
+    t.integer "owner_id"
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["owner_id"], name: "index_clients_on_owner_id"
   end
 
   create_table "invoices", force: :cascade do |t|
-    t.integer "creator_id"
+    t.integer "sender_id"
     t.integer "client_id"
     t.decimal "total", precision: 12, scale: 2
+    t.date "due_on"
+    t.date "issued_on"
+    t.text "note"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_invoices_on_client_id"
-    t.index ["creator_id"], name: "index_invoices_on_creator_id"
+    t.index ["sender_id"], name: "index_invoices_on_sender_id"
   end
 
   create_table "line_items", force: :cascade do |t|
     t.integer "invoice_id"
-    t.decimal "amount", precision: 12, scale: 2
+    t.decimal "price", precision: 12, scale: 2
     t.integer "quantity"
     t.text "description"
     t.datetime "created_at", null: false
@@ -96,6 +101,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_195619) do
     t.index ["notable_type", "notable_id"], name: "index_notes_on_notable"
   end
 
+  create_table "payments", force: :cascade do |t|
+    t.integer "invoice_id"
+    t.decimal "amount", precision: 12, scale: 2
+    t.datetime "paid_at"
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_payments_on_invoice_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.string "password_digest"
@@ -106,8 +121,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_195619) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "articles", "users", column: "author_id"
+  add_foreign_key "clients", "users", column: "owner_id"
   add_foreign_key "invoices", "clients"
-  add_foreign_key "invoices", "users", column: "creator_id"
+  add_foreign_key "invoices", "users", column: "sender_id"
   add_foreign_key "line_items", "invoices"
   add_foreign_key "notes", "users", column: "author_id"
+  add_foreign_key "payments", "invoices"
 end

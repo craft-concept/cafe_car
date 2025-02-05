@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   resources :articles
 
   namespace :admin do
+    resources :invoices
+    resources :clients
     resources :articles
     resources :users
     resources :notes

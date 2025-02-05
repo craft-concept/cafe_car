@@ -3,6 +3,6 @@
     = ui.modal :fixed do |m|
       = ui.card title: "New #{model_name.human}", actions: m.close("✕") do |card|
         = render "form", card:
-- else
+- else # create
   = turbo_stream.replace(dom_id(object, :new)) do
     = render "form", card: ui.card.context

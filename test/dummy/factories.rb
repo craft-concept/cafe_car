@@ -29,6 +29,7 @@ FactoryBot.define do
 
   factory :client do
     name { Faker::Company.unique.name }
+    owner { create(:user) }
   end
 
   factory :invoice do
