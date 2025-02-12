@@ -1,4 +1,4 @@
 !!!
 %html{lang: I18n.locale}
   %head= render "head"
-  %body= render "body"
+  %body{class: [controller_name, action_name, *@body_class]}= render "body"
