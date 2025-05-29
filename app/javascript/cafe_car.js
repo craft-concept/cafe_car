@@ -2,13 +2,14 @@ function last(arr) {
     return arr[arr.length - 1];
 }
 
-addEventListener("click", event => {
-    if (event.target.matches(".Modal_Close")) {
+addEventListener("mousedown", event => {
+    window.mouseDownTarget = event.target
+})
+
+addEventListener("mouseup", event => {
+    if (event.target === window.mouseDownTarget && event.target.matches(".Modal_Close, .Modal")) {
         event.preventDefault()
         event.target.closest(".Modal").classList.add("remove")
-    } else if (event.target.matches(".Modal")) {
-        event.preventDefault()
-        event.target.classList.add("remove")
     }
 })
 
