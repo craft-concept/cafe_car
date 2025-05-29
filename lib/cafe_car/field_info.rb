@@ -23,6 +23,10 @@ module CafeCar
     def collection   = reflection.klass.all
     def reflection   = model.reflect_on_association(@method) || reflections_by_attribute[@method]
 
+    def abrogated_keys
+      [*reflection&.foreign_type&.to_sym]
+    end
+
     def displayable = reflection&.name&.then { info(_1) } || self
 
     def reflection_type = reflection&.macro
@@ -57,6 +61,14 @@ module CafeCar
     def type
       @type ||= reflection_type || attribute_type || digest_type ||
         raise(NoMethodError.new "Can't find attribute :#{@method} on #{model_name}", @method)
+    end
+
+    def width
+      case type
+      when :text, :string
+        "minmax(10em, 1fr)"
+      else "min-content"
+      end
     end
 
     def input

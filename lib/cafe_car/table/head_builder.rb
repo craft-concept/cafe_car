@@ -1,7 +1,15 @@
 module CafeCar::Table
   class HeadBuilder < ObjectsBuilder
+    attr_reader :fields
+
+    def initialize(...)
+      @fields = []
+      super
+    end
+
     def cell(method, *flags, label: label(method), **, &)
       super
+      @fields << model.field_info(method)
       ui.cell(label, *flags)
     end
 
@@ -11,7 +19,7 @@ module CafeCar::Table
       l
     end
 
-    def controls(*, **) = ui.cell(:controls, :controls, *, **)
+    def controls(*, **) = cell(:controls, :controls, *, label: nil, **)
 
     def to_html = ui.head(:sticky, capture(self, &@block))
   end

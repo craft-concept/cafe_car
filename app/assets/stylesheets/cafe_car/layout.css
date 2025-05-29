@@ -1,6 +1,0 @@
-@charset "utf-8";
-
-body {
-    display: grid;
-    grid: auto / auto 1fr;
-}

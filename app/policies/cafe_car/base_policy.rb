@@ -18,6 +18,10 @@ class CafeCar::BasePolicy
   def edit?    = update?
   def destroy? = false
 
+  def attributes
+    @attributes ||= Attributes.new(@user, @object, permitted_attributes)
+  end
+
   class Scope
     def initialize(user, scope)
       @user  = user
@@ -31,5 +35,8 @@ class CafeCar::BasePolicy
     private
 
     attr_reader :user, :scope
+  end
+
+  class Attributes < CafeCar::Attributes
   end
 end

@@ -13,6 +13,7 @@ module CafeCar::Table
 
     def cell(method, ...) = shown!(method).then { nil }
     def shown!(method)    = @shown_attributes[method] = true
+    def shown             = @shown_attributes
 
     def title_attribute      = policy.title_attribute
     def title(*args, **opts) = cell(title_attribute, *args, href: true, **opts)
@@ -30,6 +31,6 @@ module CafeCar::Table
     end
 
     def html_safe? = true
-    def to_s       = to_html.to_s
+    def to_s       = @to_s ||= to_html.to_s
   end
 end

@@ -1,5 +1,5 @@
 .Page-wide {
-    --page-width: 80vw;
+    --page-width: auto;
 }
 
 .Page-thin {
@@ -9,7 +9,7 @@
 .Page {
     display: grid;
     grid: auto-flow / var(--aside-width) minmax(auto, var(--page-width));
-    justify-content: center;
+    justify-content: stretch;
     gap: var(--gap);
     margin: var(--gap);
 }

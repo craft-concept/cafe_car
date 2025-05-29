@@ -7,7 +7,6 @@
 @import url("cafe_car/pagination.css");
 @import url("cafe_car/utility.css");
 @import url("ui/components.css");
-@import url("cafe_car/layout.css");
 
 :root {
     --half-gap: calc(var(--gap) / 2);

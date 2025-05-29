@@ -4,7 +4,7 @@
 
     --link: var(--accent);
 
-    --font: -apple-system, menu, sans-serif;
+    --font: ui-sans-serif, -apple-system, menu, sans-serif;
     --error: var(--red);
     --invalid: #f6f8fa;
     --card: rgb(255 255 255);

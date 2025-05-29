@@ -25,26 +25,22 @@ module CafeCar::Policy
   def displayable_attributes
     permitted_attribute_keys
       .union(model.columns.map(&:name).map(&:to_sym))
-      .map { association_for_attribute(_1) || _1 }
+      .map    { association_for_attribute(_1) || _1 }
       .reject { filtered_attribute? _1 } - %i[id]
   end
 
+  def permitted_fields
+    @permitted_fields ||= permitted_attribute_keys.map { info _1 }
+  end
+
   def editable_attributes
-    permitted_attribute_keys.map { association_for_attribute(_1) || _1 }
+    permitted_fields.map(&:input_key) - permitted_fields.flat_map(&:abrogated_keys)
   end
 
   def displayable_associations
-    model.reflections.values.
-      select {|a| !a.options[:autosave] && !a.options[:polymorphic] }.
-      map(&:name).map(&:to_sym) - %i[base_tags taggings tag_taggings]
-  end
-
-  def editable_associations
-    displayable_associations.select {|a| permitted_association?(a) }
-  end
-
-  def reflect_on_editable_associations
-    model.reflections.slice(*editable_associations.map(&:to_s)).values
+    model.reflections.values
+         .select {|a| !a.options[:autosave] && !a.options[:polymorphic] }
+         .map    { _1.name.to_sym }
   end
 
   def permitted_attribute_keys

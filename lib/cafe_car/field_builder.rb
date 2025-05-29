@@ -21,6 +21,7 @@ module CafeCar
     def error(...)   = send_to_form_with_text(:error, ...)
 
     def to_s
+      return input if info.polymorphic? and object.new_record?
       partial = %W[#{info.type}_field field].find { @template.partial?(_1) }
       @template.render(partial, field: self, **@options)
     end

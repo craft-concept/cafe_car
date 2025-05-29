@@ -1,3 +1,6 @@
-= render("navigation")
-= yield
-= render("footer")
+= ui.layout do |layout|
+  = layout.sidebar do
+    %h1.center CafeCar
+    = render "navigation"
+  = layout.main       { yield }
+  = layout.footer     { render("footer") }
