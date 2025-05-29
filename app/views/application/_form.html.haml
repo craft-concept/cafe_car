@@ -1,10 +1,6 @@
 = form_for [*namespace, object] do |f|
   = card.section do
-    = render "fields", f:
-
-  = card.section do
-    = render("extra_fields", f:)
-
+    = render "fields", f:, card:
   = card.foot do
-    = render "submit", f:
-    = render("errors", f:)
+    = render "submit", f:, card:
+    = render "errors", f:, card:

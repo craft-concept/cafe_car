@@ -8,8 +8,8 @@ class CafeCar::Filter::FieldInfo < CafeCar[:FieldInfo]
     case type
     when :string   then :text_field
     when :text     then :text_field
-    when :decimal  then :range_field
-    when :integer  then :range_field
+    when :decimal  then :text_field # :range_field
+    when :integer  then :text_field # :range_field
     when :date     then :text_field
     when :datetime then :text_field
     when :password then :password_field
