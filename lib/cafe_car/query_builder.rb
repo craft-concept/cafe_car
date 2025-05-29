@@ -30,7 +30,7 @@ module CafeCar
       @scope = scope
     end
 
-    def unscoped   = QueryBuilder.new(@scope.unscoped)
+    def unscoped   = QueryBuilder.new(@scope.unscope(:where))
     def arel(key)  = @scope.arel_table[chomp(key)]
     def chomp(key) = key.to_s.sub(/\W+$/, '')
 
