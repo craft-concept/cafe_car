@@ -1,7 +1,7 @@
 class NotePolicy < ApplicationPolicy
-  def index?   = false
+  def index?   = admin?
   def show?    = admin?
-  def create?  = admin? && policy(object.notable).show?
+  def create?  = admin? && (object.is_a?(Class) || policy(object.notable).show?)
   def update?  = admin? || object.author == user
   def destroy? = update?
 
