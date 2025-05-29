@@ -3,10 +3,11 @@ module CafeCar
     attr_reader :object, :options
 
     delegate *%w[l t capture concat link link_to partial? href_for render safe_join tag ui], to: :@template
+    delegate :show_defaults, to: :class
 
     def self.present(template, object, **options)
       object = object.object if object.is_a?(Presenter)
-      find(object.class).new(template, object, **options)
+      find(options.fetch(:as) { object.class }).new(template, object, **options)
     end
 
     def self.find(klass)
@@ -14,7 +15,21 @@ module CafeCar
     end
 
     def self.candidates(klass)
-      klass.ancestors.lazy.map(&:name).compact.map { "#{_1}Presenter" }
+      names(klass).map { "#{_1}Presenter" }
+    end
+
+    def self.names(klass)
+      return [klass.to_s.classify] if klass.is_a?(Symbol)
+      klass.ancestors.lazy.map(&:name).compact
+    end
+
+    def self.show(method, **options, &block)
+      show_defaults(method).merge!(options, block:)
+    end
+
+    def self.show_defaults(method)
+      @show         ||= {}
+      @show[method] ||= {}
     end
 
     def initialize(template, object, **options)
@@ -29,8 +44,12 @@ module CafeCar
     def policy   = @policy ||= @template.policy(object)
 
     def to_s         = to_html.to_s
-    def to_html      = raise NoMethodError.new("Must implement to_html on this Presenter")
     def present(...) = @template.present(...)
+
+    def to_html
+      return render object if object.try(:to_partial_path)&.then { partial? _1 }
+      link_to title, href_for(self) rescue title
+    end
 
     def title_attribute = policy.title_attribute
     def title(...)      = show(title_attribute, ...)
@@ -40,6 +59,8 @@ module CafeCar
     end
 
     def attributes(*methods, except: nil, **options, &block)
+      methods  = policy.displayable_attributes if methods.empty?
+      methods  = methods.flatten.compact
       methods -= except if except
       capture do
         methods.map do |method|
@@ -61,7 +82,12 @@ module CafeCar
 
     def remaining_attributes(**options, &block)
       attrs = policy.displayable_attributes - @shown_attributes.keys
-      attributes(attrs, **options, &block)
+      attributes(*attrs, **options, &block)
+    end
+
+    def associations(*names, **options, &block)
+      names = policy.displayable_associations if names.blank?
+      attributes(*names, **options, &block)
     end
 
     def info_circle(method, *args, **opts, &block)
@@ -83,8 +109,12 @@ module CafeCar
 
     def show(method, **options, &block)
       @shown_attributes[method] = true
-      p                         = present(value(method, **@options), **options)
-      block ? capture(p, method, options, &block) : p.to_s
+      show_defaults(method)&.then { options.with_defaults!(_1) }
+
+      block ||= options.delete(:block)
+
+      p = present(value(method, **@options), **options)
+      block ? capture(p, method, options, &block) : p
     end
   end
 end
