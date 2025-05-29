@@ -9,25 +9,27 @@ module CafeCar::Table
     def sortable?    = @objects.columns_hash.key? @key
     def reflection   = @objects.klass.reflect_on_association(@method)
     def association? = reflection.present?
+    def order_value  = @objects.order_values.first&.then { _1.expr.name }
+    def existing     = params.fetch(:sort) { order_value }
 
     def sort
       @sort ||=
-        case params[:sort]
-        when @key then "-#{params[:sort]}"
+        case existing
+        when @key then "-#{existing}"
         else @key
         end
     end
 
     def href
       @template.url_for(**request.params.merge(sort:)) if sortable?
-   end
+    end
 
     def label_sort
       @template.tag.span(symbol) if sortable?
     end
 
     def symbol
-      case params[:sort]
+      case existing
       when @key       then "↑" # ▴↑▲
       when "-#{@key}" then "↓" # ▾↓▼
       else "•"

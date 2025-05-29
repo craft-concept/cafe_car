@@ -7,6 +7,7 @@ class User < ApplicationRecord
 
   validates :name, presence: true
 
+  default_scope -> { order(:name) }
   scope :search, -> { query("name~": _1) }
 
   def super? = true
