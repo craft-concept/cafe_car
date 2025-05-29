@@ -55,6 +55,8 @@ module CafeCar
     end
 
     def filter_form_for(objects, **options, &block)
+      raise ArgumentError, "First argument to filter_form_for cannot be nil" if objects.nil?
+
       form_for CafeCar[:FilterBuilder].new(objects, parsed_params),
                builder: CafeCar["Filter::FormBuilder"],
                method: :get,
