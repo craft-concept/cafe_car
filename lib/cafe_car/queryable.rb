@@ -7,6 +7,8 @@ module CafeCar::Queryable
       super
     end
 
+    def sample = offset(rand(count)).first
+
     def query(params)  = query_builder.query(params).scope
     def query!(params) = query_builder.query!(params).scope
 
