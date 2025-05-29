@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     resources :articles
     resources :users
     resources :notes
+    resources :line_items
 
     mount CafeCar::Engine => "/"
   end

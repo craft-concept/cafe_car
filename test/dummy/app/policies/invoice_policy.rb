@@ -5,10 +5,10 @@ class InvoicePolicy < ApplicationPolicy
   def update?  = admin? || object.sender == user
   def destroy? = update?
 
-  def title_attribute = :total
+  def title_attribute = :number
 
   def permitted_attributes
-    [:sender_id, :client_id, :total, :issued_on, :note]
+    [:sender_id, :client_id, :number, :total, :issued_on, :note]
   end
 
   class Scope < Scope

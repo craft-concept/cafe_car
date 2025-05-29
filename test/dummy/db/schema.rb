@@ -70,12 +70,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_195619) do
   create_table "invoices", force: :cascade do |t|
     t.integer "sender_id"
     t.integer "client_id"
+    t.integer "number", null: false
     t.decimal "total", precision: 12, scale: 2
     t.date "due_on"
     t.date "issued_on"
     t.text "note"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["client_id", "number"], name: "index_invoices_on_client_id_and_number", unique: true
     t.index ["client_id"], name: "index_invoices_on_client_id"
     t.index ["sender_id"], name: "index_invoices_on_sender_id"
   end
@@ -84,6 +86,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_195619) do
     t.integer "invoice_id"
     t.decimal "price", precision: 12, scale: 2
     t.integer "quantity"
+    t.virtual "amount", type: :decimal, as: "price * quantity", stored: true
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

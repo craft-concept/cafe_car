@@ -7,20 +7,20 @@ def group(label)
 end
 
 group "users" do
-  create_list :user, 20
+  create_list(:user, 20)
 end
 
 group "articles" do
-  create_list :article, 70, :content, :sample_author, :published
-  create_list :article, 30, :content, :sample_author, :draft
+  create_list(:article, 70, :content, :published)
+  create_list(:article, 30, :content, :draft)
 end
 
 puts "\nAccounting:"
 
 group "clients" do
-  create_list(:client, 35)
+  create_list(:client, 10)
 end
 
 group "invoices" do
-  create_list(:invoice, 200, :sample_client)
+  create_list(:invoice, 200)
 end

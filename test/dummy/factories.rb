@@ -6,12 +6,8 @@ FactoryBot.define do
   end
 
   factory :article do
-    title { Faker::Book.unique.title }
-    author { create(:user) }
-
-    trait :sample_author do
-      author { User.all.sample }
-    end
+    title  { Faker::Book.unique.title }
+    author { User.sample or create(:user) }
 
     trait :content do
       summary { Faker::Religion::Bible.quote }
@@ -28,11 +24,22 @@ FactoryBot.define do
   end
 
   factory :client do
-    name { Faker::Company.unique.name }
-    owner { create(:user) }
+    name  { Faker::Company.unique.name }
+    owner { User.sample or create(:user) }
   end
 
   factory :invoice do
-    line_items { build_list(:line_item, (1..10).to_a.sample) }
+    line_items { build_list(:line_item, rand(1..10)) }
+    client     { Client.sample or create(:client) }
+    sender     { client.owner }
+    issued_on  { Date.today - rand(-30..1000) }
+    due_on     { issued_on + [30, 60, 90].sample }
+    note       { Faker::Lorem.paragraph }
+  end
+
+  factory :line_item do
+    price       { rand(10.0..900.0).round(2) }
+    quantity    { rand(1..200) }
+    description { Faker::Lorem.sentence }
   end
 end

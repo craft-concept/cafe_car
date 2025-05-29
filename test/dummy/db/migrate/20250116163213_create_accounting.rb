@@ -9,17 +9,21 @@ class CreateAccounting < ActiveRecord::Migration[7.2]
     create_table :invoices do |t|
       t.references :sender, foreign_key: {to_table: :users}
       t.references :client, foreign_key: true
+      t.integer :number, null: false
       t.decimal :total, precision: 12, scale: 2
       t.date :due_on
       t.date :issued_on
       t.text :note
       t.timestamps
+
+      t.index [:client_id, :number], unique: true
     end
 
     create_table :line_items do |t|
       t.references :invoice, foreign_key: true
       t.decimal :price, precision: 12, scale: 2
       t.integer :quantity
+      t.virtual :amount, type: :numeric, as: 'price * quantity', stored: true
       t.text :description
       t.timestamps
     end

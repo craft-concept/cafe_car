@@ -1,2 +1,2 @@
-class ArticlePresenter < CafeCar::RecordPresenter
+class ArticlePresenter < CafeCar::Presenter
 end
