@@ -1,6 +1,11 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
+  config.hotwire_livereload.listen_paths += [
+    Rails.root.join("../../app/assets/stylesheets"),
+    Rails.root.join("../../app/javascript")
+  ]
+
   config.hosts << ".ts.net"
   config.enable_reloading            = true
   config.eager_load                  = false
