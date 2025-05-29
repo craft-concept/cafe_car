@@ -28,6 +28,8 @@ module CafeCar
       [*name, *flags, *args, *opts.keys].join(" ")
     end
 
+    def body_classes = [controller_name, action_name, *@body_class]
+
     def title(object)
       present(object).title.presence.tap do |title|
         content_for(:title, title)
