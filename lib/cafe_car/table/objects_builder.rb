@@ -5,7 +5,7 @@ module CafeCar::Table
       @objects = @options.delete(:objects) { raise }
     end
 
-    def model  = @objects
-    def policy = @template.policy(@objects)
+    def model                = @objects
+    def policy(o = @objects) = @template.policy(o)
   end
 end

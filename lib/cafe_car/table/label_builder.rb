@@ -4,11 +4,16 @@ module CafeCar::Table
       super
       @method  = @options.delete(:method) { raise }
       @key     = @method.to_s
+      @key    += ?. + title if belongs_to?
     end
 
-    def sortable?    = @objects.columns_hash.key? @key
-    def reflection   = @objects.klass.reflect_on_association(@method)
-    def association? = reflection.present?
+    def field        = policy.info(@method)
+    def title        = reflection&.klass&.then { policy(_1).title_attribute&.to_s }
+    def column?      = @objects.columns_hash.key? @key
+    def sortable?    = column? || belongs_to?
+    def reflection   = field.reflection
+    def association? = field.association?
+    def belongs_to?  = reflection&.belongs_to?
     def order_value  = @objects.order_values.first&.then { _1.expr.name }
     def existing     = params.fetch(:sort) { order_value }
 

@@ -5,8 +5,8 @@ module CafeCar::Table
       @object = @options.delete(:object) { raise }
     end
 
-    def model     = @object.class
-    def policy    = @template.policy(@object)
+    def model               = @object.class
+    def policy(o = @object) = @template.policy(o)
 
     def value(method) = @object.public_send(method)
     def show(method)  = present(@object).show(method)
