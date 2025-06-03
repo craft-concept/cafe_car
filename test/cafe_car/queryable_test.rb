@@ -4,7 +4,7 @@ module CafeCar
   class QueryableTest < ActiveSupport::TestCase
     setup do
       create_list(:article, 3, :published)
-      create_list(:article, 3, :draft, :sample_author)
+      create_list(:article, 3, :draft)
     end
 
     test "query attributes" do
