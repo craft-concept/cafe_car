@@ -127,7 +127,14 @@ module CafeCar
     def model_name = model.model_name
 
     def model
-      @model ||= self.class.name.gsub(/.*::|Controller$/, '').classify.then { self.class.module_parent.const_get _1 }
+      @model ||= begin
+        model_name = self.class.name.gsub(/.*::|Controller$/, '').classify
+        # First try to find the model in the same namespace as the controller
+        self.class.module_parent.const_get(model_name)
+      rescue NameError
+        # Fall back to looking in the global namespace
+        Object.const_get(model_name)
+      end
     end
 
     def created_redirect   = redirect_back fallback_location: href_for(object)
