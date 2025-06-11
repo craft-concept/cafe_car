@@ -4,7 +4,11 @@ module CafeCar
   class QueryableTest < ActiveSupport::TestCase
     setup do
       create_list(:article, 3, :published)
-      create_list(:article, 3, :draft, :sample_author)
+      create_list(:article, 3, :draft)
+      
+      # Create test user with predictable data for count test
+      @test_user = create(:user, name: "Alice")
+      create_list(:article, 3, :published, author: @test_user)
     end
 
     test "query attributes" do
@@ -25,7 +29,7 @@ module CafeCar
     end
 
     test "query count" do
-      refute_empty User.query(articles: 1..5, name: /a/)
+      refute_empty User.query(articles: 1..5, name: /a/i)
       assert_empty User.query(articles: 99)
       refute_empty User.query(articles!: 99)
     end
