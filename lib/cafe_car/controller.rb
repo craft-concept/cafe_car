@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 module CafeCar
+  # Controller concern that provides CRUD operations with authorization
   module Controller
     extend ActiveSupport::Concern
 
@@ -12,7 +15,7 @@ module CafeCar
       end
 
       def recline_in_the_cafe_car(only: nil, except: nil)
-        _only = ->(actions) do
+        filter_actions = lambda do |actions|
           actions -= except if except
           actions &= only if only
           actions
@@ -24,10 +27,10 @@ module CafeCar
 
         before_action :set_current_attributes
 
-        before_action :find_object,       only: _only.(%i[show edit update destroy])
-        before_action :build_object,      only: _only.(%i[new create])
-        before_action :find_objects,      only: _only.(%i[index])
-        before_action :assign_attributes, only: _only.(%i[create update])
+        before_action :find_object,       only: filter_actions.call(%i[show edit update destroy])
+        before_action :build_object,      only: filter_actions.call(%i[new create])
+        before_action :find_objects,      only: filter_actions.call(%i[index])
+        before_action :assign_attributes, only: filter_actions.call(%i[create update])
         before_action :authorize!
       end
 
@@ -60,7 +63,7 @@ module CafeCar
 
       respond_to do |f|
         f.html { created_redirect }
-        f.json { }
+        f.json {}
       end
     end
 
@@ -73,7 +76,7 @@ module CafeCar
 
       respond_to do |f|
         f.html { destroyed_redirect }
-        f.json { }
+        f.json {}
       end
     end
 
@@ -82,7 +85,8 @@ module CafeCar
     def authorize!
       return authorize object if object
       return authorize objects if objects
-      raise "nothing to authorize! Define self.object or self.objects"
+
+      raise 'nothing to authorize! Define self.object or self.objects'
     end
 
     def current_user = CafeCar[:Current].user
@@ -114,12 +118,15 @@ module CafeCar
     def scope   = policy_scope(model.all).then { sorted _1 }
                                          .then { filtered _1 }
                                          .then { paginated _1 }
+
     def objects = instance_variable_get("@#{model_name.plural}")
+
     def objects=(value)
       instance_variable_set("@#{model_name.plural}", value)
     end
 
     def object = instance_variable_get("@#{model_name.singular}")
+
     def object=(value)
       instance_variable_set("@#{model_name.singular}", value)
     end
@@ -142,10 +149,11 @@ module CafeCar
 
     def updated_redirect
       return destroyed_redirect if object.destroyed?
+
       redirect_to object
     end
 
-    def render_invalid_record    = render(object.persisted? ? 'edit' : 'new', status: :unprocessable_entity)
+    def render_invalid_record = render(object.persisted? ? 'edit' : 'new', status: :unprocessable_entity)
 
     # def default_render(...) = run_callbacks(:render) { super }
 
