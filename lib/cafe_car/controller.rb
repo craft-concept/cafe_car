@@ -136,10 +136,26 @@ module CafeCar
     def model
       @model ||= begin
         model_name = self.class.name.gsub(/.*::|Controller$/, '').singularize.classify
-        # First try to find the model in the same namespace as the controller
-        self.class.module_parent.const_get(model_name, false)
-      rescue NameError
-        # Fall back to looking in the global namespace
+        
+        # Get the namespace parts without the controller class name
+        namespace_parts = self.class.name.split('::')
+        namespace_parts.pop # Remove the controller class name
+        
+        # Try from most specific to least specific namespace
+        # For Admin::ActiveRecord::BlobsController:
+        # Try Admin::ActiveRecord::Blob, then ActiveRecord::Blob, then Blob
+        (0...namespace_parts.length).each do |i|
+          namespace_name = namespace_parts[i..-1].join('::')
+          
+          begin
+            namespace = namespace_name.constantize
+            return namespace.const_get(model_name, false)
+          rescue NameError
+            # Continue to next namespace
+          end
+        end
+        
+        # Finally, fall back to the global namespace
         Object.const_get(model_name)
       end
     end
