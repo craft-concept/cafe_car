@@ -128,9 +128,9 @@ module CafeCar
 
     def model
       @model ||= begin
-        model_name = self.class.name.gsub(/.*::|Controller$/, '').classify
+        model_name = self.class.name.gsub(/.*::|Controller$/, '').singularize.classify
         # First try to find the model in the same namespace as the controller
-        self.class.module_parent.const_get(model_name)
+        self.class.module_parent.const_get(model_name, false)
       rescue NameError
         # Fall back to looking in the global namespace
         Object.const_get(model_name)
