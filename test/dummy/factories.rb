@@ -21,6 +21,10 @@ FactoryBot.define do
     trait :draft do
       published_at { Faker::Time.between(from: Time.current, to: 1.month.from_now) }
     end
+
+    trait :sample_author do
+      author { create(:user) }
+    end
   end
 
   factory :client do

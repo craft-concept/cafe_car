@@ -5,6 +5,7 @@ class ClientPolicy < ApplicationPolicy
   def update?  = admin?
   def destroy? = update?
 
+  def title_attribute = :name
 
   def permitted_attributes
     [:name, :owner_id]
