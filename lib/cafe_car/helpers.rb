@@ -31,9 +31,9 @@ module CafeCar
     def body_classes = [controller_name, action_name, *@body_class]
 
     def title(object)
-      present(object).title.presence.tap do |title|
-        content_for(:title, title)
-      end
+      title_text = present(object).title.to_s.presence
+      content_for(:title, title_text) if title_text
+      title_text
     end
 
     def present(*args, **options)
