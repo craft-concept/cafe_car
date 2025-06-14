@@ -3,6 +3,8 @@ class Invoice < ApplicationRecord
   belongs_to :client
   has_many :line_items
 
+  accepts_nested_attributes_for :line_items, allow_destroy: true
+
   after_initialize :set_number, unless: :number?
   before_save :set_total
 
