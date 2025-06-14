@@ -39,7 +39,12 @@ module CafeCar
 
     def polymorphic_methods = [reflection.foreign_type, reflection.foreign_key]
 
-    def errors      = @object.errors[@method] | (reflection&.then { @object.errors[_1.name] } || [])
+    def errors
+      errors     = @object.try(:errors)
+      associated = reflection&.then { errors[_1.name] } || []
+      errors[@method] | associated
+    end
+
     def error       = errors.to_sentence.presence
     def placeholder = i18n(:placeholder)
     def hint        = i18n(:hint)
@@ -90,7 +95,6 @@ module CafeCar
     def input_key
       case type
       when :belongs_to then reflection.foreign_key
-      when :has_many then raise "implement foreign_key_ids or w/e"
       else method
       end
     end
