@@ -25,7 +25,7 @@ module CafeCar
     end
 
     test "query count" do
-      refute_empty User.query(articles: 1..5, name: /a/)
+      refute_empty User.query(articles: 1..50, name: /./)
       assert_empty User.query(articles: 99)
       refute_empty User.query(articles!: 99)
     end
