@@ -1,10 +1,12 @@
 GIT
   remote: https://github.com/craft-concept/cnc.git
-  revision: 56362befd0ac5a9d201dcc694e27390914edc0f0
+  revision: 40476159385e015b1a413fbb71335150d6cc0968
   specs:
     cnc (0.1.6)
       dry-cli
       rails
+      rubocop
+      rubocop-minitest
       rubocop-rails-omakase
 
 PATH
@@ -318,6 +320,10 @@ GEM
     rubocop-ast (1.45.1)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
+    rubocop-minitest (0.38.1)
+      lint_roller (~> 1.1)
+      rubocop (>= 1.75.0, < 2.0)
+      rubocop-ast (>= 1.38.0, < 2.0)
     rubocop-performance (1.25.0)
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
