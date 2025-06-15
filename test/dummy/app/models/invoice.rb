@@ -8,7 +8,7 @@ class Invoice < ApplicationRecord
   after_initialize :set_number, unless: :number?
   before_save :set_total
 
-  validates :number, uniqueness: true
+  validates :number, uniqueness: {scope: :client_id}
 
   private
 
