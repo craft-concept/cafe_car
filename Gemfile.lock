@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/craft-concept/cnc.git
-  revision: 40476159385e015b1a413fbb71335150d6cc0968
+  revision: 43c2d9ee7f0e283cf0bbf015ab583fd22674fa53
   specs:
     cnc (0.1.6)
       dry-cli
