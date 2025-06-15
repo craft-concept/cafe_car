@@ -5,7 +5,8 @@ class Invoice < ApplicationRecord
 
   accepts_nested_attributes_for :line_items, allow_destroy: true
 
-  after_initialize :set_number, unless: :number?
+  after_initialize :set_number, unless: :number?, if: :client_id?
+  before_save :set_number, unless: :number?
   before_save :set_total
 
   validates :number, uniqueness: {scope: :client_id}
