@@ -4,7 +4,7 @@
 
 = page.wrapper *flags do
   = page.head do
-    = page.title(tag: :h1) { title }
-    = page.actions { actions }
+    = page.title(title, tag: :h1)
+    = page.actions(actions)
 
   = yield
