@@ -36,15 +36,15 @@ jobs:
       - uses: peter-evans/create-pull-request@v7.0.5
         # if: github.event == push
         with:
-          base: ${{ github.head_ref }}
-          branch: rubocop/${{ github.head_ref }}
-          title: Rubocop Autocorrections on ${{ github.head_ref }}
+          base: ${{ github.ref_name }}
+          branch: rubocop/${{ github.ref_name }}
+          title: Rubocop Autocorrections on ${{ github.ref_name }}
       # - if: github.event == pull_request
       #   run: git commit -am "rubocop fixes" && git push
       #   with:
       #     base: ${{ github.base_ref }}
-      #     branch: rubocop/${{ github.head_ref }}
-      #     title: Rubocop Autocorrections on ${{ github.head_ref }}
+      #     branch: rubocop/${{ github.ref_name }}
+      #     title: Rubocop Autocorrections on ${{ github.ref_name }}
 
   test:
     runs-on: ubuntu-latest
