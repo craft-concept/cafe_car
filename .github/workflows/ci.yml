@@ -12,7 +12,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with: {bundler-cache: true}
-      - name: Scan for common Rails security vulnerabilities using static analysis
+      - name:
+          Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
 
   js_audit:
@@ -33,19 +34,28 @@ jobs:
         with: {bundler-cache: true}
       - run: bin/rubocop -Af github
       - uses: peter-evans/create-pull-request@v7.0.5
+        # if: github.event == push
         with:
-          branch: rubocop
-          title: Rubocop Autocorrections
-
+          base: ${{ github.head_ref }}
+          branch: rubocop/${{ github.head_ref }}
+          title: Rubocop Autocorrections on ${{ github.head_ref }}
+      # - if: github.event == pull_request
+      #   run: git commit -am "rubocop fixes" && git push
+      #   with:
+      #     base: ${{ github.base_ref }}
+      #     branch: rubocop/${{ github.head_ref }}
+      #     title: Rubocop Autocorrections on ${{ github.head_ref }}
 
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl libjemalloc2 libvips sqlite3
+        run:
+          sudo apt-get update && sudo apt-get install --no-install-recommends -y
+          google-chrome-stable curl libjemalloc2 libvips sqlite3
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
-        with: { bundler-cache: true }
+        with: {bundler-cache: true}
       - name: Run tests
         run: bin/rails test
         env:
@@ -55,7 +65,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl libjemalloc2 libvips sqlite3
+        run:
+          sudo apt-get update && sudo apt-get install --no-install-recommends -y
+          google-chrome-stable curl libjemalloc2 libvips sqlite3
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with: {bundler-cache: true}
