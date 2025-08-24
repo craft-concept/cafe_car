@@ -31,7 +31,11 @@ class CafeCar::ParamParser
     when /[{}\[\]]/ then value(JSON.parse(v))
     when /,/        then value(v.split(','))
     when /^(.*?)\.\.(\.?)(.*)$/
-      Range.new(value($1), value($3), $2.present?)
+      begin
+        Range.new(value($1), value($3), $2.present?)
+      rescue ArgumentError
+        v
+      end
     when /^\$(\w+)\.(\w+)$/
       # TODO: make less scary
       $1.constantize.arel_table[$2]
