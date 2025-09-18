@@ -1,54 +1,73 @@
 @charset "utf-8";
 
 @import url("trix.css");
+@import url("iconoir.css");
 @import url("cafe_car/trix.css");
 
-@import url("cafe_car/themes/cool.css");
+@import url("cafe_car/themes/warm.css");
 @import url("cafe_car/pagination.css");
 @import url("cafe_car/utility.css");
 @import url("ui/components.css");
 
 :root {
-    --half-gap: calc(var(--gap) / 2);
+  --half-gap: calc(var(--gap) / 2);
 }
 
 a {
-    color: var(--link);
-    text-decoration: none;
+  color: var(--link);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    filter: brightness(1.05);
+  }
+
+  &:active {
+    filter: brightness(.95);
+  }
 }
 
-a:hover {
-    text-decoration: underline;
+.dim {
+  color: var(--gray);
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
+  outline-color: var(--outline);
 }
 
 body {
-    color: var(--color);
-    background: var(--background);
-    font-family: var(--font), sans-serif;
-    margin: 0;
+  color: var(--color);
+  background: var(--background);
+  font-family: var(--font), sans-serif;
+  margin: 0;
+}
+
+h1, h2, h4, h5, h6, p {
+  margin-left: var(--indent);
 }
 
 input,
 textarea,
 select {
-    background: var(--input);
-    border: 1px solid var(--border);
-    max-width: 100%;
-    border-radius: 4px;
-    padding: 8px;
-    font: inherit;
+  background: var(--input);
+  border: 1px solid var(--border);
+  max-width: 100%;
+  border-radius: var(--control-radius);
+  padding: 8px;
+  font: inherit;
+}
+
+select {
+  box-shadow: rgba(34, 32, 29, 0.05) 0px 1px 2px;
 }
 
 ::placeholder {
-    color: inherit;
-    opacity: .3;
+  color: inherit;
+  opacity: .3;
 }
 
 time {
-    text-decoration: dotted underline;
-    text-decoration-color: var(--dim);
+  text-decoration: dotted underline;
+  text-decoration-color: var(--dim);
 }

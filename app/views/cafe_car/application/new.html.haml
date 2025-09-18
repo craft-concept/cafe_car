@@ -1,7 +1,6 @@
-- title = title("New #{model_name.human}")
-- actions = link(model).index
+- title = breadcrumbs(link(model).index, title("New #{model_name.human}"))
 
-= ui.page title:, actions: do |page|
+= ui.page title: do |page|
   = page.body do
     = ui.card do |card|
       = render "form", card:

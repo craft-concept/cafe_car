@@ -1,2 +1,5 @@
-- nav.routes.each do |r|
-  = nav.link_to r.name.humanize, r.requirements.clone.tap { _1[:controller] = "/" + _1[:controller]}
+- nav.groups.each do |name, routes|
+  - if name.present?
+    %h4= name.join.humanize
+  - routes.each do |r|
+    = r.link

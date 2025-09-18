@@ -1,5 +1,5 @@
 en:
-  "true":  "Yes"
+  "true": "Yes"
   "false": "No"
 
   list_html:
@@ -7,32 +7,33 @@ en:
     one: "%{list}"
     other: "%{count} total: %{list}"
 
-  index:   List
-  show:    View
+  index: List
+  show: View
   destroy: Delete
 
   controls:
     default: "%{Action}"
-    new:     New %{Model}
-    index:   ← All %{Models}
+    new: New %{Model}
+    index: "%{Models}"
+    # index: ← All %{Models}
     confirm:
       destroy: This %{Model} will be PERMANENTLY deleted. Are you sure?
     disabled:
       policy:
         default: You don't have permission to %{action} this %{model}.
-        index:   You don't have permission to %{action} %{models}.
+        index: You don't have permission to %{action} %{models}.
 
   time:
     formats:
       default: "%b %{ordinal}, %Y at %-l:%M%p"
-      long:    "%A, %B %{ordinal}, %Y at %-l:%M:%S%p %Z"
+      long: "%A, %B %{ordinal}, %Y at %-l:%M:%S%p %Z"
 
   attributes:
-    to_s:         Item
-    id:           ID
-    created_at:   Created
-    updated_at:   Updated
-    deleted_at:   Deleted
+    to_s: Item
+    id: ID
+    created_at: Created
+    updated_at: Updated
+    deleted_at: Deleted
     published_at: Published
 
   application:
@@ -45,7 +46,7 @@ en:
     models:
       application_record: Record # .model_name.human
       person:
-        one:   Person
+        one: Person
         other: People
     attributes:
       article:

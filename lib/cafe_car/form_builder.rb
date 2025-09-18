@@ -2,6 +2,8 @@ module CafeCar
   class FormBuilder < ActionView::Helpers::FormBuilder
     include Resolver
 
+    delegate :ui, to: :@template
+
     def initialize(...)
       super
       @info   = {}
@@ -9,7 +11,7 @@ module CafeCar
     end
 
     def policy    = @template.policy(@object)
-    def show(...) = @template.ui.input { @template.present(@object).show(...) }
+    def show(...) = ui.input { @template.present(@object).show(...) }
 
     def association(method, collection: nil, **options)
       info = info(method)
@@ -35,6 +37,11 @@ module CafeCar
 
     def label(method, text = info(method).label, required: info(method).required?, **, &)
       super(method, text, required:, **, &)
+    end
+
+    def submit(value = nil, **options)
+      options[:class] ||= ui.class(:button, :primary)
+      super(value, options)
     end
 
     def info(method)

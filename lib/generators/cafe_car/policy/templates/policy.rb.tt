@@ -1,20 +1,20 @@
 <% module_namespacing do -%>
 class <%= class_name %>Policy < <%= base_policy_name %>
-  def index?   = false
-  def show?    = false
-  def create?  = false
-  def update?  = false
+  def index?   = admin?
+  def show?    = admin?
+  def create?  = admin?
+  def update?  = admin?
   def destroy? = update?
 
 
   # def title_attribute = <%= title_attribute %>
 
   def permitted_attributes
-    # [<%= permitted_attributes %>]
+    [<%= permitted_attributes %>]
   end
 
   class Scope < Scope
-    # def resolve = scope.all
+    def resolve = scope.all
   end
 end
 <% end -%>

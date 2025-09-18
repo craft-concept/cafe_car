@@ -96,21 +96,17 @@
     color: inherit;
 }
 
-.Table_Row:hover {
-    background-color: var(--hover);
-}
-
 .Table_Row:not(:hover) .Table-shy {
     visibility: hidden;
 }
 
-/*.Table_Row + .Table_Row > .Table_Cell {*/
-/*    border-top: 1px solid var(--border);*/
-/*}*/
+.Table_Row + .Table_Row {
+   border-top: 1px solid var(--background);
+}
 
 .Table_Cell {
     white-space: nowrap;
-    max-width: 20em;
+    /* max-width: 20em; */
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 1em;

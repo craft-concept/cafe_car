@@ -1,23 +1,29 @@
 .Navigation {
+    --indent: .7em;
     display: grid;
     align-content: start;
-    padding-top: var(--gap);
 }
 
 .Navigation_Link {
-    padding: var(--gap) calc(var(--gap) * 2);
+    padding: .7em;
     position: relative;
+    color: inherit;
+    display: flex;
+    align-items: center;
 }
 
 
 .Navigation_Link:is(a):hover,
 .Navigation-current {
-    &::before {
+    text-decoration: none;
+
+    &::after {
         content: '';
         display: block;
         position: absolute;
-        inset: 3px 10px;
-        border-radius: var(--radius);
+        inset: 3px 0;
+        border-radius: var(--control-radius);
         background: var(--hover);
+        z-index: -1;
     }
 }

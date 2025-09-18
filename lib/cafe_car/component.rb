@@ -25,8 +25,8 @@ module CafeCar
     def class_names     = @names.map(&:to_s).map(&:camelize)
     def class_name(...) = ui_class(class_names, *@flags, *(@tag.to_s if href?), ...)
 
-    def contents
-      @contents ||= @template.safe_join([*@args, *(capture(context, &@block) if @block)])
+    def content
+      @content ||= @template.safe_join([*@args, *(capture(context, &@block) if @block)])
     end
 
     def wrapper(*args, **opts, &)
@@ -35,14 +35,20 @@ module CafeCar
       end
     end
 
+    def blank?
+      content.blank? or !content.match?(/^.*?[^<\s]/) or content.gsub(/<!--.*?-->/, "").blank?
+    end
+
+    def +(o) = safe_join([self, o])
+
     def html_safe? = true
     def to_s
-      return "" if @block and contents.blank?
+      return "" if @block and blank?
 
       if partial?
-        render(partial_name, options:, flags:, c: self, component: self, name => context, **options) { contents }
+        render(partial_name, options:, flags:, c: self, component: self, name => context, **options) { content }
       else
-        wrapper(*@args, **@options) { contents }
+        wrapper(*@args, **@options) { content }
       end
     end
   end

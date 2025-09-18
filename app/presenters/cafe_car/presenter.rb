@@ -43,6 +43,7 @@ module CafeCar
     def model    = @object.class
     def policy   = @policy ||= @template.policy(object)
 
+    def html_safe? = true
     def to_s         = to_html.to_s
     def present(...) = @template.present(...)
 

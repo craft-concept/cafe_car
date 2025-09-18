@@ -1,0 +1,17 @@
+@charset "utf-8";
+
+.Icon {
+  vertical-align: bottom;
+}
+
+.Icon-before {
+  margin-right: 0.5em;
+}
+
+.Icon-after {
+  margin-left: 0.5em;
+}
+
+.Icon-dim {
+  opacity: 0.5;
+}

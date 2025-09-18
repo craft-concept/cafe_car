@@ -1,5 +1,5 @@
-- title   = title(object)
-- actions = ui(object).controls(index: true)
+- title   = breadcrumbs(link(object).index, title(object))
+- actions = ui(object).controls
 - summary = ui(object).attributes :updated_at, :created_at, try: true
 - body    = render("show")
 

@@ -1,4 +1,16 @@
 en:
+  application:
+    name: CafeCar
+
+  navigation:
+    icon:
+      articles: journal-page
+      clients: city
+      invoices: page
+      line_items: lot-of-cash
+      notes: notes
+      users: user-square
+
   helpers:
     hint:
       article:

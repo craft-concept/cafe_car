@@ -44,14 +44,20 @@ module CafeCar
     def current_href?(...) = current_page? href_for(...)
 
     def href_for(*parts, namespace: self.namespace, **params)
-      params.merge! parts.extract_options!
-      params.delete(:action) if %i[show destroy index].include? params[:action]
-      url_for([*namespace, *parts, params])
+      HrefBuilder.new(*parts, namespace:, template: self, **params).to_s
     end
 
     def link(object)
       @links         ||= {}
       @links[object] ||= CafeCar[:LinkBuilder].new(self, object)
+    end
+
+    def icon(name, *, **, &)
+      ui.Icon(*, tag: :i, class: "iconoir-#{name.to_s.dasherize}", **, &)
+    end
+
+    def breadcrumbs(*items)
+      ui.row safe_join(items, icon(:nav_arrow_right, :dim))
     end
 
     def filter_form_for(objects, **options, &block)

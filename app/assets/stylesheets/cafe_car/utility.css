@@ -54,3 +54,7 @@
 :hover > .shy {
     visibility: visible;
 }
+
+.pretty_inspect {
+    white-space: pre-wrap;
+}

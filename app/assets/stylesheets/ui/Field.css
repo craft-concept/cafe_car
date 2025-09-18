@@ -25,7 +25,7 @@
 
 .Field_Error + .Field_Input:not(:focus) {
     background: var(--invalid);
-    border-color: #E68788;
+    border-color: var(--red);
 }
 
 textarea.Field_Input {

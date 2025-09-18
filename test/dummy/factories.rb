@@ -11,7 +11,7 @@ FactoryBot.define do
 
     trait :content do
       summary { Faker::Religion::Bible.quote }
-      body    { Faker::Hipster.paragraphs.join("<br><br>") }
+      body    { Faker::Lorem.paragraphs.join("<br><br>") }
     end
 
     trait :published do

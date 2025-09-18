@@ -70,8 +70,11 @@ module CafeCar
 
     def width
       case type
-      when :text, :string
-        "minmax(10em, 1fr)"
+      when :text, :string, :json
+        # "minmax(10em, fit-content)"
+        # "minmax(10em, 1fr)"
+        "minmax(10em, auto)"
+        # "min-content"
       else "min-content"
       end
     end
@@ -79,8 +82,8 @@ module CafeCar
     def input
       case type
       when :string   then :text_field
-      when :text     then :text_area
       when :decimal  then :text_field
+      when :text, :json then :text_area
       when :integer  then :number_field
       when :date     then :date_field
       when :datetime then :datetime_field

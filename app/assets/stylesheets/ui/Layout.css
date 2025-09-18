@@ -7,12 +7,15 @@
 }
 
 .Layout_Sidebar {
+  --indent: .7rem;
   display: flex;
   flex-direction: column;
-  width: 20em;
+  width: 250px;
+  flex-shrink: 0;
   white-space: nowrap;
   overflow: auto;
-  border-right: 1px solid var(--border);
+  padding: var(--gap);
+  padding-right: 0;
 }
 
 .Layout_Main {

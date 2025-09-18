@@ -4,12 +4,11 @@ Rails.application.routes.draw do
   resources :articles
 
   namespace :admin do
-    resources :invoices
-    resources :clients
     resources :articles
-    resources :users
+    resources :clients
+    resources :invoices
     resources :notes
-    resources :line_items
+    resources :users
 
     mount CafeCar::Engine => "/"
   end

@@ -1,6 +1,7 @@
 = ui.layout do |layout|
   = layout.sidebar do
-    %h1.center CafeCar
+    %h2= t(:title, scope: [:application], default: Rails.application.name.titleize)
     = render "navigation"
+
   = layout.main       { yield }
   = layout.footer     { render("footer") }

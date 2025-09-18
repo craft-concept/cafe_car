@@ -1,7 +1,9 @@
 module CafeCar::Table
   class Builder
+    include CafeCar[:ProcHelpers]
+
     attr_reader :ui
-    delegate :capture, :link_to, :params, :present, :request, :safe_join, to: :@template
+    delegate :capture, :link_to, :href_for, :params, :present, :request, :safe_join, to: :@template
 
     def initialize(template, **options, &block)
       @template         = template
@@ -16,7 +18,7 @@ module CafeCar::Table
     def shown             = @shown_attributes
 
     def title_attribute      = policy.title_attribute
-    def title(*args, **opts) = cell(title_attribute, *args, href: true, **opts)
+    def title(*, **, &) = cell(title_attribute, *, href: true, **, &)
 
     def timestamps(...) = cell(:updated_at, ...)
 
