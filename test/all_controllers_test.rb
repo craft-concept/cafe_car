@@ -9,6 +9,10 @@ class AllControllersTest < ActionDispatch::IntegrationTest
       get url_for(controller:, action: :index)
       assert_response :success
 
+      params = {singular => build(singular).as_json}
+      post(url_for(controller:, action: :create), params:)
+      assert_response :redirect
+
       get url_for(controller:, action: :new)
       assert_response :success
 
