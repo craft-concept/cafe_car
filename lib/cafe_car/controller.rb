@@ -138,7 +138,7 @@ module CafeCar
       redirect_to object
     end
 
-    def render_invalid_record    = render(object.persisted? ? 'edit' : 'new', status: :unprocessable_entity)
+    def render_invalid_record = render(object.persisted? ? 'edit' : 'new', status: :unprocessable_content)
 
     # def default_render(...) = run_callbacks(:render) { super }
 
