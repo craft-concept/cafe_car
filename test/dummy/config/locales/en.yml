@@ -5,6 +5,7 @@ en:
   navigation:
     icon:
       articles: journal-page
+      authors: open-book
       clients: city
       invoices: page
       line_items: lot-of-cash

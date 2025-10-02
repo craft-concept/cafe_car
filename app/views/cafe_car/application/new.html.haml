@@ -2,6 +2,7 @@
 
 = ui.page title: do |page|
   = page.body do
+    = render "alerts"
     = ui.card do |card|
       = render "form", card:
     = render "debug" if debug?

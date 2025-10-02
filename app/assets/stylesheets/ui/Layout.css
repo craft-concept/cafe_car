@@ -1,4 +1,5 @@
 .Layout {
+  container: Layout;
   display: flex;
   height: 100vh;
   width: 100vw;
@@ -8,6 +9,8 @@
 
 .Layout_Sidebar {
   --indent: .7rem;
+  transition: margin 300ms, width 300ms;
+  container: Sidebar;
   display: flex;
   flex-direction: column;
   width: 250px;
@@ -25,4 +28,48 @@
   flex-grow: 1;
   overflow: auto;
   position: relative;
+}
+
+.Layout_Menu {
+  display: none;
+  appearance: none;
+  border-radius: 99px;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  cursor: pointer;
+  vertical-align: center;
+  border-color: transparent;
+  background: none;
+
+  &:hover {
+    border-color: var(--border);
+    box-shadow: var(--box-shadow);
+  }
+
+  &:checked {
+    border-color: var(--border);
+    box-shadow: inset var(--box-shadow);
+  }
+
+  &::before {
+    content: "𑁔";
+    display: block;
+    font-size: 30px;
+    line-height: 1;
+    margin-top: -3px;
+  }
+}
+
+@media (width < 720px) {
+  .Layout:not(:has(.Layout_Menu:checked)) {
+    .Layout_Sidebar {
+      margin-left: -100vw;
+      width: 100vw;
+    }
+  }
+
+  .Layout:has(.Layout_Sidebar) .Layout_Menu {
+    display: inline-block;
+  }
 }

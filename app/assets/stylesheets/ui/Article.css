@@ -1,0 +1,11 @@
+.Article_Title {
+  margin-bottom: 0;
+}
+
+.Article_Author {
+  margin-top: 0;
+}
+
+.Article + .Article {
+  margin-top: 3em;
+}

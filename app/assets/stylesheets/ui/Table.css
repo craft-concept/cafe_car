@@ -32,7 +32,7 @@
     /*overflow: hidden;*/
     z-index: 2;
     white-space: nowrap;
-    /*border-bottom: 1px solid var(--border);*/
+    font-weight: bold;
 
     &::before, &::after {
         content: "";
@@ -45,11 +45,6 @@
 
     &::before {
         backdrop-filter: blur(20px);
-        background: linear-gradient(
-                to bottom,
-                var(--background),
-                transparent 50%
-        );
         mask-image: linear-gradient(
                 to bottom,
                 black 0 50%,
@@ -69,8 +64,7 @@
         );
     }
 
-    & .Table_Cell {
-        font-weight: bold;
+    .Table_Cell {
 
         &:first-child {
             border-top-left-radius: var(--radius);
@@ -89,19 +83,21 @@
             border-left: 1px solid var(--border);
         }
     }
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
 }
 
-.Table_Head a {
-    text-decoration: none;
-    color: inherit;
-}
+.Table_Row {
+    &:not(:hover) .Table-shy {
+        visibility: hidden;
+    }
 
-.Table_Row:not(:hover) .Table-shy {
-    visibility: hidden;
-}
-
-.Table_Row + .Table_Row {
-   border-top: 1px solid var(--background);
+    & + & {
+        border-top: 1px solid var(--background);
+    }
 }
 
 .Table_Cell {
@@ -115,10 +111,4 @@
 
 .Table-controls {
     text-align: right;
-}
-
-@media (prefers-color-scheme: dark) {
-    .Table {
-        border: 1px solid var(--border);
-    }
 }

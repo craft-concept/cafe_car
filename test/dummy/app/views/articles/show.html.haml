@@ -2,9 +2,10 @@
 - actions = link(@article).index
 - p       = present(@article)
 
-= ui.page :thin do |page|
+= ui.page :slim do |page|
   = page.body do
-    %h1= title
-    %h2= p.show :author
-    = p.show :body
-    = render "debug" if debug?
+    %article
+      %h1= title
+      %h2= p.show :author
+      = p.show :body
+      = render "debug" if debug?

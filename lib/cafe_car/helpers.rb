@@ -28,7 +28,7 @@ module CafeCar
       [*name, *flags, *args, *opts.keys].join(" ")
     end
 
-    def body_classes = [controller_name, action_name, *@body_class]
+    def body_classes = [*controller_path.split(?/), action_name, *@body_class]
 
     def title(object)
       present(object).title.presence.tap do |title|
@@ -36,10 +36,17 @@ module CafeCar
       end
     end
 
+    def capture(*, &)
+      super do
+        yield(*).then { _1.try(:html_safe?) ? _1.to_s : _1 }
+      end
+    end
+
     def present(*args, **options)
       @presenters                  ||= {}
       @presenters[[args, options]] ||= CafeCar[:Presenter].present(self, *args, **options)
     end
+    alias_method :p, :present
 
     def current_href?(...) = current_page? href_for(...)
 

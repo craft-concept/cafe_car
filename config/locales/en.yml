@@ -1,21 +1,19 @@
 en:
   "true": "Yes"
   "false": "No"
+  index: List
+  show: View
+  destroy: Delete
 
   list_html:
     zero: "(none)"
     one: "%{list}"
     other: "%{count} total: %{list}"
 
-  index: List
-  show: View
-  destroy: Delete
-
   controls:
     default: "%{Action}"
-    new: New %{Model}
+    new: "%{Action} %{Model}"
     index: "%{Models}"
-    # index: ← All %{Models}
     confirm:
       destroy: This %{Model} will be PERMANENTLY deleted. Are you sure?
     disabled:
@@ -36,11 +34,10 @@ en:
     deleted_at: Deleted
     published_at: Published
 
-  application:
-    create:
-      success: "%{Model} created!"
-    update:
-      success: "%{Model} updated!"
+  flashes:
+    create_html: "%{Model} created!"
+    update_html: "%{Model} updated: %{Object}"
+    destroy_html: "%{Model} deleted!"
 
   activerecord:
     models:

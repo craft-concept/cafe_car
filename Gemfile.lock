@@ -160,6 +160,8 @@ GEM
       railties (>= 7.0.0)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
+    i18n-debug (1.2.0)
+      i18n (< 2)
     image_processing (1.14.0)
       mini_magick (>= 4.9.5, < 6)
       ruby-vips (>= 2.0.17, < 3)
@@ -408,6 +410,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   hotwire-livereload
+  i18n-debug
   image_processing (~> 1.13)
   mutex_m
   puma

@@ -19,5 +19,5 @@ group :development do
   gem "hotwire-livereload"
   gem "better_errors"
   gem "binding_of_caller"
-  # gem "i18n-debug"
+  gem "i18n-debug"
 end

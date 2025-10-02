@@ -4,6 +4,7 @@
 
 = page.wrapper *flags do
   = page.head do
+    = ui.layout.context.menu(tag: :input, type: :checkbox)
     = page.title(title, tag: :h2)
     = page.actions(actions)
 

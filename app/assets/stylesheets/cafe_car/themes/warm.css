@@ -2,36 +2,20 @@
 
 :root {
   --red: rgb(206 44 49);
+  --green: rgb(32 130 88);
 
   --color: rgb(34 32 29);
   --dim: #6c7a91;
 
   --accent: rgb(2 152 194);
-  /* --accent: rgb(46, 159, 5); */
   --border: rgb(228 225 222);
   --background: #f6f5f3;
-  --backdrop: rgb(61 56 48 / .5);
+  --backdrop: rgb(58 50 37 / .5);
   --input: #fff;
   --invalid: #faf6f6;
   --card: white;
-  /* --hover: rgb(50 50 93 / .03); */
   --hover: rgb(63 52 31 / .05);
   --shadow: rgb(34 32 29 / .1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --input: #151f2c;
-    --invalid: #351f2c;
-    --background: #151f2c;
-
-    --color: #dce1e7;
-    --dim: #6c7a91;
-
-    --card: #192433;
-    --border: #1f2e42;
-    --accent: #6aa9e3;
-  }
 }
 
 body {

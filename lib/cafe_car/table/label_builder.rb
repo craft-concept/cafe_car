@@ -8,7 +8,7 @@ module CafeCar::Table
     end
 
     def field        = policy.info(@method)
-    def title        = reflection&.klass&.then { policy(_1).title_attribute&.to_s }
+    def title        = reflection&.klass&.then { policy(_1).title_attribute&.to_s } rescue ""
     def column?      = @objects.columns_hash.key? @key
     def sortable?    = column? || belongs_to?
     def reflection   = field.reflection

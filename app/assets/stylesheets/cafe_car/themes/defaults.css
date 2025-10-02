@@ -6,6 +6,11 @@
     --secondary: var(--accent);
     --tertiary: var(--accent);
 
+    --success: var(--green);
+    --warning: var(--orange);
+    --danger: var(--red);
+    --error: var(--red);
+
     --outline: var(--accent);
     --link: var(--accent);
     --error: var(--red);
@@ -13,7 +18,8 @@
     --card: rgb(255 255 255);
     --hover: rgb(50 50 93 / .03);
 
-    --font: ui-sans-serif, -apple-system, menu, sans-serif;
+    --font-family: ui-sans-serif, -apple-system, menu, sans-serif;
+    --font: 16px var(--font-family);
 
     --shadow: rgb(50 50 93 / .25);
     --box-shadow: var(--shadow) 0 2px 5px -1px,
@@ -25,6 +31,7 @@
     --gap: 1rem;
     --indent: 0;
     --half-gap: calc(var(--gap) / 2);
+    --third-gap: calc(var(--gap) / 3);
     --gap2: calc(var(--gap) * 2);
     --radius: 12px;
     --control-radius: calc(var(--radius) / 3);

@@ -1,4 +1,5 @@
 .Card {
+    container: Card;
     box-shadow: var(--box-shadow);
     border-radius: var(--radius);
     background: var(--card);

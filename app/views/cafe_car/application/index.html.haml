@@ -3,9 +3,10 @@
 - body = render("index")
 
 = ui.page title:, actions: do |page|
-  -# = page.left do
+  -# = page.aside do
   -#   = render "filters"
 
   = page.body do
+    = render "alerts"
     = body
     = render "debug" if debug?

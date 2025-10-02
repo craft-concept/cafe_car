@@ -4,7 +4,6 @@ module CafeCar
 
     include Pundit::Authorization
     include Filtering
-    include Helpers
 
     class_methods do
       def model(model)
@@ -41,11 +40,13 @@ module CafeCar
       default_form_builder CafeCar[:FormBuilder]
 
       define_callbacks :render, :update, :create, :destroy
+      add_flash_types :success, :warning, :error
 
       helper_method :model, :model_name, :object, :objects
       helper_method :action, :scope
 
       helper Helpers
+      delegate :present, to: :helpers
 
       after_action :verify_authorized, :verify_policy_scoped
     end
@@ -57,23 +58,23 @@ module CafeCar
 
     def create
       run_callbacks(:create) { object.save! }
-
+      flash!
       respond_to do |f|
         f.html { created_redirect }
-        f.json { }
       end
     end
 
     def update
       run_callbacks(:update) { object.save! }
+      flash!
     end
 
     def destroy
       run_callbacks(:destroy) { object.destroy }
 
+      flash!
       respond_to do |f|
         f.html { destroyed_redirect }
-        f.json { }
       end
     end
 
@@ -83,6 +84,10 @@ module CafeCar
       return authorize object if object
       return authorize objects if objects
       raise "nothing to authorize! Define self.object or self.objects"
+    end
+
+    def flash!
+      flash[:success] = present(object).i18n("#{action_name}_html", scope: :flashes)
     end
 
     def current_user = CafeCar[:Current].user
@@ -135,7 +140,7 @@ module CafeCar
 
     def updated_redirect
       return destroyed_redirect if object.destroyed?
-      redirect_to object
+      redirect_to object, alert: "Updated"
     end
 
     def render_invalid_record = render(object.persisted? ? 'edit' : 'new', status: :unprocessable_content)

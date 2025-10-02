@@ -1,0 +1,14 @@
+.Alert {
+  padding: var(--gap);
+  border-radius: var(--radius);
+}
+
+.Alert-success {
+  color: var(--success);
+  background: color-mix(in lab, var(--success) 20%, transparent);
+}
+
+.Alert-error {
+  color: var(--error);
+  background: color-mix(in lab, var(--error) 20%, transparent);
+}

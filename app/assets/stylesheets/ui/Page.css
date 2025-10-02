@@ -1,63 +1,51 @@
-.Page-thin {
-    --page-width: 720px;
-}
-
 .Page {
-    --page-width: auto;
-
-    display: flex;
-    flex-wrap: wrap;
-    /* display: grid; */
-    /* grid: auto-flow / var(--aside-width) minmax(auto, var(--page-width)); */
-    justify-content: stretch;
-    gap: var(--gap);
-    margin: var(--gap);
-}
-
-.Page:has(.Page_right, .Page-right) {
-    grid: auto-flow / var(--aside-width) minmax(auto, var(--page-width)) var(--aside-width);
+  container: Page;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: stretch;
+  gap: var(--gap);
+  margin: var(--gap);
 }
 
 .Page_Head {
-    grid-column: 2;
-    display: flex;
-    align-items: center;
-    gap: var(--gap);
-    width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  width: 100%;
 }
 
 .Page_Title {
-    flex-grow: 1;
-    margin: 0;
+  flex-grow: 1;
+  margin: 0;
 }
 
-.Page_Left {
-    grid-column: 1;
+.Page_Aside {
+  min-width: 300px;
 }
 
 .Page_Body {
-    grid-column: 2;
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: 20px;
+  flex: 1 1 20px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
 }
 
-.Page_Right {
-    grid-column: 3;
+.Page-slim .Page_Body {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media (width < 720px) {
-    .Page {
-        grid: auto-flow / 1fr;
-        justify-items: stretch;
-    }
+  .Page {
+    flex-direction: column;
+    justify-items: stretch;
+  }
 
-    .Page_Left,
-    .Page_Head,
-    .Page_Body,
-    .Page_Right,
-    .Page_Foot {
-        grid-area: auto/1;
-        justify-self: stretch;
-    }
+  .Page_Head,
+  .Page_Body,
+  .Page_Aside,
+  .Page_Foot {
+    justify-self: stretch;
+  }
 }

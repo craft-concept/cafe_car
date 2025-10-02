@@ -1,22 +1,14 @@
 - title   = breadcrumbs(link(object).index, title(object))
-- actions = ui(object).controls
 - summary = ui(object).attributes :updated_at, :created_at, try: true
 - body    = render("show")
 
-= ui.page :full, title:, actions: do |page|
-  = page.left do
-    = ui.card :sticky do
-      = summary
-
-    = ui.card title: "Actions" do |card|
-      = render("actions", card:)
-
-    = ui.card title: "Notes" do |card|
-      = render("notes", card:)
-
+= ui.page :full, title: do |page|
+  = page.aside do
     = yield :left
 
   = page.body do
+    = render "alerts"
+
     - if tab = params[:tab]
       -# - title tab.humanize
       -# = row bottom: true do
@@ -29,5 +21,15 @@
       = body
     = render "debug" if debug?
 
-  = page.right do
+  = page.aside do
+    = ui.card :sticky do |card|
+      = card.section ui(object).controls
+      = card.section summary
+
+    = ui.card title: "Actions" do |card|
+      = render("actions", card:)
+
+    = ui.card title: "Notes" do |card|
+      = render("notes", card:)
+
     = yield :right

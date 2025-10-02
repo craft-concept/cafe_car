@@ -1,18 +1,18 @@
-- title("Edit #{model_name.human}")
-- title = breadcrumbs(link(object).index, link(object), "Edit")
-- actions = ui(object).controls(edit: false)
+- title = breadcrumbs(link(object).index, link(object), title("Edit #{model_name.human}"))
 
-= ui.page title:, actions: do |page|
-  = page.left do
+= ui.page title: do |page|
+  = page.body do
+    = render "alerts"
+    = ui.card do |card|
+      = render 'form', card:
+    = render "debug" if debug?
+
+  = page.aside do
     = ui.card :sticky do |card|
+      = card.section ui(object).controls(edit: false)
       - if object.persisted?
         = card.section do
           =  ui(object).attributes :updated_at, :created_at, try: true
 
     = ui.card title: "Actions" do
       = render('actions')
-
-  = page.body do
-    = ui.card do |card|
-      = render 'form', card:
-    = render "debug" if debug?

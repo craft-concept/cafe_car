@@ -3,6 +3,7 @@ module CafeCar
     attr_reader :object
 
     delegate :capture, :link_to, :link_to_unless, :current_page?, :href_for, to: :@template
+    delegate :model, :policy, to: :p
 
     def initialize(template, object, namespace: template.namespace)
       @template  = template
@@ -10,19 +11,11 @@ module CafeCar
       @namespace = namespace
     end
 
-    def model         = @object.is_a?(Class) ? @object : @object.class
-    def model_name    = model.model_name
-    def policy        = @template.policy(@object)
-    def var(names)    = names.merge!(*names.map { {_1.to_s.downcase.intern => _2.downcase} })
+    def p             = @template.present(@object)
     def can?(action)  = policy.public_send("#{action}?")
     def cant?(action) = !can?(action) && disabled(action, :policy)
 
-    def i18n(action, scope: nil, default: :default, **)
-      vars = var Action: @template.t(action, default: action.to_s.humanize),
-                 Model:  model_name.human,
-                 Models: model_name.human(count: 2)
-      @template.t(action, scope: [:controls, *scope], default:, **vars, **)
-    end
+    def i18n(*, scope: nil, **) = p.i18n(*, scope: [:controls, *scope], **)
 
     def confirm(key)             = i18n(key, scope: :confirm)
     def disabled(action, reason) = i18n(action, scope: [:disabled, reason])
@@ -38,14 +31,14 @@ module CafeCar
 
     def link(action, target, label = i18n(action), disabled: false, hide: false, **opts, &)
       disabled ||= cant?(action)
-      return "" if disabled and hide
+      return if disabled and hide
 
       href    = href_for(*target, action:, namespace: @namespace)
       current = current_page?(href)
       content = block_given? ? capture(label, &) : label
 
       link_to_unless(disabled || current, content, href, **turbo!(opts)) do
-        @template.tag.span(content, class: "disabled", disabled: true, title: disabled)
+        @template.tag.span(content, class: "disabled", disabled: true, title: disabled.presence)
       end
     end
 
@@ -64,6 +57,6 @@ module CafeCar
     end
 
     def html_safe? = true
-    def to_s = @template.present(@object).to_s
+    def to_s = p.to_s
   end
 end

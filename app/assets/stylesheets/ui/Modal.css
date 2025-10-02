@@ -9,7 +9,7 @@
     justify-content: center;
     overflow: auto;
     backdrop-filter: blur(8px);
-    padding: calc(var(--gap) * 2);
+    padding: var(--gap);
     animation: fade-in 100ms;
 }
 

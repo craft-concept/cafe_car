@@ -1,0 +1,28 @@
+@import url(defaults.css);
+
+:root {
+  --input: #1e1e1d;
+  --invalid: #35261f;
+  --background: #191918;
+
+  --color: #e7e3dc;
+  --dim: #6c7a91;
+
+  --card: #222221;
+  --border: #2A2A28;
+  --accent: rgb(35, 175, 208);
+  --hover: rgb(42, 42, 40);
+  --shadow: rgba(0, 0, 0, 0.2);
+}
+
+body {
+  scrollbar-color: rgb(73, 72, 70) rgb(25, 25, 24);
+}
+
+.Card, .Table {
+  border: 0;
+}
+
+.Table_Head {
+  background-color: var(--card);
+}

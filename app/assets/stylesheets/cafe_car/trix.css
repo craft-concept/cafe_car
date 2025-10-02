@@ -1,55 +1,56 @@
-
 trix-editor {
-    background: var(--input);
-    border: 1px solid var(--border);
+  background: var(--input);
+  border: 1px solid var(--border);
 
-    & .trix-button {
-        border-bottom: none;
-    }
+  .trix-button {
+    border-bottom: none;
+  }
+
+  &:focus {
+    outline-width: 2px;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
-    trix-toolbar {
-        & .trix-button-group {
-            border: 1px solid var(--border);
-        }
-
-        & .trix-button {
-            &.trix-active {
-                background: var(--link);
-            }
-
-            &:first-child {
-                border-top-left-radius: inherit;
-                border-bottom-left-radius: inherit;
-            }
-
-            &:last-child {
-                border-top-right-radius: inherit;
-                border-bottom-right-radius: inherit;
-            }
-        }
-
-        & .trix-dialog {
-            background: var(--card);
-            box-shadow: var(--shadow);
-        }
-
-        & [data-trix-dialog] [data-trix-validate]:invalid {
-            background: var(--invalid);
-        }
+  trix-toolbar {
+    .trix-button-group {
+      border: 1px solid var(--border);
     }
 
-    trix-toolbar .trix-button {
-        border: none;
-    }
+    .trix-button {
+      border: none;
 
-    trix-toolbar .trix-button:not(:first-child) {
+      &.trix-active {
+        background: var(--link);
+      }
+
+      &:first-child {
+        border-top-left-radius: inherit;
+        border-bottom-left-radius: inherit;
+      }
+
+      &:last-child {
+        border-top-right-radius: inherit;
+        border-bottom-right-radius: inherit;
+      }
+
+      &:not(:first-child) {
         border-left: 1px solid var(--border);
+      }
     }
 
-    trix-toolbar .trix-button--icon::before {
-        opacity: 1;
-        filter: invert(100%);
+    .trix-dialog {
+      background: var(--card);
+      box-shadow: var(--shadow);
     }
+
+    [data-trix-dialog] [data-trix-validate]:invalid {
+      background: var(--invalid);
+    }
+
+    .trix-button--icon::before {
+      opacity: 1;
+      filter: invert(100%);
+    }
+  }
 }

@@ -39,9 +39,10 @@ module CafeCar
       @shown_attributes = {}
     end
 
-    def to_model = @object
-    def model    = @object.class
-    def policy   = @policy ||= @template.policy(object)
+    def to_model   = @object
+    def model      = @object.is_a?(Class) ? @object : @object.class
+    def model_name = model.model_name
+    def policy     = @policy ||= @template.policy(object)
 
     def html_safe? = true
     def to_s         = to_html.to_s
@@ -116,6 +117,16 @@ module CafeCar
 
       p = present(value(method, **@options), **options)
       block ? capture(p, method, options, &block) : p
+    end
+
+    def i18n_vars(names) = names.merge(*names.map { {_1.to_s.downcase.to_sym => _2.downcase} })
+
+    def i18n(action, scope: nil, **)
+      vars = i18n_vars Action: t(action, default: action.to_s.humanize),
+                       Model:  model_name.human,
+                       Models: model_name.human(count: 2),
+                       Object: link(@object).to_s.html_safe
+      @template.translate(action, scope:, default: :default, deep_interpolation: true, **vars, **)
     end
   end
 end

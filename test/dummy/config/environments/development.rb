@@ -6,7 +6,7 @@ Rails.application.configure do
     Rails.root.join("../../app/javascript")
   ]
 
-  config.hosts << ".ts.net"
+  config.hosts << /(.*)\.ts\.net$/
   config.enable_reloading            = true
   config.eager_load                  = false
   config.consider_all_requests_local = true
