@@ -10,5 +10,7 @@ class User < ApplicationRecord
   default_scope -> { order(:name) }
   scope :search, -> { query("name~": _1) }
 
+  broadcasts_refreshes
+
   def super? = true
 end

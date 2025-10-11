@@ -83,3 +83,13 @@ time {
   text-decoration-color: var(--dim);
   cursor: default;
 }
+
+
+html[data-turbo-visit-direction="forward"]::view-transition-group(root),
+html[data-turbo-visit-direction="back"]::view-transition-group(root) {
+  animation: none;
+}
+
+turbo-frame {
+  display: contents;
+}

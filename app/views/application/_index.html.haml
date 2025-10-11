@@ -1,3 +1,4 @@
+- page = params.fetch(:page, 1)
 = render("table").presence or render("empty")
-%p.center= page_entries_info objects
+.center= page_entries_info objects
 = paginate objects

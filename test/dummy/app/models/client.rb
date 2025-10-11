@@ -4,4 +4,6 @@ class Client < ApplicationRecord
   has_many :invoices
 
   validates :name, presence: true
+
+  broadcasts_refreshes
 end

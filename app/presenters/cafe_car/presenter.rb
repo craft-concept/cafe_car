@@ -119,6 +119,12 @@ module CafeCar
       block ? capture(p, method, options, &block) : p
     end
 
+    # def card(**)
+    #   ui.card title:, ** do |card|
+    #     ui <<
+    #   end
+    # end
+
     def i18n_vars(names) = names.merge(*names.map { {_1.to_s.downcase.to_sym => _2.downcase} })
 
     def i18n(action, scope: nil, **)

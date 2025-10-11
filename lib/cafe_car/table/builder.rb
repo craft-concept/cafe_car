@@ -13,6 +13,8 @@ module CafeCar::Table
       @shown_attributes = {}
     end
 
+    def model_name = model.model_name
+
     def cell(method, ...) = shown!(method).then { nil }
     def shown!(method)    = @shown_attributes[method] = true
     def shown             = @shown_attributes

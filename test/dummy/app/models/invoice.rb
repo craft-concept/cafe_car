@@ -11,6 +11,8 @@ class Invoice < ApplicationRecord
 
   validates :number, uniqueness: {scope: :client_id}
 
+  broadcasts_refreshes
+
   private
 
   def set_number

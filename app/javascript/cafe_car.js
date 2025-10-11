@@ -1,3 +1,12 @@
+import "@hotwired/turbo-rails"
+
+Object.assign(Turbo.StreamActions, {
+  // <turbo-stream action="navigate" target="Hello, world"></turbo-stream>
+  navigate() {
+    history.pushState({ action: "navigate" }, "", this.getAttribute("target"))
+  }
+})
+
 function last(arr) {
   return arr[arr.length - 1];
 }
@@ -9,9 +18,10 @@ addEventListener("mousedown", event => {
 addEventListener("mouseup", event => {
   if (event.target === window.mouseDownTarget && event.target.matches(".Modal_Close, .Modal")) {
     event.preventDefault()
+    event.stopPropagation()
     event.target.closest(".Modal").classList.add("remove")
   }
-})
+}, { capture: true })
 
 addEventListener("keydown", event => {
   switch (event.key) {

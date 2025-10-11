@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_23_195619) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_05_220017) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -112,6 +112,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_195619) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["invoice_id"], name: "index_payments_on_invoice_id"
+  end
+
+  create_table "slugs", force: :cascade do |t|
+    t.string "slug", null: false
+    t.string "sluggable_type"
+    t.integer "sluggable_id"
+    t.string "scope"
+    t.datetime "created_at"
+    t.index ["slug", "sluggable_type", "scope"], name: "index_slugs_on_slug_and_sluggable_type_and_scope", unique: true
+    t.index ["slug", "sluggable_type"], name: "index_slugs_on_slug_and_sluggable_type"
+    t.index ["sluggable_type", "sluggable_id"], name: "index_slugs_on_sluggable"
   end
 
   create_table "users", force: :cascade do |t|

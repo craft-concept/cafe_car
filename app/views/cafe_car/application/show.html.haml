@@ -2,6 +2,7 @@
 - summary = ui(object).attributes :updated_at, :created_at, try: true
 - body    = render("show")
 
+= turbo_stream_from(object)
 = ui.page :full, title: do |page|
   = page.aside do
     = yield :left

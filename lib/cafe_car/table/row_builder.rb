@@ -37,7 +37,7 @@ module CafeCar::Table
     def content = capture(self, &@block)
 
     def to_html
-      ui.row(content)
+      ui.row(content, @template.turbo_stream_from(@object))
     end
   end
 end

@@ -10,6 +10,8 @@ class Article < ApplicationRecord
   scope :unpublished, -> { where(published_at: nil) }
   scope :search, ->(term) { query("title~": term) }
 
+  broadcasts_refreshes
+
   def published? = published_at && published_at < Time.zone.now
   def draft?     = published_at && published_at > Time.zone.now
 end
