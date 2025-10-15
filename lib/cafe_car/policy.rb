@@ -19,7 +19,7 @@ module CafeCar::Policy
   end
 
   def listable_attributes
-    model_info.listable_fields.map(&:method)
+    model_info.fields.listable.map(&:method)
   end
 
   def displayable_attributes
@@ -40,6 +40,7 @@ module CafeCar::Policy
   def displayable_associations
     model.reflections.values
          .select {|a| !a.options[:autosave] && !a.options[:polymorphic] }
+         .reject { _1.class_name =~ /^ActiveStorage::/ }
          .map    { _1.name.to_sym }
   end
 

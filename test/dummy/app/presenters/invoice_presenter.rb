@@ -1,8 +1,6 @@
 class InvoicePresenter < CafeCar::Presenter
   show :total, as: :currency
-  show :number do |number|
-    "#%03d" % number.object
-  end
+  show :number, -> { "#%03d" % _1.object }
 
   def title = show(:number)
 end

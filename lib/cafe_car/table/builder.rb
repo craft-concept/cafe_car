@@ -1,6 +1,7 @@
 module CafeCar::Table
   class Builder
-    include CafeCar[:ProcHelpers]
+    include CafeCar::ProcHelpers
+    include CafeCar::OptionHelpers
 
     attr_reader :ui
     delegate :capture, :link_to, :href_for, :params, :present, :request, :safe_join, to: :@template
@@ -11,6 +12,7 @@ module CafeCar::Table
       @block            = block
       @ui               = @template.ui.table.context
       @shown_attributes = {}
+      assign_options!
     end
 
     def model_name = model.model_name

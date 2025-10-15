@@ -6,7 +6,7 @@ module CafeCar
 
     def initialize(template, name, *args, tag: :div, **options, &block)
       @template = template
-      @names    = [*name]
+      @names    = [*name].map(&:to_s).map(&:underscore).map(&:to_sym)
       @tag      = tag
       @flags    = args.extract! { _1.is_a? Symbol }
       @args     = args

@@ -1,33 +1,37 @@
+:root {
+  --sidebar-width: 250px;
+}
+
 .Layout {
-  container: Layout;
   display: flex;
-  height: 100vh;
-  width: 100vw;
-  align-items: stretch;
-  overflow: hidden;
+  align-items: start;
 }
 
 .Layout_Sidebar {
   --indent: .7rem;
-  transition: margin 300ms, width 300ms;
-  container: Sidebar;
+
+  width: var(--sidebar-width);
+  position: sticky;
+  inset: 0;
+  overflow: auto;
+
   display: flex;
   flex-direction: column;
-  width: 250px;
   flex-shrink: 0;
-  white-space: nowrap;
-  overflow: auto;
+
   padding: var(--gap);
-  padding-right: 0;
+  white-space: nowrap;
+  transition: margin var(--duration), width var(--duration);
 }
 
 .Layout_Main {
+  transition: transform var(--duration);
+  /* margin-left: var(--sidebar-width); */
   display: flex;
   flex-direction: column;
   align-items: stretch;
   flex-grow: 1;
-  overflow: auto;
-  position: relative;
+  padding: var(--gap);
 }
 
 .Layout_Menu {
@@ -62,10 +66,23 @@
 }
 
 @media (width < 720px) {
-  .Layout:not(:has(.Layout_Menu:checked)) {
+  .Layout_Main {
+    margin-left: 0;
+    transform: translateX(var(--sidebar-width));
+  }
+
+  body:has(.Layout_Menu:checked) {
+    overflow-x: hidden;
+  }
+
+  body:not(:has(.Layout_Menu:checked)) {
     .Layout_Sidebar {
-      margin-left: -100vw;
-      width: 100vw;
+      margin-left: calc(-1 * var(--sidebar-width));
+      /* width: 100vw; */
+    }
+
+    .Layout_Main {
+      transform: none;
     }
   }
 

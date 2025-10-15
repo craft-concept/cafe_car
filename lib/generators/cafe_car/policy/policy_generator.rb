@@ -20,7 +20,7 @@ class CafeCar::PolicyGenerator < Rails::Generators::NamedBase
   def model  = @model ||= CafeCar[:ModelInfo].new(model_class)
 
   def attribute_names
-    @attribute_names ||= permitted.presence || model.editable_fields.map(&:method)
+    @attribute_names ||= permitted.presence || model.fields.editable.map(&:method)
   end
 
   def title_attribute

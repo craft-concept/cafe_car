@@ -11,5 +11,6 @@ module Dummy
     config.load_defaults Rails::VERSION::STRING.to_f
     config.autoload_lib(ignore: %w[assets tasks])
     config.time_zone = ENV["TZ"] || "America/Detroit"
+    # config.railties_order = [:all, :main_app]
   end
 end

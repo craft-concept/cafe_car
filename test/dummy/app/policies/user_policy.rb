@@ -10,9 +10,11 @@ class UserPolicy < ApplicationPolicy
   def title_attribute = :name
 
   def permitted_attributes
-    [:name,
-     *([:password, :password_confirmation] if object.new_record? or me?)
-    ]
+    if object.new_record? or me?
+      [:name, :avatar, :password, :password_confirmation]
+    else
+      [:name, :avatar]
+    end
   end
 
   class Scope < Scope

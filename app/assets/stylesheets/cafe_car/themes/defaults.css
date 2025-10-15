@@ -1,6 +1,7 @@
 :root {
     color-scheme: light dark;
     accent-color: var(--accent);
+    scroll-behavior: smooth;
 
     --primary: var(--accent);
     --secondary: var(--accent);
@@ -40,4 +41,6 @@
     --page-width: 1024px;
     --aside-width: 20vw;
     --modal-width: 720px;
+
+    --duration: 300ms;
 }

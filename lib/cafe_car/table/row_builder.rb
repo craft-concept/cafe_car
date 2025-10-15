@@ -1,9 +1,6 @@
 module CafeCar::Table
   class RowBuilder < Builder
-    def initialize(...)
-      super
-      @object = @options.delete(:object) { raise }
-    end
+    option :object, default: -> { raise }
 
     def href!
       @href = @options.delete(:href) { true }

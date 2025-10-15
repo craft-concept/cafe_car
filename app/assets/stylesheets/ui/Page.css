@@ -4,7 +4,6 @@
   flex-wrap: wrap;
   justify-content: stretch;
   gap: var(--gap);
-  margin: var(--gap);
 }
 
 .Page_Head {
@@ -12,6 +11,9 @@
   align-items: center;
   gap: var(--gap);
   width: 100%;
+  position: sticky;
+  top: var(--gap);
+  left: var(--gap);
 }
 
 .Page_Title {

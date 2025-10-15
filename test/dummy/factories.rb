@@ -1,8 +1,11 @@
+require "open-uri"
+
 FactoryBot.define do
   factory :user do
     name     { Faker::Religion::Bible.unique.character }
     password { @pw = Faker::Internet.password }
     password_confirmation { @pw }
+    avatar { {io: URI.parse(Faker::Avatar.image).open, filename: "avatar.png"} }
   end
 
   factory :article do

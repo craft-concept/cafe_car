@@ -1,5 +1,5 @@
 module CafeCar
   class BasicObjectPresenter < CafeCar[:Presenter]
-    def to_html = object.to_s
+    def to_html = captured
   end
 end

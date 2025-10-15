@@ -1,5 +1,7 @@
 module CafeCar
   class ModelInfo
+    include Caching
+
     attr_reader :model, :object
 
     def self.find(klass)
@@ -15,8 +17,7 @@ module CafeCar
 
     def columns         = model.column_names
     def field(method)   = @field[method]   ||= FieldInfo.new(object:, method:)
-    def fields          = @fields          ||= columns.map { field _1 }
-    def editable_fields = @editable_fields ||= fields.reject(&:constant?)
-    def listable_fields = @listable_fields ||= editable_fields.reject(&:digest?)
+
+    derive :fields, -> { Fields.new(columns.map { field _1 }) }
   end
 end

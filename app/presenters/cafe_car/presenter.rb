@@ -1,13 +1,22 @@
 module CafeCar
   class Presenter
-    attr_reader :object, :options
+    include Caching
+    include OptionHelpers
 
     delegate *%w[l t capture concat link link_to partial? href_for render safe_join tag ui], to: :@template
-    delegate :show_defaults, to: :class
+    delegate :model_name, to: :model
 
-    def self.present(template, object, **options)
+    attr_reader :object, :options, :block
+    class_attribute :show_defaults, default: Hash.new { _1[_2] = {} }
+
+    def self.inherited(subclass)
+      super
+      subclass.show_defaults = show_defaults.deep_dup
+    end
+
+    def self.present(template, object, **options, &)
       object = object.object if object.is_a?(Presenter)
-      find(options.fetch(:as) { object.class }).new(template, object, **options)
+      find(options.fetch(:as) { object.class }).new(template, object, **options, &)
     end
 
     def self.find(klass)
@@ -23,42 +32,36 @@ module CafeCar
       klass.ancestors.lazy.map(&:name).compact
     end
 
-    def self.show(method, **options, &block)
-      show_defaults(method).merge!(options, block:)
+    def self.show(method, proc = nil, **, &block)
+      block ||= proc
+      show_defaults[method].merge!({block:}.compact, **)
     end
 
-    def self.show_defaults(method)
-      @show         ||= {}
-      @show[method] ||= {}
-    end
-
-    def initialize(template, object, **options)
+    def initialize(template, object, **options, &block)
       @template         = template
       @object           = object
       @options          = options
+      @block            = options.delete(:block) { block }
       @shown_attributes = {}
+      assign_options!
     end
 
     def to_model   = @object
     def model      = @object.is_a?(Class) ? @object : @object.class
-    def model_name = model.model_name
-    def policy     = @policy ||= @template.policy(object)
-
     def html_safe? = true
-    def to_s         = to_html.to_s
+    def to_s       = to_html.to_s
     def present(...) = @template.present(...)
+    def has_partial? = @object.try(:to_partial_path)&.then { partial? _1 }
+
+    derive :policy,   -> { @template.policy(@object) }
+    derive :captured, -> { @block ? capture(self, &@block) : @object.to_s }
 
     def to_html
-      return render object if object.try(:to_partial_path)&.then { partial? _1 }
+      return render object if has_partial?
       link_to title, href_for(self) rescue title
     end
 
-    def title_attribute = policy.title_attribute
-    def title(...)      = show(title_attribute, ...)
-
-    def human(attribute, **options)
-      object.class.human_attribute_name(attribute, options)
-    end
+    def title(...) = show(policy.title_attribute, ...)
 
     def attributes(*methods, except: nil, **options, &block)
       methods  = policy.displayable_attributes if methods.empty?
@@ -71,15 +74,28 @@ module CafeCar
       end
     end
 
-    def attribute(method, **options, &block)
-      # TODO: rescue from missing attribute errors and suggest checking the policy
-      content                   = show(method, **options, &block).to_s
+    def links = link(object)
+
+    def attribute(method, **, &)
+      content = show(method, &)
       return "" if content.blank?
 
-      ui.field do |field|
-        concat field.label(safe_join([human(method), *info_circle(method)], " "), tag: :strong)
-        concat field.content(content)
+      ui.Field do |f|
+        concat f.Label(safe_join([human(method), *info_circle(method)], " "), tag: :strong)
+        concat f.Content(content)
       end
+    end
+
+    def info(method) = model.field_info(method)
+    def human(method, **) = model.human_attribute_name(method, **)
+
+    def value(method)
+      model.inspection_filter.filter_param(method, object.public_send(method))
+    end
+
+    def show(method, **, &)
+      @shown_attributes[method] = true
+      present(value(method), **show_defaults[method], **, &)
     end
 
     def remaining_attributes(**options, &block)
@@ -93,30 +109,13 @@ module CafeCar
     end
 
     def info_circle(method, *args, **opts, &block)
-      title = FieldInfo.new(object:, method:).hint
+      title = info(method).hint
       return unless title
       ui.info_circle(*args, title:, **opts, &block)
     end
 
     def controls(**options, &block)
       render("controls", object:, options:, &block)
-    end
-
-    def links = link(object)
-
-    def value(method, ...)
-      value = object.public_send(method, ...)
-      model.inspection_filter.filter_param(method, value)
-    end
-
-    def show(method, **options, &block)
-      @shown_attributes[method] = true
-      show_defaults(method)&.then { options.with_defaults!(_1) }
-
-      block ||= options.delete(:block)
-
-      p = present(value(method, **@options), **options)
-      block ? capture(p, method, options, &block) : p
     end
 
     # def card(**)
