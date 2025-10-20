@@ -12,6 +12,7 @@
   gap: var(--gap);
   width: 100%;
   position: sticky;
+  z-index: -1;
   top: var(--gap);
   left: var(--gap);
 }

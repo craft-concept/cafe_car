@@ -3,7 +3,8 @@ module CafeCar
     include Caching
     include OptionHelpers
 
-    delegate *%w[l t capture concat link link_to partial? href_for render safe_join tag ui], to: :@template
+    delegate *%w[l t capture concat link link_to partial? get_partial href_for render safe_join tag ui], to: :@template
+    delegate :context, :context?, to: :@template
     delegate :model_name, to: :model
 
     attr_reader :object, :options, :block
@@ -51,22 +52,28 @@ module CafeCar
     def html_safe? = true
     def to_s       = to_html.to_s
     def present(...) = @template.present(...)
-    def has_partial? = @object.try(:to_partial_path)&.then { partial? _1 }
+    def partial      = @object.try(:to_partial_path)
+    def has_partial? = partial&.then { partial? _1 }
 
     derive :policy,   -> { @template.policy(@object) }
     derive :captured, -> { @block ? capture(self, &@block) : @object.to_s }
 
     def to_html
-      return render object if has_partial?
-      link_to title, href_for(self) rescue title
+      return render(object:, partial:) if has_partial?
+      if context?(:a)
+        preview
+      else
+        link_to (context(:a) { preview }), href rescue preview
+      end
     end
 
     def title(...) = show(policy.title_attribute, ...)
+    def logo(...) = show(policy.logo_attribute, ...)
 
     def attributes(*methods, except: nil, **options, &block)
       methods  = policy.displayable_attributes if methods.empty?
       methods  = methods.flatten.compact
-      methods -= except if except
+      methods -= [*except]
       capture do
         methods.map do |method|
           attribute(method, **options, &block)
@@ -75,6 +82,14 @@ module CafeCar
     end
 
     def links = link(object)
+    def href  = href_for(object)
+
+    def preview(**, &)
+      ui.row do
+        concat logo(size: :icon)
+        concat title
+      end
+    end
 
     def attribute(method, **, &)
       content = show(method, &)
@@ -86,14 +101,15 @@ module CafeCar
       end
     end
 
-    def info(method) = model.field_info(method)
+    def info(method) = model.info.field(method)
     def human(method, **) = model.human_attribute_name(method, **)
 
     def value(method)
-      model.inspection_filter.filter_param(method, object.public_send(method))
+      model.inspection_filter.filter_param(method, object.try(method))
     end
 
     def show(method, **, &)
+      return if method.nil?
       @shown_attributes[method] = true
       present(value(method), **show_defaults[method], **, &)
     end

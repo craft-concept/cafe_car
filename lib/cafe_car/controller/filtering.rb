@@ -12,6 +12,11 @@ module CafeCar::Controller::Filtering
   end
 
   def parsed_params
-    @parsed_params ||= CafeCar::ParamParser.new(request.params).parsed
+    @parsed_params ||=
+      if request.get? || request.head?
+        CafeCar::ParamParser.new(request.params).parsed
+      else
+        request.params
+      end
   end
 end

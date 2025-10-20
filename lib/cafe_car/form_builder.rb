@@ -6,10 +6,10 @@ module CafeCar
 
     def initialize(...)
       super
-      @info   = {}
       @fields = {}
     end
 
+    def model     = @object.is_a?(Class) ? @object : @object.class
     def policy    = @template.policy(@object)
     def show(...) = ui.input { @template.present(@object).show(...) }
 
@@ -44,9 +44,7 @@ module CafeCar
       super(value, options)
     end
 
-    def info(method)
-      @info[method] ||= const(:FieldInfo).new(method:, object:)
-    end
+    def info(method) = model.info.field(method)
 
     def input(method, *args, as: nil, **options)
       info = info(method)
@@ -60,7 +58,17 @@ module CafeCar
       @template.tag.small(text, **) if text.present?
     end
 
-    def error(method, text = info(method).error, **)
+    def errors(method)
+      errors     = object.try(:errors)
+      associated = info(method).reflection&.then { errors[_1.name] } || []
+      errors[method] | associated
+    end
+
+    def error_text(method)
+      errors(method).to_sentence.presence
+    end
+
+    def error(method, text = error_text(method), **)
       @template.tag.span(text, **) if text.present?
     end
 

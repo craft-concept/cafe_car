@@ -98,15 +98,28 @@
     & + & {
         border-top: 1px solid var(--background);
     }
+    align-items: center;
 }
 
 .Table_Cell {
     white-space: nowrap;
-    /* max-width: 20em; */
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 1em;
     position: relative;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    &:has(img) {
+        padding: 0;
+    }
+
+    img {
+        height: 2em;
+        /* margin: 4px; */
+        display: inline-block;
+    }
 }
 
 .Table-controls {

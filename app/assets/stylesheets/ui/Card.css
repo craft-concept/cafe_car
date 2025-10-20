@@ -28,8 +28,10 @@
     gap: var(--gap);
 }
 
-:is(.Card_Head, .Card_Section) + :is(.Card_Section, .Card_Foot) {
-    border-top: 1px solid var(--border);
+:is(.Card_Head, .Card_Section, .Card_Foot) {
+    & + &, & + form > &, form > & + & {
+        border-top: 1px solid var(--border);
+    }
 }
 
 .Card:not(:has(.Card_Head, .Card_Foot, .Card_Section)) {

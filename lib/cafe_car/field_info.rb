@@ -1,25 +1,26 @@
 module CafeCar
   class FieldInfo
-    attr_reader :method, :object
+    attr_reader :method, :model
+    alias_method :name, :method
 
-    def initialize(object:, method:)
+    delegate :model_name, to: :@model
+
+    def initialize(model:, method:)
       @method = method.to_sym
-      @object = object
+      @model = model
     end
 
-    def info(method) = self.class.new(object:, method:)
+    def info(method) = model.info.field(method)
 
     def id?          = method =~ /_ids?$/
     def constant?    = method.in? %i[id created_at updated_at]
-    def value        = @object.public_send(@method)
-    def model        = @object.try(:klass) || (@object.is_a?(Class) ? @object : @object.class)
-    def model_name   = @object.model_name
     def association? = model.reflect_on_association(@method).present?
     def associated?  = reflection.present?
     def polymorphic? = reflection&.polymorphic?
     def digest?      = method =~ /_digest$/
     def password?    = type == :password
     def rich_text?   = reflection&.name =~ /^rich_text_(\w+)$/
+    def attachment?  = model.reflect_on_attachment(method)
     def collection   = reflection.klass.all
     def reflection   = model.reflect_on_association(@method) || reflections_by_attribute[@method]
 
@@ -29,23 +30,26 @@ module CafeCar
 
     def displayable = reflection&.name&.then { info(_1) } || self
 
+    def default_type
+      case method
+      when :controls then method
+      end
+    end
+
     def reflection_type = reflection&.macro
     def attribute_type  = model.type_for_attribute(@method)&.type
     def digest_type
       if @method =~ /^(\w+)(_confirmation)?$/
-        model.type_for_attribute(@method) && :password
+        model.type_for_attribute("#{$1}_digest")&.type && :password
       end
+    end
+
+    def attachment_type
+      :attachment if attachment?
     end
 
     def polymorphic_methods = [reflection.foreign_type, reflection.foreign_key]
 
-    def errors
-      errors     = @object.try(:errors)
-      associated = reflection&.then { errors[_1.name] } || []
-      errors[@method] | associated
-    end
-
-    def error       = errors.to_sentence.presence
     def placeholder = i18n(:placeholder)
     def hint        = i18n(:hint)
     def label       = i18n(:label, default: human)
@@ -64,7 +68,7 @@ module CafeCar
     end
 
     def type
-      @type ||= reflection_type || attribute_type || digest_type ||
+      @type ||= reflection_type || attribute_type || digest_type || attachment_type || default_type ||
         raise(NoMethodError.new "Can't find attribute :#{@method} on #{model_name}", @method)
     end
 

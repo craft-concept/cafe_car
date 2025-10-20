@@ -13,10 +13,11 @@ Rails.application.routes.draw do
     resources :notes
     resources :users
 
-    # namespace :active_record do
-    #   resources :attachments
-    #   resources :blobs
-    # end
+    resources :attachments
+
+    namespace :active_storage do
+      resources :attachments
+    end
 
     mount CafeCar::Engine => "/"
   end

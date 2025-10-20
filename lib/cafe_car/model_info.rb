@@ -2,22 +2,23 @@ module CafeCar
   class ModelInfo
     include Caching
 
-    attr_reader :model, :object
+    attr_reader :model
 
-    def self.find(klass)
+    def self.find(object)
+      model = object.is_a?(Class) ? object : object.class
       @cache        ||= {}
-      @cache[klass] ||= new(klass)
+      @cache[model] ||= new(model:)
     end
 
-    def initialize(object)
-      @object = object
-      @model  = object.is_a?(Class) ? object : object.class
+    def initialize(model:)
+      @model  = model
       @field  = {}
     end
 
     def columns         = model.column_names
-    def field(method)   = @field[method]   ||= FieldInfo.new(object:, method:)
+    def field_names     = model.column_names | model.reflect_on_all_attachments.map(&:name)
+    def field(method)   = @field[method]   ||= FieldInfo.new(model:, method:)
 
-    derive :fields, -> { Fields.new(columns.map { field _1 }) }
+    derive :fields, -> { Fields.new(field_names.map { field _1 }) }
   end
 end

@@ -21,10 +21,19 @@ module CafeCar::Table
     def shown!(method)    = @shown_attributes[method] = true
     def shown             = @shown_attributes
 
-    def title_attribute      = policy.title_attribute
-    def title(*, **, &) = cell(title_attribute, *, href: true, **, &)
+    def has?(method) = model.info.fields.has?(method)
 
-    def timestamps(...) = cell(:updated_at, ...)
+    def title(method = policy.title_attribute, *, **, &)
+      cell(method, *, href: true, **, &)
+    end
+
+    def logo(method = policy.logo_attribute, *, **, &)
+      cell(method, *, label: nil, blank: "", **, &) if method
+    end
+
+    def timestamps(...) = cell(timestamp_attribute, ...)
+
+    def timestamp_attribute = %w[updated_at created_at].find { has? _1 }
 
     def remaining_attributes = policy.listable_attributes - @shown_attributes.keys
 

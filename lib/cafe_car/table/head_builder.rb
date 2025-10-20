@@ -9,7 +9,7 @@ module CafeCar::Table
 
     def cell(method, *flags, label: label(method), **, &)
       super
-      @fields << model.field_info(method)
+      @fields << model.info.field(method)
       ui.cell(label, *flags)
     end
 

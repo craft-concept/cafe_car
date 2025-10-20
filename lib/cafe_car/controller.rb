@@ -46,7 +46,7 @@ module CafeCar
       helper_method :action, :scope
 
       helper Helpers
-      delegate :present, to: :helpers
+      delegate :present, :href_for, to: :helpers
 
       after_action :verify_authorized, :verify_policy_scoped
     end

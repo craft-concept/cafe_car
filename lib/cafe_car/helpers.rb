@@ -1,14 +1,16 @@
 module CafeCar
   module Helpers
     # Returns a new `Context`. Used for instantiating components: `ui.button(:primary, "Submit")`
-    def ui(*args, **options)
+    def ui(*args, **, &)
       # For now, this must be defined in a helper instead of in the controller. Passing `view_context` or `helpers`
       # from the controller somehow breaks `capture`. `capture` will return the captured content, but the content
       # _also_ gets appended to the original output buffer.
       # This can be tested in a view by comparing the behavior of `= capture do` with
       # `= controller.view_context.capture do`; the latter outputs the content twice.
       if args.any?
-        present(*args, **options)
+        present(*args, **, &)
+      elsif block_given?
+        capture(&)
       else
         @ui ||= CafeCar::Context.new(self)
       end
@@ -52,6 +54,27 @@ module CafeCar
 
     def href_for(*parts, namespace: self.namespace, **params)
       HrefBuilder.new(*parts, namespace:, template: self, **params).to_s
+    end
+
+    def context(name = nil, &)
+      @context ||= []
+
+      if block_given?
+        @context << name
+        r = capture(&)
+        @context.pop
+        r
+      else
+        @context
+      end
+    end
+
+    def context?(*names)
+      context.reverse_each do |ctx|
+        return true if names.empty?
+        names.pop if ctx == names.last
+      end
+      names.empty?
     end
 
     def link(object)

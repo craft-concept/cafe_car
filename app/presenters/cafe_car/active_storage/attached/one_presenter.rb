@@ -1,9 +1,8 @@
 module CafeCar
   module ActiveStorage
     module Attached
-      class OnePresenter < CafeCar[:Presenter]
-        def url = object.url
-        def to_html = url&.then { @template.image_tag url } || "(none)"
+      class OnePresenter < AttachmentPresenter
+        def href = present(object.attachment).href
       end
     end
   end

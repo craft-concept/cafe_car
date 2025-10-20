@@ -1,5 +1,5 @@
 .Row {
-  display: flex;
+  display: inline-flex;
   justify-items: stretch;
   align-items: center;
 }

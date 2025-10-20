@@ -5,6 +5,11 @@ en:
   show: View
   destroy: Delete
 
+  navigation:
+    icon:
+      attachments: pin
+      blobs: multiple-pages
+
   list_html:
     zero: "(none)"
     one: "%{list}"

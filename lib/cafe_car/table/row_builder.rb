@@ -13,18 +13,19 @@ module CafeCar::Table
     def model               = @object.class
     def policy(o = @object) = @template.policy(o)
 
-    def value(method) = @object.public_send(method)
+    def value(method) = @object.try(method)
     def show(...)  = present(@object).show(...)
 
     def cell(method, *flags, **options, &)
       super
       options[:href] = @template.href_for(@object) if options[:href] == true
       call_procs!(options, @object)
-      ui.cell(show(method, &), *flags, **options)
+      ui.cell(show(method, **options.slice(:blank), &), *flags, **options)
     end
 
     def timestamps(**options)
-      cell(:updated_at, :shrink, title: "Created: #{show(:created_at).string}", **options)
+      title = show(:created_at).string&.then { "Created: #{_1}" }
+      cell(timestamp_attribute, :shrink, title:, **options)
     end
 
     def controls(*args, **options)

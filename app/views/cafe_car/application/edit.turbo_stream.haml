@@ -1,7 +1,7 @@
 - if action.edit?
   -# = turbo_stream.navigate(request.fullpath)
   = turbo_stream.append_all("body") do
-    = ui.modal :fixed, id: dom_id(object), data: {turbo_permanent: true} do |m|
+    = ui.modal :fixed, id: dom_id(object, :modal), data: {turbo_permanent: true} do |m|
       = ui.card title: "Edit #{model_name.human}", actions: m.close("✕") do |card|
         = render "form", card:
 - else

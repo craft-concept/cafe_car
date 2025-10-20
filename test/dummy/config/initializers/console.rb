@@ -8,4 +8,6 @@ Rails.application.console do
 
   ApplicationController.allow_forgery_protection = false
   puts "CSRF disabled to enable app.post calls"
+
+  def present(...) = CafeCar[:Presenter].present(helper, ...)
 end
