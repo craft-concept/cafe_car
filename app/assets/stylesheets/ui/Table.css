@@ -10,11 +10,6 @@
     z-index: 0;
 }
 
-.Table-sticky {
-    position: sticky;
-    top: 0;
-}
-
 .Table_Head,
 .Table_Body,
 .Table_Foot,
@@ -33,6 +28,7 @@
     z-index: 2;
     white-space: nowrap;
     font-weight: bold;
+    position: relative;
 
     &::before, &::after {
         content: "";
@@ -65,7 +61,6 @@
     }
 
     .Table_Cell {
-
         &:first-child {
             border-top-left-radius: var(--radius);
         }
@@ -112,14 +107,20 @@
     gap: 2px;
 
     &:has(img) {
-        padding: 0;
+        padding-block: 0;
     }
 
     img {
         height: 2em;
         /* margin: 4px; */
         display: inline-block;
+        border-radius: 99px;
     }
+}
+
+.Table-sticky {
+    position: sticky;
+    top: 0;
 }
 
 .Table-controls {

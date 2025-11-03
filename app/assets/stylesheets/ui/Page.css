@@ -1,7 +1,7 @@
 .Page {
   container: Page;
   display: flex;
-  flex-wrap: wrap;
+  flex-flow: wrap;
   justify-content: stretch;
   gap: var(--gap);
 }
@@ -11,8 +11,6 @@
   align-items: center;
   gap: var(--gap);
   width: 100%;
-  position: sticky;
-  z-index: -1;
   top: var(--gap);
   left: var(--gap);
 }
@@ -24,12 +22,15 @@
 
 .Page_Aside {
   min-width: 300px;
+  display: flex;
+  flex-flow: column;
+  gap: var(--gap);
 }
 
 .Page_Body {
   flex: 1 1 20px;
   display: flex;
-  flex-direction: column;
+  flex-flow: column;
   gap: var(--gap);
 }
 
@@ -41,7 +42,7 @@
 
 @media (width < 720px) {
   .Page {
-    flex-direction: column;
+    flex-flow: column;
     justify-items: stretch;
   }
 

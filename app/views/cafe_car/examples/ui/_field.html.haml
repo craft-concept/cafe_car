@@ -1,0 +1,9 @@
+= Field do |f|
+  = f.Label "Label"
+  = f.Input tag: :input, placeholder: "placeholder"
+  = f.Hint "Hint"
+
+= Field do |f|
+  = f.Label "Label"
+  = f.Error "has an error"
+  = f.Input tag: :input, placeholder: "with error"

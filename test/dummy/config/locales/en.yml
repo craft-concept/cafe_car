@@ -21,3 +21,9 @@ en:
     placeholder:
       article:
         title: My New Article
+
+    autocomplete:
+      user:
+        name: name
+        password: new-password
+        password_confirmation: new-password

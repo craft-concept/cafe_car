@@ -39,9 +39,8 @@ module CafeCar
     def reflection_type = reflection&.macro
     def attribute_type  = model.type_for_attribute(@method)&.type
     def digest_type
-      if @method =~ /^(\w+)(_confirmation)?$/
-        model.type_for_attribute("#{$1}_digest")&.type && :password
-      end
+      key = @method.to_s.chomp("_confirmation")
+      model.type_for_attribute("#{key}_digest")&.type && :password
     end
 
     def attachment_type
@@ -50,12 +49,13 @@ module CafeCar
 
     def polymorphic_methods = [reflection.foreign_type, reflection.foreign_key]
 
-    def placeholder = i18n(:placeholder)
-    def hint        = i18n(:hint)
-    def label       = i18n(:label, default: human)
-    def prompt      = i18n(:prompt, default: "Select #{human.downcase}...")
-    def human(...)  = model.human_attribute_name(@method, ...)
-    def required?   = validator?(:presence)
+    def placeholder  = i18n(:placeholder)
+    def autocomplete = i18n(:autocomplete)
+    def hint         = i18n(:hint)
+    def label        = i18n(:label, default: human)
+    def prompt       = i18n(:prompt, default: "Select #{human.downcase}...")
+    def human(...)   = model.human_attribute_name(@method, ...)
+    def required?    = validator?(:presence)
 
     def validator?(kind, **options)
       model.validators_on(@method).any? { _1.kind == kind and _1.options >= options }
@@ -92,6 +92,7 @@ module CafeCar
       when :date     then :date_field
       when :datetime then :datetime_field
       when :password then :password_field
+      when :attachment then :file_field
       when :belongs_to, :has_many then :association
       when :has_one
         rich_text? ? :rich_text_area : nil

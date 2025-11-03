@@ -1,6 +1,14 @@
 = stylesheet_link_tag 'ui/Example'
 
-- %w[card controls error field info_circle modal nav page table].each do |name|
-  - partial = "cafe_car/examples/#{name}"
+:css
+  #{Rouge::Themes::Base16.mode(:light).render(scope: '.Example_Source')}
+
+-# :javascript
+-#   window.onhashchange = () => {
+-#     $("[href]").remove(".current")
+-#     $("[href='" + location.hash + "']").add(".current")
+-#   }
+
+- @examples.each do |name, partial|
   = render "cafe_car/examples/example", name:, partial: do
     = render partial

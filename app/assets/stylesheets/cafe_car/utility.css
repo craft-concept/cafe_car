@@ -58,3 +58,7 @@
 .pretty_inspect {
     white-space: pre-wrap;
 }
+
+.auto {
+    field-sizing: content;
+}

@@ -16,7 +16,7 @@
   overflow: auto;
 
   display: flex;
-  flex-direction: column;
+  flex-flow: column;
   flex-shrink: 0;
 
   padding: var(--gap);
@@ -28,7 +28,7 @@
   transition: transform var(--duration);
   /* margin-left: var(--sidebar-width); */
   display: flex;
-  flex-direction: column;
+  flex-flow: column;
   align-items: stretch;
   flex-grow: 1;
   padding: var(--gap);

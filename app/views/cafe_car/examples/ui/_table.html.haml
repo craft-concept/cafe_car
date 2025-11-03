@@ -1,0 +1,13 @@
+= Table do |t|
+  = t.Head do
+    = t.Cell "Column"
+    = t.Cell "Another"
+
+  = t.Body do
+    = t.Row do
+      = t.Cell "A cell"
+      = t.Cell "Another cell"
+
+    = t.Row do
+      = t.Cell "Another row"
+      = t.Cell :shy, tag.span("Shy cell")

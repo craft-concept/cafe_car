@@ -1,0 +1,15 @@
+= Group do
+  = Button { "First" }
+  = Button { "Second" }
+  = Button { "Third" }
+
+= Group do
+  = Card { "First Card" }
+  = Card { "Second Card" }
+  = Card { "Third Card" }
+
+= Field label: "Inputs" do |f|
+  = Group do
+    = f.Input tag: "input", value: "first",  class: "auto"
+    = f.Input tag: "input", value: "second", class: "auto"
+    = f.Input tag: "input", value: "third",  class: "auto"

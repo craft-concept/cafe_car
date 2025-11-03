@@ -1,9 +1,12 @@
-= ui.example id: name do |ex|
-  = ex.head do
-    = ex.title ui_class(name), tag: :h2, href: "##{name}"
+= Example id: name do |ex|
+  = ex.Head do
+    = ex.Title ui.class(name), tag: :h2, href: "##{name}"
 
-  = ex.body do
+  = ex.Body do
     = yield
 
-  = ex.source tag: :pre do
-    = get_partial(partial).encode!
+  = ex.Source tag: :pre, class: "highlight" do
+    - formatter = Rouge::Formatters::HTML.new
+    - lexer     = Rouge::Lexers::Haml.new
+    - source    = get_partial(partial).encode!
+    = raw formatter.format(lexer.lex(source))

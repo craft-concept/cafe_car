@@ -49,3 +49,83 @@ addEventListener("transitionend", event => {
 // addEventListener("input", ({ target }) => {
 //   if (target.matches("textarea")) adjustHeight(target)
 // })
+
+export class Selection extends Array {
+  constructor(obj, ...rest) {
+    switch (typeof obj) {
+      case "string": {
+        super(...document.querySelectorAll(obj))
+        this.selector = obj
+        break
+      }
+      default: super(obj, ...rest); break
+    }
+  }
+
+  static on(...x) { return this(window).on(...x) }
+  static off(...x) { return this(window).off(...x) }
+
+  select(v, ...rest) {
+    if (!v) return this
+
+    switch (typeof v) {
+      case "function": return super.filter(v).select(...rest)
+      case "string": return super.filter(e => e.matches(v)).select(...rest)
+    }
+  }
+
+  reject(v, ...rest) {
+    if (!v) return this
+    switch (typeof v) {
+      case "function": return super.filter(e => !v(e)).reject(...rest)
+      case "string": return super.filter(e => !e.matches(v)).reject(...rest)
+    }
+  }
+
+  each(...xs) { return this.forEach(...xs) }
+
+  forEach(...xs) {
+    super.forEach(...xs)
+    return this
+  }
+
+  add(name, ...names) {
+    if (!name) return this
+    if (name[0] == '.') name = name.slice(1)
+    return this.each(el => { el.classList.add(name) }).add(...names)
+  }
+
+  remove(name, ...names) {
+    if (!name) return this
+    if (name[0] == '.') name = name.slice(1)
+    return this.each(el => el.classList.remove(name)).remove(...names)
+  }
+
+  on(eventName, fn) {
+    return this.each(el => el.addEventListener(eventName, fn))
+  }
+
+  off(eventName, fn) {
+    return this.each(el => el.removeEventListener(eventName, fn))
+  }
+
+  set onhashchange(fn) { this.on("hashchange", fn) }
+  set onload(fn) { this.on("load", fn) }
+  set onclick(fn) { this.on("click", fn) }
+
+  get isLoaded() { return document.readyState == "complete" }
+
+  loaded(fn) {
+    return this.isLoaded
+      ? this.each(fn)
+      : this.on('load', fn)
+  }
+}
+
+window.Selection = Selection
+window.$ = function $(x, ...xs) {
+  switch (typeof x) {
+    case "function": return $(document).loaded(x)
+    default: return new Selection(x, ...xs)
+  }
+}

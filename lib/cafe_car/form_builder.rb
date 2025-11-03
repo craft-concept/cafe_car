@@ -50,7 +50,9 @@ module CafeCar
       info = info(method)
       as ||= info.input
 
-      options[:placeholder] = info.placeholder unless options.key?(:placeholder)
+      options[:placeholder]  = info.placeholder  unless options.key?(:placeholder)
+      options[:autocomplete] = info.autocomplete unless options.key?(:autocomplete)
+
       public_send(as, method, *args, **options)
     end
 

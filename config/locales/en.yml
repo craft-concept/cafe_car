@@ -41,7 +41,7 @@ en:
 
   flashes:
     create_html: "%{Model} created!"
-    update_html: "%{Model} updated: %{Object}"
+    update_html: "%{Model} updated!"
     destroy_html: "%{Model} deleted!"
 
   activerecord:

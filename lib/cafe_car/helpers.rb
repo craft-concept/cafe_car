@@ -119,8 +119,19 @@ module CafeCar
       lookup_context.find(path, prefixes, true)
     end
 
+    def template_glob(glob)
+      lookup_context.view_paths
+        .flat_map { _1.send(:template_glob, glob) }
+        .map { ActionView::TemplatePath.parse(_1) }
+    end
+
     def namespace
       @namespace ||= controller_path.split("/").tap(&:pop).map(&:to_sym)
+    end
+
+    def method_missing(name, ...)
+      return ui.send(name, ...) if name =~ /^[A-Z]/
+      super
     end
   end
 end

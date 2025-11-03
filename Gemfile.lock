@@ -116,6 +116,8 @@ GEM
     brakeman (7.1.0)
       racc
     builder (3.3.0)
+    chrome_devtools_rails (0.1.0)
+      rails (~> 8.0, >= 8.0.2)
     chronic (0.10.2)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.4)
@@ -235,6 +237,9 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.10-x86_64-linux-musl)
       racc (~> 1.4)
+    paper_trail (16.0.0)
+      activerecord (>= 6.1)
+      request_store (~> 1.4)
     parallel (1.27.0)
     parser (3.3.9.0)
       ast (~> 2.4.1)
@@ -303,6 +308,8 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.2)
       io-console (~> 0.5)
+    request_store (1.7.0)
+      rack (>= 1.4)
     rouge (4.6.0)
     rubocop (1.80.2)
       json (~> 2.3)
@@ -404,13 +411,16 @@ DEPENDENCIES
   binding_of_caller
   brakeman
   cafe_car!
+  chrome_devtools_rails
   cnc!
   factory_bot_rails
   faker
   hotwire-livereload
   image_processing (~> 1.13)
   mutex_m
+  paper_trail
   puma
+  rouge
   solid_cable
   sqlite3
   web-console
