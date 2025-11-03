@@ -14,7 +14,7 @@ module CafeCar
 
     def html_safe?   = true
     def info         = form.info(@method)
-    def wrapper(...) = @template.ui.field(...)
+    def wrapper(...) = @template.ui.Field(...)
     def input(...)   = send_to_form(:input, ...)
     def label(...)   = send_to_form_with_text(:label, ...)
     def hint(...)    = send_to_form_with_text(:hint, ...)

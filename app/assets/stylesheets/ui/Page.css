@@ -16,8 +16,11 @@
 }
 
 .Page_Title {
-  flex-grow: 1;
   margin: 0;
+}
+
+.Page_Actions {
+  margin-left: auto;
 }
 
 .Page_Aside {

@@ -26,12 +26,12 @@ module CafeCar
     def class_name(...) = ui_class(class_names, *@flags, *(@tag.to_s if href?), ...)
 
     def content
-      @content ||= @template.safe_join([*@args, *(capture(context, &@block) if @block)])
+      @content ||= @template.safe_join([*@args, *(capture(self, &@block) if @block)])
     end
 
     def wrapper(*args, **opts, &)
       @template.content_tag(tag_name, safe_join([*args]), class: class_name(*opts.delete(:class)), **opts) do
-        capture(context, &)
+        capture(self, &)
       end
     end
 
@@ -39,16 +39,25 @@ module CafeCar
       content.blank? or !content.match?(/^.*?[^<\s]/) or content.gsub(/<!--.*?-->/, "").blank?
     end
 
-    def +(o) = safe_join([self, o])
+    def +(o)  = safe_join([self, o])
+    def <<(o) = @template.concat(o)
 
     def html_safe? = true
     def to_s
       return "" if @block and blank?
 
       if partial?
-        render(partial_name, options:, flags:, c: self, component: self, name => context, **options) { content }
+        render(partial_name, options:, flags:, c: self, component: self, name => self, **options) { content }
       else
         wrapper(*@args, **@options) { content }
+      end
+    end
+
+    def method_missing(name, ...)
+      if name =~ /^[A-Z]/
+        Component.new(@template, [*@names, name], ...)
+      else
+        super
       end
     end
   end

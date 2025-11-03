@@ -2,8 +2,8 @@
 - actions = link(@article).index
 - p       = present(@article)
 
-= ui.page :slim do |page|
-  = page.body do
+= Page :slim do |page|
+  = page.Body do
     %article
       %h1= title
       %h2= p.show :author

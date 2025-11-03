@@ -1,11 +1,13 @@
 :ruby
-  title ||= nil
-  actions ||= nil
+  title  ||= nil
+  actions||= nil
+  tabs   ||= nil
 
 = page.wrapper *flags do
-  = page.head do
-    = ui.layout.context.menu(tag: :input, type: :checkbox)
-    = page.title(title, tag: :h2)
-    = page.actions(actions)
+  = page.Head do
+    = ui.Layout.Menu
+    = page.Title(title, tag: :h2)
+    = page.Tabs(*tabs)
+    = page.Actions(actions)
 
   = yield

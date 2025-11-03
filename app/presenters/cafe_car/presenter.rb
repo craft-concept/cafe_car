@@ -85,7 +85,7 @@ module CafeCar
     def href  = href_for(object)
 
     def preview(**, &)
-      ui.row do
+      ui.Row do
         concat logo(size: :icon)
         concat title
       end
@@ -127,7 +127,7 @@ module CafeCar
     def info_circle(method, *args, **opts, &block)
       title = info(method).hint
       return unless title
-      ui.info_circle(*args, title:, **opts, &block)
+      ui.InfoCircle(*args, title:, **opts, &block)
     end
 
     def controls(**options, &block)
@@ -135,7 +135,7 @@ module CafeCar
     end
 
     # def card(**)
-    #   ui.card title:, ** do |card|
+    #   ui.Card title:, ** do |card|
     #     ui <<
     #   end
     # end

@@ -1,6 +1,6 @@
 module CafeCar
   module Helpers
-    # Returns a new `Context`. Used for instantiating components: `ui.button(:primary, "Submit")`
+    # Returns a new `Context`. Used for instantiating components: `ui.Button(:primary, "Submit")`
     def ui(*args, **, &)
       # For now, this must be defined in a helper instead of in the controller. Passing `view_context` or `helpers`
       # from the controller somehow breaks `capture`. `capture` will return the captured content, but the content
@@ -87,7 +87,7 @@ module CafeCar
     end
 
     def breadcrumbs(*items)
-      ui.row safe_join(items, icon(:nav_arrow_right, :dim))
+      ui.Row safe_join(items, icon(:nav_arrow_right, :dim))
     end
 
     def filter_form_for(objects, **options, &block)

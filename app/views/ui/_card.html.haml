@@ -2,8 +2,8 @@
 - actions = options.delete(:actions)
 
 = card.wrapper(*flags, **options) do
-  = card.head do
-    = card.title(tag: :h2) { title }
-    = card.actions { safe_join([*actions]) }
+  = card.Head do
+    = card.Title(tag: :h2) { title }
+    = card.Actions(*actions)
 
   = yield

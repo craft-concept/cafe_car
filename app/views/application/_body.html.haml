@@ -1,6 +1,6 @@
-= ui.layout do |layout|
-  = layout.sidebar do
+= Layout do |l|
+  = l.Sidebar do
     %h2= t(:title, scope: [:application], default: Rails.application.name.titleize)
     = render "navigation"
-  = layout.main { yield }
-  = layout.footer     { render("footer") }
+  = l.Main { yield }
+  = l.Footer     { render("footer") }

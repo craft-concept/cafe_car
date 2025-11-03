@@ -1,9 +1,9 @@
 - if action.new?
   -# = turbo_stream.navigate(request.fullpath)
   = turbo_stream.append_all("body") do
-    = ui.modal :fixed, id: dom_id(object, :modal), data: {turbo_permanent: true} do |m|
-      = ui.card title: "New #{model_name.human}", actions: m.close("✕") do |card|
+    = Modal :fixed, id: dom_id(object, :modal), data: {turbo_permanent: true} do |m|
+      = Card title: "New #{model_name.human}", actions: m.Close("✕") do |card|
         = render "form", card:
 - else # create
   = turbo_stream.replace(dom_id(object, :new)) do
-    = render "form", card: ui.card.context
+    = render "form", card: ui.Card

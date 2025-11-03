@@ -1,8 +1,8 @@
-= ui.card :sticky do |card|
+= Card :sticky do |card|
   = filter_form_for objects do |f|
-    = card.section do
+    = card.Section do
       - f.remaining_attributes.each do |attr|
         = f.field attr
 
-    = card.foot do
+    = card.Foot do
       = f.submit "Filter", commit: false

@@ -10,7 +10,7 @@ module CafeCar::Table
       @template         = template
       @options          = options
       @block            = block
-      @ui               = @template.ui.table.context
+      @ui               = @template.ui.Table
       @shown_attributes = {}
       assign_options!
     end

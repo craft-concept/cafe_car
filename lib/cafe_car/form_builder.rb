@@ -11,7 +11,7 @@ module CafeCar
 
     def model     = @object.is_a?(Class) ? @object : @object.class
     def policy    = @template.policy(@object)
-    def show(...) = ui.input { @template.present(@object).show(...) }
+    def show(...) = ui.Input { @template.present(@object).show(...) }
 
     def association(method, collection: nil, **options)
       info = info(method)

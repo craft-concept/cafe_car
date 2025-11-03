@@ -9,8 +9,8 @@ module CafeCar
     def wrapper(...)     = Component.new(@template, [*@prefix], ...).wrapper(...)
     def <<(obj)          = @template.concat(obj)
 
-    def method_missing(method, *, **, &)
-      Component.new(@template, [*@prefix, method], *, **, &)
+    def method_missing(method, ...)
+      Component.new(@template, [*@prefix, method], ...)
     end
   end
 end

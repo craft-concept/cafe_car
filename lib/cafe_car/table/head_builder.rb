@@ -10,7 +10,7 @@ module CafeCar::Table
     def cell(method, *flags, label: label(method), **, &)
       super
       @fields << model.info.field(method)
-      ui.cell(label, *flags)
+      ui.Cell(label, *flags)
     end
 
     def label(method)
@@ -21,6 +21,6 @@ module CafeCar::Table
 
     def controls(*, **) = cell(:controls, :controls, *, label: nil, **)
 
-    def to_html = ui.head(:sticky, capture(self, &@block))
+    def to_html = ui.Head(:sticky, capture(self, &@block))
   end
 end

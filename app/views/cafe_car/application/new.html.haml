@@ -1,8 +1,8 @@
 - title = breadcrumbs(link(model).index, title("New #{model_name.human}"))
 
-= ui.page title: do |page|
-  = page.body do
+= Page title: do |page|
+  = page.Body do
     = render "alerts"
-    = ui.card do |card|
+    = Card do |card|
       = render "form", card:
     = render "debug" if debug?

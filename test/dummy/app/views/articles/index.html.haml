@@ -1,11 +1,11 @@
-= ui.page :slim do |page|
-  = page.body do
+= Page :slim do |page|
+  = page.Body do
     - @articles.includes(:author).each do |article|
-      = ui.article(tag: :article) do |a|
-        = a.title(tag: :h2) { p article }
-        = a.author(tag: :h3) do
+      = Article(tag: :article) do |a|
+        = a.Title(tag: :h2) { p article }
+        = a.Author(tag: :h3) do
           by #{p article.author}
-        = a.body { article.summary }
+        = a.Body { article.summary }
 
     %section
       = paginate @articles

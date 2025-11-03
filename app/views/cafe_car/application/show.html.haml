@@ -3,11 +3,11 @@
 - body    = render("show")
 
 = turbo_stream_from(object)
-= ui.page :full, title: do |page|
-  = page.aside do
+= Page :full, title: do |page|
+  = page.Aside do
     = yield :left
 
-  = page.body do
+  = page.Body do
     = render "alerts"
 
     - if tab = params[:tab]
@@ -22,15 +22,15 @@
       = body
     = render "debug" if debug?
 
-  = page.aside do
-    = ui.card :sticky do |card|
-      = card.section ui(object).controls
-      = card.section summary
+  = page.Aside do
+    = Card :sticky do |card|
+      = card.Section ui(object).controls
+      = card.Section summary
 
-    = ui.card title: "Actions" do |card|
+    = Card title: "Actions" do |card|
       = render("actions", card:)
 
-    = ui.card title: "Notes" do |card|
+    = Card title: "Notes" do |card|
       = render("notes", card:)
 
     = yield :right
