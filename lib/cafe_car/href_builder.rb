@@ -37,7 +37,8 @@ module CafeCar
     def expand_part(part)
       case part
       when Symbol, String, Hash, Array then part
-      when Class then part.model_name.route_key.to_sym
+      when ActiveModel::Naming then part.model_name.route_key.to_sym
+      when Class then part.name.underscore.split(?/).map(&:to_sym)
       else expand_part(part.class)
       end
     end

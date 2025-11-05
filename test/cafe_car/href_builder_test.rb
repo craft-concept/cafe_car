@@ -2,6 +2,11 @@ require "test_helper"
 
 module CafeCar
   class HrefBuilderTest < ActiveSupport::TestCase
+    test "route key calculation" do
+      href = HrefBuilder.new(PaperTrail::Version.new)
+      assert_equal [:paper_trail_versions], href.expanded_parts
+    end
+
     test "namespace truncation" do
       obj = Object.new
       href = HrefBuilder.new(:b, obj, :c, namespace: [:a, :b])
