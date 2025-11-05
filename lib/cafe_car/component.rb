@@ -9,7 +9,7 @@ module CafeCar
       @names    = [*name].map(&:to_s).map(&:underscore).map(&:to_sym)
       @tag      = tag
       @flags    = args.extract! { _1.is_a? Symbol }
-      @args     = args
+      @args     = args.flatten.compact_blank
       @options  = options
       @block    = block
     end

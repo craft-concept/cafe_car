@@ -4,6 +4,6 @@
 = card.wrapper(*flags, **options) do
   = card.Head do
     = card.Title(tag: :h2) { title }
-    = card.Actions(*actions)
+    = card.Actions { actions }
 
   = yield
