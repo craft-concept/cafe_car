@@ -85,7 +85,7 @@ module CafeCar
     def href  = href_for(object)
 
     def preview(**, &)
-      ui.Row do
+      ui.Row :space do
         concat logo(size: :icon)
         concat title
       end

@@ -5,6 +5,7 @@
     border-bottom: 1px solid var(--border);
     clip-path: rect(0 auto auto 0);
     padding-bottom: 5vh;
+    color-scheme: dark;
 }
 
 .Example_Head {

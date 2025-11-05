@@ -3,3 +3,7 @@
   justify-items: stretch;
   align-items: center;
 }
+
+.Row-space {
+  gap: .3em;
+}
