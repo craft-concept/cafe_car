@@ -1,8 +1,9 @@
 @import url(defaults.css);
 
 :root {
+  --blue: rgb(35, 175, 208);
+
   --input: #1e1e1d;
-  --invalid: #35261f;
   --background: #191918;
 
   --color: #e7e3dc;
@@ -10,7 +11,6 @@
 
   --card: #222221;
   --border: #2A2A28;
-  --accent: rgb(35, 175, 208);
   --hover: rgb(42, 42, 40);
   --shadow: rgba(0, 0, 0, 0.2);
 }

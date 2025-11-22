@@ -1,4 +1,5 @@
 module CafeCar
+  # Acts 1:3
   class Presenter
     include Caching
     include OptionHelpers

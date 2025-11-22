@@ -3,6 +3,16 @@
     accent-color: var(--accent);
     scroll-behavior: smooth;
 
+    --blue: blue;
+    --green: green;
+    --orange: orange;
+    --red: red;
+
+    --white: white;
+    --gray: #eee;
+    --black: black;
+
+    --accent: var(--blue);
     --primary: var(--accent);
     --secondary: var(--accent);
     --tertiary: var(--accent);
@@ -11,23 +21,26 @@
     --warning: var(--orange);
     --danger: var(--red);
     --error: var(--red);
+    --info: var(--blue);
 
-    --outline: var(--accent);
     --link: var(--accent);
-    --error: var(--red);
-    --invalid: #faf8f6;
-    --card: rgb(255 255 255);
+    --card: var(--white);
+    --button: var(--gray);
+
+    --shadow: rgb(50 50 93 / .25);
+    --backdrop: rgb(0 0 0 / .5);
+
     --hover: rgb(50 50 93 / .03);
+    --outline: var(--accent);
+    --invalid: color-mix(in lab, var(--error) 3%, var(--input));
+    --selection: color-mix(in lab, var(--accent) 25%, transparent);
 
     --font-family: ui-sans-serif, -apple-system, menu, sans-serif;
     --font: 16px var(--font-family);
 
-    --shadow: rgb(50 50 93 / .25);
     --box-shadow: var(--shadow) 0 2px 5px -1px,
                   var(--shadow) 0 1px 3px -1px;
-
     --inset-shadow: inset var(--shadow) 0 1px 3px -1px;
-    --backdrop: rgb(0 0 0 / .5);
 
     --gap: 1rem;
     --indent: 0;

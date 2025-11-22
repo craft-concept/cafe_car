@@ -66,3 +66,7 @@ html[data-turbo-visit-direction="back"]::view-transition-group(root) {
 turbo-frame {
   display: contents;
 }
+
+::selection {
+  background-color: var(--selection);
+}

@@ -13,11 +13,14 @@
     grid-column: span 2;
     top: 0;
     z-index: 1;
-    padding: 0 var(--gap);
+    display: flex;
 }
 
 .Example_Title {
     color: inherit;
+    background: var(--background);
+    padding: .2em .5em;
+    border-radius: var(--radius);
 }
 
 .Example_Body {

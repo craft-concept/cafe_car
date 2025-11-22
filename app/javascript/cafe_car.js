@@ -62,6 +62,28 @@ export class Selection extends Array {
     }
   }
 
+  get clone() { return structuredClone(this) }
+
+  with(...objs) {
+    return this.clone.assign(...objs)
+  }
+
+  assign(...objs) {
+    for (let obj of objs) {
+      switch (typeof obj) {
+        case "function": obj(this)
+        default: Object.assign(this, obj)
+      }
+    }
+
+    return this
+  }
+
+  tap(fn) {
+    fn(this)
+    return this
+  }
+
   static on(...x) { return this(window).on(...x) }
   static off(...x) { return this(window).off(...x) }
 
@@ -119,6 +141,22 @@ export class Selection extends Array {
     return this.isLoaded
       ? this.each(fn)
       : this.on('load', fn)
+  }
+
+  onIntersection() {}
+
+  intersection(...options) {
+    return this.clone.tap(clone => {
+      clone.observer = new IntersectionObserver(clone.onIntersection.bind(clone), ...options)
+    })
+  }
+
+  observe(...options) {
+    return this.each(el => this.observer.observe(el, ...options))
+  }
+
+  unobserve(...options) {
+    this.each(el => this.observer.unobserve(el, ...options))
   }
 }
 

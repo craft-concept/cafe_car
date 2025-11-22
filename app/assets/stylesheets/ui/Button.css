@@ -1,5 +1,5 @@
 .Button {
-  --background: #fdfdfd;
+  --background: var(--button);
   --color: contrast-color(var(--background));
   background: var(--background);
   color: var(--color);
@@ -11,12 +11,14 @@
   display: flex;
   align-items: center;
   gap: 0.5em;
+  user-select: none;
 }
 
 .Button:hover {
   text-decoration: none;
   box-shadow: rgba(34, 32, 29, 0.1) 0px 1px 2px;
   filter: brightness(1.05);
+  z-index: 1;
 }
 
 .Button:active {
