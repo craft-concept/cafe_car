@@ -29,9 +29,9 @@ module CafeCar
         end
       end
 
-      def link(**)
-        @template.link_to_unless_current(content, params, class: ui_class([:navigation, :link]), **) do
-          tag.span(content, class: ui_class([:navigation, :link], :current))
+      def link(**opts)
+        @template.link_to_unless_current(content, params, **opts) do
+          tag.span(content, **opts, class: ["current", *opts[:class]])
         end
       end
     end
@@ -43,6 +43,7 @@ module CafeCar
       @options  = options
     end
 
+    def router = Rails.application.routes.router
     def named_routes = Rails.application.routes.named_routes.to_h.values.map { Route.new(_1, template: @template) }
     def index_routes = named_routes.select(&:index?)
     def groups = routes.group_by(&:group)
@@ -52,6 +53,22 @@ module CafeCar
                               .uniq(&:requirements)
     end
 
+    def recognize(obj, **)
+      req = case obj
+            when String
+              path = ActionDispatch::Journey::Router::Utils.normalize_path(path)
+              env  = Rack::MockRequest.env_for(path, method: :get, **)
+              ActionDispatch::Request.new(env)
+            when ActionDispatch::Request then obj
+            else raise "cannot recognize this obj"
+            end
+
+      router.recognize(req) do |route, params|
+        return Route.new(route, template: @template)
+      end
+    end
+
+    def current = recognize(@template.request)
 
     def link_to(*args, **opts, &block)
       block ||= -> { @template.tag.span(_1, class: ui_class([:navigation, :link], :current)) }

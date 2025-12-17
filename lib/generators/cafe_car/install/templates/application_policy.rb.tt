@@ -1,0 +1,7 @@
+class ApplicationPolicy < CafeCar::BasePolicy
+  def admin? = development?
+
+  class Scope < Scope
+    def admin? = development?
+  end
+end

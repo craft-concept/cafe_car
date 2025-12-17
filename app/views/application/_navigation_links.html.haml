@@ -1,5 +1,5 @@
-- nav.groups.each do |name, routes|
+- navigation.groups.each do |name, routes|
   - if name.present?
     %h4= name.join(" ").titleize
   - routes.each do |r|
-    = r.link
+    = r.link class: nav.Link.class_name

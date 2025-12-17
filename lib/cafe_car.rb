@@ -1,3 +1,5 @@
+require "cafe_car/core_ext/hash"
+
 require "cafe_car/version"
 require "cafe_car/engine"
 require "cafe_car/resolver"

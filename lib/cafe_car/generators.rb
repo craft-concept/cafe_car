@@ -1,12 +1,19 @@
 require "rails/generators/active_record/migration"
+require "rails/generators/bundle_helper"
 
 module CafeCar::Generators
   extend ActiveSupport::Concern
   include ActiveRecord::Generators::Migration
+  include Rails::Generators::BundleHelper
 
   private
 
   def migration(name, ...) = migration_template("#{name}.rb", "db/migrate/#{name}.rb", ...)
+
+  def model(name, ...)
+    name = name.chomp(".rb").underscore
+    template("#{name}.rb", "app/models/#{name}.rb", ...)
+  end
 
   def class_namespace = class_path.join('/').classify
 

@@ -35,11 +35,19 @@ module CafeCar
     private
 
     def expand_part(part)
+      normalize case part
+                when Symbol, String, Hash, Array then part
+                when ActiveModel::Naming then part.model_name.collection
+                when Class then part.name.underscore
+                else expand_part(part.class)
+                end
+    end
+
+    def normalize(part)
       case part
-      when Symbol, String, Hash, Array then part
-      when ActiveModel::Naming then part.model_name.route_key.to_sym
-      when Class then part.name.underscore.split(?/).map(&:to_sym)
-      else expand_part(part.class)
+      when String
+        part.split(?/).map(&:to_sym)
+      else part
       end
     end
 

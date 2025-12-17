@@ -4,7 +4,10 @@ module CafeCar
   class HrefBuilderTest < ActiveSupport::TestCase
     test "route key calculation" do
       href = HrefBuilder.new(PaperTrail::Version.new)
-      assert_equal [:paper_trail_versions], href.expanded_parts
+      assert_equal [:paper_trail, :versions], href.expanded_parts
+
+      href = HrefBuilder.new(PaperTrail::Version.new, namespace: [:paper_trail])
+      assert_equal [:paper_trail, :versions], href.expanded_parts
     end
 
     test "namespace truncation" do

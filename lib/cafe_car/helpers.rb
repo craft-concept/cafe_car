@@ -125,6 +125,10 @@ module CafeCar
         .map { ActionView::TemplatePath.parse(_1) }
     end
 
+    def navigation
+      @navigation ||= CafeCar::Navigation.new(self)
+    end
+
     def namespace
       @namespace ||= controller_path.split("/").tap(&:pop).map(&:to_sym)
     end

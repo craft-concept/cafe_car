@@ -10,6 +10,7 @@ module CafeCar
       @tag      = tag
       @flags    = args.extract! { _1.is_a? Symbol }
       @args     = args.flatten.compact_blank
+      @children = options.extract_if! { _1 =~ /^[A-Z]\w*$/ }
       @options  = options
       @block    = block
     end
@@ -25,8 +26,12 @@ module CafeCar
     def class_names     = @names.map(&:to_s).map(&:camelize)
     def class_name(...) = ui_class(class_names, *@flags, *(@tag.to_s if href?), ...)
 
+    def children
+      @children.map {|name, content| send(name) { content } }
+    end
+
     def content
-      @content ||= @template.safe_join([*@args, *(capture(self, &@block) if @block)])
+      @content ||= @template.safe_join([*children, *@args, *(capture(self, &@block) if @block)])
     end
 
     def wrapper(*args, **opts, &)
@@ -53,9 +58,11 @@ module CafeCar
       end
     end
 
+    def child(name, ...) = Component.new(@template, [*@names, name], ...)
+
     def method_missing(name, ...)
       if name =~ /^[A-Z]/
-        Component.new(@template, [*@names, name], ...)
+        child(name, ...)
       else
         super
       end

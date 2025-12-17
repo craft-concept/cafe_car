@@ -55,5 +55,22 @@ module CafeCar
     initializer "cafe_car.field_with_errors" do
       ActionView::Base.field_error_proc = proc { _1.html_safe }
     end
+
+    initializer "cafe_car.console" do |app|
+      app.console do
+        if defined?(FactoryBot)
+          include FactoryBot::Syntax::Methods
+          logger.info "FactoryBot methods enabled"
+        end
+
+        Rails.logger.level = 0
+        logger.info 'SQL logs enabled'
+
+        ApplicationController.allow_forgery_protection = false
+        logger.info "CSRF disabled to enable app.post calls"
+
+        def present(...) = CafeCar[:Presenter].present(helper, ...)
+      end
+    end
   end
 end
