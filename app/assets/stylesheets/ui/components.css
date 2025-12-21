@@ -6,7 +6,6 @@
 @import url("Controls.css");
 @import url("Error.css");
 @import url("Field.css");
-@import url("Group.css");
 @import url("Icon.css");
 @import url("Input.css");
 @import url("Image.css");
@@ -17,3 +16,5 @@
 @import url("Page.css");
 @import url("Row.css");
 @import url("Table.css");
+
+@import url("Group.css");

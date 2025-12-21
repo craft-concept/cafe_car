@@ -58,18 +58,21 @@ module CafeCar
 
     initializer "cafe_car.console" do |app|
       app.console do
-        if defined?(FactoryBot)
-          include FactoryBot::Syntax::Methods
-          logger.info "FactoryBot methods enabled"
+        TOPLEVEL_BINDING.eval('self').instance_exec do
+          def logger = Rails.logger
+
+          if defined?(FactoryBot)
+            include FactoryBot::Syntax::Methods
+            logger.info "FactoryBot methods enabled."
+          end
+
+          logger.info 'SQL logs enabled.'
+
+          ApplicationController.allow_forgery_protection = false
+          logger.info "CSRF disabled to enable app.post calls."
+
+          def present(...) = CafeCar[:Presenter].present(helper, ...)
         end
-
-        Rails.logger.level = 0
-        logger.info 'SQL logs enabled'
-
-        ApplicationController.allow_forgery_protection = false
-        logger.info "CSRF disabled to enable app.post calls"
-
-        def present(...) = CafeCar[:Presenter].present(helper, ...)
       end
     end
   end

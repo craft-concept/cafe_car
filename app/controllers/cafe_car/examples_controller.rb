@@ -1,5 +1,9 @@
+require "rouge"
+require "faker"
+
 module CafeCar
-  class ExamplesController < ApplicationController
+  class ExamplesController < const(:ApplicationController)
+    include Controller
     helper CafeCar::Helpers
 
     before_action :skip_policy_scope, only: :index
@@ -8,7 +12,7 @@ module CafeCar
     def index
       @examples = view_context.template_glob("cafe_car/examples/ui/*")
         .map { _1.name.sub(/\..+$/, "") }
-        .to_h { [_1, "cafe_car/examples/ui/#{_1}"] }
+        .to_h { [_1.camelize, "cafe_car/examples/ui/#{_1}"] }
     end
 
     private

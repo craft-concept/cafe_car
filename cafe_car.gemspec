@@ -29,4 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "pundit"
   spec.add_dependency "chronic"
   spec.add_dependency "web-console"
+
+  spec.add_dependency "rouge"
+  spec.add_dependency "faker"
 end

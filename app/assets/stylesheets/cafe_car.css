@@ -16,6 +16,10 @@
   --half-gap: calc(var(--gap) / 2);
 }
 
+:focus {
+  z-index: 1;
+}
+
 a {
   color: var(--link);
   text-decoration: none;

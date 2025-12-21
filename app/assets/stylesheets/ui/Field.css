@@ -19,18 +19,10 @@
     color: var(--error);
 }
 
-.Field_Input {
-    font: inherit;
-}
-
-.Field_Error + .Field_Input:not(:focus) {
+.Field_Error ~ .Input:not(:focus),
+.Field_Error ~ * .Input:not(:focus) {
     background: var(--invalid);
     border-color: var(--red);
-}
-
-textarea.Field_Input {
-    width: 100%;
-    min-height: 5em;
 }
 
 .Field_Hint {

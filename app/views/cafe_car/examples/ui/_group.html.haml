@@ -1,7 +1,7 @@
 = Group do
-  = Button { "First" }
-  = Button { "Second" }
-  = Button { "Third" }
+  = Button(href:) { "First" }
+  = Button(href:) { "Second" }
+  = Button(href:) { "Third" }
 
 = Group do
   = Card { "First Card" }
@@ -10,6 +10,12 @@
 
 = Field label: "Inputs" do |f|
   = Group do
-    = f.Input tag: "input", value: "first",  class: "auto"
-    = f.Input tag: "input", value: "second", class: "auto"
-    = f.Input tag: "input", value: "third",  class: "auto"
+    = f.Input tag: :input, value: "first",  class: "auto"
+    = f.Input tag: :input, value: "second", class: "auto"
+    = f.Input tag: :input, value: "third",  class: "auto"
+
+= Field label: "Input" do |f|
+  = f.Error "ERROR"
+  = Group do
+    = Input "$", tag: :b
+    = Input tag: :input, value: "value", class: "auto"
