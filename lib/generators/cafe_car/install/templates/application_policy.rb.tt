@@ -1,7 +1,7 @@
-class ApplicationPolicy < CafeCar::BasePolicy
-  def admin? = development?
+class ApplicationPolicy < CafeCar::ApplicationPolicy
+  def admin? = Rails.env.development?
 
   class Scope < Scope
-    def admin? = development?
+    def admin? = Rails.env.development?
   end
 end

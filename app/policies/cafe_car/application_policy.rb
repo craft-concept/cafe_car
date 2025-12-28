@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CafeCar::BasePolicy
+class CafeCar::ApplicationPolicy
   include CafeCar::Policy
 
   attr_reader :user, :object

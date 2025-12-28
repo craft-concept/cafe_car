@@ -1,17 +1,44 @@
 module CafeCar
   module AutoResolver
-    def auto_resolve!
-      Object.define_method :const_missing do |name|
-        define(method)
-      end
+    def auto_resolve!(mod)
+      mod.instance_eval <<~RUBY, __FILE__, __LINE__
+        def const_missing(name)
+          super
+        rescue NameError
+          CafeCar.define(self, name) or raise
+        end
+      RUBY
     end
 
-    def define(name)
+    def define(mod, name)
       case name.to_s
       when /^\w+Controller$/
-        Class.new(const(:ApplicationController))
+        TOPLEVEL_BINDING.eval <<~RUBY, __FILE__, __LINE__
+          class #{mod.name}::#{name} < CafeCar[:ApplicationController]
+            include CafeCar::Controller
+            recline_in_the_cafe_car
+            self
+          end
+        RUBY
       when /^\w+Policy$/
-        Class.new(const(:BasePolicy))
+        TOPLEVEL_BINDING.eval <<~RUBY, __FILE__, __LINE__
+          class #{mod.name}::#{name} < CafeCar[:ApplicationPolicy]
+            def admin? = Rails.env.development?
+
+            def index?   = admin?
+            def show?    = admin?
+            def create?  = admin?
+            def update?  = admin?
+            def destroy? = admin?
+
+            def permitted_attributes = model.info.fields.names
+
+            class Scope < Scope
+              def resolve = scope.all
+            end
+            self
+          end
+        RUBY
       end
     end
   end

@@ -1,3 +1,5 @@
+require "responders"
+
 module CafeCar
   module Controller
     extend ActiveSupport::Concern
@@ -21,6 +23,8 @@ module CafeCar
 
         append_cafe_car_views
 
+        respond_to :json, :html, :turbo_stream
+
         before_action :set_current_attributes
 
         before_action :find_object,       only: _only.(%i[show edit update destroy])
@@ -37,6 +41,7 @@ module CafeCar
     end
 
     included do
+      self.responder = CafeCar[:ApplicationResponder]
       default_form_builder CafeCar[:FormBuilder]
 
       define_callbacks :render, :update, :create, :destroy
@@ -51,31 +56,24 @@ module CafeCar
       after_action :verify_authorized, :verify_policy_scoped
     end
 
-    def index = nil
-    def show  = nil
-    def new   = nil
-    def edit  = nil
+    def index = respond_with objects
+    def show  = respond_with object
+    def new   = respond_with object
+    def edit  = respond_with object
 
     def create
       run_callbacks(:create) { object.save! }
-      flash!
-      respond_to do |f|
-        f.html { created_redirect }
-      end
+      respond_with object
     end
 
     def update
       run_callbacks(:update) { object.save! }
-      flash!
+      respond_with object
     end
 
     def destroy
-      run_callbacks(:destroy) { object.destroy }
-
-      flash!
-      respond_to do |f|
-        f.html { destroyed_redirect }
-      end
+      run_callbacks(:destroy) { object.destroy! }
+      respond_with object
     end
 
     private
@@ -116,9 +114,10 @@ module CafeCar
       object.assign_attributes(permitted_attributes(object))
     end
 
-    def scope   = policy_scope(model.all).then { sorted _1 }
-                                         .then { filtered _1 }
-                                         .then { paginated _1 }
+    def scope   = model.all.then { policy_scope _1 }
+                           .then { sorted _1 }
+                           .then { filtered _1 }
+                           .then { paginated _1 }
     def objects = instance_variable_get("@#{model_name.plural}")
     def objects=(value)
       instance_variable_set("@#{model_name.plural}", value)
@@ -132,15 +131,9 @@ module CafeCar
     def model_name = model.model_name
 
     def model
-      @model ||= self.class.name.gsub(/.*::|Controller$/, '').classify.then { self.class.module_parent.const_get _1 }
-    end
-
-    def created_redirect   = redirect_back fallback_location: href_for(object)
-    def destroyed_redirect = redirect_to href_for(model)
-
-    def updated_redirect
-      return destroyed_redirect if object.destroyed?
-      redirect_to object, alert: "Updated"
+      @model ||= self.class.name.gsub(/.*::|Controller$/, '')
+                                .classify
+                                .then { self.class.module_parent.const_get _1 }
     end
 
     def render_invalid_record = render(object.persisted? ? 'edit' : 'new', status: :unprocessable_content)
@@ -153,6 +146,16 @@ module CafeCar
 
     def action
       @action ||= ActiveSupport::StringInquirer.new(action_name)
+    end
+
+    def _render_with_renderer_json(obj, options)
+      options[:only] ||= [:id] | policy(obj).displayable_attributes
+
+      if obj.is_a?(CafeCar::Model)
+        options[:include] ||= policy(obj).displayable_associations
+      end
+
+      super obj, **options
     end
 
     def set_current_attributes

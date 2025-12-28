@@ -4,7 +4,7 @@ module CafeCar
     include Caching
     include OptionHelpers
 
-    delegate *%w[l t capture concat link link_to partial? get_partial href_for render safe_join tag ui], to: :@template
+    delegate *%w[l t capture concat link link_to partial? get_partial href_for render safe_join raw tag ui], to: :@template
     delegate :context, :context?, to: :@template
     delegate :model_name, to: :model
 

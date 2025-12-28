@@ -22,6 +22,10 @@ module CafeCar
       app.config.assets.paths << root.join("app/javascript")
     end
 
+    initializer "cafe_car.filter_parameters" do |app|
+      app.config.filter_parameters |= %i[authorization passw secret token _key crypt salt certificate otp ssn]
+    end
+
     initializer "cafe_car.importmap", before: "importmap" do |app|
       app.config.importmap.paths << root.join("config/importmap.rb")
       app.config.importmap.cache_sweepers << root.join("app/javascript")
@@ -30,6 +34,12 @@ module CafeCar
     initializer "cafe_car.active_record" do |app|
       app.reloader.to_prepare do
         ::ActiveRecord::Base.include(Model)
+      end
+    end
+
+    initializer "cafe_car.routing" do |app|
+      app.reloader.to_prepare do
+        ::ActionDispatch::Routing::Mapper.include(Routing)
       end
     end
 

@@ -12,6 +12,9 @@
 @import url(cafe_car/themes/warm.css);
 @import url(cafe_car/themes/warm-dark.css) (prefers-color-scheme: dark);
 
+@import url(cafe_car/code/base16-light.css);
+@import url(cafe_car/code/base16-dark.css) (prefers-color-scheme: dark);
+
 :root {
   --half-gap: calc(var(--gap) / 2);
 }
