@@ -36,7 +36,7 @@ module CafeCar
     end
 
     def label(method, text = info(method).label, required: info(method).required?, **, &)
-      super(method, text, required:, **, &)
+      super(method, @template.safe_join([text, required ? "*" : ""]), required:, **, &)
     end
 
     def submit(value = nil, **options)
