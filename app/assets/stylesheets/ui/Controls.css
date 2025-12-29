@@ -1,16 +1,16 @@
 @charset "utf-8";
 
 .Controls {
-    display: inline-flex;
+  display: inline-flex;
 }
 
 .Controls_Link + .Controls_Link::before {
-    display: inline;
-    content: "·";
-    padding: 0 0.3em;
-    opacity: .3;
+  display: inline;
+  content: "·";
+  padding: 0 0.3em;
+  opacity: .3;
 }
 
 .Controls_Link a {
-    color: var(--link);
+  color: var(--link);
 }

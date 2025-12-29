@@ -1,4 +1,4 @@
 .Code {
-    font-family: var(--monospace, monospace), monospace;
-    white-space: pre-wrap;
+  font-family: var(--monospace, monospace), monospace;
+  white-space: pre-wrap;
 }

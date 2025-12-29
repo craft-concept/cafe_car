@@ -1,11 +1,11 @@
 @charset "utf-8";
 
 .InfoCircle {
-    display: inline-block;
-    cursor: help;
+  display: inline-block;
+  cursor: help;
 }
 
 .InfoCircle::after {
-    display: inline;
-    content: " ⓘ";
+  display: inline;
+  content: " ⓘ";
 }

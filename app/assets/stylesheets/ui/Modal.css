@@ -1,33 +1,33 @@
 .Modal {
-    z-index: 1;
-    inset: 0;
-    display: grid;
-    grid-template-columns: fit-content(var(--modal-width));
-    background: var(--backdrop);
-    overscroll-behavior: contain;
-    align-items: center;
-    justify-content: center;
-    overflow: auto;
-    backdrop-filter: blur(8px);
-    padding: var(--gap);
-    animation: fade-in 100ms;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  grid-template-columns: fit-content(var(--modal-width));
+  background: var(--backdrop);
+  overscroll-behavior: contain;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  backdrop-filter: blur(8px);
+  padding: var(--gap);
+  animation: fade-in 100ms;
 }
 
 .Modal_Close {
-    font-size: 150%;
-    cursor: pointer;
-    line-height: 1;
+  font-size: 150%;
+  cursor: pointer;
+  line-height: 1;
 }
 
 .Modal_Close:hover {
-    opacity: .8;
-    text-decoration: none;
+  opacity: .8;
+  text-decoration: none;
 }
 
 .Modal-fixed {
-    position: fixed;
+  position: fixed;
 }
 
 body:has(> .Modal-fixed) {
-    overflow: hidden;
+  overflow: hidden;
 }

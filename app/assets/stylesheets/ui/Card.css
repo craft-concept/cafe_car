@@ -1,56 +1,56 @@
 .Card {
-    container: Card;
-    box-shadow: var(--box-shadow);
-    border-radius: var(--radius);
-    background: var(--card);
+  container: Card;
+  box-shadow: var(--box-shadow);
+  border-radius: var(--radius);
+  background: var(--card);
 }
 
 .Card_Head,
 .Card_Foot {
-    display: flex;
-    gap: var(--gap);
-    align-items: baseline;
+  display: flex;
+  gap: var(--gap);
+  align-items: baseline;
 }
 
 .Card_Title {
-    flex-grow: 1;
-    margin: 0;
+  flex-grow: 1;
+  margin: 0;
 }
 
 .Card_Head,
 .Card_Foot,
 .Card_Section {
-    padding: var(--gap);
+  padding: var(--gap);
 }
 
 .Card_Section {
-    display: grid;
-    gap: var(--gap);
+  display: grid;
+  gap: var(--gap);
 }
 
 :is(.Card_Head, .Card_Section, .Card_Foot) {
-    & + &, & + form > &, form > & + & {
-        border-top: 1px solid var(--border);
-    }
+  & + &, & + form > &, form > & + & {
+    border-top: 1px solid var(--border);
+  }
 }
 
 .Card:not(:has(.Card_Head, .Card_Foot, .Card_Section)) {
-    padding: var(--gap);
-    display: grid;
-    gap: var(--gap);
+  padding: var(--gap);
+  display: grid;
+  gap: var(--gap);
 }
 
 .Card-sticky {
-    position: sticky;
-    top: var(--gap);
+  position: sticky;
+  top: var(--gap);
 }
 
 .Card-block {
-    display: block;
+  display: block;
 }
 
 @media (prefers-color-scheme: dark) {
-    .Card {
-        border: 1px solid var(--border);
-    }
+  .Card {
+    border: 1px solid var(--border);
+  }
 }
