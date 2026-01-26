@@ -56,6 +56,11 @@ module CafeCar
       :attachment if attachment?
     end
 
+    def nested_attributes_type
+      key = @method.to_s.chomp("_attributes").to_sym
+      model.nested_attributes_options.key?(key) && :nested
+    end
+
     def polymorphic_methods = [reflection.foreign_type, reflection.foreign_key]
 
     def placeholder  = i18n(:placeholder)
@@ -79,8 +84,9 @@ module CafeCar
 
     def type
       return if @method.nil?
-      @type ||= reflection_type || attribute_type || digest_type || attachment_type || default_type ||
-        raise(NoMethodError.new "Can't find attribute :#{@method} on #{model_name}", @method)
+      @type ||= reflection_type || attribute_type || digest_type || attachment_type ||
+                default_type || nested_attributes_type ||
+                raise(NoMethodError.new "Can't find attribute :#{@method} on #{model_name}", @method)
     end
 
     def width
@@ -103,6 +109,7 @@ module CafeCar
       when :date     then :date_field
       when :datetime then :datetime_field
       when :password then :password_field
+      when :nested   then :fields_for
       when :attachment then :file_field
       when :belongs_to, :has_many then :association
       when :has_one

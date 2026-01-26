@@ -74,6 +74,26 @@ module CafeCar
       @template.tag.span(text, **) if text.present?
     end
 
+    def fields_for(method, object = object_for(method), **, &)
+      method = method.to_s.chomp("_attributes").to_sym
+      if block_given?
+        super
+      else
+        super(method, **) do |f|
+          f.remaining_fields
+        end
+      end
+    end
+
+    def object_for(method)
+      method = method.to_s.chomp("_attributes").to_sym
+      if info(method).reflection.collection?
+        object.try(method)
+      else
+        object.try(method) || object.try("build_#{method}")
+      end
+    end
+
     def remaining_attributes = policy.editable_attributes - @fields.keys
 
     def remaining_fields(**, &block)

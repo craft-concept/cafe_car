@@ -12,7 +12,6 @@ module CafeCar
       @block    = block
     end
 
-    def html_safe?   = true
     def info         = form.info(@method)
     def wrapper(...) = @template.ui.Field(...)
     def input(...)   = send_to_form(:input, ...)
@@ -20,6 +19,8 @@ module CafeCar
     def hint(...)    = send_to_form_with_text(:hint, ...)
     def error(...)   = send_to_form_with_text(:error, ...)
 
+
+    def html_safe? = true
     def to_s
       return input if info.polymorphic? and object.new_record?
       partial = %W[#{info.type}_field field].find { @template.partial?(_1) }

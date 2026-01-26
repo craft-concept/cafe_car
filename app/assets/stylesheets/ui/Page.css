@@ -42,6 +42,9 @@
 
 .Page-slim .Page_Body {
   max-width: 720px;
+}
+
+.Page-center .Page_Body {
   margin-left: auto;
   margin-right: auto;
 }

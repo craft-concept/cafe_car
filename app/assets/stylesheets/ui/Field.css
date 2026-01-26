@@ -3,6 +3,7 @@
   grid: auto / auto 1fr;
   gap: .1em .5em;
   align-items: baseline;
+  flex-grow: 1;
 }
 
 .Field > :not(.Field_Label, .Field_Error) {

@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency "rails"
+  spec.add_dependency "cnc"
   spec.add_dependency "responders"
   spec.add_dependency "activerecord_where_assoc"
   spec.add_dependency "propshaft"

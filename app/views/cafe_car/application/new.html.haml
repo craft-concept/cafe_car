@@ -1,6 +1,6 @@
 - title = breadcrumbs(link(model).index, title("New #{model_name.human}"))
 
-= Page title: do |page|
+= Page :slim, title: do |page|
   = page.Body do
     = render "alerts"
     = Card do |card|
