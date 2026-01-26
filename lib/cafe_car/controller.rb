@@ -103,8 +103,12 @@ module CafeCar
     end
 
     def find_object
-      self.object = scope.except(:limit, :offset).find(params[:id])
+      delimiter = model.param_delimiter
+      id = unwrap params.extract_value(:id, delimiter:)
+      self.object = scope.except(:limit, :offset).find(id)
     end
+
+    def unwrap(arr) = arr.size == 1 ? arr.first : arr
 
     def find_objects
       self.objects = scope
