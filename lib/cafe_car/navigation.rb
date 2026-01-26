@@ -19,7 +19,7 @@ module CafeCar
         p[:controller] = "/" + p[:controller]
       end
 
-      def icon_name = t(text, scope: "navigation.icon")
+      def icon_name = t(text, scope: "navigation.icon", default: nil)&.to_sym
       def icon = @template.icon(icon_name, :before)
 
       def content

@@ -82,8 +82,15 @@ module CafeCar
       @links[object] ||= CafeCar[:LinkBuilder].new(self, object)
     end
 
-    def icon(name, *, **, &)
-      ui.Icon(*, tag: :i, class: "iconoir-#{name.to_s.dasherize}", **, &)
+    def icon(name = nil, *, **, &)
+      case name
+      when Symbol
+        class_ = name&.then { "iconoir-#{_1.to_s.dasherize}" }
+      when String, Array
+        label = name
+      end
+
+      ui.Icon(*label, *, tag: :i, class: class_, **, &)
     end
 
     def breadcrumbs(*items)
