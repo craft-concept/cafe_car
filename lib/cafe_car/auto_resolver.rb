@@ -31,7 +31,11 @@ module CafeCar
             def update?  = admin?
             def destroy? = admin?
 
-            def permitted_attributes = model.info.fields.names
+            def permitted_attributes
+              model.info.fields.names.then do |names|
+                [*model.primary_key].reverse.map(&:to_sym) & names | names
+              end
+            end
 
             class Scope < Scope
               def resolve = scope.all
