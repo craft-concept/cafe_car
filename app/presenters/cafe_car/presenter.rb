@@ -109,10 +109,12 @@ module CafeCar
       model.inspection_filter.filter_param(method, object.try(method))
     end
 
-    def show(method, **, &)
+    def show(method, **options, &)
       return if method.nil?
       @shown_attributes[method] = true
-      present(value(method), **show_defaults[method], **, &)
+      value = value(method)
+      options[:blank]&.then { value = _1 if value.blank? }
+      present(value, **show_defaults[method], **options, &)
     end
 
     def remaining_attributes(**options, &block)

@@ -24,7 +24,7 @@ module CafeCar::Table
     def has?(method) = model.info.fields.has?(method)
 
     def title(method = policy.title_attribute, *, **, &)
-      cell(method, *, href: true, **, &)
+      cell(method, *, href: true, blank: '(none)', **, &)
     end
 
     def logo(method = policy.logo_attribute, *, **, &)

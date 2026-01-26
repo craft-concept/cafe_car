@@ -41,7 +41,7 @@ module CafeCar::Table
       end
     end
 
-    def label   = present(@objects).human(@method)
+    def label   = @method&.then { present(@objects).human(_1) }
     def content = @template.safe_join([label, label_sort], "&nbsp;".html_safe)
     def to_html = @template.link_to_unless(!sortable?, content, href)
   end
