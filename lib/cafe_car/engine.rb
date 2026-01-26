@@ -22,6 +22,10 @@ module CafeCar
       app.config.assets.paths << root.join("app/javascript")
     end
 
+    initializer "cafe_car.preload_header" do |app|
+      app.config.action_view.preload_links_header = false
+    end
+
     initializer "cafe_car.filter_parameters" do |app|
       app.config.filter_parameters |= %i[authorization passw secret token _key crypt salt certificate otp ssn]
     end
