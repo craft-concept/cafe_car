@@ -77,3 +77,7 @@ turbo-frame {
 ::selection {
   background-color: var(--selection);
 }
+
+.highlight {
+  white-space: pre-wrap;
+}

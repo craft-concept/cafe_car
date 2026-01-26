@@ -32,6 +32,7 @@
   align-items: stretch;
   flex-grow: 1;
   padding: var(--gap);
+  z-index: 1;
 }
 
 .Layout_Menu {
