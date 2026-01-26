@@ -26,6 +26,7 @@
     --link: var(--accent);
     --card: var(--white);
     --button: var(--gray);
+    --menu: var(--card);
 
     --shadow: rgb(50 50 93 / .25);
     --backdrop: rgb(0 0 0 / .5);
@@ -48,6 +49,7 @@
     --third-gap: calc(var(--gap) / 3);
     --gap2: calc(var(--gap) * 2);
     --radius: 12px;
+    --menu-radius: calc(var(--radius) / 2);
     --control-radius: calc(var(--radius) / 3);
 
     --max-width: 720px;

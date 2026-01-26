@@ -1,0 +1,38 @@
+.Menu {
+  container: Menu;
+  box-shadow: var(--box-shadow);
+  border-radius: var(--menu-radius);
+  background: var(--menu);
+}
+
+.Menu_Item {
+  display: flex;
+  gap: var(--half-gap);
+  padding: var(--half-gap) var(--gap);
+}
+
+.Menu_Item:any-link {
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    color: var(--white);
+
+    &::before {
+      content: '';
+      display: block;
+      border-radius: var(--menu-radius);
+      position: absolute;
+      inset: 4px;
+      background: var(--link);
+      z-index: -1;
+    }
+  }
+}
+
+
+.Menu_Item {
+  & + & {
+    border-top: 1px solid var(--border);
+  }
+}

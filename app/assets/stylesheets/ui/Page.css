@@ -4,12 +4,15 @@
   flex-flow: wrap;
   justify-content: stretch;
   gap: var(--gap);
+  background: var(--background);
+  border-radius: var(--radius);
 }
 
 .Page_Head {
   display: flex;
   align-items: center;
   gap: var(--gap);
+  padding-left: var(--gap);
   width: 100%;
   top: var(--gap);
   left: var(--gap);

@@ -2,6 +2,16 @@
 
 .Icon {
   vertical-align: bottom;
+  display: flex;
+  gap: var(--half-gap);
+  font-style: inherit;
+
+  &::before {
+    display: block;
+    content: '';
+    height: 1em;
+    width: 1em;
+  }
 }
 
 .Icon-before {
