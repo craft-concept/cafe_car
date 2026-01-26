@@ -6,7 +6,8 @@ module CafeCar
     delegate :model_name, to: :@model
 
     def initialize(model:, method:)
-      @method = method.to_sym
+      # raise "Cannot get FieldInfo for nil method" if method.nil?
+      @method = method&.to_sym
       @model = model
     end
 
@@ -14,7 +15,12 @@ module CafeCar
 
     def id?          = method =~ /_ids?$/
     def constant?    = method.in? %i[id created_at updated_at]
-    def association? = model.reflect_on_association(@method).present?
+
+    def association?
+      return if @method.nil?
+      model.reflect_on_association(@method).present?
+    end
+
     def associated?  = reflection.present?
     def polymorphic? = reflection&.polymorphic?
     def digest?      = method =~ /_digest$/
@@ -22,7 +28,10 @@ module CafeCar
     def rich_text?   = reflection&.name =~ /^rich_text_(\w+)$/
     def attachment?  = model.reflect_on_attachment(method)
     def collection   = reflection.klass.all
-    def reflection   = model.reflect_on_association(@method) || reflections_by_attribute[@method]
+    def reflection
+      return if @method.nil?
+      model.reflect_on_association(@method) || reflections_by_attribute[@method]
+    end
 
     def abrogated_keys
       [*reflection&.foreign_type&.to_sym]
@@ -54,7 +63,7 @@ module CafeCar
     def hint         = i18n(:hint)
     def label        = i18n(:label, default: human)
     def prompt       = i18n(:prompt, default: "Select #{human.downcase}...")
-    def human(...)   = model.human_attribute_name(@method, ...)
+    def human(...)   = @method&.then { model.human_attribute_name(_1, ...) }
     def required?    = validator?(:presence)
 
     def validator?(kind, **options)
@@ -63,11 +72,13 @@ module CafeCar
 
     def i18n_key = model_name.i18n_key
     def i18n(key, **opts)
+      return if @method.nil?
       I18n.t(@method, scope: [:helpers, key, i18n_key], raise: true, **opts)
     rescue I18n::MissingTranslationData
     end
 
     def type
+      return if @method.nil?
       @type ||= reflection_type || attribute_type || digest_type || attachment_type || default_type ||
         raise(NoMethodError.new "Can't find attribute :#{@method} on #{model_name}", @method)
     end
