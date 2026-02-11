@@ -10,6 +10,7 @@ module CafeCar
 
     attr_reader :object, :options, :block
     class_attribute :show_defaults, default: Hash.new { _1[_2] = {} }
+    option :blank, presence: false
 
     def self.inherited(subclass)
       super
@@ -34,8 +35,7 @@ module CafeCar
       klass.ancestors.lazy.map(&:name).compact
     end
 
-    def self.show(method, proc = nil, **, &block)
-      block ||= proc
+    def self.show(method, block = nil, **)
       show_defaults[method].merge!({block:}.compact, **)
     end
 
@@ -57,19 +57,17 @@ module CafeCar
     def has_partial? = partial&.then { partial? _1 }
 
     derive :policy,   -> { @template.policy(@object) }
-    derive :captured, -> { @block ? capture(self, &@block) : @object.to_s }
+    derive :captured, -> { block ? capture(object, &block) : object.to_s }
 
     def to_html
       return render(object:, partial:) if has_partial?
-      if context?(:a)
-        preview
-      else
-        link_to (context(:a) { preview }), href rescue preview
-      end
+      return preview if context?(:a)
+      return blank if captured.blank? && blank
+      link_to(href) { preview } rescue preview
     end
 
-    def title(...) = show(policy.title_attribute, ...)
-    def logo(...) = show(policy.logo_attribute, ...)
+    def title(*, **, &) = show(policy.title_attribute, *, blank: show(:id), **, &)
+    def logo(*, **, &) = show(policy.logo_attribute, *, **, &)
 
     def attributes(*methods, except: nil, **options, &block)
       methods  = policy.displayable_attributes if methods.empty?
@@ -112,13 +110,12 @@ module CafeCar
     def show(method, **options, &)
       return if method.nil?
       @shown_attributes[method] = true
-      value = value(method)
-      options[:blank]&.then { value = _1 if value.blank? }
-      present(value, **show_defaults[method], **options, &)
+      present(value(method), **show_defaults[method], **options, &)
     end
 
-    def remaining_attributes(**options, &block)
+    def remaining_attributes(count = nil, **options, &block)
       attrs = policy.displayable_attributes - @shown_attributes.keys
+      attrs = attrs.take(count) if count
       attributes(*attrs, **options, &block)
     end
 
@@ -136,12 +133,6 @@ module CafeCar
     def controls(**options, &block)
       render("controls", object:, options:, &block)
     end
-
-    # def card(**)
-    #   ui.Card title:, ** do |card|
-    #     ui <<
-    #   end
-    # end
 
     def i18n_vars(names) = names.merge(*names.map { {_1.to_s.downcase.to_sym => _2.downcase} })
 

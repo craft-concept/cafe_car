@@ -1,0 +1,17 @@
+:ruby
+  style = [*options.delete(:style)]
+  style << options.delete(:template)&.then { "grid-template: #{_1}" }
+  style << options.delete(:columns)&.then do
+    case _1
+    in Numeric
+      "repeat(#{_1}, auto)"
+    in [a, b]
+      "repeat(auto-fit, minmax(#{a}, #{b}))"
+    else _1
+    end
+  end&.then { "grid-template-columns: #{_1}" }
+  style = style.join("; ")
+
+
+= grid.wrapper(*flags, style:, **options) do
+  = yield

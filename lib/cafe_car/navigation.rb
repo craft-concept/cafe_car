@@ -30,9 +30,7 @@ module CafeCar
       end
 
       def link(**opts)
-        @template.link_to_unless_current(content, params, **opts) do
-          tag.span(content, **opts, class: ["current", *opts[:class]])
-        end
+        @template.link_to(content, params, **opts, class: [*opts[:class], ("current" if @template.current_page?(params))])
       end
     end
 

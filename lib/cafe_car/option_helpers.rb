@@ -22,11 +22,20 @@ module CafeCar
         subclass.option_defaults = option_defaults.deep_dup
       end
 
-      def option(name, default: nil, accessor: true, reader: accessor, writer: accessor)
-        attr_reader name if reader
-        attr_writer name if writer
-        option_defaults[name] = default
-        define_method("#{name}?") { instance_variable_get("@#{name}").present? }
+      def option(*names, default: nil, accessor: true, reader: accessor, writer: accessor, presence: accessor)
+        names.each do |name|
+          attr_reader name if reader
+          attr_writer name if writer
+          option_defaults[name] = default
+          define_method("#{name}?") { instance_variable_get("@#{name}").present? } if presence
+        end
+      end
+
+      def flag(*names, setter: true, **)
+        names.each do |name|
+          option name, default: false, reader: false, **
+          define_method(name) { instance_variable_set("@#{name}", true); self } if setter
+        end
       end
 
       def option_accessor(name)

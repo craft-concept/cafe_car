@@ -1,7 +1,11 @@
 - title   = options.delete(:title)
+- image   = options.delete(:image)
 - actions = options.delete(:actions)
 
 = card.wrapper(*flags, **options) do
+  - if image
+    = card.Image style: image.url.then { "background-image: url(#{_1})" }
+
   = card.Head do
     = card.Title(tag: :h2) { title }
     = card.Actions { actions }

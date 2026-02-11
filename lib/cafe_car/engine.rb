@@ -86,6 +86,7 @@ module CafeCar
           logger.info "CSRF disabled to enable app.post calls."
 
           def present(...) = CafeCar[:Presenter].present(helper, ...)
+          def ui(...) = helper.ui(...)
         end
       end
     end

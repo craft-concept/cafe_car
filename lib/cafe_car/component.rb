@@ -1,30 +1,48 @@
 module CafeCar
   class Component
+    include OptionHelpers
+
+    concerning :Macros do
+      class_methods do
+        def component(*names, **, &)
+          names.each do |name|
+            define_class(name, const(:Component), **, &)
+          end
+        end
+      end
+    end
+
     attr_reader :flags, :options
 
     delegate :tag, :render, :capture, :safe_join, :ui_class, to: :@template
 
-    def initialize(template, name, *args, tag: :div, **options, &block)
+    option :tag, default: :div
+
+    def initialize(template, name, *args, **options, &block)
       @template = template
       @names    = [*name].map(&:to_s).map(&:underscore).map(&:to_sym)
-      @tag      = tag
       @flags    = args.extract! { _1.is_a? Symbol }
       @args     = args.flatten.compact_blank
       @children = options.extract_if! { _1 =~ /^[A-Z]\w*$/ }
       @options  = options
       @block    = block
+      options.transform!(:href) { @template.href_for _1 }
+      assign_options!
     end
 
     def name     = @names.last
     def context  = @context ||= Context.new(@template, prefix: @names)
     def partial? = @template.partial?(partial_name)
     def href?    = options[:href].present?
-    def tag_name = href? ? :a : @tag
+    def tag_name = href? && !current_href? ? :a : @tag
+
+    def current_href? = options[:href]&.then { @template.current_href?(_1, check_parameters: true) }
+    def ancestor_href? = options[:href]&.then { @template.ancestor_href?(_1) }
 
     def partial_name = 'ui/' + @names.join('_')
 
     def class_names     = @names.map(&:to_s).map(&:camelize)
-    def class_name(...) = ui_class(class_names, *@flags, *(@tag.to_s if href?), ...)
+    def class_name(...) = ui_class(class_names, *@flags, *(@tag.to_s if href?), (:current if current_href?), (:ancestor if ancestor_href?), ...)
 
     def children
       @children.map {|name, content| send(name) { content } }
@@ -48,7 +66,10 @@ module CafeCar
     def <<(o) = @template.concat(o)
 
     def html_safe? = true
-    def to_s
+
+    def to_s = to_html
+
+    def to_html
       return "" if @block and blank?
 
       if partial?

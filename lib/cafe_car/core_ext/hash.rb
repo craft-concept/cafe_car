@@ -6,4 +6,12 @@ class Hash
       result[key] = delete(key) if yield(key, value)
     end
   end
+
+  def transform!(*keys)
+    keys.each do |k|
+      self[k] = yield self[k] if key?(k)
+    end
+  end
+
+  def transform(...) = dup.transform!(...)
 end

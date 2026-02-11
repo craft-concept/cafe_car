@@ -1,4 +1,4 @@
-require "cafe_car/core_ext/hash"
+require "cafe_car/core_ext"
 
 require "cafe_car/version"
 require "cafe_car/engine"

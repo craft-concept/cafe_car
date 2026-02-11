@@ -5,6 +5,20 @@
   background: var(--card);
 }
 
+.Card_Image {
+  display: block;
+  aspect-ratio: 5/4;
+  background-size: cover;
+  background-position: center;
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+  /* &::before {
+    display: block;
+    content: '';
+    margin-top: 30%;
+  } */
+}
+
 .Card_Head,
 .Card_Foot {
   display: flex;

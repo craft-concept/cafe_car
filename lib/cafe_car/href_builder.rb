@@ -10,7 +10,14 @@ module CafeCar
       normalize!
     end
 
-    def to_s = @template.url_for([*collapsed_namespace, *@parts, @params])
+    def to_s
+      case [*@parts]
+      in [String]
+        [*@parts, *@params.to_query.presence].join(??)
+      else
+        @template.url_for([*collapsed_namespace, *@parts, @params])
+      end
+    end
 
     def normalize!
       @parts.flatten!

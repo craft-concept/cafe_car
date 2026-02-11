@@ -1,0 +1,4 @@
+.Grid {
+  display: grid;
+  gap: var(--gap);
+}

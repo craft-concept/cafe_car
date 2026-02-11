@@ -23,6 +23,8 @@
 }
 
 .Page_Actions {
+  display: flex;
+  gap: var(--gap);
   margin-left: auto;
 }
 

@@ -1,4 +1,5 @@
 module CafeCar
-  class RecordPresenter < CafeCar["ActiveRecord::BasePresenter"]
+  class RecordPresenter < CafeCar[:Presenter]
+    show :id, -> { "##{_1}" }
   end
 end

@@ -50,7 +50,8 @@ module CafeCar
     end
     alias_method :p, :present
 
-    def current_href?(...) = current_page? href_for(...)
+    def current_href?(*, check_parameters: false, **) = current_page?(href_for(*, **), check_parameters:)
+    def ancestor_href?(...) = URI(href_for(...)) < URI(url_for(request.params))
 
     def href_for(*parts, namespace: self.namespace, **params)
       HrefBuilder.new(*parts, namespace:, template: self, **params).to_s
@@ -81,6 +82,8 @@ module CafeCar
       @links         ||= {}
       @links[object] ||= CafeCar[:LinkBuilder].new(self, object)
     end
+
+    def link_to(...) = context(:a) { super }
 
     def icon(name = nil, *, **, &)
       case name

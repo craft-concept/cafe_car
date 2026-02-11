@@ -18,7 +18,7 @@ module CafeCar::Table
 
     def cell(method, *flags, **options, &)
       super
-      options[:href] = @template.href_for(@object) if options[:href] == true
+      options[:href] = @object if options[:href] == true
       call_procs!(options, @object)
       ui.Cell(show(method, **options.slice(:blank), &), *flags, **options)
     end

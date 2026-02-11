@@ -48,7 +48,7 @@ module CafeCar
       add_flash_types :success, :warning, :error
 
       helper_method :model, :model_name, :object, :objects
-      helper_method :action, :scope
+      helper_method :action, :scope, :view
 
       helper Helpers
       delegate :present, :href_for, to: :helpers
@@ -150,6 +150,10 @@ module CafeCar
 
     def action
       @action ||= ActiveSupport::StringInquirer.new(action_name)
+    end
+
+    def view
+      params.fetch(:view) { "table" }
     end
 
     def _render_with_renderer_json(obj, options)
