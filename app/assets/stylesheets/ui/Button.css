@@ -1,6 +1,6 @@
 .Button {
   --background: var(--button);
-  --color: black;
+  --color: var(--color);
   background: var(--background);
   color: var(--color);
   border-radius: var(--control-radius);
@@ -8,21 +8,22 @@
   box-shadow: rgba(34, 32, 29, 0.05) 0px 1px 2px;
   /* border: 1px solid rgba(255,255,255, 0.3); */
   border: 0;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5em;
   user-select: none;
 }
 
-.Button:hover {
+.Button:where(:not(.Button-current)):hover {
+  cursor: pointer;
   text-decoration: none;
   box-shadow: rgba(34, 32, 29, 0.1) 0px 1px 2px;
   filter: brightness(1.05);
   z-index: 1;
 }
 
-.Button:active {
+.Button:active,
+.Button-current {
   text-decoration: none;
   box-shadow: rgba(34, 32, 29, 0.1) 0px 1px 2px;
   filter: brightness(0.95);
