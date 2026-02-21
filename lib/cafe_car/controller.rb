@@ -51,7 +51,7 @@ module CafeCar
       helper_method :action, :scope, :view
 
       helper Helpers
-      delegate :present, :href_for, to: :helpers
+      delegate :present, :href_for, :namespace, to: :helpers
 
       after_action :verify_authorized, :verify_policy_scoped
     end
@@ -74,6 +74,10 @@ module CafeCar
     def destroy
       run_callbacks(:destroy) { object.destroy! }
       respond_with object
+    end
+
+    def respond_with(*resources, **options, &block)
+      super(*namespace, *resources, **options, &block)
     end
 
     private
