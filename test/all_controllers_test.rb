@@ -5,26 +5,42 @@ class AllControllersTest < ActionDispatch::IntegrationTest
     controller = [*scope, *name].join("/")
     singular   = [*name].join("/").singularize
 
-    test controller do
+    test "#{controller}_index" do
       get url_for(controller:, action: :index)
-      assert_response :success
 
+      assert_response :success
+    end
+
+    test "#{controller}_create"  do
       params = {singular => build(singular).as_json}
       post(url_for(controller:, action: :create), params:)
+
       assert_response :redirect
+    end
 
+    test "#{controller}_new"  do
       get url_for(controller:, action: :new)
-      assert_response :success
 
+      assert_response :success
+    end
+
+    test "#{controller}_show"  do
       id = create(singular)
 
       get url_for(controller:, action: :show, id:)
-      assert_response :success
 
+      assert_response :success
+    end
+
+    test "#{controller}_edit"  do
       get url_for(controller:, action: :edit, id:)
-      assert_response :success
 
+      assert_response :success
+    end
+
+    test "#{controller}_destroy"  do
       delete url_for(controller:, action: :destroy, id:)
+
       assert_redirected_to url_for(controller:, action: :index)
     end
   end

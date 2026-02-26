@@ -1,7 +1,5 @@
 module CafeCar
-  module Fields
-    class StringField < const(:ApplicationField)
-      option type: :text
-    end
+  class StringField < const(:ApplicationField)
+    option type: :text
   end
 end
