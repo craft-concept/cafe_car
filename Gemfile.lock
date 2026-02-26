@@ -116,9 +116,10 @@ GEM
     chrome_devtools_rails (0.1.0)
       rails (~> 8.0, >= 8.0.2)
     chronic (0.10.2)
-    cnc (0.1.8)
+    cnc (0.1.11)
       activesupport
       listen
+      rack
       rubocop
       rubocop-minitest
       rubocop-rails-omakase
