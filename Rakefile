@@ -8,4 +8,9 @@ require "rubocop/rake_task"
 
 RuboCop::RakeTask.new
 
-task default: %i[test rubocop]
+task :brakeman do
+  require "brakeman"
+  Brakeman.run app_path: ".", print_report: true
+end
+
+task default: %i[rubocop test brakeman]
