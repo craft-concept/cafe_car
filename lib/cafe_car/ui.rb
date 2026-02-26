@@ -3,7 +3,7 @@ module CafeCar
     module_function
 
     def component(name, **, &)
-      define_class(name, const(:Component), **, &)
+      define_class(name, CafeCar[:Component], **, &)
     end
   end
 end

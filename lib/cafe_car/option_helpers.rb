@@ -33,7 +33,7 @@ module CafeCar
 
       def flag(*names, setter: true, **)
         names.each do |name|
-          option name, default: false, reader: false, **
+          option(name, default: false, reader: false, **)
           define_method(name) { instance_variable_set("@#{name}", true); self } if setter
         end
       end

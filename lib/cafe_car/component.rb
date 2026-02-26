@@ -6,7 +6,7 @@ module CafeCar
       class_methods do
         def component(*names, **, &)
           names.each do |name|
-            define_class(name, const(:Component), **, &)
+            define_class(name, CafeCar[:Component], **, &)
           end
         end
       end

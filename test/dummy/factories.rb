@@ -2,14 +2,14 @@ require "open-uri"
 
 FactoryBot.define do
   factory :user do
-    name     { Faker::Religion::Bible.unique.character }
+    name     { Faker::Religion::Bible.character }
     password { @pw = Faker::Internet.password }
     password_confirmation { @pw }
     avatar { {io: URI.parse(Faker::Avatar.image).open, filename: "avatar.png"} }
   end
 
   factory :article do
-    title  { Faker::Book.unique.title }
+    title  { Faker::Book.title }
     author { User.sample or create(:user) }
 
     trait :content do
@@ -27,7 +27,7 @@ FactoryBot.define do
   end
 
   factory :client do
-    name  { Faker::Company.unique.name }
+    name  { Faker::Company.name }
     owner { User.sample or create(:user) }
   end
 

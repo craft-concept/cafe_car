@@ -8,9 +8,4 @@ class Module
     end
     const_set name, klass
   end
-
-  def const_cache(name)
-    name = name.to_s.gsub('::', ?_)
-    const_defined?(name, false) ? const_get(name) : const_set(name, yield(name))
-  end
 end

@@ -11,6 +11,12 @@ module CafeCar
   class Engine < ::Rails::Engine
     config.autoload_paths += paths["lib"].to_a
 
+    initializer "cafe_car.inflections" do
+      ActiveSupport::Inflector.inflections do |i|
+        i.acronym "UI"
+      end
+    end
+
     initializer "cafe_car.i18n" do |app|
       app.reloader.to_prepare do
         CafeCar::NamePatch.patch!

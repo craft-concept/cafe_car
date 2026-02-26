@@ -33,12 +33,14 @@ class AllControllersTest < ActionDispatch::IntegrationTest
     end
 
     test "#{controller}_edit"  do
+      id = create(singular)
       get url_for(controller:, action: :edit, id:)
 
       assert_response :success
     end
 
     test "#{controller}_destroy"  do
+      id = create(singular)
       delete url_for(controller:, action: :destroy, id:)
 
       assert_redirected_to url_for(controller:, action: :index)
