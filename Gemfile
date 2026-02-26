@@ -6,7 +6,7 @@ gem "minitest", "~> 5.0"
 gem "mutex_m"
 
 gem "bcrypt"
-gem "cnc", github: "craft-concept/cnc", branch: "main"
+gem "cnc" # , github: "craft-concept/cnc", branch: "main"
 gem "brakeman"
 gem "puma"
 gem "sqlite3"
