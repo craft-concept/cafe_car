@@ -13,8 +13,9 @@ module CafeCar
 
     def info(method) = model.info.field(method)
 
-    def id?          = method =~ /_ids?$/
-    def constant?    = method.in? %i[id created_at updated_at]
+    def id?        = method =~ /_ids?$/
+    def constant?  = method.in? %i[id created_at updated_at]
+    def timestamp? = type.in? %i[date datetime time]
 
     def association?
       return if @method.nil?
@@ -95,7 +96,7 @@ module CafeCar
         # "minmax(10em, fit-content)"
         # "minmax(10em, 1fr)"
         "minmax(10em, auto)"
-        # "min-content"
+        # "minmax(min-content, auto)"
       else "min-content"
       end
     end

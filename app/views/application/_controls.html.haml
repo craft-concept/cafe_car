@@ -4,6 +4,7 @@
 - destroy = options.delete(:destroy) { true }
 - links   = link(object)
 
+-# TODO: Handle resources with missing routes
 = Controls tag: :span, **options do |c|
   = c.Link links.index   if index
   = c.Link links.show    if show

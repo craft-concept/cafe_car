@@ -98,14 +98,17 @@
 }
 
 .Table_Cell {
+  position: relative;
+  padding: .75em 1em;
+  align-items: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 1em;
-  position: relative;
-  display: flex;
-  align-items: center;
   gap: 2px;
+
+  > code {
+    white-space: nowrap;
+  }
 
   &:has(img) {
     padding-block: 0;

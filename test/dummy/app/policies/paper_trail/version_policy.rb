@@ -1,6 +1,7 @@
 class PaperTrail::VersionPolicy < ApplicationPolicy
-  delegate :index?, :show?, to: :item_policy
+  delegate :show?, to: :item_policy
 
+  def index?  = admin?
   def create? = false
   def update? = false
   def destroy? = false

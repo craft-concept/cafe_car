@@ -57,6 +57,13 @@ module CafeCar
       HrefBuilder.new(*parts, namespace:, template: self, **params).to_s
     end
 
+    def view_url(view)
+      view = view.to_s
+      params = request.params.merge(view:)
+      params.delete(:view) if params[:view] == default_view
+      url_for(params)
+    end
+
     def context(name = nil, &)
       @context ||= []
 

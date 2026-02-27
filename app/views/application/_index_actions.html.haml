@@ -1,7 +1,7 @@
 = Group do
-  = Button href: url_for(request.params.merge(view: :grid)), title: "Grid View" do
+  = Button href: view_url(:grid), title: "Grid View" do
     = icon(:view_grid)
-  = Button href: url_for(request.params.except(:view)), title: "Table View" do
+  = Button href: view_url(:table), title: "Table View" do
     = icon(:table_rows)
 
 = link(model).new(class: ui.Button(:primary).class_name) { icon(:plus) + _1}

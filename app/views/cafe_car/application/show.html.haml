@@ -1,5 +1,5 @@
 - title   = breadcrumbs(link(object).index, title(object))
-- summary = ui(object).attributes :updated_at, :created_at, try: true
+- summary = ui(object).timestamps try: true
 - body    = render("show")
 
 = turbo_stream_from(object)

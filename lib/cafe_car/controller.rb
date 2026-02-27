@@ -12,6 +12,10 @@ module CafeCar
         define_method(:model) { @model ||= model }
       end
 
+      def default_view(v = @default_view || "table")
+        @default_view = v.to_s
+      end
+
       def recline_in_the_cafe_car(only: nil, except: nil)
         _only = ->(actions) do
           actions -= except if except
@@ -48,7 +52,7 @@ module CafeCar
       add_flash_types :success, :warning, :error
 
       helper_method :model, :model_name, :object, :objects
-      helper_method :action, :scope, :view
+      helper_method :action, :scope, :view, :default_view
 
       helper Helpers
       delegate :present, :href_for, :namespace, to: :helpers
@@ -156,8 +160,9 @@ module CafeCar
       @action ||= ActiveSupport::StringInquirer.new(action_name)
     end
 
+    def default_view = self.class.default_view
     def view
-      params.fetch(:view) { "table" }
+      params.fetch(:view) { default_view }
     end
 
     def _render_with_renderer_json(obj, options)

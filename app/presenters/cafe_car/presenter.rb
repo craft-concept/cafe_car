@@ -69,6 +69,10 @@ module CafeCar
     def title(*, **, &) = show(policy.title_attribute, *, blank: show(:id), **, &)
     def logo(*, **, &) = show(policy.logo_attribute, *, **, &)
 
+    def timestamps(**, &)
+      attributes(*model.info.fields.timestamps.names, **, &)
+    end
+
     def attributes(*methods, except: nil, **options, &block)
       methods  = policy.displayable_attributes if methods.empty?
       methods  = methods.flatten.compact

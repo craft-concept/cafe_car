@@ -6,6 +6,7 @@ module CafeCar
       # def url = object.representation(resize_to_limit: [100, 100]).processed.path
       def url = object.url
       def blank = options.fetch(:blank) { "(none)" }
+      def logo = self
 
       def image
         @template.image_tag url, class: ui.class(:image, size) if url

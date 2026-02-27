@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cafe_car (0.1.0)
+    cafe_car (0.1.1)
       activerecord_where_assoc
       chronic
       cnc

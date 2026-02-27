@@ -1,6 +1,7 @@
 = Layout do |l|
   = l.Sidebar do
-    %h2= t(:title, scope: [:application], default: Rails.application.name.titleize)
+    - title = t(:title, scope: [:application], default: Rails.application.name.titleize)
+    %h2= link_to title, root_path
     = render "navigation"
   = l.Main { yield }
   = l.Footer     { render("footer") }

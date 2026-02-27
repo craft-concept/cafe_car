@@ -15,7 +15,14 @@ module CafeCar
       in [String]
         [*@parts, *@params.to_query.presence].join(??)
       else
-        @template.url_for([*collapsed_namespace, *@parts, @params])
+        namespace = collapsed_namespace
+        begin
+          @template.url_for([*namespace, *@parts, @params])
+        rescue NoMethodError
+          raise if namespace.empty?
+          namespace.pop
+          retry
+        end
       end
     end
 

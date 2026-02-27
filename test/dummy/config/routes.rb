@@ -15,6 +15,10 @@ Rails.application.routes.draw do
 
     resources :attachments
 
+    namespace :paper_trail do
+      resources :versions
+    end
+
     namespace :active_storage do
       resources :attachments
     end
