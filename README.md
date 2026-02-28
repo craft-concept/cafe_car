@@ -1,16 +1,24 @@
 # CafeCar
 
-CafeCar is a Rails engine that extends the MVC "view" layer to provide automatic CRUD UI generation with sensible defaults. Its philosophy is rooted in the idea that Rails should render _something_ that represents the CRUD operations of your models by default. These defaults can then be expanded or overridden on either an application-wide or model-specific basis.
+CafeCar is a Rails engine that extends the MVC "view" layer to provide automatic
+CRUD UI generation with sensible defaults. Its philosophy is rooted in the idea
+that Rails should render _something_ that represents the CRUD operations of your
+models by default. These defaults can then be expanded or overridden on either
+an application-wide or model-specific basis.
 
 **Perfect for**: Admin panels, internal tools, and rapid prototyping.
 
 ## Features
 
-- 🚀 **Auto-generated CRUD interfaces** - One line of code generates complete index, show, new, edit views
-- 🎨 **Component-based UI system** - Flexible, composable components for building interfaces
-- 🔐 **Built-in authorization** - Pundit integration for attribute-level permissions
+- 🚀 **Auto-generated CRUD interfaces** - One line of code generates complete
+  index, show, new, edit views
+- 🎨 **Component-based UI system** - Flexible, composable components for
+  building interfaces
+- 🔐 **Built-in authorization** - Pundit integration for attribute-level
+  permissions
 - 📊 **Smart presenters** - Automatic type-aware display of your data
-- 🔍 **Advanced filtering** - Range queries, comparison operators, and association filters
+- 🔍 **Advanced filtering** - Range queries, comparison operators, and
+  association filters
 - 📄 **Pagination & sorting** - Kaminari integration with sortable columns
 - ⚡ **Hotwire ready** - Turbo Streams support out of the box
 - 📝 **Intelligent forms** - Auto-generated forms with smart field detection
@@ -41,7 +49,9 @@ $ rails generate cafe_car:install
 ```
 
 This will:
-- Add required dependencies (bcrypt, paper_trail, factory_bot_rails, faker, rouge)
+
+- Add required dependencies (bcrypt, paper_trail, factory_bot_rails, faker,
+  rouge)
 - Mount the CafeCar engine at `/` under the `:admin` namespace
 - Create `app/policies/application_policy.rb`
 - Add `CafeCar::Controller` to your `ApplicationController`
@@ -51,13 +61,15 @@ This will:
 
 ### Quick Start: Generate a Complete Resource
 
-The fastest way to get started is to generate a complete resource (model + controller + policy):
+The fastest way to get started is to generate a complete resource (model +
+controller + policy):
 
 ```bash
 $ rails generate cafe_car:resource Product name:string price:decimal description:text
 ```
 
 This creates:
+
 - Migration and model (`app/models/product.rb`)
 - Controller with CRUD actions (`app/controllers/products_controller.rb`)
 - Policy with permission methods (`app/policies/product_policy.rb`)
@@ -79,11 +91,12 @@ You can also add CafeCar to existing resources:
 
 ```ruby
 class ProductsController < ApplicationController
-  recline_in_the_cafe_car
+  cafe_car
 end
 ```
 
 That single line provides:
+
 - All 7 RESTful actions (index, show, new, create, edit, update, destroy)
 - Automatic authorization via Pundit
 - Filtering and sorting
@@ -113,17 +126,19 @@ The policy controls both authorization and which attributes can be edited.
 
 ### Controllers
 
-The `CafeCar::Controller` module provides automatic CRUD functionality with the `recline_in_the_cafe_car` class method.
+The `CafeCar::Controller` module provides automatic CRUD functionality with the
+`cafe_car` class method.
 
 ```ruby
 class Admin::ClientsController < ApplicationController
-  recline_in_the_cafe_car
+  cafe_car
 end
 ```
 
 **What you get:**
 
-- **RESTful actions**: `index`, `show`, `new`, `edit`, `create`, `update`, `destroy`
+- **RESTful actions**: `index`, `show`, `new`, `edit`, `create`, `update`,
+  `destroy`
 - **Authorization**: Automatic `authorize!` before each action
 - **Smart defaults**: Model detection from controller name
 - **Callbacks**: Lifecycle hooks for `render`, `update`, `create`, `destroy`
@@ -132,9 +147,9 @@ end
 **Limiting actions:**
 
 ```ruby
-recline_in_the_cafe_car only: [:index, :show]
+cafe_car only: [:index, :show]
 # or
-recline_in_the_cafe_car except: [:destroy]
+cafe_car except: [:destroy]
 ```
 
 **Custom model:**
@@ -142,7 +157,7 @@ recline_in_the_cafe_car except: [:destroy]
 ```ruby
 class Admin::ClientsController < ApplicationController
   model Company  # Use Company model instead of Client
-  recline_in_the_cafe_car
+  cafe_car
 end
 ```
 
@@ -150,8 +165,8 @@ end
 
 ```ruby
 class ProductsController < ApplicationController
-  recline_in_the_cafe_car
-  
+  cafe_car
+
   set_callback :create, :after do |controller|
     NotificationMailer.product_created(controller.object).deliver_later
   end
@@ -160,7 +175,8 @@ end
 
 ### Policies
 
-CafeCar extends Pundit with attribute-level permissions and auto-detection of displayable fields.
+CafeCar extends Pundit with attribute-level permissions and auto-detection of
+displayable fields.
 
 ```ruby
 class ClientPolicy < ApplicationPolicy
@@ -185,9 +201,11 @@ end
 **Key methods:**
 
 - `permitted_attributes` - Attributes that can be edited via forms
-- `displayable_attributes` - Attributes shown in views (auto-detected from columns + associations)
+- `displayable_attributes` - Attributes shown in views (auto-detected from
+  columns + associations)
 - `displayable_associations` - Associations that can be displayed
-- `filtered_attribute?(attr)` - Check if attribute should be hidden (uses Rails parameter filters)
+- `filtered_attribute?(attr)` - Check if attribute should be hidden (uses Rails
+  parameter filters)
 
 **Scope pattern:**
 
@@ -203,7 +221,8 @@ end
 
 ### Presenters
 
-Presenters convert model objects into view-ready representations with automatic type detection.
+Presenters convert model objects into view-ready representations with automatic
+type detection.
 
 **Automatic usage** (in views):
 
@@ -212,6 +231,7 @@ Presenters convert model objects into view-ready representations with automatic 
 ```
 
 This automatically:
+
 1. Finds the appropriate presenter for the object type
 2. Checks policy permissions
 3. Renders displayable attributes
@@ -227,14 +247,14 @@ class ProductPresenter < CafeCar::Presenter
   show :description
   show :category
   show :created_at
-  
+
   # Custom display method
   def preview
     "#{name} - #{format_currency(price)}"
   end
-  
+
   private
-  
+
   def format_currency(amount)
     "$#{amount}"
   end
@@ -397,6 +417,7 @@ end
 ```
 
 The model gets:
+
 - `sorted(*keys)` - Parse and apply sort parameters
 - `normalized_sort_key()` - Convert sort keys to Arel format
 
@@ -404,10 +425,10 @@ The model gets:
 
 ```ruby
 class ProductsController < ApplicationController
-  recline_in_the_cafe_car
-  
+  cafe_car
+
   private
-  
+
   def find_objects
     @objects = model.where(active: true)
                     .query(filter_params)
@@ -431,16 +452,17 @@ app/views/
     _form.html.haml    # Override form partial
 ```
 
-CafeCar's default views are in `app/views/cafe_car/application/` and serve as templates.
+CafeCar's default views are in `app/views/cafe_car/application/` and serve as
+templates.
 
 ### Custom Responders
 
 ```ruby
 class ProductsController < ApplicationController
-  recline_in_the_cafe_car
-  
+  cafe_car
+
   private
-  
+
   def create
     super
     respond_with object, location: custom_path
@@ -477,7 +499,8 @@ CafeCar::Current.user_agent     # User agent string
 CafeCar::Current.ip_address     # IP address
 ```
 
-Set in controllers via `set_current_attributes` (automatically called by `recline_in_the_cafe_car`).
+Set in controllers via `set_current_attributes` (automatically called by
+`cafe_car`).
 
 ## Generators
 
@@ -514,6 +537,7 @@ $ rails generate cafe_car:notes
 ```
 
 Creates:
+
 - Migration for notes table
 - `Note` model
 - `Notable` concern for trackable models
@@ -539,7 +563,7 @@ class ApplicationPresenter < CafeCar::Presenter
   # Application-wide presenter customizations
 end
 
-# app/presenters/product_presenter.rb  
+# app/presenters/product_presenter.rb
 class ProductPresenter < ApplicationPresenter
   show :name
   show :price
@@ -568,7 +592,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     get products_url
     assert_response :success
   end
-  
+
   test "create with valid attributes" do
     assert_difference "Product.count", 1 do
       post products_url, params: { product: { name: "Widget" } }
@@ -584,4 +608,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+The gem is available as open source under the terms of the
+[MIT License](https://opensource.org/licenses/MIT).

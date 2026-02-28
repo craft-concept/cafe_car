@@ -16,7 +16,7 @@ module CafeCar
         @default_view = v.to_s
       end
 
-      def recline_in_the_cafe_car(only: nil, except: nil)
+      def cafe_car(only: nil, except: nil)
         _only = ->(actions) do
           actions -= except if except
           actions &= only if only

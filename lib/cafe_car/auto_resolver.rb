@@ -16,7 +16,7 @@ module CafeCar
         TOPLEVEL_BINDING.eval <<~RUBY, __FILE__, __LINE__
           class #{mod.name}::#{name} < CafeCar[:ApplicationController]
             include CafeCar::Controller
-            recline_in_the_cafe_car
+            cafe_car
             self
           end
         RUBY

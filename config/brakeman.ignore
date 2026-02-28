@@ -9,7 +9,7 @@
       "file": "lib/cafe_car/auto_resolver.rb",
       "line": 16,
       "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
-      "code": "TOPLEVEL_BINDING.eval(\"class #{mod.name}::#{name} < CafeCar[:ApplicationController]\\n  include CafeCar::Controller\\n  recline_in_the_cafe_car\\n  self\\nend\\n\", \"lib/cafe_car/auto_resolver.rb\", 16)",
+      "code": "TOPLEVEL_BINDING.eval(\"class #{mod.name}::#{name} < CafeCar[:ApplicationController]\\n  include CafeCar::Controller\\n  cafe_car\\n  self\\nend\\n\", \"lib/cafe_car/auto_resolver.rb\", 16)",
       "render_path": null,
       "location": {
         "type": "method",
