@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cafe_car (0.1.1)
+    cafe_car (0.1.2)
       activerecord_where_assoc
       chronic
       cnc
@@ -447,4 +447,4 @@ DEPENDENCIES
   web-console
 
 BUNDLED WITH
-   4.0.7
+  4.0.7
