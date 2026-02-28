@@ -97,7 +97,7 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    addressable (2.8.8)
+    addressable (2.8.9)
       public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
     base64 (0.3.0)
@@ -116,7 +116,7 @@ GEM
     chrome_devtools_rails (0.1.0)
       rails (~> 8.0, >= 8.0.2)
     chronic (0.10.2)
-    cnc (0.1.11)
+    cnc (0.1.13)
       activesupport
       listen
       rack
@@ -447,4 +447,4 @@ DEPENDENCIES
   web-console
 
 BUNDLED WITH
-   2.5.3
+   4.0.7
