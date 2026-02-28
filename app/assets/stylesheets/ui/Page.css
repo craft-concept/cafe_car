@@ -2,10 +2,12 @@
   container: Page;
   display: flex;
   flex-flow: wrap;
-  justify-content: stretch;
+  justify-content: center;
   gap: var(--gap);
   background: var(--background);
   border-radius: var(--radius);
+  min-height: 100%;
+  align-content: start;
 }
 
 .Page_Head {
@@ -16,6 +18,10 @@
   width: 100%;
   top: var(--gap);
   left: var(--gap);
+}
+
+.Page_Foot {
+  width: 100%;
 }
 
 .Page_Title {

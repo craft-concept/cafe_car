@@ -53,7 +53,7 @@ module CafeCar
     end
 
     def wrapper(*args, **opts, &)
-      @template.content_tag(tag_name, safe_join([*args]), class: class_name(*opts.delete(:class)), **opts) do
+      @template.content_tag(opts.delete(:tag) { tag_name }, safe_join([*args]), class: class_name(*opts.delete(:class)), **opts) do
         capture(self, &)
       end
     end

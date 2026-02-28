@@ -10,3 +10,6 @@
     = render "alerts"
     = body
     = render "debug" if debug?
+
+  = page.Foot do
+    = yield :foot

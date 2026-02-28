@@ -4,7 +4,8 @@
 
 .Layout {
   display: flex;
-  align-items: start;
+  align-items: stretch;
+  flex-grow: 1;
 }
 
 .Layout_Sidebar {
@@ -13,11 +14,14 @@
   width: var(--sidebar-width);
   position: sticky;
   inset: 0;
+
   overflow: auto;
+  max-height: 100dvh;
 
   display: flex;
   flex-flow: column;
   flex-shrink: 0;
+  align-self: start;
 
   padding: var(--gap);
   white-space: nowrap;
@@ -43,7 +47,6 @@
   height: 40px;
   text-align: center;
   cursor: pointer;
-  vertical-align: center;
   border-color: transparent;
   background: none;
 
@@ -62,7 +65,7 @@
     display: block;
     font-size: 30px;
     line-height: 1;
-    margin-top: -3px;
+    margin-top: -1px;
   }
 }
 
@@ -72,16 +75,15 @@
     transform: translateX(var(--sidebar-width));
   }
 
+  .Layout_Sidebar {
+    margin-left: calc(-1 * var(--sidebar-width));
+  }
+
   body:has(.Layout_Menu:checked) {
     overflow-x: hidden;
   }
 
   body:not(:has(.Layout_Menu:checked)) {
-    .Layout_Sidebar {
-      margin-left: calc(-1 * var(--sidebar-width));
-      /* width: 100vw; */
-    }
-
     .Layout_Main {
       transform: none;
     }

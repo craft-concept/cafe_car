@@ -4,13 +4,13 @@
   style << options.delete(:columns)&.then do
     case _1
     in Numeric
-      "repeat(#{_1}, auto)"
+      "repeat(#{_1}, 1fr)"
     in [a, b]
-      "repeat(auto-fit, minmax(#{a}, #{b}))"
+      "repeat(auto-fill, minmax(#{a}, #{b}))"
     else _1
     end
   end&.then { "grid-template-columns: #{_1}" }
-  style = style.join("; ")
+  style = style.compact_blank.join("; ").presence
 
 
 = grid.wrapper(*flags, style:, **options) do

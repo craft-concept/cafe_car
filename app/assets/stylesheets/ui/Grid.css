@@ -1,4 +1,6 @@
 .Grid {
+  container: Grid / inline-size;
   display: grid;
   gap: var(--gap);
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
