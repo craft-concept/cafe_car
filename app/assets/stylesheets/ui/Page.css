@@ -2,12 +2,17 @@
   container: Page;
   display: flex;
   flex-flow: wrap;
-  justify-content: center;
+  justify-content: start;
   gap: var(--gap);
   background: var(--background);
   border-radius: var(--radius);
   min-height: 100%;
   align-content: start;
+}
+
+.Page-center {
+  justify-content: start;
+  padding: var(--gap);
 }
 
 .Page_Head {

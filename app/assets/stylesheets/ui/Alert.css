@@ -15,7 +15,8 @@
   --color: var(--error);
 }
 
-.Alert-info {
+.Alert-info,
+.Alert-notice {
   --color: var(--info);
 }
 

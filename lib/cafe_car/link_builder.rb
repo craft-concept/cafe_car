@@ -22,9 +22,10 @@ module CafeCar
 
     def turbo!(opts)
       opts.replace({
-        data: {turbo_stream:  true,
-               turbo_method:  opts.delete(:method),
-               turbo_confirm: opts.delete(:confirm)
+        data: {
+          turbo_stream:  true,
+          turbo_method:  opts.delete(:method),
+          turbo_confirm: opts.delete(:confirm)
         }
       }.deep_merge(opts))
     end
@@ -42,10 +43,10 @@ module CafeCar
       end
     end
 
-    def show(...)         = link(:show, @object, ...)
+    def show(*, **, &)    = link(:show, @object, *, data: {turbo_stream:  nil}, **, &)
     def edit(...)         = link(:edit, @object, ...)
     def destroy(*, **, &) = link(:destroy, @object, *, method: :delete, confirm: confirm(:destroy), **, &)
-    def index(*, **, &)   = link(:index, model, *, hide: true, **, &)
+    def index(*, **, &)   = link(:index, model, *, hide: true, data: {turbo_stream:  nil}, **, &)
     def new(*, **, &)     = link(:new, model, *, hide: true, **, &)
 
     def code(path = nil)

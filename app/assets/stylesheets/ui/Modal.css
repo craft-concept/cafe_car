@@ -10,7 +10,7 @@
   overflow: auto;
   backdrop-filter: blur(8px);
   padding: var(--gap);
-  animation: fade-in 100ms;
+  animation: fade-in var(--duration);
 }
 
 .Modal_Close {

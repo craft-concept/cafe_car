@@ -1,4 +1,4 @@
-= Page :slim do |page|
+= Page :slim, :center do |page|
   = page.Body do
     - @articles.includes(:author).each do |article|
       = Article(tag: :article) do |a|
