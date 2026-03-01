@@ -1,4 +1,5 @@
 - return unless object.respond_to? :notes
+- href_for(:notes) rescue return
 
 - ui(object.notes).each do |note|
   = card.Section :block do
