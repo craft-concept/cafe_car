@@ -1,0 +1,33 @@
+- reflection = field.info.reflection
+- if reflection&.collection?
+  - model_plural = reflection.klass.model_name.plural
+  - new_object = reflection.klass.new
+  - nested_opts = field.form.object.class.nested_attributes_options[field.method] || {}
+  - allow_destroy = nested_opts[:allow_destroy]
+  - fields_partial = partial?("#{model_plural}/fields") ? "#{model_plural}/fields" : "fields"
+  = field.wrapper do
+    = field.label
+    = field.error
+    %div{data: {nested_wrapper: ""}}
+      %div{data: {nested_container: ""}}
+        = field.form.fields_for field.method do |f|
+          %div{data: {nested_item: ""}}
+            = render fields_partial, f: f
+            - if allow_destroy
+              = f.hidden_field :_destroy, value: "0"
+              %button{type: "button", data: {nested_remove: ""}} Remove
+      %template{data: {nested_template: ""}}
+        %div{data: {nested_item: ""}}
+          = field.form.fields_for field.method, new_object, child_index: "CAFE_CAR_NEW_RECORD" do |f|
+            = render fields_partial, f: f
+            - if allow_destroy
+              = f.hidden_field :_destroy, value: "0"
+              %button{type: "button", data: {nested_remove: ""}} Remove
+      %button{type: "button", data: {nested_add: ""}}
+        = "+ #{field.info.label}"
+- else
+  = field.wrapper do
+    = field.label
+    = field.error
+    = field.input
+    = field.hint
