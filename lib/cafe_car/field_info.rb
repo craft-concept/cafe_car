@@ -85,8 +85,8 @@ module CafeCar
 
     def type
       return if @method.nil?
-      @type ||= reflection_type || attribute_type || digest_type || attachment_type ||
-                default_type || nested_attributes_type ||
+      @type ||= nested_attributes_type || reflection_type || attribute_type || digest_type || attachment_type ||
+                default_type ||
                 raise(NoMethodError.new "Can't find attribute :#{@method} on #{model_name}", @method)
     end
 

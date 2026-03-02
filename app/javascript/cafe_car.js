@@ -32,6 +32,30 @@ addEventListener("keydown", event => {
   }
 })
 
+addEventListener("click", event => {
+  const addButton = event.target.closest("[data-nested-add]")
+  if (addButton) {
+    const wrapper = addButton.closest("[data-nested-wrapper]")
+    const template = wrapper.querySelector("template[data-nested-template]")
+    const container = wrapper.querySelector("[data-nested-container]")
+    const html = template.innerHTML.replaceAll("CAFE_CAR_NEW_RECORD", Date.now())
+    container.insertAdjacentHTML("beforeend", html)
+    return
+  }
+
+  const removeButton = event.target.closest("[data-nested-remove]")
+  if (removeButton) {
+    const item = removeButton.closest("[data-nested-item]")
+    const destroyField = item.querySelector("input[name*='[_destroy]']")
+    if (destroyField) {
+      destroyField.value = "1"
+      item.hidden = true
+    } else {
+      item.remove()
+    }
+  }
+})
+
 addEventListener("animationend", event => {
   if (event.target.matches(".remove")) event.target.remove()
 })
