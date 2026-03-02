@@ -7,10 +7,10 @@ en:
       articles: journal-page
       authors: open-book
       clients: city
-      invoices: page
+      invoices: dollar
       line_items: lot-of-cash
       notes: notes
-      users: user-square
+      users: group
 
   helpers:
     hint:
