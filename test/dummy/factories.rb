@@ -45,4 +45,7 @@ FactoryBot.define do
     quantity    { rand(1..200) }
     description { Faker::Lorem.sentence }
   end
+
+  factory :note do
+  end
 end
