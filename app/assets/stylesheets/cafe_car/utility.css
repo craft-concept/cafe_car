@@ -7,9 +7,8 @@
 }
 
 .remove {
-    /*animation: fade-out 100ms;*/
     opacity: 0;
-    transition: opacity var(--duration);
+    transition: all var(--duration);
     pointer-events: none;
 }
 

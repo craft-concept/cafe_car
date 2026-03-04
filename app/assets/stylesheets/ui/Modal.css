@@ -11,17 +11,10 @@
   backdrop-filter: blur(8px);
   padding: var(--gap);
   animation: fade-in var(--duration);
-}
 
-.Modal_Close {
-  font-size: 150%;
-  cursor: pointer;
-  line-height: 1;
-}
-
-.Modal_Close:hover {
-  opacity: .8;
-  text-decoration: none;
+  & > * {
+    min-width: 250px;
+  }
 }
 
 .Modal-fixed {

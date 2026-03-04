@@ -41,6 +41,8 @@ module CafeCar
 
     def partial_name = 'ui/' + @names.join('_')
 
+    def selector = class_names.join(?_).then { ?. + _1 }
+
     def class_names     = @names.map(&:to_s).map(&:camelize)
     def class_name(...) = ui_class(class_names, *@flags, *(@tag.to_s if href?), (:current if current_href?), (:ancestor if ancestor_href?), ...)
 

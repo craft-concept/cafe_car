@@ -39,15 +39,36 @@
   margin-left: auto;
 }
 
+@keyframes Page_Aside-popup {
+  from {
+    margin-right: -400px;
+  }
+
+  to {
+    margin-right: 0px;
+  }
+}
+
 .Page_Aside {
   min-width: 300px;
   display: flex;
   flex-flow: column;
   gap: var(--gap);
+
+  &.popup {
+    animation: Page_Aside-popup var(--duration);
+  }
+
+  &.remove {
+    opacity: 1;
+    margin-right: -400px;
+    pointer-events: none;
+  }
 }
 
 .Page_Body {
-  flex: 1 1 20px;
+  flex: 1 1;
+  width: 0;
   display: flex;
   flex-flow: column;
   gap: var(--gap);
@@ -73,5 +94,6 @@
   .Page_Aside,
   .Page_Foot {
     justify-self: stretch;
+    width: auto;
   }
 }

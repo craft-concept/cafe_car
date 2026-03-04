@@ -16,10 +16,10 @@ addEventListener("mousedown", event => {
 })
 
 addEventListener("mouseup", event => {
-  if (event.target === window.mouseDownTarget && event.target.matches(".Modal_Close, .Modal")) {
+  if (event.target === window.mouseDownTarget && event.target.matches(".Close, .Modal")) {
     event.preventDefault()
     event.stopPropagation()
-    event.target.closest(".Modal").classList.add("remove")
+    event.target.closest(".Modal, .Page_Aside").classList.add("remove")
   }
 }, { capture: true })
 

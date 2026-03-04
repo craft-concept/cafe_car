@@ -1,0 +1,7 @@
+-# = turbo_stream.append_all("body") do
+-#   = Modal :fixed, id: dom_id(object, :modal), data: {turbo_permanent: true} do |m|
+-#     = yield
+
+= turbo_stream.after_all ui.Page.Body.selector do
+  = ui.Page.Aside class: "popup", id: dom_id(object, :popup), data: {turbo_permanent: true} do
+    = yield

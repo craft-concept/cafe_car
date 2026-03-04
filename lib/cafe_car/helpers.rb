@@ -19,13 +19,12 @@ module CafeCar
     def ui_class(names, *args, **opts)
       names  = [*names].map(&:to_s).map(&:camelize)
       name   = names.join("_")
-      parent = names.first
       args.flatten!
       args.compact_blank!
       opts.compact_blank!
 
       flags = args.extract! { _1.is_a? Symbol } | opts.extract! { _1.is_a? Symbol }.keys
-      flags.map! { [*parent, _1].join("-") }
+      flags.map! { "#{name}-#{_1}" }
 
       [*name, *flags, *args, *opts.keys].join(" ")
     end

@@ -5,7 +5,8 @@
   box-shadow: var(--box-shadow);
   border-radius: var(--radius);
   width: 100%;
-  overflow: clip;
+  /* overflow: clip; */
+  overflow: auto;
   position: relative;
   z-index: 0;
 }
@@ -58,10 +59,15 @@
   }
 }
 
+.Table_Head-sticky {
+  position: sticky;
+  top: 0;
+}
+
 .Table_Row {
   align-items: center;
 
-  &:not(:hover) .Table-shy {
+  &:not(:hover) .Table_Cell-shy {
     visibility: hidden;
   }
 
@@ -94,13 +100,8 @@
     border-radius: 99px;
     max-width: none;
   }
-}
 
-.Table-sticky {
-  position: sticky;
-  top: 0;
-}
-
-.Table-controls {
-  text-align: right;
+  &-controls {
+    text-align: right;
+  }
 }

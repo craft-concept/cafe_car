@@ -4,4 +4,4 @@
   = Button href: view_url(:table), title: "Table View" do
     = icon(:table_rows)
 
-= link(model).new(class: ui.Button(:primary).class_name) { icon(:plus) + _1}
+= link(model.build).new(class: ui.Button(:primary).class_name) { icon(:plus) + _1}
