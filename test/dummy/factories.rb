@@ -47,5 +47,8 @@ FactoryBot.define do
   end
 
   factory :note do
+    notable { Client.first || create(:client) }
+    author { User.first || create(:user) }
+    body { Faker::Lorem.paragraph }
   end
 end
