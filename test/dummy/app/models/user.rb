@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_secure_password
   has_one_attached :avatar
 
+  normalizes :email, with: -> { it.strip.downcase }
   validates :name, presence: true
 
   default_scope -> { order(:name) }
