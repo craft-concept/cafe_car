@@ -2,8 +2,8 @@ class UserPolicy < ApplicationPolicy
   def show?    = true
   def index?   = true
   def create?  = true
-  def update?  = me?
-  def destroy? = false
+  def update?  = admin? || me?
+  def destroy? = admin? && !me?
 
   def me? = object == user
 
