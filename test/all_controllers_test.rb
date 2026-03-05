@@ -51,7 +51,7 @@ class AllControllersTest < ActionDispatch::IntegrationTest
     test_resources :articles
     test_resources :clients
     test_resources :invoices
-    # test_resources :notes
+    test_resources :notes
     # test_resources :users
   end
 end
