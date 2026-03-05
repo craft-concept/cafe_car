@@ -30,12 +30,13 @@ module CafeCar
       }.deep_merge(opts))
     end
 
-    def link(action, target, label = i18n(action), disabled: false, hide: false, **opts, &)
+    def link(action, target, label = i18n(action), disabled: false, hide: false, params: nil, **opts, &)
+      params ||= {}
       disabled ||= cant?(action)
       return if disabled and hide
 
-      href    = href_for(*target, action:, namespace: @namespace)
-      current = current_page?(href)
+      href    = href_for(*target, action:, namespace: @namespace, **params)
+      current = current_page?(href, check_parameters: true)
       content = block_given? ? capture(label, &) : label
 
       link_to_unless(disabled || current, content, href, **turbo!(opts)) do
