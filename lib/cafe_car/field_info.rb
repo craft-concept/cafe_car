@@ -31,7 +31,7 @@ module CafeCar
     def collection   = reflection.klass.all
     def reflection
       return if @method.nil?
-      model.reflect_on_association(@method) || reflections_by_attribute[@method]
+      model.try(:reflect_on_association, @method) || reflections_by_attribute[@method]
     end
 
     def abrogated_keys
@@ -128,6 +128,7 @@ module CafeCar
 
     @@reflections_by_attribute = {}
     def reflections_by_attribute
+      return {} unless model.respond_to? :reflections
       @@reflections_by_attribute[model] ||=
         model.reflections.values.index_by do |r|
           case [r.macro, r.name]

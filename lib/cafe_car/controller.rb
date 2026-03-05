@@ -16,14 +16,17 @@ module CafeCar
         @default_view = v.to_s
       end
 
-      def cafe_car(only: nil, except: nil)
+      def cafe_car(only: nil, except: nil, model: nil)
         _only = ->(actions) do
           actions -= except if except
           actions &= only if only
           actions
         end
 
-        rescue_from ::ActiveRecord::RecordInvalid, with: :render_invalid_record
+        self.model model if model
+
+        rescue_from ::ActiveRecord::RecordInvalid,
+                    ::ActiveModel::ValidationError, with: :render_invalid_object
 
         append_cafe_car_views
 
@@ -148,7 +151,9 @@ module CafeCar
                                 .then { self.class.module_parent.const_get _1 }
     end
 
-    def render_invalid_record = render(object.persisted? ? 'edit' : 'new', status: :unprocessable_content)
+    def render_invalid_object
+      render(object.persisted? ? 'edit' : 'new', status: :unprocessable_content)
+    end
 
     # def default_render(...) = run_callbacks(:render) { super }
 
