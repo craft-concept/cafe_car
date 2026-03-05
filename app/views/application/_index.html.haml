@@ -1,5 +1,4 @@
 = render(view).presence or render("empty")
 
-= content_for :foot do
-  .center= page_entries_info objects
-  = paginate objects
+.center= page_entries_info objects
+= paginate objects

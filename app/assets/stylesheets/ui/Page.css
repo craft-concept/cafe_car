@@ -42,15 +42,18 @@
 @keyframes Page_Aside-popup {
   from {
     margin-right: -400px;
+    opacity: 0;
   }
 
   to {
     margin-right: 0px;
+    opacity: 1;
   }
 }
 
 .Page_Aside {
   min-width: 300px;
+  max-width: 720px;
   display: flex;
   flex-flow: column;
   gap: var(--gap);
