@@ -10,4 +10,7 @@ module CafeCar
   include Resolver
   extend AutoResolver
   extend ProcHelpers
+
+  class MissingAttributeError < StandardError
+  end
 end

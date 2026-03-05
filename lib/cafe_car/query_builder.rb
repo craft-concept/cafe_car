@@ -116,7 +116,7 @@ module CafeCar
       when method(:scope?)
         scope!(key, value)
       else
-        raise "can't find #{key.inspect} on #{@scope.model_name}"
+        raise MissingAttributeError, "can't find #{key.inspect} on #{@scope.model_name}"
       end
     end
 
