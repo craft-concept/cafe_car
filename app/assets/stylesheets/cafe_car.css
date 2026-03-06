@@ -70,7 +70,6 @@ h1, h2, h4, h5, h6, p {
 time {
   text-decoration: dotted underline;
   text-decoration-color: var(--dim);
-  cursor: default;
 }
 
 
