@@ -6,6 +6,8 @@ require "propshaft"
 require "pundit"
 require "importmap-rails"
 require "turbo-rails"
+require "potter"
+require "potter/type"
 
 module CafeCar
   class Engine < ::Rails::Engine

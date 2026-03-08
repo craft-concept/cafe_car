@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "importmap-rails"
   spec.add_dependency "turbo-rails"
   spec.add_dependency "kaminari"
+  spec.add_dependency "potter"
   spec.add_dependency "pundit"
   spec.add_dependency "chronic"
   spec.add_dependency "web-console"
