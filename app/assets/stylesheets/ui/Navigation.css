@@ -14,7 +14,7 @@
 
 
 .Navigation_Link:is(a):hover,
-.Navigation-current,
+.Navigation_Link-current,
 .Navigation_Link.current {
   text-decoration: none;
   &::after {

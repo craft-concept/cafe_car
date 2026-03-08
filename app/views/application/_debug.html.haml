@@ -3,7 +3,7 @@
 = Card title: "Debug" do |card|
   = card.Section do
     = Field label: "Params" do
-      = Code parsed_params.pretty_inspect
+      = p parsed_params
 
     = Field label: "Query" do
       = Code scope.to_sql

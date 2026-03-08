@@ -9,6 +9,7 @@ en:
     icon:
       attachments: media-image-list
       blobs: media-image-folder
+      passwords: key
       versions: multiple-pages
 
   list_html:
