@@ -103,7 +103,7 @@ module CafeCar
     end
 
     def breadcrumbs(*items)
-      ui.Row safe_join(items, icon(:nav_arrow_right, :dim))
+      ui.Row safe_join(items.compact_blank, icon(:nav_arrow_right, :dim))
     end
 
     def filter_form_for(objects, **options, &block)
