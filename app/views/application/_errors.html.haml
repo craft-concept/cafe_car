@@ -1,8 +1,4 @@
-- return unless (errors = f.object.errors.full_messages.presence)
-
-= Error do
-  Correct the errors above.
-
--# %ul
--#   - errors.each do |message|
--#     %li= Error { message }
+- if errors = f.object.errors.full_messages.presence
+  = Error do
+    = to_sentence(f.object.errors.messages[:base]).presence || "Correct the errors above."
+    %p= to_sentence(errors)
