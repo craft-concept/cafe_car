@@ -1,6 +1,6 @@
 - if action.new?
   = render "popup" do
-    = Card title: "New #{model_name.human}", actions: Close("✕") do |card|
+    = Card title: "New #{model_name.human}", actions: Close { icon(:xmark_circle_solid) } do |card|
       = render "form", card:
 
 - else # error during :create action

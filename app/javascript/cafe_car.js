@@ -16,19 +16,20 @@ addEventListener("mousedown", event => {
 })
 
 addEventListener("mouseup", event => {
-  if (event.target === window.mouseDownTarget && event.target.matches(".Close, .Modal")) {
+  let isClose = event.target.closest(".Close") || event.target.matches(".Modal")
+  if (isClose && event.target === window.mouseDownTarget) {
     event.preventDefault()
     event.stopPropagation()
-    event.target.closest(".Modal, .Page_Aside").classList.add("remove")
+    event.target.closest(".popup").classList.add("remove")
   }
 }, { capture: true })
 
 addEventListener("keydown", event => {
   switch (event.key) {
     case "Escape":
-      let modal = event.target.closest(".Modal") ||
-        last(document.querySelectorAll(".Modal-fixed"))
-      if (modal) modal.classList.add("remove");
+      let popup = event.target.closest(".popup") ||
+        last(document.querySelectorAll(".popup"))
+      if (popup) popup.classList.add("remove");
   }
 })
 

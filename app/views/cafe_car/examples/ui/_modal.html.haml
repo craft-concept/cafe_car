@@ -1,4 +1,4 @@
 = Modal do |m|
   = m.Body do
-    = Card title: "Card in modal", actions: m.Close("✕") do |c|
+    = Card title: "Card in modal", actions: m.Close { icon(:xmark_circle_solid) } do |c|
       = c.Section "Body"
