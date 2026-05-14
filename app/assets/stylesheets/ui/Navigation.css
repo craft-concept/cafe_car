@@ -1,28 +1,29 @@
 .Navigation {
-  --indent: .7em;
-  display: grid;
+  --indent: 0.7em;
+  display: flex;
+  flex-flow: column;
   align-content: start;
 }
 
 .Navigation_Link {
-  padding: .7em;
+  padding: 0.7em;
   position: relative;
   color: inherit;
   display: flex;
   align-items: center;
 }
 
-
 .Navigation_Link:is(a):hover,
 .Navigation_Link-current,
 .Navigation_Link.current {
   text-decoration: none;
   &::after {
-    content: '';
+    content: "";
     display: block;
     position: absolute;
     inset: 3px 0;
     border-radius: var(--control-radius);
+    box-shadow: inset rgb(0 0 0 / 0.2) 0 -2px;
     background: var(--hover);
     z-index: -1;
   }

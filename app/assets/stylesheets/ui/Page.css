@@ -75,9 +75,11 @@
   display: flex;
   flex-flow: column;
   gap: var(--gap);
+  overflow: auto;
 }
 
-.Page-slim .Page_Body {
+.Page-slim .Page_Body,
+.Page_Body-slim {
   max-width: 720px;
 }
 

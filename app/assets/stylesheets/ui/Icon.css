@@ -1,14 +1,14 @@
 @charset "utf-8";
 
 .Icon {
-  vertical-align: bottom;
-  display: flex;
+  vertical-align: text-bottom;
+  display: inline-flex;
   gap: var(--half-gap);
   font-style: inherit;
 
   &::before {
     display: block;
-    content: '';
+    content: "";
     height: 1.5em;
     width: 1.5em;
   }

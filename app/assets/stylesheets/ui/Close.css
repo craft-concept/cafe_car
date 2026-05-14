@@ -1,10 +1,11 @@
 .Close {
-  font-size: 150%;
   cursor: pointer;
   line-height: 1;
+  opacity: 0.3;
 }
 
 .Close:hover {
-  opacity: .8;
+  opacity: 0.8;
   text-decoration: none;
+  alignment-baseline: middle;
 }
