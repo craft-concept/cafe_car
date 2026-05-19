@@ -1,61 +1,60 @@
 :root {
-    color-scheme: light dark;
-    accent-color: var(--accent);
-    scroll-behavior: smooth;
+  color-scheme: light dark;
+  accent-color: var(--accent);
+  scroll-behavior: smooth;
 
-    --blue: blue;
-    --green: green;
-    --orange: orange;
-    --red: red;
+  --blue: blue;
+  --green: green;
+  --orange: orange;
+  --red: red;
 
-    --white: white;
-    --gray: #eee;
-    --black: black;
+  --white: white;
+  --gray: #eee;
+  --black: black;
 
-    --accent: var(--blue);
-    --primary: var(--accent);
-    --secondary: var(--accent);
-    --tertiary: var(--accent);
+  --accent: var(--blue);
+  --primary: var(--accent);
+  --secondary: var(--accent);
+  --tertiary: var(--accent);
 
-    --success: var(--green);
-    --warning: var(--orange);
-    --danger: var(--red);
-    --error: var(--red);
-    --info: var(--blue);
+  --success: var(--green);
+  --warning: var(--orange);
+  --danger: var(--red);
+  --error: var(--red);
+  --info: var(--blue);
 
-    --link: var(--accent);
-    --card: var(--white);
-    --button: var(--gray);
-    --menu: var(--card);
+  --link: var(--accent);
+  --card: var(--white);
+  --button: var(--gray);
+  --menu: var(--card);
 
-    --shadow: rgb(50 50 93 / .25);
-    --backdrop: rgb(0 0 0 / .5);
+  --shadow: rgb(50 50 93 / 0.25);
+  --backdrop: rgb(0 0 0 / 0.5);
 
-    --hover: rgb(50 50 93 / .03);
-    --outline: var(--accent);
-    --invalid: color-mix(in lab, var(--error) 3%, var(--input));
-    --selection: color-mix(in lab, var(--accent) 25%, transparent);
+  --hover: rgb(50 50 93 / 0.03);
+  --outline: var(--accent);
+  --invalid: color-mix(in lab, var(--error) 3%, var(--input));
+  --selection: color-mix(in lab, var(--accent) 25%, transparent);
 
-    --font-family: ui-sans-serif, -apple-system, menu, sans-serif;
-    --font: 16px var(--font-family);
+  --font-family: ui-sans-serif, -apple-system, menu, sans-serif;
+  --font: 16px var(--font-family);
 
-    --box-shadow: var(--shadow) 0 2px 5px -1px,
-                  var(--shadow) 0 1px 3px -1px;
-    --inset-shadow: inset var(--shadow) 0 1px 3px -1px;
+  --box-shadow: var(--shadow) 0 2px 5px -1px, var(--shadow) 0 1px 3px -1px;
+  --inset-shadow: inset var(--shadow) 0 1px 3px -1px;
 
-    --gap: 1rem;
-    --indent: 0;
-    --half-gap: calc(var(--gap) / 2);
-    --third-gap: calc(var(--gap) / 3);
-    --gap2: calc(var(--gap) * 2);
-    --radius: 12px;
-    --menu-radius: calc(var(--radius) / 2);
-    --control-radius: calc(var(--radius) / 3);
+  --gap: 1rem;
+  --indent: 0;
+  --half-gap: calc(var(--gap) / 2);
+  --third-gap: calc(var(--gap) / 3);
+  --gap2: calc(var(--gap) * 2);
+  --radius: 12px;
+  --menu-radius: calc(var(--radius) / 2);
+  --control-radius: calc(var(--radius) / 3);
 
-    --max-width: 720px;
-    --page-width: 1024px;
-    --aside-width: 20vw;
-    --modal-width: 720px;
+  --max-width: 720px;
+  --page-width: 1024px;
+  --aside-width: 20vw;
+  --modal-width: 720px;
 
-    --duration: 100ms;
+  --duration: 100ms;
 }

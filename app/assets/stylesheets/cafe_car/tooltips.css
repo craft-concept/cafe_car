@@ -1,0 +1,27 @@
+[title],
+[data-tip] {
+  position: relative;
+  cursor: default;
+
+  &::before {
+    content: attr(data-tip, attr(title));
+
+    display: none;
+    z-index: 99;
+    position: absolute;
+    background: var(--tooltip, rgb(0 0 0 / 0.7));
+    font-size: 0.8rem;
+    color: var(--white, white);
+    bottom: 100%;
+    left: 50%;
+    padding: 0.25rem 0.5rem;
+    overflow: hidden;
+    transform: translate(-50%, -0.25em);
+    pointer-events: none;
+    border-radius: var(--control-radius);
+  }
+
+  &:hover::before {
+    display: block;
+  }
+}

@@ -7,6 +7,7 @@
 @import url(cafe_car/trix.css);
 
 @import url(cafe_car/pagination.css);
+@import url(cafe_car/tooltips.css);
 @import url(cafe_car/utility.css);
 @import url(ui/components.css);
 @import url(Lexend.css);
@@ -34,7 +35,7 @@ a {
   }
 
   &:active {
-    filter: brightness(.95);
+    filter: brightness(0.95);
   }
 }
 
@@ -63,7 +64,12 @@ body {
   }
 }
 
-h1, h2, h4, h5, h6, p {
+h1,
+h2,
+h4,
+h5,
+h6,
+p {
   margin-left: var(--indent);
 }
 
@@ -71,7 +77,6 @@ time {
   text-decoration: dotted underline;
   text-decoration-color: var(--dim);
 }
-
 
 html[data-turbo-visit-direction="forward"]::view-transition-group(root),
 html[data-turbo-visit-direction="back"]::view-transition-group(root) {
