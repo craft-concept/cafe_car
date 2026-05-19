@@ -61,9 +61,8 @@ module CafeCar
 
     def to_html
       return render(object:, partial:) if has_partial?
-      return preview if context?(:a)
       return blank if captured.blank? && blank
-      link_to(href) { preview } rescue preview
+      preview
     end
 
     def title(*, **, &) = show(policy.title_attribute, *, blank: show(:id), **, &)
@@ -88,7 +87,7 @@ module CafeCar
     def href  = href_for(object)
 
     def preview(**, &)
-      ui.Row :space do
+      ui.Row :space, href: do
         concat logo(size: :icon)
         concat title
       end
