@@ -1,7 +1,7 @@
 module CafeCar
   class Navigation
     class Route
-      delegate :tag, :ui_class, :capture, :concat, :t, to: :@template
+      delegate :tag, :ui, :ui_class, :capture, :concat, :t, to: :@template
       delegate :name, :requirements, to: :@route
 
       def initialize(route, template:)
@@ -30,16 +30,16 @@ module CafeCar
       end
 
       def link(**opts)
-        @template.link_to(content, params, **opts, class: [*opts[:class], ("current" if @template.current_page?(params))])
+        ui.Navigation().Link(href: @template.href_for([params]), **opts) { content }
       end
     end
-
-    delegate :ui, :ui_class, to: :@template
 
     def initialize(template, **options)
       @template = template
       @options  = options
     end
+
+    delegate :ui_class, to: :@template
 
     def router = Rails.application.routes.router
     def named_routes = Rails.application.routes.named_routes.to_h.values.map { Route.new(_1, template: @template) }
