@@ -6,6 +6,6 @@ module CafeCar
     def long    = l(object, format: :long)
 
     def string  = words
-    def to_html = tag.time words, datetime:, title: long
+    def to_html = tag.time words, datetime:, "data-tip": long
   end
 end

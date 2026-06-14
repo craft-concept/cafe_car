@@ -2,6 +2,7 @@
   --indent: 0.7em;
   display: flex;
   flex-flow: column;
+  flex-grow: 1;
   align-content: start;
 }
 
@@ -13,10 +14,16 @@
   align-items: center;
 }
 
+.Navigation_Link-bottom {
+  margin-top: auto;
+}
+
 .Navigation_Link:is(a):hover,
 .Navigation_Link-current,
+.Navigation_Link-ancestor,
 .Navigation_Link.current {
   text-decoration: none;
+
   &::after {
     content: "";
     display: block;

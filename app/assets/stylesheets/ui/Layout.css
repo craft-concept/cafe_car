@@ -3,20 +3,22 @@
 }
 
 .Layout {
-  display: flex;
-  align-items: stretch;
+  /* display: flex; */
+  /* align-items: stretch; */
   flex-grow: 1;
 }
 
 .Layout_Sidebar {
-  --indent: .7rem;
+  --indent: 0.7rem;
 
   width: var(--sidebar-width);
-  position: sticky;
+  /* position: sticky; */
+  position: fixed;
   inset: 0;
 
   overflow: auto;
   max-height: 100dvh;
+  height: 100%;
 
   display: flex;
   flex-flow: column;
@@ -25,17 +27,20 @@
 
   padding: var(--gap);
   white-space: nowrap;
-  transition: margin var(--duration), width var(--duration);
+  transition:
+    margin var(--duration),
+    width var(--duration);
 }
 
 .Layout_Main {
   transition: transform var(--duration);
-  /* margin-left: var(--sidebar-width); */
+  margin-left: var(--sidebar-width);
   display: flex;
   flex-flow: column;
   align-items: stretch;
   flex-grow: 1;
   padding: var(--gap);
+  position: relative;
   z-index: 1;
 }
 

@@ -2,7 +2,7 @@ class UserPolicy < ApplicationPolicy
   def show?    = true
   def index?   = true
   def create?  = true
-  def update?  = admin? || me?
+  def update?  = me?
   def destroy? = admin? && !me?
 
   def me? = object == user
@@ -11,9 +11,9 @@ class UserPolicy < ApplicationPolicy
 
   def permitted_attributes
     if object.try(:new_record?) or me?
-      [:name, :avatar, :password, :password_confirmation]
+      [:name, :email, :avatar, :password, :password_confirmation]
     else
-      [:name, :avatar]
+      [:name, :email, :avatar]
     end
   end
 

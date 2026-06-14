@@ -10,6 +10,10 @@ module CafeCar
 
       def [](const_name) = const(const_name)
 
+      def const_try(name)
+        const_get(name) if const_defined?(name)
+      end
+
       def const(name)
         const_scopes.detect { _1.const_defined?(name) }
                     &.then { _1.const_get(name) }

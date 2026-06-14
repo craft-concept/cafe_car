@@ -1,5 +1,7 @@
 module CafeCar
   module UI
+    include Resolver
+
     module_function
 
     def component(name, **, &)

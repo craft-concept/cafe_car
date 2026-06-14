@@ -128,9 +128,9 @@ module CafeCar
     end
 
     def info_circle(method, *args, **opts, &block)
-      title = info(method).hint
-      return unless title
-      ui.InfoCircle(*args, title:, **opts, &block)
+      tip = info(method).hint
+      return unless tip
+      ui.InfoCircle(*args, tip:, **opts, &block)
     end
 
     def controls(**options, &block)

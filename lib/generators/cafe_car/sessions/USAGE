@@ -1,0 +1,9 @@
+Description:
+    Generates a Session resource that enables
+
+Example:
+    bin/rails generate cafe_car:sessions
+
+    This will create:
+        app/models/session.rb
+        app/policies/session_policy.rb

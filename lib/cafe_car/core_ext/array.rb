@@ -8,4 +8,17 @@ class Array
       end
     end
   end
+
+  def extract!(pattern = nil, &block)
+    block = -> { pattern === _1 } if pattern
+    return to_enum(:extract!) { size } unless block
+
+    extracted_elements = []
+
+    reject! do |element|
+      extracted_elements << element if block.(element)
+    end
+
+    extracted_elements
+  end
 end

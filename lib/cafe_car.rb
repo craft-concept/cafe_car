@@ -13,4 +13,9 @@ module CafeCar
 
   class MissingAttributeError < StandardError
   end
+
+  class AuthenticationFailed < StandardError
+  end
+
+  def self.use_relative_model_naming? = true
 end

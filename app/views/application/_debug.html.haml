@@ -6,6 +6,13 @@
       = p parsed_params
 
     = Field label: "Query" do
-      = Code scope.to_sql
+      = p scope.to_sql, as: :code, lang: :sql
+
+    - if session = current_session
+      = Field label: "Session" do
+        = p session.as_json
+
+    = Field label: "Cookies" do
+      = p cookies.signed.as_json.to_s, as: :code
 
   = yield :debug

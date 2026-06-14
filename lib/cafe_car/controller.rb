@@ -5,7 +5,7 @@ module CafeCar
     extend ActiveSupport::Concern
 
     include Pundit::Authorization
-    include Filtering
+    include Filtering, Authentication
 
     class_methods do
       def model(model)
@@ -28,6 +28,8 @@ module CafeCar
         rescue_from ::ActiveRecord::RecordInvalid,
                     ::ActiveModel::ValidationError, with: :render_invalid_object
 
+        rescue_from ::Pundit::NotAuthorizedError, with: :render_unauthorized
+
         append_cafe_car_views
 
         respond_to :json, :html, :turbo_stream
@@ -45,13 +47,29 @@ module CafeCar
         append_view_path CafeCar::Engine.root.join('app/views/cafe_car')
         append_view_path 'app/views/cafe_car'
       end
+
+      def define_callbacks_with_helpers(*names, **)
+        define_callbacks(*names, **)
+
+        names.each do |name|
+          %i[before around after].each do |kind|
+            define_singleton_method "#{kind}_#{name}" do |*args, **opts|
+              set_callback(name, kind, *args, prepend: true, **opts)
+            end
+
+            define_singleton_method "skip_#{kind}_#{name}" do |*args|
+              skip_callback(name, kind, *args)
+            end
+          end
+        end
+      end
     end
 
     included do
       self.responder = CafeCar[:ApplicationResponder]
       default_form_builder CafeCar[:FormBuilder]
 
-      define_callbacks :render, :update, :create, :destroy
+      define_callbacks_with_helpers :render, :update, :create, :destroy
       add_flash_types :success, :warning, :error
 
       helper_method :model, :model_name, :object, :objects
@@ -98,8 +116,6 @@ module CafeCar
     def flash!
       flash[:success] = present(object).i18n("#{action_name}_html", scope: :flashes)
     end
-
-    def current_user = CafeCar[:Current].user
 
     def sorted(scope)
       scope.sorted(*params[:sort].presence)
@@ -153,6 +169,14 @@ module CafeCar
 
     def render_invalid_object
       render(object.persisted? ? 'edit' : 'new', status: :unprocessable_content)
+    end
+
+    def render_unauthorized
+      if authenticated?
+        redirect_back_or_to root_path
+      else
+        request_authentication
+      end
     end
 
     # def default_render(...) = run_callbacks(:render) { super }

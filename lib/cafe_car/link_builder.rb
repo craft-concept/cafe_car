@@ -37,9 +37,10 @@ module CafeCar
 
       href    = href_for(*target, action:, namespace: @namespace, **params)
       current = current_page?(href, check_parameters: true)
+      in_link = @template.context?(:a)
       content = block_given? ? capture(label, &) : label
 
-      link_to_unless(disabled || current, content, href, **turbo!(opts)) do
+      link_to_unless(disabled || current || in_link, content, href, **turbo!(opts)) do
         @template.tag.span(content, class: "disabled", disabled: true, title: disabled.presence)
       end
     end

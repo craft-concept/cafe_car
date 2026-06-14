@@ -4,9 +4,13 @@ en:
   index: List
   show: View
   destroy: Delete
+  new_session: Log In
+  auth_required: Please %{new_session} first.
 
   navigation:
     icon:
+      new_session: log-in
+      sessions: log-in
       attachments: media-image-list
       blobs: media-image-folder
       passwords: key
@@ -36,6 +40,8 @@ en:
   attributes:
     to_s: Item
     id: ID
+    ip: IP
+    ip_address: IP address
     created_at: Created
     updated_at: Updated
     deleted_at: Deleted

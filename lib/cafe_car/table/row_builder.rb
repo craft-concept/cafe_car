@@ -20,22 +20,20 @@ module CafeCar::Table
       super
       options[:href] = @object if options[:href] == true
       call_procs!(options, @object)
-      ui.Cell(show(method, **options.slice(:blank), &), *flags, **options)
+      ui.Cell(*flags, **options) { show(method, **options.slice(:blank), &) }
     end
 
     def timestamps(**options)
-      title = show(:created_at).string&.then { "Created: #{_1}" }
-      cell(timestamp_attribute, :shrink, title:, **options)
+      tip = show(:created_at).string&.then { "Created: #{_1}" }
+      cell(timestamp_attribute, :shrink, tip:, **options)
     end
 
     def controls(*args, **options)
-      ui.Cell(:shrink, :shy, :controls, *args, present(@object).controls(*args, **options))
+      ui.Cell(:shrink, :shy, :controls, *args) { present(@object).controls(*args, **options) }
     end
 
-    def content = capture(self, &@block)
-
     def to_html
-      ui.Row(content, @template.turbo_stream_from(@object))
+      ui.Row { safe_join [capture(self, &@block), @template.turbo_stream_from(@object)] }
     end
   end
 end

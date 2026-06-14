@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resource :session, controller: "cafe_car/sessions"# , as: :session
+  resources :passwords, param: :token
   # mount ActiveStorage::Engine => '/'
 
   get "up" => "rails/health#show", as: :rails_health_check
@@ -12,6 +14,7 @@ Rails.application.routes.draw do
     resources :invoices
     resources :notes
     resources :users
+    resources :sessions
 
     resources :attachments
 

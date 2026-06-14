@@ -1,13 +1,7 @@
-:ruby
-  title  ||= nil
-  actions||= nil
-  tabs   ||= nil
+= page.Head do
+  = ui.Layout.Menu
+  = page.Title { page.title }
+  = page.Tabs { tabs }
+  = page.Actions { actions }
 
-= page.wrapper *flags do
-  = page.Head do
-    = ui.Layout.Menu
-    = page.Title(title, tag: :h2)
-    = page.Tabs(*tabs)
-    = page.Actions(actions)
-
-  = yield
+= yield

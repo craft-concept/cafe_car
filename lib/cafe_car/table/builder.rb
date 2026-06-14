@@ -47,5 +47,6 @@ module CafeCar::Table
 
     def html_safe? = true
     def to_s       = @to_s ||= to_html.to_s
+    def ~@         = @template.concat(to_s)
   end
 end

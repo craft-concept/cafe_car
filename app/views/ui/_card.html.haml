@@ -1,15 +1,8 @@
-- subtitle   = options.delete(:subtitle)
-- title   = options.delete(:title)
-- image   = options.delete(:image)
-- actions = options.delete(:actions)
+= card.Image href:, src: image.url if image
 
-= card.wrapper(*flags, **options) do
-  - if image
-    = card.Image tag: :img, src: image.url
+= card.Head do
+  = card.Title(href:) { title }
+  = card.Subtitle { subtitle }
+  = card.Actions { actions }
 
-  = card.Head do
-    = card.Title(tag: :h3) { title }
-    = card.Subtitle(tag: :h4) { subtitle }
-    = card.Actions { actions }
-
-  = yield
+= yield

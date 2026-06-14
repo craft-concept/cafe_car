@@ -1,27 +1,20 @@
-[title],
-[data-tip] {
-  position: relative;
-  cursor: default;
-
+[data-tip]:not(:has([data-tip]:hover)):hover {
   &::before {
     content: attr(data-tip, attr(title));
+    position: fixed;
+    display: block;
 
-    display: none;
+    position-anchor: auto;
+    position-area: top;
+    position-try-fallbacks: flip-block;
+
     z-index: 99;
-    position: absolute;
-    background: var(--tooltip, rgb(0 0 0 / 0.7));
+    background: var(--tooltip, rgb(0 0 0 / 0.8));
     font-size: 0.8rem;
     color: var(--white, white);
-    bottom: 100%;
-    left: 50%;
     padding: 0.25rem 0.5rem;
-    overflow: hidden;
-    transform: translate(-50%, -0.25em);
-    pointer-events: none;
+    max-width: 80%;
+    white-space: wrap;
     border-radius: var(--control-radius);
-  }
-
-  &:hover::before {
-    display: block;
   }
 }

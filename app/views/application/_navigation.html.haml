@@ -1,2 +1,9 @@
 = Navigation tag: :nav do |nav|
   = render "navigation_links", nav:
+
+  - if session = try(:current_session)
+    = nav.Link(:bottom, href: :session) { p(session) }
+  - elsif href = try(:new_session_path)
+    = nav.Link(:bottom, href:) do
+      = Icon t(:new_session, scope: "navigation.icon").to_sym
+      Sign In

@@ -33,13 +33,17 @@ addEventListener("keydown", event => {
   }
 })
 
-addEventListener("animationend", event => {
-  if (event.target.matches(".remove")) event.target.remove()
-})
+function animationEnd({ target }) {
+  if (target.matches(".remove")) target.remove()
+  else if (target.matches(".popup")) {
+    let input = target.querySelector("input:not([type=hidden]), textarea")
+    input?.focus()
+    input?.setSelectionRange(-1, -1)
+  }
+}
 
-addEventListener("transitionend", event => {
-  if (event.target.matches(".remove")) event.target.remove()
-})
+addEventListener("animationend", animationEnd)
+addEventListener("transitionend", animationEnd)
 
 // NOTE: field-sizing property is used instead
 // function adjustHeight(textarea) {

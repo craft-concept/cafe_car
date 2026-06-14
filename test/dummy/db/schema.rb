@@ -10,36 +10,36 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_20_151030) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
   create_table "action_text_rich_texts", force: :cascade do |t|
-    t.string "name", null: false
     t.text "body"
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
     t.datetime "updated_at", null: false
     t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
   end
 
   create_table "active_storage_attachments", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename", null: false
-    t.string "content_type"
-    t.text "metadata"
-    t.string "service_name", null: false
     t.bigint "byte_size", null: false
     t.string "checksum"
+    t.string "content_type"
     t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
@@ -51,31 +51,31 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_20_151030) do
 
   create_table "articles", force: :cascade do |t|
     t.integer "author_id"
-    t.string "title", null: false
+    t.datetime "created_at", null: false
     t.datetime "published_at"
     t.text "summary"
-    t.datetime "created_at", null: false
+    t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_articles_on_author_id"
   end
 
   create_table "clients", force: :cascade do |t|
-    t.integer "owner_id"
-    t.string "name"
     t.datetime "created_at", null: false
+    t.string "name"
+    t.integer "owner_id"
     t.datetime "updated_at", null: false
     t.index ["owner_id"], name: "index_clients_on_owner_id"
   end
 
   create_table "invoices", force: :cascade do |t|
-    t.integer "sender_id"
     t.integer "client_id"
-    t.integer "number", null: false
-    t.decimal "total", precision: 12, scale: 2
+    t.datetime "created_at", null: false
     t.date "due_on"
     t.date "issued_on"
     t.text "note"
-    t.datetime "created_at", null: false
+    t.integer "number", null: false
+    t.integer "sender_id"
+    t.decimal "total", precision: 12, scale: 2
     t.datetime "updated_at", null: false
     t.index ["client_id", "number"], name: "index_invoices_on_client_id_and_number", unique: true
     t.index ["client_id"], name: "index_invoices_on_client_id"
@@ -83,63 +83,74 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_20_151030) do
   end
 
   create_table "line_items", force: :cascade do |t|
+    t.virtual "amount", type: :decimal, as: "price * quantity", stored: true
+    t.datetime "created_at", null: false
+    t.text "description"
     t.integer "invoice_id"
     t.decimal "price", precision: 12, scale: 2
     t.integer "quantity"
-    t.virtual "amount", type: :decimal, as: "price * quantity", stored: true
-    t.text "description"
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["invoice_id"], name: "index_line_items_on_invoice_id"
   end
 
   create_table "notes", force: :cascade do |t|
-    t.string "notable_type", null: false
-    t.integer "notable_id", null: false
     t.integer "author_id", null: false
     t.text "body"
     t.datetime "created_at", null: false
+    t.integer "notable_id", null: false
+    t.string "notable_type", null: false
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_notes_on_author_id"
     t.index ["notable_type", "notable_id"], name: "index_notes_on_notable"
   end
 
   create_table "payments", force: :cascade do |t|
-    t.integer "invoice_id"
     t.decimal "amount", precision: 12, scale: 2
-    t.datetime "paid_at"
-    t.text "note"
     t.datetime "created_at", null: false
+    t.integer "invoice_id"
+    t.text "note"
+    t.datetime "paid_at"
     t.datetime "updated_at", null: false
     t.index ["invoice_id"], name: "index_payments_on_invoice_id"
   end
 
+  create_table "sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "ip_address"
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
   create_table "slugs", force: :cascade do |t|
-    t.string "slug", null: false
-    t.string "sluggable_type"
-    t.integer "sluggable_id"
-    t.string "scope"
     t.datetime "created_at"
+    t.string "scope"
+    t.string "slug", null: false
+    t.integer "sluggable_id"
+    t.string "sluggable_type"
     t.index ["slug", "sluggable_type", "scope"], name: "index_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_slugs_on_sluggable"
   end
 
   create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email"
     t.string "name", null: false
     t.string "password_digest"
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   create_table "versions", force: :cascade do |t|
-    t.bigint "whodunnit"
     t.datetime "created_at"
+    t.string "event", null: false
     t.bigint "item_id", null: false
     t.string "item_type", null: false
-    t.string "event", null: false
     t.json "object"
     t.json "object_changes"
+    t.bigint "whodunnit"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
@@ -152,4 +163,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_20_151030) do
   add_foreign_key "line_items", "invoices"
   add_foreign_key "notes", "users", column: "author_id"
   add_foreign_key "payments", "invoices"
+  add_foreign_key "sessions", "users"
 end

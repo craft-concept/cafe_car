@@ -1,0 +1,33 @@
+.Chat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: var(--gap);
+}
+
+.Chat_Message {
+  padding: var(--gap);
+  border-radius: var(--radius);
+  box-shadow: var(--box-shadow);
+  max-width: 80%;
+
+}
+
+.Chat_Message-local,
+.Chat_Message-right {
+  align-self: end;
+}
+
+.Chat_Message-remote,
+.Chat_Message-left {
+  align-self: start;
+}
+
+.Chat_Message-local {
+  background-color: var(--blue);
+  color: var(--white);
+}
+
+.Chat_Message-remote {
+  background-color: var(--gray);
+}

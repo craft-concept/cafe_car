@@ -60,6 +60,7 @@
 
   &.popup {
     animation: Page_Aside-popup var(--duration);
+    z-index: 2;
   }
 
   &.remove {
@@ -75,7 +76,7 @@
   display: flex;
   flex-flow: column;
   gap: var(--gap);
-  overflow: auto;
+  /* overflow: auto; */
 }
 
 .Page-slim .Page_Body,

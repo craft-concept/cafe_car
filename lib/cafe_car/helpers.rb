@@ -17,13 +17,15 @@ module CafeCar
     end
 
     def ui_class(names, *args, **opts)
-      names  = [*names].map(&:to_s).map(&:camelize)
+      names  = [*names].map(&:camelize)
       name   = names.join("_")
       args.flatten!
       args.compact_blank!
       opts.compact_blank!
+      opts.merge!(*args.extract!(Hash))
 
-      flags = args.extract! { _1.is_a? Symbol } | opts.extract! { _1.is_a? Symbol }.keys
+      flags = args.extract!(Symbol)
+      flags |= opts.extract_if! { _1.is_a? Symbol }.keys
       flags.map! { "#{name}-#{_1}" }
 
       [*name, *flags, *args, *opts.keys].join(" ")
@@ -35,6 +37,18 @@ module CafeCar
       present(object).title.presence.tap do |title|
         content_for(:title, title)
       end
+    end
+
+    def cat(*args)
+      args.flatten.each do |arg|
+        arg = capture(&arg) if arg.respond_to?(:to_proc)
+        arg = arg.to_s
+        concat(arg) if arg.present?
+      end
+    end
+
+    def cap(*)
+      capture { cat(*) }
     end
 
     def capture(*, &)
@@ -50,7 +64,7 @@ module CafeCar
     alias_method :p, :present
 
     def current_href?(*, check_parameters: false, **) = current_page?(href_for(*, **), check_parameters:)
-    def ancestor_href?(...) = URI(href_for(...)) < URI(url_for(request.params))
+    def ancestor_href?(...) = URI(href_for(...)) < URI(url_for(request.url))
 
     def href_for(*parts, namespace: self.namespace, **params)
       HrefBuilder.new(*parts, namespace:, template: self, **params).to_s
@@ -89,7 +103,10 @@ module CafeCar
       @links[object] ||= CafeCar[:LinkBuilder].new(self, object)
     end
 
-    def link_to(...) = context(:a) { super }
+    def link_to(...)
+      raise ArgumentError, "Links cannot be nested" if context?(:a)
+      context(:a) { super }
+    end
 
     def icon(name = nil, *, **, &)
       case name
@@ -124,6 +141,10 @@ module CafeCar
 
     def debug?   = params.key?(:debug)
     def console? = params.key?(:console)
+
+    def comment(text)
+      "<!-- #{text} -->".html_safe
+    end
 
     def partial?(path)
       prefixes = path.include?(?/) ? [] : lookup_context.prefixes

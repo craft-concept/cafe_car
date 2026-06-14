@@ -14,6 +14,8 @@ module CafeCar
       case [*@parts]
       in [String]
         [*@parts, *@params.to_query.presence].join(??)
+      in []
+        @template.url_for(@params)
       else
         namespace = collapsed_namespace
         begin
