@@ -1,4 +1,4 @@
-require "open-uri"
+AVATARS = Rails.root.join("db/seeds/avatars").glob("*.svg").freeze
 
 FactoryBot.define do
   factory :user do
@@ -6,7 +6,10 @@ FactoryBot.define do
     email    { "#{@name.parameterize}@#{Faker::Internet.domain_name}" }
     password { @pw = Faker::Internet.password }
     password_confirmation { @pw }
-    avatar { {io: URI.parse(Faker::Avatar.image).open, filename: "avatar.png"} }
+    avatar do
+      file = AVATARS.sample
+      {io: file.open, filename: file.basename.to_s, content_type: "image/svg+xml"}
+    end
   end
 
   factory :article do
