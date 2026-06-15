@@ -195,7 +195,10 @@ module CafeCar
     end
 
     def _render_with_renderer_json(obj, options)
-      options[:only] ||= [:id] | policy(obj).displayable_attributes
+      # permitted_attributes is record-oriented, so ask a record for the column
+      # list even when serializing a collection.
+      record = obj.is_a?(CafeCar::Model) ? obj : obj.klass.new
+      options[:only] ||= [:id] | policy(record).displayable_attributes
 
       if obj.is_a?(CafeCar::Model)
         options[:include] ||= policy(obj).displayable_associations

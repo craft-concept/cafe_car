@@ -14,3 +14,13 @@ if ActiveSupport::TestCase.respond_to?(:fixture_paths=)
 end
 
 ActiveSupport::TestCase.include FactoryBot::Syntax::Methods
+
+module SignInHelper
+  # Logs in through the real session flow so requests have a current_user.
+  def sign_in(user = create(:user, password: "secret", password_confirmation: "secret"))
+    post "/session", params: {session: {email: user.email, password: "secret"}}
+    user
+  end
+end
+
+ActionDispatch::IntegrationTest.include SignInHelper

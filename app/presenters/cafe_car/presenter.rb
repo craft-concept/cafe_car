@@ -84,7 +84,14 @@ module CafeCar
     end
 
     def links = link(object)
-    def href  = href_for(object)
+
+    # The object's canonical path, or nil when it isn't independently routable
+    # (e.g. a nested resource like a line item).
+    def href
+      href_for(object)
+    rescue NoMethodError, ActionController::UrlGenerationError
+      nil
+    end
 
     def preview(**, &)
       ui.Row :space, href: do

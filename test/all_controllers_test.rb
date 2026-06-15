@@ -1,6 +1,8 @@
 require "test_helper"
 
 class AllControllersTest < ActionDispatch::IntegrationTest
+  setup { sign_in }
+
   def self.test_resources(name, scope: nil)
     controller = [*scope, *name].join("/")
     singular   = [*name].join("/").singularize

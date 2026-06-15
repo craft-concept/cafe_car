@@ -9,6 +9,11 @@ module CafeCar
     after_create :persist_session
     after_destroy :terminate_session
 
+    def create
+      run_callbacks(:create) { object.save! }
+      respond_with object, location: after_authentication_url
+    end
+
     private
 
     def find_object
