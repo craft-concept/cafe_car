@@ -18,6 +18,6 @@ class UserPolicy < ApplicationPolicy
   end
 
   class Scope < Scope
-    def resolve = user.super? ? scope.all : scope.where(id: user.id)
+    def resolve = user&.super? ? scope.all : scope.where(id: user&.id)
   end
 end

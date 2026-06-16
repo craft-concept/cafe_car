@@ -8,6 +8,12 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action='/session']"
   end
 
+  test "show renders without a turbo stream for an unpersisted session" do
+    get "/session"
+
+    assert_response :success
+  end
+
   test "failed login re-renders the form with an error" do
     create(:user, password: "secret", password_confirmation: "secret")
 

@@ -2,7 +2,7 @@
 - summary = ui(object).timestamps try: true
 - body    = render("show")
 
-= turbo_stream_from(object)
+= turbo_stream_from(object) if object.persisted?
 = Page :full, title: do |page|
   = page.Aside do
     = yield :left
