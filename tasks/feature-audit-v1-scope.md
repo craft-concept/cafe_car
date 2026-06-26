@@ -2,7 +2,7 @@
 id: feature-audit-v1-scope
 title: Audit feature completeness and define v1 scope
 priority: P1
-status: wip
+status: done
 domain: Product
 created: '2026-06-26'
 updated: '2026-06-26'

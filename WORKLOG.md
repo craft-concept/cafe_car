@@ -5,6 +5,36 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Pass 2: security cleanup + honest v1 scope
+
+**Shipped (all on `main`, CI green):**
+- **Cleared every Dependabot alert** (`f02c924`, delegated) — 56 → **0** open, including
+  the 1 critical (`rack-session`) and all 14 high (rack, puma, rails 8.1.2→8.1.3, nokogiri,
+  etc.). Surgical `Gemfile.lock`-only bumps; `rake` stayed green; no gemspec changes.
+- **Feature audit → `V1_SCOPE.md`** (`43b4aa7`, delegated) — every advertised feature
+  classified **8 IN / 7 NEEDS-WORK / 2 OUT** with file-level evidence.
+
+**Key findings / decisions:**
+- **Auth/sessions is half-baked and carries a latent 500**: `Authentication` is
+  force-included into every CRUD `Controller`, so a CRUD-only host with no sessions table
+  can 500. The decouple is an unambiguous bug fix (queued in `fix-halfbaked-features`); the
+  *product* call — ship experimental vs. finish vs. cut — is raised to the owner in
+  QUESTIONS.md.
+- **README false advertising** found (trust killers): `f.field(...).errors` → `.error`;
+  `normalized_sort_key()` → `normalize_sort_key`; the `sessions` generator USAGE lies; the
+  auth stack is undocumented; install gem-list is incomplete. Folded into the fix tasks.
+- Builder hygiene held: both builders kept to disjoint files, cleaned generator artifacts,
+  and left the committed tree green.
+
+**Flagged for the owner (QUESTIONS.md):** sessions experimental-vs-finish-vs-cut decision
+(new); cnc inline/demote (still pending).
+
+**Next pass:** ship the README accuracy fixes (pure trust wins, in flight); then the
+auth-decoupling bug fix; then `ci-rubocop-check-gate` + retro tags. The auth *product*
+direction and cnc are the two owner-gated items.
+
+---
+
 ## 2026-06-26 — Pass 1: CI rescue, backlog genesis, first hygiene wave
 
 **Shipped (all on `main`, CI green):**

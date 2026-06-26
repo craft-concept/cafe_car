@@ -61,3 +61,24 @@ zero production cost.
    rubocop/thor/listen in production)?
 3. If we demote to dev-only: keep inheriting `.rubocop.yml` from cnc, or inline
    the rubocop config too and drop cnc entirely?
+
+## Sessions/auth — ship as v1 feature, or label experimental?
+
+The feature audit (`V1_SCOPE.md`) found CafeCar ships an auth/sessions stack
+(`app/models/cafe_car/session.rb`, an `Authentication` concern, `Current`) that is
+**half-baked**: it has no session routes in the engine, hardcodes a host `User` model it
+never provides, is undocumented, and — most importantly — `Authentication` is force-coupled
+into every CRUD controller, creating a **latent 500** for any host that uses CafeCar for
+plain CRUD without a sessions table.
+
+There's a clear **bug fix** I'll do regardless (decouple `Authentication` from the
+mandatory `Controller` include so CRUD-only hosts can't 500). But the **product question**
+is yours:
+
+1. **Label sessions experimental for v1** (recommended) — decouple it, document it as
+   opt-in/experimental, defer "finish it" past 1.0. Fastest path to a credible v1.
+2. **Finish sessions for v1** — wire engine routes, make the host `User` coupling
+   configurable, document it, test it. More work; delays v1.
+3. **Cut it entirely** — remove the sessions stack from the gem for now.
+
+Which direction? This gates `fix-halfbaked-features` and the v1 launch scope.

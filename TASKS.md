@@ -42,11 +42,28 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         Stabilize the features the audit flags as broken/incomplete. Stability is half of the
         "ship + trust" mission — a feature that 500s is worse than a missing one.
 
-        - Depends on [[feature-audit-v1-scope]] for the authoritative list.
-        - Known hot spots from git history: sessions/auth (unpersisted-session 500s, signed-out
-          user scope, singular-resource login URLs). Verify these are fully fixed with tests.
+        Authoritative list is now in `V1_SCOPE.md` (8 IN / 7 NEEDS-WORK / 2 OUT). Concrete
+        must-fix items from the audit, highest leverage first:
+
+        1. **Latent 500 / auth coupling (top priority).** `Authentication` is force-included into
+           every CRUD `Controller` (`app/.../controller.rb:8`), so a host app that uses CafeCar
+           for plain CRUD but has no sessions table is one unauthorized request from a 500.
+           Decouple `Authentication` from the mandatory `Controller` include. Pairs with the
+           product decision on whether sessions ships as experimental (see QUESTIONS.md).
+        2. **`sessions` generator** lies in its USAGE (claims model + policy; creates only a
+           migration). Fix it to match, or cut the generator.
+        3. **README false advertising** (also tracked in [[readme-badges-accuracy]]):
+           `f.field(:price).errors` → `error` (singular); `normalized_sort_key()` →
+           `normalize_sort_key`; document or caveat the undocumented auth/sessions/Current stack;
+           fix the install gem-list.
+        4. **Missing generator tests** — `install`/`resource`/`controller`/`notes` are uncovered
+           (install/notes test files are empty stubs). The Gemfile-mutating `install` generator is
+           the riskiest untested path.
+        5. Add tests for advertised-but-unverified paths: `turbo_stream` + `json` responses, a
+           direct presenter render, and a sort/paginate test.
+
         - Every fix lands with a regression test. `rake` green before push.
-        - Anything that can't reach v1 quality gets cut from scope (documented in V1_SCOPE), not
+        - Anything that can't reach v1 quality gets cut/labeled experimental (per V1_SCOPE), not
           shipped broken.
 - [ ] (P1) Polish gemspec for a credible v0.1.2 release
         Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's
@@ -61,18 +78,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
           so resolution is predictable for adopters. Coordinate with [[cnc-keep-or-drop]].
         - Do NOT bump the version or publish without explicit owner approval — flag readiness via
           QUESTIONS.md / holdco.
-- [~] (P1) Resolve Dependabot vulnerabilities (1 critical, 14 high)
-        GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default
-        branch (surfaced on push 2026-06-26). For a gem selling "trust," advertising a stack full
-        of known CVEs to every adopter is a direct contradiction of the mission.
-
-        - Review the Dependabot alerts (`gh api repos/craft-concept/cafe_car/dependabot/alerts`
-          or the Security tab). Triage critical/high first.
-        - Bump vulnerable gems via `bundle update <gem>`; keep `rake` green after each.
-        - Many will be transitive — check whether bumping direct deps (rails, etc.) clears them.
-        - Consider enabling Dependabot version-update PRs so this stays maintained.
-        - Coordinate with [[gemspec-release-polish]] (version floors) and [[cnc-keep-or-drop]]
-          (cnc drags extra transitive deps into prod).
 - [ ] (P2) Retroactively tag v0.1.1 and v0.1.2 releases
         The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
         gemspec's release provenance) don't resolve. Tag the already-published versions
@@ -95,18 +100,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Strongest forcing function for [[fix-halfbaked-features]] and v1 scope.
         - Owner input likely needed on CrayonBloom requirements — capture open questions in
           QUESTIONS.md.
-- [~] (P1) Audit feature completeness and define v1 scope
-        Inventory every advertised feature in `README.md` against what actually works, so we
-        can declare an honest v1 surface and stop shipping half-baked features.
-
-        - Cross-check each README feature (CRUD generation, presenters, components, forms,
-          filtering/sorting, auth/sessions, generators) against the engine code + test coverage.
-        - Recent churn signals instability around **sessions/auth** (commits: "fix 500s on
-          unpersisted-session show", "fix singular-resource URLs so session login form renders",
-          "refactor and start on sessions") — treat auth as the prime suspect for "half-baked."
-        - Output: a `V1_SCOPE.md` (or section) listing IN / OUT / NEEDS-WORK per feature, with
-          rationale. Feeds [[fix-halfbaked-features]] and the README accuracy pass.
-        - This is the gate before any launch push — don't market features that 500.
 
 ## 📣 Marketing & GTM
 
@@ -201,6 +194,8 @@ the user on these.
 Short memory aid only — git history is the full record. Trim as this grows.
 
 - Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY — Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
+- Audit feature completeness and define v1 scope — Inventory every advertised feature in `README.md` against what actually works, so we
+- Resolve Dependabot vulnerabilities (1 critical, 14 high) — GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default
 - Investigate cnc dependency, recommend keep or drop — Owner asked for a keep-or-drop recommendation on the `cnc` dependency.
 - Write CHANGELOG.md — Roadmap item #1. A changelog is a baseline trust signal and a release prerequisite.
 
