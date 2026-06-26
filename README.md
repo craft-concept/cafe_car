@@ -604,7 +604,10 @@ end
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for
+development setup, how to run the tests (`bundle exec rake`), and PR expectations.
+By participating you agree to the [Code of Conduct](CODE_OF_CONDUCT.md). To report a
+security issue, see [SECURITY.md](SECURITY.md).
 
 ## License
 

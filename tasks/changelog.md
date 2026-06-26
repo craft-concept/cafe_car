@@ -2,9 +2,10 @@
 id: changelog
 title: Write CHANGELOG.md
 priority: P1
-status: open
+status: done
 domain: Eng
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 Roadmap item #1. A changelog is a baseline trust signal and a release prerequisite.

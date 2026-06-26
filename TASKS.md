@@ -38,26 +38,18 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ## 🟠 Engineering
 
-- [ ] (P1) Write CHANGELOG.md
-        Roadmap item #1. A changelog is a baseline trust signal and a release prerequisite.
+- [ ] (P1) Resolve Dependabot vulnerabilities (1 critical, 14 high)
+        GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default
+        branch (surfaced on push 2026-06-26). For a gem selling "trust," advertising a stack full
+        of known CVEs to every adopter is a direct contradiction of the mission.
 
-        - Adopt Keep a Changelog format + semver. Reconstruct entries from git history for
-          released versions (0.1.x) and an `[Unreleased]` section for current work.
-        - Point `cafe_car.gemspec` `changelog_uri` at the file (currently points at repo root).
-        - Keep it current as part of every future release (see [[gemspec-release-polish]]).
-- [ ] (P1) Investigate cnc dependency, recommend keep or drop
-        Owner asked for a keep-or-drop recommendation on the `cnc` dependency.
-
-        - **New finding:** `cnc` is NOT private — it's a public RubyGems package (v0.1.13, ~4.5k
-          downloads, MIT), authored by the owner (Jeff Peterson), source at
-          github.com/craft-concept/cnc. The AGENTS.md "private cnc" premise is stale. So it does
-          NOT block installation; the question is whether the coupling is worth it.
-        - Document exactly what CafeCar uses from cnc. Known: `.rubocop.yml` does
-          `inherit_gem: cnc: rubocop.yml` (shared lint config); the `--ensure-latest` binstub
-          convention likely came from cnc too. Audit `lib/`/`app/` for `Cnc`/`cnc` usage.
-        - Recommend: keep (document the coupling), inline the small bits we use, or drop. Weigh
-          adoption friction (extra transitive dep, owner-controlled) vs. maintenance cost.
-        - Deliver the recommendation to the owner via QUESTIONS.md / holdco, not just a reply.
+        - Review the Dependabot alerts (`gh api repos/craft-concept/cafe_car/dependabot/alerts`
+          or the Security tab). Triage critical/high first.
+        - Bump vulnerable gems via `bundle update <gem>`; keep `rake` green after each.
+        - Many will be transitive — check whether bumping direct deps (rails, etc.) clears them.
+        - Consider enabling Dependabot version-update PRs so this stays maintained.
+        - Coordinate with [[gemspec-release-polish]] (version floors) and [[cnc-keep-or-drop]]
+          (cnc drags extra transitive deps into prod).
 - [ ] (P1) Fix the half-baked features (auth/sessions first)
         Stabilize the features the audit flags as broken/incomplete. Stability is half of the
         "ship + trust" mission — a feature that 500s is worse than a missing one.
@@ -81,6 +73,15 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
           so resolution is predictable for adopters. Coordinate with [[cnc-keep-or-drop]].
         - Do NOT bump the version or publish without explicit owner approval — flag readiness via
           QUESTIONS.md / holdco.
+- [ ] (P2) Retroactively tag v0.1.1 and v0.1.2 releases
+        The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
+        gemspec's release provenance) don't resolve. Tag the already-published versions
+        retroactively at their release commits.
+
+        - Identify the commits for v0.1.1 and v0.1.2 (git history; the "v 0.1.2" commit on
+          2026-02-28 is a marker). Create annotated tags `v0.1.1` / `v0.1.2` and push them.
+        - Tagging is NOT a gem publish — safe to do autonomously. Do NOT `gem push`.
+        - Verify CHANGELOG links resolve afterward. Feeds [[gemspec-release-polish]].
 
 ## 🧭 Product
 
@@ -150,16 +151,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Close/clean the stale auto-generated rubocop PR(s) and the `rubocop/main` branch.
         - Keep formatting enforced locally via `rake` (already green).
         - While here: CI uses deprecated Node20 actions — bump checkout/setup actions if cheap.
-- [ ] (P1) Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY
-        Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
-        adopters look for; their absence reads as "unmaintained."
-
-        - `CONTRIBUTING.md` — dev setup (`bin/setup`, `rake`), how to run the dummy app/tests,
-          PR expectations, the one-file-per-task backlog convention.
-        - `CODE_OF_CONDUCT.md` — Contributor Covenant, owner email as contact (jeff@yak.sh).
-        - `SECURITY.md` — supported versions + private disclosure address. Coordinate with the
-          brakeman posture already in CI.
-        - Expand the thin README "Contributing" section to link these.
 - [ ] (P2) Add GitHub issue and PR templates
         Roadmap item #4 (templates). Lowers the friction for first-time contributors and keeps
         issues actionable.
@@ -169,6 +160,16 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - `.github/pull_request_template.md` — checklist (tests added, `rake` green, CHANGELOG
           updated, docs touched).
         - Depends loosely on [[oss-hygiene-docs]] for the CONTRIBUTING link.
+- [ ] (P2) Triage stale draft PR
+        Open draft PR #11 "Render nested fields for has_many with accepts_nested_attributes_for"
+        (Copilot-authored, March 2026) has sat unattended for months. A stale open PR signals an
+        unmaintained repo — triage it as part of being a responsive maintainer.
+
+        - Review the diff: is the feature wanted, correct, and tested? `accepts_nested_attributes_for`
+          support in the form builder is a plausibly valuable feature.
+        - Decide: finish + merge (with tests + CHANGELOG entry), or close with a courteous
+          explanation. Either way, don't leave it hanging.
+        - Good first signal for the discoverability push that the repo is alive.
 
 ---
 
@@ -177,6 +178,21 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 Surfaced here so they're not lost in the sections above. Do the autonomous work; nudge
 the user on these.
 
+- [ ] (P1) Inline cnc's two core-ext methods, demote cnc to dev dependency
+        Execution of the [[cnc-keep-or-drop]] recommendation (see QUESTIONS.md). Blocked on the
+        owner ratifying the dependency-strategy decision they asked us to recommend on.
+
+        Plan once approved:
+        - Inline `Hash#extract_if!` and `Module#define_class` (~10 lines each, currently from
+          `cnc/core_ext`) into `lib/cafe_car/core_ext/` alongside the existing `array.rb` extras,
+          matching its style.
+        - Drop `require "cnc/core_ext"` from `lib/cafe_car/core_ext.rb`.
+        - Move `cnc` from `add_dependency` to `add_development_dependency` in the gemspec (keeps
+          `.rubocop.yml`'s `inherit_gem: cnc` for contributors; removes rubocop/thor/listen from
+          production installs).
+        - Verify callers: `component.rb:22,64`, `helpers.rb:28`, `ui.rb:8`. `rake` green.
+        - Owner decision points (QUESTIONS.md): inline-and-demote (default) vs. keep-runtime vs.
+          also-inline-the-rubocop-config-and-drop-entirely.
 
 ---
 
@@ -184,4 +200,7 @@ the user on these.
 
 Short memory aid only — git history is the full record. Trim as this grows.
 
+- Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY — Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
+- Investigate cnc dependency, recommend keep or drop — Owner asked for a keep-or-drop recommendation on the `cnc` dependency.
+- Write CHANGELOG.md — Roadmap item #1. A changelog is a baseline trust signal and a release prerequisite.
 

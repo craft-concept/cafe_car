@@ -2,9 +2,10 @@
 id: cnc-keep-or-drop
 title: Investigate cnc dependency, recommend keep or drop
 priority: P1
-status: open
+status: done
 domain: Eng
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 Owner asked for a keep-or-drop recommendation on the `cnc` dependency.

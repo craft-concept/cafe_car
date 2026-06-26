@@ -2,9 +2,10 @@
 id: oss-hygiene-docs
 title: Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY
 priority: P1
-status: open
+status: done
 domain: Ops
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
