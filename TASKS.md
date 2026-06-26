@@ -85,15 +85,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
           so resolution is predictable for adopters. Coordinate with [[cnc-keep-or-drop]].
         - Do NOT bump the version or publish without explicit owner approval — flag readiness via
           QUESTIONS.md / holdco.
-- [ ] (P2) Retroactively tag v0.1.1 and v0.1.2 releases
-        The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
-        gemspec's release provenance) don't resolve. Tag the already-published versions
-        retroactively at their release commits.
-
-        - Identify the commits for v0.1.1 and v0.1.2 (git history; the "v 0.1.2" commit on
-          2026-02-28 is a marker). Create annotated tags `v0.1.1` / `v0.1.2` and push them.
-        - Tagging is NOT a gem publish — safe to do autonomously. Do NOT `gem push`.
-        - Verify CHANGELOG links resolve afterward. Feeds [[gemspec-release-polish]].
 
 ## 🧭 Product
 
@@ -180,6 +171,7 @@ the user on these.
 
 Short memory aid only — git history is the full record. Trim as this grows.
 
+- Retroactively tag v0.1.1 and v0.1.2 releases — The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
 - README badges + fix inaccuracies — The README is the storefront. Add credibility badges and remove statements that don't
 - Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY — Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
 - Audit feature completeness and define v1 scope — Inventory every advertised feature in `README.md` against what actually works, so we

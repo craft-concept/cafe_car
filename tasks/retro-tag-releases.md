@@ -2,9 +2,10 @@
 id: retro-tag-releases
 title: Retroactively tag v0.1.1 and v0.1.2 releases
 priority: P2
-status: open
+status: done
 domain: Eng
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
