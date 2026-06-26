@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resource :session, controller: "cafe_car/sessions"# , as: :session
   resources :passwords, param: :token
+  resources :denials, only: :index
   # mount ActiveStorage::Engine => '/'
 
   get "up" => "rails/health#show", as: :rails_health_check

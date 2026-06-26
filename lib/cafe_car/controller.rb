@@ -172,7 +172,9 @@ module CafeCar
     end
 
     def render_unauthorized
-      if authenticated?
+      if !sessions_available?
+        head :forbidden
+      elsif authenticated?
         redirect_back_or_to root_path
       else
         request_authentication

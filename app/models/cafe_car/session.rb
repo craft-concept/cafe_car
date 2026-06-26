@@ -1,6 +1,6 @@
 module CafeCar
   class Session < ApplicationRecord
-    belongs_to :user
+    belongs_to :user, class_name: CafeCar.user_class_name
 
     attribute :email, :string
     attribute :password, :password
@@ -11,7 +11,7 @@ module CafeCar
     before_validation :authenticate, if: :login?
 
     def authenticate
-      self.user = User.authenticate_by(email:, password:) or
+      self.user = CafeCar.user_class.authenticate_by(email:, password:) or
         errors.add(:base, "Could not find user with given credentials")
     end
   end

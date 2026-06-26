@@ -8,6 +8,16 @@ module CafeCar
 
     private
 
+    # Sessions/login are opt-in: a host enables them by running the
+    # `cafe_car:sessions` generator and exposing the session routes. When that
+    # infrastructure is absent we can't redirect to a login page, so callers
+    # fall back to 403 Forbidden instead of 500ing on a missing route.
+    def sessions_available?
+      respond_to?(:new_session_path) && CafeCar.sessions_available?
+    rescue StandardError
+      false
+    end
+
     def authenticated?
       current_user
     end
@@ -41,7 +51,7 @@ module CafeCar
 
     def request_authentication
       session[:return_to_after_authenticating] = request.url
-      redirect_to new_session_path, warning: t(:auth_required, log_in: t(:log_in))
+      redirect_to new_session_path, warning: t(:auth_required, new_session: t(:new_session))
     end
 
     def after_authentication_url
