@@ -18,3 +18,7 @@ task :test do
 end
 
 task default: %i[rubocop test brakeman]
+
+# Holdco backlog machinery (tasks:new, tasks:index, tasks:claim, tasks:done, rake task).
+# Loads every .rake under lib/tasks/ so the gem's own tasks and holdco_tasks both run.
+Dir.glob(File.expand_path("lib/tasks/*.rake", __dir__)).sort.each { |f| load f }

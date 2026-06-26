@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#
+# ./conductor — launch Claude Code as the autonomous conductor for CafeCar.
+#
+# Boots an interactive Claude session with the conductor persona injected, full
+# autonomy (permissions skipped), the most capable model, remote control so you can
+# steer from claude.ai/code or the mobile app, and a standing-work driver.
+#
+# CafeCar is overseen by holdco (the portfolio manager). This launcher runs the
+# conductor for CafeCar only.
+#
+# Toggles (env vars):
+#   OP_MODEL     model alias/id         (default: opus)
+#   OP_REMOTE    1=remote-control on    (default: 1)  — needs claude.ai sub; set 0 if it errors
+#   OP_DRIVE     standing-work driver   (default: loop)
+#                  loop  — /loop: wake on a cadence (or self-paced), make a pass, rest.
+#                  goal  — /goal: never idle-stop until the goal holds.
+#                  none  — plain interactive session, no standing driver.
+#   OP_LOOP_EVERY  loop cadence, e.g. 30m (default: empty = self-paced)
+#   OP_GOAL        goal text for DRIVE=goal (default: the standing work prompt)
+#   OP_RESUME      1=resume the last session (--continue)  (default: 0 = clean context)
+#
+# Any extra args are passed through to `claude` as the opening prompt.
+#
+set -euo pipefail
+cd "$(dirname "$0")"
+
+PERSONA=".claude/agents/conductor.md"
+[[ -f "$PERSONA" ]] || { echo "cafe_car: missing persona file $PERSONA" >&2; exit 1; }
+
+args=(
+  --append-system-prompt-file "$PERSONA"
+  --model "${OP_MODEL:-opus}"
+  --dangerously-skip-permissions
+  --verbose
+)
+
+[[ "${OP_RESUME:-0}" == "1" ]] && args+=(--continue)
+[[ "${OP_REMOTE:-1}" == "1" ]] && args+=(--remote-control "${OP_REMOTE_NAME:-CafeCar Conductor}")
+
+WORK="Continue CafeCar operation."
+DRIVE="${OP_DRIVE:-loop}"
+
+if [[ $# -gt 0 ]]; then
+  exec claude "${args[@]}" "$@"
+elif [[ "$DRIVE" == "loop" ]]; then
+  exec claude "${args[@]}" "/loop ${OP_LOOP_EVERY:+$OP_LOOP_EVERY }/clear $WORK"
+elif [[ "$DRIVE" == "goal" ]]; then
+  exec claude "${args[@]}" "/goal ${OP_GOAL:-$WORK}"
+else
+  exec claude "${args[@]}"
+fi
