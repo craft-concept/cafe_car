@@ -1,5 +1,9 @@
 # CafeCar
 
+[![CI](https://img.shields.io/github/actions/workflow/status/craft-concept/cafe_car/ci.yml?branch=main&label=CI)](https://github.com/craft-concept/cafe_car/actions/workflows/ci.yml)
+[![Gem Version](https://img.shields.io/gem/v/cafe_car)](https://rubygems.org/gems/cafe_car)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
+
 CafeCar is a Rails engine that extends the MVC "view" layer to provide automatic
 CRUD UI generation with sensible defaults. Its philosophy is rooted in the idea
 that Rails should render _something_ that represents the CRUD operations of your
@@ -25,8 +29,8 @@ an application-wide or model-specific basis.
 
 ## Prerequisites
 
-- Rails 7.0+
-- Ruby 3.0+
+- Ruby 3.3+ (developed and tested against 3.3.5)
+- Rails 8.0+ (developed and tested against Rails 8.1)
 
 ## Installation
 
@@ -50,12 +54,13 @@ $ rails generate cafe_car:install
 
 This will:
 
-- Add required dependencies (bcrypt, paper_trail, factory_bot_rails, faker,
-  rouge)
+- Add required gems (cnc, bcrypt, paper_trail, factory_bot_rails, faker, rouge)
+  plus development tools (hotwire-livereload, better_errors, binding_of_caller,
+  chrome_devtools_rails, i18n-debug)
 - Mount the CafeCar engine at `/` under the `:admin` namespace
 - Create `app/policies/application_policy.rb`
 - Add `CafeCar::Controller` to your `ApplicationController`
-- Set up JavaScript imports for Trix and ActionText
+- Set up JavaScript imports for CafeCar, Trix, and ActionText
 
 ## Getting Started
 
@@ -369,7 +374,7 @@ The form builder automatically detects field types:
   <%= f.field(:price).label %>
   <%= f.field(:price).input class: "currency" %>
   <%= f.field(:price).hint "In USD" %>
-  <%= f.field(:price).errors %>
+  <%= f.field(:price).error %>
 <% end %>
 ```
 
@@ -419,7 +424,8 @@ end
 The model gets:
 
 - `sorted(*keys)` - Parse and apply sort parameters
-- `normalized_sort_key()` - Convert sort keys to Arel format
+- `normalize_sort_key(key)` - Internal helper that converts a sort key to Arel
+  order format
 
 **Custom filters in controllers:**
 
