@@ -11,16 +11,16 @@ module CafeCar
     end
 
     def to_s
-      case [*@parts]
-      in [String]
-        [*@parts, *@params.to_query.presence].join(??)
+      case [ *@parts ]
+      in [ String ]
+        [ *@parts, *@params.to_query.presence ].join(??)
       in []
         @template.url_for(@params)
       else
         namespace = collapsed_namespace
         parts     = @parts.map { singular_resource(_1) }
         begin
-          @template.url_for([*namespace, *parts, @params])
+          @template.url_for([ *namespace, *parts, @params ])
         rescue NoMethodError
           raise if namespace.empty?
           namespace.pop
@@ -69,11 +69,11 @@ module CafeCar
 
     def expand_part(part)
       normalize case part
-                when Symbol, String, Hash, Array then part
-                when ActiveModel::Naming then part.model_name.collection
-                when Class then part.name.underscore
-                else expand_part(part.class)
-                end
+      when Symbol, String, Hash, Array then part
+      when ActiveModel::Naming then part.model_name.collection
+      when Class then part.name.underscore
+      else expand_part(part.class)
+      end
     end
 
     def normalize(part)

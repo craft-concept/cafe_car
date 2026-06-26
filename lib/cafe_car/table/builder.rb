@@ -24,7 +24,7 @@ module CafeCar::Table
     def has?(method) = model.info.fields.has?(method)
 
     def title(method = policy.title_attribute, *, **, &)
-      cell(method, *, href: true, blank: '(none)', **, &)
+      cell(method, *, href: true, blank: "(none)", **, &)
     end
 
     def logo(method = policy.logo_attribute, *, **, &)
@@ -39,7 +39,7 @@ module CafeCar::Table
 
     def remaining(except: [])
       capture do
-        (remaining_attributes - [*except]).each do |attr|
+        (remaining_attributes - [ *except ]).each do |attr|
           ui << cell(policy.info(attr).displayable.method)
         end
       end

@@ -4,8 +4,8 @@ class AllControllersTest < ActionDispatch::IntegrationTest
   setup { sign_in }
 
   def self.test_resources(name, scope: nil)
-    controller = [*scope, *name].join("/")
-    singular   = [*name].join("/").singularize
+    controller = [ *scope, *name ].join("/")
+    singular   = [ *name ].join("/").singularize
 
     test "#{controller}_index" do
       get url_for(controller:, action: :index)
@@ -14,7 +14,7 @@ class AllControllersTest < ActionDispatch::IntegrationTest
     end
 
     test "#{controller}_create"  do
-      params = {singular => build(singular).as_json}
+      params = { singular => build(singular).as_json }
       post(url_for(controller:, action: :create), params:)
 
       assert_response :redirect

@@ -3,9 +3,9 @@ require_relative "lib/cafe_car/version"
 Gem::Specification.new do |spec|
   spec.name        = "cafe_car"
   spec.version     = CafeCar::VERSION
-  spec.authors     = ["Jeff Peterson"]
-  spec.email       = ["jeff@yak.sh"]
-  spec.homepage    = "https://concept.love/cafe_car"
+  spec.authors     = [ "Jeff Peterson" ]
+  spec.email       = [ "jeff@yak.sh" ]
+  spec.homepage    = "https://craft-concept.github.io/cafe_car"
   spec.summary     = "Auto-generate CRUD admin UI for your Rails models, with sensible overridable defaults."
   spec.description = <<~DESC.tr("\n", " ").strip
     CafeCar is a Rails engine that extends the view layer to render complete index, show,
@@ -29,7 +29,6 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency "rails", ">= 8.0"
-  spec.add_dependency "cnc"
   spec.add_dependency "responders", ">= 3.0"
   spec.add_dependency "activerecord_where_assoc", ">= 1.3"
   spec.add_dependency "propshaft", ">= 1.0"

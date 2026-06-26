@@ -18,7 +18,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.bigint "record_id", null: false
     t.string "record_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+    t.index [ "record_type", "record_id", "name" ], name: "index_action_text_rich_texts_uniqueness", unique: true
   end
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -27,8 +27,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.string "name", null: false
     t.bigint "record_id", null: false
     t.string "record_type", null: false
-    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
-    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+    t.index [ "blob_id" ], name: "index_active_storage_attachments_on_blob_id"
+    t.index [ "record_type", "record_id", "name", "blob_id" ], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", force: :cascade do |t|
@@ -40,13 +40,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.string "key", null: false
     t.text "metadata"
     t.string "service_name", null: false
-    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+    t.index [ "key" ], name: "index_active_storage_blobs_on_key", unique: true
   end
 
   create_table "active_storage_variant_records", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
-    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+    t.index [ "blob_id", "variation_digest" ], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
   create_table "articles", force: :cascade do |t|
@@ -56,7 +56,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.text "summary"
     t.string "title", null: false
     t.datetime "updated_at", null: false
-    t.index ["author_id"], name: "index_articles_on_author_id"
+    t.index [ "author_id" ], name: "index_articles_on_author_id"
   end
 
   create_table "clients", force: :cascade do |t|
@@ -64,7 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.string "name"
     t.integer "owner_id"
     t.datetime "updated_at", null: false
-    t.index ["owner_id"], name: "index_clients_on_owner_id"
+    t.index [ "owner_id" ], name: "index_clients_on_owner_id"
   end
 
   create_table "invoices", force: :cascade do |t|
@@ -77,9 +77,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.integer "sender_id"
     t.decimal "total", precision: 12, scale: 2
     t.datetime "updated_at", null: false
-    t.index ["client_id", "number"], name: "index_invoices_on_client_id_and_number", unique: true
-    t.index ["client_id"], name: "index_invoices_on_client_id"
-    t.index ["sender_id"], name: "index_invoices_on_sender_id"
+    t.index [ "client_id", "number" ], name: "index_invoices_on_client_id_and_number", unique: true
+    t.index [ "client_id" ], name: "index_invoices_on_client_id"
+    t.index [ "sender_id" ], name: "index_invoices_on_sender_id"
   end
 
   create_table "line_items", force: :cascade do |t|
@@ -90,7 +90,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.decimal "price", precision: 12, scale: 2
     t.integer "quantity"
     t.datetime "updated_at", null: false
-    t.index ["invoice_id"], name: "index_line_items_on_invoice_id"
+    t.index [ "invoice_id" ], name: "index_line_items_on_invoice_id"
   end
 
   create_table "notes", force: :cascade do |t|
@@ -100,8 +100,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.integer "notable_id", null: false
     t.string "notable_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["author_id"], name: "index_notes_on_author_id"
-    t.index ["notable_type", "notable_id"], name: "index_notes_on_notable"
+    t.index [ "author_id" ], name: "index_notes_on_author_id"
+    t.index [ "notable_type", "notable_id" ], name: "index_notes_on_notable"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -111,7 +111,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.text "note"
     t.datetime "paid_at"
     t.datetime "updated_at", null: false
-    t.index ["invoice_id"], name: "index_payments_on_invoice_id"
+    t.index [ "invoice_id" ], name: "index_payments_on_invoice_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -120,7 +120,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.datetime "updated_at", null: false
     t.string "user_agent"
     t.integer "user_id", null: false
-    t.index ["user_id"], name: "index_sessions_on_user_id"
+    t.index [ "user_id" ], name: "index_sessions_on_user_id"
   end
 
   create_table "slugs", force: :cascade do |t|
@@ -129,9 +129,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.string "slug", null: false
     t.integer "sluggable_id"
     t.string "sluggable_type"
-    t.index ["slug", "sluggable_type", "scope"], name: "index_slugs_on_slug_and_sluggable_type_and_scope", unique: true
-    t.index ["slug", "sluggable_type"], name: "index_slugs_on_slug_and_sluggable_type"
-    t.index ["sluggable_type", "sluggable_id"], name: "index_slugs_on_sluggable"
+    t.index [ "slug", "sluggable_type", "scope" ], name: "index_slugs_on_slug_and_sluggable_type_and_scope", unique: true
+    t.index [ "slug", "sluggable_type" ], name: "index_slugs_on_slug_and_sluggable_type"
+    t.index [ "sluggable_type", "sluggable_id" ], name: "index_slugs_on_sluggable"
   end
 
   create_table "users", force: :cascade do |t|
@@ -140,7 +140,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.string "name", null: false
     t.string "password_digest"
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index [ "email" ], name: "index_users_on_email", unique: true
   end
 
   create_table "versions", force: :cascade do |t|
@@ -151,7 +151,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_173014) do
     t.json "object"
     t.json "object_changes"
     t.bigint "whodunnit"
-    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
+    t.index [ "item_type", "item_id" ], name: "index_versions_on_item_type_and_item_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

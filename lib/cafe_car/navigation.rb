@@ -30,7 +30,7 @@ module CafeCar
       end
 
       def link(**opts)
-        ui.Navigation().Link(href: @template.href_for([params]), **opts) { content }
+        ui.Navigation().Link(href: @template.href_for([ params ]), **opts) { content }
       end
     end
 
@@ -53,13 +53,13 @@ module CafeCar
 
     def recognize(obj, **)
       req = case obj
-            when String
+      when String
               path = ActionDispatch::Journey::Router::Utils.normalize_path(path)
               env  = Rack::MockRequest.env_for(path, method: :get, **)
               ActionDispatch::Request.new(env)
-            when ActionDispatch::Request then obj
-            else raise "cannot recognize this obj"
-            end
+      when ActionDispatch::Request then obj
+      else raise "cannot recognize this obj"
+      end
 
       router.recognize(req) do |route, params|
         return Route.new(route, template: @template)
@@ -69,8 +69,8 @@ module CafeCar
     def current = recognize(@template.request)
 
     def link_to(*args, **opts, &block)
-      block ||= -> { @template.tag.span(_1, class: ui_class([:navigation, :link], :current)) }
-      @template.link_to_unless_current(*args, class: ui_class([:navigation, :link]), **opts, &block)
+      block ||= -> { @template.tag.span(_1, class: ui_class([ :navigation, :link ], :current)) }
+      @template.link_to_unless_current(*args, class: ui_class([ :navigation, :link ]), **opts, &block)
     end
   end
 end

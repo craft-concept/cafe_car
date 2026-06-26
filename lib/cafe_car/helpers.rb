@@ -17,7 +17,7 @@ module CafeCar
     end
 
     def ui_class(names, *args, **opts)
-      names  = [*names].map(&:camelize)
+      names  = [ *names ].map(&:camelize)
       name   = names.join("_")
       args.flatten!
       args.compact_blank!
@@ -28,10 +28,10 @@ module CafeCar
       flags |= opts.extract_if! { _1.is_a? Symbol }.keys
       flags.map! { "#{name}-#{_1}" }
 
-      [*name, *flags, *args, *opts.keys].join(" ")
+      [ *name, *flags, *args, *opts.keys ].join(" ")
     end
 
-    def body_classes = [*controller_path.split(?/), action_name, *@body_class]
+    def body_classes = [ *controller_path.split(?/), action_name, *@body_class ]
 
     def title(object)
       present(object).title.presence.tap do |title|
@@ -59,7 +59,7 @@ module CafeCar
 
     def present(*args, **options)
       @presenters                  ||= {}
-      @presenters[[args, options]] ||= CafeCar[:Presenter].present(self, *args, **options)
+      @presenters[[ args, options ]] ||= CafeCar[:Presenter].present(self, *args, **options)
     end
     alias_method :p, :present
 

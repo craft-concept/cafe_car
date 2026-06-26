@@ -31,12 +31,12 @@ module CafeCar
     end
 
     def self.names(klass)
-      return [klass.to_s.classify] if klass.is_a?(Symbol)
+      return [ klass.to_s.classify ] if klass.is_a?(Symbol)
       klass.ancestors.lazy.map(&:name).compact
     end
 
     def self.show(method, block = nil, **)
-      show_defaults[method].merge!({block:}.compact, **)
+      show_defaults[method].merge!({ block: }.compact, **)
     end
 
     def initialize(template, object, **options, &block)
@@ -75,7 +75,7 @@ module CafeCar
     def attributes(*methods, except: nil, **options, &block)
       methods  = policy.displayable_attributes if methods.empty?
       methods  = methods.flatten.compact
-      methods -= [*except]
+      methods -= [ *except ]
       capture do
         methods.map do |method|
           attribute(method, **options, &block)
@@ -105,7 +105,7 @@ module CafeCar
       return "" if content.blank?
 
       ui.Field do |f|
-        concat f.Label(safe_join([human(method), *info_circle(method)], " "), tag: :strong)
+        concat f.Label(safe_join([ human(method), *info_circle(method) ], " "), tag: :strong)
         concat f.Content(content)
       end
     end
@@ -144,7 +144,7 @@ module CafeCar
       render("controls", object:, options:, &block)
     end
 
-    def i18n_vars(names) = names.merge(*names.map { {_1.to_s.downcase.to_sym => _2.downcase} })
+    def i18n_vars(names) = names.merge(*names.map { { _1.to_s.downcase.to_sym => _2.downcase } })
 
     def i18n(action, scope: nil, **)
       vars = i18n_vars Action: t(action, default: action.to_s.humanize),

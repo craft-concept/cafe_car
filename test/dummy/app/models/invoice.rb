@@ -9,7 +9,7 @@ class Invoice < ApplicationRecord
   before_save :set_number, unless: :number?
   before_save :set_total
 
-  validates :number, uniqueness: {scope: :client_id}
+  validates :number, uniqueness: { scope: :client_id }
 
   broadcasts_refreshes
 

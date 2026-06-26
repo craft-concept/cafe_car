@@ -17,7 +17,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "failed login re-renders the form with an error" do
     create(:user, password: "secret", password_confirmation: "secret")
 
-    post "/session", params: {session: {email: "nobody@example.com", password: "wrong"}}
+    post "/session", params: { session: { email: "nobody@example.com", password: "wrong" } }
 
     assert_response :unprocessable_content
     assert_select ".Error", /Could not find user/
@@ -27,7 +27,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "successful login authenticates and redirects" do
     user = create(:user, password: "secret", password_confirmation: "secret")
 
-    post "/session", params: {session: {email: user.email, password: "secret"}}
+    post "/session", params: { session: { email: user.email, password: "secret" } }
 
     assert_response :redirect
     assert_predicate cookies[:session_id], :present?

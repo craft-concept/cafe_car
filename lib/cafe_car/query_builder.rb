@@ -32,7 +32,7 @@ module CafeCar
 
     def unscoped   = QueryBuilder.new(@scope.unscope(:where))
     def arel(key)  = @scope.arel_table[chomp(key)]
-    def chomp(key) = key.to_s.sub(/\W+$/, '')
+    def chomp(key) = key.to_s.sub(/\W+$/, "")
 
     def parse_time(value)
       Chronic.parse(value, guess: false, context: :past)
@@ -121,7 +121,7 @@ module CafeCar
     end
 
     def attribute!(key, value)
-      case [key, value]
+      case [ key, value ]
       in _, Regexp
         @scope.where!(arel(key).matches_regexp(value.source, !value.casefold?))
       in _, Op

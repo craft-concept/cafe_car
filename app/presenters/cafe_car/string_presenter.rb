@@ -9,9 +9,9 @@ module CafeCar
 
       case object
       when %r{^https?://.+\.(png|jpe?g|svg)$}
-        @template.image_tag object, style: 'width: 1em'
+        @template.image_tag object, style: "width: 1em"
       when %r{^https?://}
-        link_to(txt, object, target: '_blank', rel: "noopener")
+        link_to(txt, object, target: "_blank", rel: "noopener")
       else
         txt
       end

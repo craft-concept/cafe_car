@@ -15,10 +15,10 @@ module CafeCar
     def can?(action)  = policy.public_send("#{action}?")
     def cant?(action) = !can?(action) && disabled(action, :policy)
 
-    def i18n(*, scope: nil, **) = p.i18n(*, scope: [:controls, *scope], **)
+    def i18n(*, scope: nil, **) = p.i18n(*, scope: [ :controls, *scope ], **)
 
     def confirm(key)             = i18n(key, scope: :confirm)
-    def disabled(action, reason) = i18n(action, scope: [:disabled, reason])
+    def disabled(action, reason) = i18n(action, scope: [ :disabled, reason ])
 
     def turbo!(opts)
       opts.replace({
@@ -45,10 +45,10 @@ module CafeCar
       end
     end
 
-    def show(*, **, &)    = link(:show, @object, *, data: {turbo_stream:  nil}, **, &)
+    def show(*, **, &)    = link(:show, @object, *, data: { turbo_stream:  nil }, **, &)
     def edit(...)         = link(:edit, @object, ...)
     def destroy(*, **, &) = link(:destroy, @object, *, method: :delete, confirm: confirm(:destroy), **, &)
-    def index(*, **, &)   = link(:index, model, *, hide: true, data: {turbo_stream:  nil}, **, &)
+    def index(*, **, &)   = link(:index, model, *, hide: true, data: { turbo_stream:  nil }, **, &)
     def new(*, **, &)     = link(:new, model, *, hide: true, **, &)
 
     def code(path = nil)

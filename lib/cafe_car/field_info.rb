@@ -35,7 +35,7 @@ module CafeCar
     end
 
     def abrogated_keys
-      [*reflection&.foreign_type&.to_sym]
+      [ *reflection&.foreign_type&.to_sym ]
     end
 
     def displayable = reflection&.name&.then { info(_1) } || self
@@ -62,7 +62,7 @@ module CafeCar
       model.nested_attributes_options.key?(key) && :nested
     end
 
-    def polymorphic_methods = [reflection.foreign_type, reflection.foreign_key]
+    def polymorphic_methods = [ reflection.foreign_type, reflection.foreign_key ]
 
     def placeholder  = i18n(:placeholder)
     def autocomplete = i18n(:autocomplete)
@@ -79,7 +79,7 @@ module CafeCar
     def i18n_key = model_name.i18n_key
     def i18n(key, **opts)
       return if @method.nil?
-      I18n.t(@method, scope: [:helpers, key, i18n_key], raise: true, **opts)
+      I18n.t(@method, scope: [ :helpers, key, i18n_key ], raise: true, **opts)
     rescue I18n::MissingTranslationData
     end
 
@@ -131,11 +131,11 @@ module CafeCar
       return {} unless model.respond_to? :reflections
       @@reflections_by_attribute[model] ||=
         model.reflections.values.index_by do |r|
-          case [r.macro, r.name]
-          in [:belongs_to, *]                then r.foreign_key
-          in [:has_many, *]                  then "#{r.name.to_s.singularize}_ids"
-          in [:has_one, /^rich_text_(\w+)$/] then $1
-          in [:has_one, *]                   then r.name
+          case [ r.macro, r.name ]
+          in [ :belongs_to, * ]                then r.foreign_key
+          in [ :has_many, * ]                  then "#{r.name.to_s.singularize}_ids"
+          in [ :has_one, /^rich_text_(\w+)$/ ] then $1
+          in [ :has_one, * ]                   then r.name
           else raise NoMethodError.new("Not yet implemented :#{r.macro}")
           end
         end.with_indifferent_access

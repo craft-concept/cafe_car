@@ -9,7 +9,7 @@ class LineItemPolicy < ApplicationPolicy
   def title_attribute = :amount
 
   def permitted_attributes
-    [:price, :quantity, :description]
+    [ :price, :quantity, :description ]
   end
 
   class Scope < Scope

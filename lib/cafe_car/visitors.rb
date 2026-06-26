@@ -10,12 +10,12 @@ module CafeCar::Visitors
     end
 
     def visit_Arel_Nodes_Regexp(o, collector)
-      function("regexp", [o.right, o.left, bool(o.case_sensitive)], collector)
+      function("regexp", [ o.right, o.left, bool(o.case_sensitive) ], collector)
     end
 
     def visit_Arel_Nodes_NotRegexp(o, collector)
       collector << "NOT "
-      function("regexp", [o.right, o.left, bool(o.case_sensitive)], collector)
+      function("regexp", [ o.right, o.left, bool(o.case_sensitive) ], collector)
     end
   end
 end

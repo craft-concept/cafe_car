@@ -33,7 +33,7 @@ module CafeCar
           attr_writer name if writer
           option_defaults[name] = default
           define_method("#{name}?") { instance_variable_get("@#{name}").present? } if presence
-          define_singleton_method(name) {|v| option_defaults[name] = v } if macro
+          define_singleton_method(name) { |v| option_defaults[name] = v } if macro
         end
       end
 

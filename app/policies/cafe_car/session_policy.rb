@@ -9,7 +9,7 @@ module CafeCar
     def title_attribute = :user
 
     def permitted_attributes
-      [:email, :password]
+      [ :email, :password ]
     end
 
     class Scope < Scope

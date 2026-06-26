@@ -6,7 +6,7 @@ class ArticlePolicy < ApplicationPolicy
   def destroy? = update?
 
   def permitted_attributes
-    [:title, :author_id, :published_at, :summary, :body]
+    [ :title, :author_id, :published_at, :summary, :body ]
   end
 
   class Scope < Scope

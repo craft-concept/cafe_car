@@ -9,14 +9,14 @@ class CafeCar::ParamParser
   end
 
   def params(params)
-    params.map {|k, v| k.split('.').reverse.reduce(value(v)) { {_2 => _1} } }
+    params.map { |k, v| k.split(".").reverse.reduce(value(v)) { { _2 => _1 } } }
           .reduce({}) { _1.deep_merge(_2, &method(:merge)) }
           .with_indifferent_access
   end
 
   def merge(_, a, b)
     if a.is_a?(Array) || b.is_a?(Array)
-      [*Array.wrap(a), *Array.wrap(b)]
+      [ *Array.wrap(a), *Array.wrap(b) ]
     else
       b
     end
@@ -26,10 +26,10 @@ class CafeCar::ParamParser
     case v
     when Array      then v.map { value(_1) }
     when Hash       then params(v).tap { _1.merge!(_1.delete("")) if _1[""] }
-    when '""', "''" then ''
-    when 'nil', ''  then nil
+    when '""', "''" then ""
+    when "nil", ""  then nil
     when /[{}\[\]]/ then value(JSON.parse(v))
-    when /,/        then value(v.split(','))
+    when /,/        then value(v.split(","))
     when /^(.*?)\.\.(\.?)(.*)$/
       begin
         Range.new(value($1), value($3), $2.present?)

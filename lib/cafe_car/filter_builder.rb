@@ -8,7 +8,7 @@ module CafeCar
     end
 
     def model      = @objects.klass
-    def to_key     = [model_name.param_key, :filters]
+    def to_key     = [ model_name.param_key, :filters ]
     def to_model   = self
     def persisted? = false
     def errors     = Hash.new([])

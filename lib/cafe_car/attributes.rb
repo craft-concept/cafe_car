@@ -4,7 +4,7 @@ class CafeCar::Attributes
   def initialize(user, object, permitted_attributes)
     @user      = user
     @object    = object
-    @permitted = [*permitted_attributes]
+    @permitted = [ *permitted_attributes ]
     process_attributes!
   end
 

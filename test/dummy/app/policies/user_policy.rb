@@ -11,9 +11,9 @@ class UserPolicy < ApplicationPolicy
 
   def permitted_attributes
     if object.try(:new_record?) or me?
-      [:name, :email, :avatar, :password, :password_confirmation]
+      [ :name, :email, :avatar, :password, :password_confirmation ]
     else
-      [:name, :email, :avatar]
+      [ :name, :email, :avatar ]
     end
   end
 

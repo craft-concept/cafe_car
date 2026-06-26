@@ -4,7 +4,7 @@ class Admin::ClientsControllerTest < ActionDispatch::IntegrationTest
   test "clients index" do
     get "/admin/clients"
 
-    assert_select '.Page_Title', 'Clients'
+    assert_select ".Page_Title", "Clients"
   end
 
   test "missing params" do
@@ -14,22 +14,22 @@ class Admin::ClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "validation errors" do
-    post "/admin/clients", params: {client: {a: 1}}
+    post "/admin/clients", params: { client: { a: 1 } }
 
     assert_response :unprocessable_content
-    assert_select '.Field_Error', "can't be blank"
+    assert_select ".Field_Error", "can't be blank"
   end
 
   test "clients create" do
-    post "/admin/clients", params: {client: {name: "Bob", owner_id: create(:user).id}}
+    post "/admin/clients", params: { client: { name: "Bob", owner_id: create(:user).id } }
     follow_redirect!
 
-    assert_select '.Page_Title', 1
+    assert_select ".Page_Title", 1
   end
 
   test "client show" do
     client = create(:client)
-    get url_for([:admin, client])
+    get url_for([ :admin, client ])
 
     assert_response :success
     assert_select ".Page_Title", 1

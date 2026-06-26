@@ -1,6 +1,6 @@
 class CafeCar::Filter::FieldInfo < CafeCar[:FieldInfo]
   def i18n(key, **opts)
-    I18n.t(@method, scope: [:helpers, :filter, key, i18n_key], raise: true, **opts)
+    I18n.t(@method, scope: [ :helpers, :filter, key, i18n_key ], raise: true, **opts)
   rescue I18n::MissingTranslationData
   end
 

@@ -6,7 +6,7 @@ module CafeCar
     def const!(name) = self.class.const!(name)
 
     class_methods do
-      def const_scopes = [self, *module_parents]
+      def const_scopes = [ self, *module_parents ]
 
       def [](const_name) = const(const_name)
 

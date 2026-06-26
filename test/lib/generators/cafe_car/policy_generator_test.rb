@@ -8,7 +8,7 @@ class CafeCar::PolicyGeneratorTest < Rails::Generators::TestCase
 
   test "generator runs without errors" do
     assert_nothing_raised do
-      run_generator ["admin/payments"]
+      run_generator [ "admin/payments" ]
     end
   end
 end

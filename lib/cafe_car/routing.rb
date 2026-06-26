@@ -11,7 +11,7 @@ module CafeCar
         end
       end
 
-      super(*, **, concerns: [:batchable, *concerns], &)
+      super(*, **, concerns: [ :batchable, *concerns ], &)
     end
   end
 end

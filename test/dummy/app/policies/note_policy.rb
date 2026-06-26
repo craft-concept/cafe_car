@@ -7,7 +7,7 @@ class NotePolicy < ApplicationPolicy
 
 
   def permitted_attributes
-    [:body, :notable_id, :notable_type]
+    [ :body, :notable_id, :notable_type ]
   end
 
   class Scope < Scope

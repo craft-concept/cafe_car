@@ -4,7 +4,6 @@ class CafeCar::InstallGenerator < Rails::Generators::Base
   source_root File.expand_path("templates", __dir__)
 
   def install_deps
-    gem "cnc", github: "craft-concept/cnc"
     gem "bcrypt"
     gem "paper_trail"
     gem "factory_bot_rails"

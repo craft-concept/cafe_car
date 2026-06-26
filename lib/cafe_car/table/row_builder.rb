@@ -33,7 +33,7 @@ module CafeCar::Table
     end
 
     def to_html
-      ui.Row { safe_join [capture(self, &@block), @template.turbo_stream_from(@object)] }
+      ui.Row { safe_join [ capture(self, &@block), @template.turbo_stream_from(@object) ] }
     end
   end
 end

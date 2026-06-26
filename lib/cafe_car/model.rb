@@ -14,8 +14,8 @@ module CafeCar::Model
     def normalize_sort_key(key)
       case key
       when /,/
-        key.split(',').map { normalize_sort_key _1 }
-      when /^-(.+)$/ then {$1 => :desc}
+        key.split(",").map { normalize_sort_key _1 }
+      when /^-(.+)$/ then { $1 => :desc }
       else key
       end
     end

@@ -18,7 +18,7 @@ module CafeCar
     end
 
     def placeholder
-      I18n.t(method, scope: [:helpers, :placeholder, object_name], raise: true).presence
+      I18n.t(method, scope: [ :helpers, :placeholder, object_name ], raise: true).presence
     rescue I18n::MissingTranslationData => _
     end
   end

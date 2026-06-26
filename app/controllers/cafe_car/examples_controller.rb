@@ -12,7 +12,7 @@ module CafeCar
     def index
       @examples = view_context.template_glob("cafe_car/examples/ui/*")
         .map { _1.name.sub(/\..+$/, "") }
-        .to_h { [_1.camelize, "cafe_car/examples/ui/#{_1}"] }
+        .to_h { [ _1.camelize, "cafe_car/examples/ui/#{_1}" ] }
     end
 
     private

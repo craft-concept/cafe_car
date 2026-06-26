@@ -44,8 +44,8 @@ module CafeCar
       end
 
       def append_cafe_car_views
-        append_view_path CafeCar::Engine.root.join('app/views/cafe_car')
-        append_view_path 'app/views/cafe_car'
+        append_view_path CafeCar::Engine.root.join("app/views/cafe_car")
+        append_view_path "app/views/cafe_car"
       end
 
       def define_callbacks_with_helpers(*names, **)
@@ -162,13 +162,13 @@ module CafeCar
     def model_name = model.model_name
 
     def model
-      @model ||= self.class.name.gsub(/.*::|Controller$/, '')
+      @model ||= self.class.name.gsub(/.*::|Controller$/, "")
                                 .classify
                                 .then { self.class.module_parent.const_get _1 }
     end
 
     def render_invalid_object
-      render(object.persisted? ? 'edit' : 'new', status: :unprocessable_content)
+      render(object.persisted? ? "edit" : "new", status: :unprocessable_content)
     end
 
     def render_unauthorized
@@ -198,7 +198,7 @@ module CafeCar
       # permitted_attributes is record-oriented, so ask a record for the column
       # list even when serializing a collection.
       record = obj.is_a?(CafeCar::Model) ? obj : obj.klass.new
-      options[:only] ||= [:id] | policy(record).displayable_attributes
+      options[:only] ||= [ :id ] | policy(record).displayable_attributes
 
       if obj.is_a?(CafeCar::Model)
         options[:include] ||= policy(obj).displayable_associations

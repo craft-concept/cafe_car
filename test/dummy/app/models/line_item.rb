@@ -3,5 +3,5 @@ class LineItem < ApplicationRecord
 
   broadcasts_refreshes
 
-  def amount = super || [*price, *quantity].reduce(&:*)
+  def amount = super || [ *price, *quantity ].reduce(&:*)
 end

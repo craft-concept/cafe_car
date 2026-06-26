@@ -4,7 +4,6 @@ PATH
     cafe_car (0.1.2)
       activerecord_where_assoc (>= 1.3)
       chronic (>= 0.10)
-      cnc
       faker (>= 3.0)
       haml-rails (>= 3.0)
       image_processing (>= 1.13)
@@ -432,7 +431,6 @@ DEPENDENCIES
   brakeman
   cafe_car!
   chrome_devtools_rails
-  cnc
   factory_bot_rails
   faker
   hotwire-livereload
@@ -442,6 +440,7 @@ DEPENDENCIES
   paper_trail
   puma
   rouge
+  rubocop-rails-omakase
   solid_cable
   sqlite3
   web-console

@@ -25,16 +25,16 @@ module CafeCar
 
         def flag(flag)
           include Module.new do
-            define_method(flag) {|v| @options[flag] = v.nil? ? true : v }
+            define_method(flag) { |v| @options[flag] = v.nil? ? true : v }
           end
         end
 
         def option(name, default: nil, accessor: true, reader: accessor, writer: accessor, presence: accessor, macro: accessor)
           option_defaults[name] = default
-          define_singleton_method(name) {|v| option_defaults[name] = v } if macro
+          define_singleton_method(name) { |v| option_defaults[name] = v } if macro
           include Module.new {
             define_method(name) { options[name] } if reader
-            define_method("#{name}=") {|v| options[name] = v } if writer
+            define_method("#{name}=") { |v| options[name] = v } if writer
             define_method("#{name}?") { options[name].present? } if presence
           }
         end
@@ -57,7 +57,7 @@ module CafeCar
 
     def initialize(template, name, *args, **attributes, &block)
       @template   = template
-      @names      = [*name].map(&:underscore)
+      @names      = [ *name ].map(&:underscore)
       @flags      = args.extract! { _1.is_a? Symbol }
       @args       = args.flatten.compact_blank
       @attributes = attributes.with_defaults!(attribute_defaults)
@@ -78,11 +78,11 @@ module CafeCar
     def ancestor_href? = options[:href]&.then { @template.ancestor_href?(_1) }
 
     def data
-      super.merge({tip:}.compact_blank)
+      super.merge({ tip: }.compact_blank)
     end
 
     def partial?     = @template.partial?(partial_name)
-    def partial_name = 'ui/' + @names.join('_')
+    def partial_name = "ui/" + @names.join("_")
 
     def render_partial
       render(partial_name, options:, flags:, name => self, **options) { content }
@@ -103,7 +103,7 @@ module CafeCar
     end
 
     def children
-      @children.map {|name, content| send(name) { content } }
+      @children.map { |name, content| send(name) { content } }
     end
 
     def blank?
@@ -115,7 +115,7 @@ module CafeCar
     end
 
     def content
-      @content ||= safe_join [*children, *@args, *(capture(self, &@block) if @block)]
+      @content ||= safe_join [ *children, *@args, *(capture(self, &@block) if @block) ]
     end
 
     def context(&)
@@ -127,7 +127,7 @@ module CafeCar
     end
 
     def ~@    = @template.concat(self)
-    def +(o)  = safe_join([self, o])
+    def +(o)  = safe_join([ self, o ])
     def <<(o) = @template.concat(o)
 
     def html_safe? = true
@@ -141,7 +141,7 @@ module CafeCar
 
     def child(name, ...)
       c = self.class.try { const_defined?(name) ? const_get(name) : Component }
-      c.new(@template, [*@names, name], ...)
+      c.new(@template, [ *@names, name ], ...)
     end
 
     def method_missing(name, ...)

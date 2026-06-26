@@ -10,12 +10,12 @@ module CafeCar::Filter
       dotted_name method
     end
 
-    def clean(method) = method.to_s.sub(/^\W+|\W+$/, '')
+    def clean(method) = method.to_s.sub(/^\W+|\W+$/, "")
     def info(method)  = super(clean(method))
 
     def field_name(*methods, multiple: false, index: @options[:index])
       # TODO: handle multiple/index
-      ["", *methods].join(".")
+      [ "", *methods ].join(".")
     end
   end
 end

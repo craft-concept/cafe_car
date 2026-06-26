@@ -41,13 +41,13 @@ module CafeCar::Policy
 
   def displayable_associations
     model.reflections.values
-         .select {|a| !a.options[:autosave] && !a.options[:polymorphic] }
+         .select { |a| !a.options[:autosave] && !a.options[:polymorphic] }
          .reject { _1.class_name =~ /^ActiveStorage::/ }
          .map    { _1.name.to_sym }
   end
 
   def permitted_attribute_keys
-    permitted_attributes.flat_map {|a| a.try(:keys) || a }
+    permitted_attributes.flat_map { |a| a.try(:keys) || a }
   end
 
   def permitted_association?(name)

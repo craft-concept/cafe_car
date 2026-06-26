@@ -7,10 +7,10 @@ class ActiveStorage::AttachmentPolicy < ApplicationPolicy
 
   def permitted_attributes = []
   def displayable_attributes
-    super - [:record]
+    super - [ :record ]
   end
   def listable_attributes
-    super - [:record_id]
+    super - [ :record_id ]
   end
 
   class Scope < Scope

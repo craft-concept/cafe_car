@@ -32,7 +32,7 @@ module CafeCar
     end
 
     def persist_session
-      cookies.signed.permanent[:session_id] = {value: current_session.id, httponly: true, same_site: :lax}
+      cookies.signed.permanent[:session_id] = { value: current_session.id, httponly: true, same_site: :lax }
     end
 
     def find_session_by_cookie

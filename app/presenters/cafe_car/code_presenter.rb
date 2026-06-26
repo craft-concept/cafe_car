@@ -12,7 +12,7 @@ module CafeCar
     end
 
     def to_html
-      ui.Code(formatted.html_safe, class: ['highlight', lexer.tag])
+      ui.Code(formatted.html_safe, class: [ "highlight", lexer.tag ])
     end
   end
 end

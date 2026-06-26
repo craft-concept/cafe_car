@@ -8,7 +8,7 @@ FactoryBot.define do
     password_confirmation { @pw }
     avatar do
       file = AVATARS.sample
-      {io: file.open, filename: file.basename.to_s, content_type: "image/svg+xml"}
+      { io: file.open, filename: file.basename.to_s, content_type: "image/svg+xml" }
     end
   end
 
@@ -40,7 +40,7 @@ FactoryBot.define do
     client     { Client.sample or create(:client) }
     sender     { client.owner }
     issued_on  { Date.today - rand(-30..1000) }
-    due_on     { issued_on + [30, 60, 90].sample }
+    due_on     { issued_on + [ 30, 60, 90 ].sample }
     note       { Faker::Lorem.paragraph }
   end
 

@@ -15,7 +15,7 @@ module CafeCar::Generators
     template("#{name}.rb", "app/models/#{name}.rb", ...)
   end
 
-  def class_namespace = class_path.join('/').classify
+  def class_namespace = class_path.join("/").classify
 
   def module_namespacing(&block)
     super { concat wrap_with_module(class_namespace, &block) }

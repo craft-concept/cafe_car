@@ -8,7 +8,7 @@ class InvoicePolicy < ApplicationPolicy
   def title_attribute = :number
 
   def permitted_attributes
-    [*(:client_id if object.new_record?), :number, :issued_on, :note, line_items: policy(LineItem).permitted_attributes]
+    [ *(:client_id if object.new_record?), :number, :issued_on, :note, line_items: policy(LineItem).permitted_attributes ]
   end
 
   class Scope < Scope

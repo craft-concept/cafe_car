@@ -1,2 +1,6 @@
 inherit_gem:
-  cnc: rubocop.yml
+  rubocop-rails-omakase: rubocop.yml
+
+AllCops:
+  Exclude:
+    - test/dummy/tmp/**/*

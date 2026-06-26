@@ -6,7 +6,6 @@ gem "minitest", "~> 5.0"
 gem "mutex_m"
 
 gem "bcrypt"
-gem "cnc" # , github: "craft-concept/cnc", branch: "main"
 gem "brakeman"
 gem "puma"
 gem "sqlite3"
@@ -18,6 +17,7 @@ gem "faker"
 gem "rouge"
 
 group :development do
+  gem "rubocop-rails-omakase"
   gem "web-console"
   gem "hotwire-livereload"
   gem "better_errors"

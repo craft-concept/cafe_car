@@ -76,7 +76,7 @@ module CafeCar
 
     initializer "cafe_car.responders" do
       require "responders"
-      config.responders.flash_keys = [:success, :error]
+      config.responders.flash_keys = [ :success, :error ]
     end
 
     initializer "cafe_car.field_with_errors" do
@@ -85,7 +85,7 @@ module CafeCar
 
     initializer "cafe_car.console" do |app|
       app.console do
-        TOPLEVEL_BINDING.eval('self').instance_exec do
+        TOPLEVEL_BINDING.eval("self").instance_exec do
           def logger = Rails.logger
 
           if defined?(FactoryBot)
@@ -93,7 +93,7 @@ module CafeCar
             logger.info "FactoryBot methods enabled."
           end
 
-          logger.info 'SQL logs enabled.'
+          logger.info "SQL logs enabled."
 
           ApplicationController.allow_forgery_protection = false
           logger.info "CSRF disabled to enable app.post calls."

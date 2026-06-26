@@ -10,7 +10,7 @@ module CafeCar
       end
 
       def style
-        style = [*@style]
+        style = [ *@style ]
         style << "grid-template: #{template}" if template?
         style << "grid-template-columns: #{columns}" if columns?
         style.compact_blank.join("; ").presence
@@ -20,7 +20,7 @@ module CafeCar
         case @columns
         in Numeric
           "repeat(#{@columns}, 1fr)"
-        in [a, b]
+        in [ a, b ]
           "repeat(auto-fill, minmax(#{a}, #{b}))"
         else @columns
         end

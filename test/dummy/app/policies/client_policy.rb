@@ -6,7 +6,7 @@ class ClientPolicy < ApplicationPolicy
   def destroy? = update?
 
   def permitted_attributes
-    [:name, :owner_id]
+    [ :name, :owner_id ]
   end
 
   class Scope < Scope
