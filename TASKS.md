@@ -36,6 +36,140 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ---
 
+## 🟠 Engineering
+
+- [ ] (P1) Write CHANGELOG.md
+        Roadmap item #1. A changelog is a baseline trust signal and a release prerequisite.
+
+        - Adopt Keep a Changelog format + semver. Reconstruct entries from git history for
+          released versions (0.1.x) and an `[Unreleased]` section for current work.
+        - Point `cafe_car.gemspec` `changelog_uri` at the file (currently points at repo root).
+        - Keep it current as part of every future release (see [[gemspec-release-polish]]).
+- [ ] (P1) Investigate cnc dependency, recommend keep or drop
+        Owner asked for a keep-or-drop recommendation on the `cnc` dependency.
+
+        - **New finding:** `cnc` is NOT private — it's a public RubyGems package (v0.1.13, ~4.5k
+          downloads, MIT), authored by the owner (Jeff Peterson), source at
+          github.com/craft-concept/cnc. The AGENTS.md "private cnc" premise is stale. So it does
+          NOT block installation; the question is whether the coupling is worth it.
+        - Document exactly what CafeCar uses from cnc. Known: `.rubocop.yml` does
+          `inherit_gem: cnc: rubocop.yml` (shared lint config); the `--ensure-latest` binstub
+          convention likely came from cnc too. Audit `lib/`/`app/` for `Cnc`/`cnc` usage.
+        - Recommend: keep (document the coupling), inline the small bits we use, or drop. Weigh
+          adoption friction (extra transitive dep, owner-controlled) vs. maintenance cost.
+        - Deliver the recommendation to the owner via QUESTIONS.md / holdco, not just a reply.
+- [ ] (P1) Fix the half-baked features (auth/sessions first)
+        Stabilize the features the audit flags as broken/incomplete. Stability is half of the
+        "ship + trust" mission — a feature that 500s is worse than a missing one.
+
+        - Depends on [[feature-audit-v1-scope]] for the authoritative list.
+        - Known hot spots from git history: sessions/auth (unpersisted-session 500s, signed-out
+          user scope, singular-resource login URLs). Verify these are fully fixed with tests.
+        - Every fix lands with a regression test. `rake` green before push.
+        - Anything that can't reach v1 quality gets cut from scope (documented in V1_SCOPE), not
+          shipped broken.
+- [ ] (P1) Polish gemspec for a credible v0.1.2 release
+        Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's
+        RubyGems key). Make the gem metadata release-grade.
+
+        - `summary` and `description` are both "Rails UI and admin panels." — write a real,
+          distinct description that sells the auto-CRUD value prop.
+        - `changelog_uri` should point at CHANGELOG.md (see [[changelog]]); verify `homepage`
+          (`https://concept.love/cafe_car`) resolves or update it.
+        - Add `required_ruby_version` / metadata (`rubygems_mfa_required`, `bug_tracker_uri`).
+        - Pin/declare dependency version floors instead of bare `add_dependency "rails"` etc.,
+          so resolution is predictable for adopters. Coordinate with [[cnc-keep-or-drop]].
+        - Do NOT bump the version or publish without explicit owner approval — flag readiness via
+          QUESTIONS.md / holdco.
+
+## 🧭 Product
+
+- [ ] (P1) Milestone — CafeCar usable for CrayonBloom back-office
+        Owner milestone: make CafeCar good enough to power CrayonBloom's back-office (dogfooding).
+        Dogfooding is the fastest way to surface real gaps and earn credibility ("we run our own
+        business on it").
+
+        - Enumerate what CrayonBloom's back-office needs (resources, auth, roles, filtering,
+          exports) and map to CafeCar capabilities; the deltas become Eng tasks.
+        - Strongest forcing function for [[fix-halfbaked-features]] and v1 scope.
+        - Owner input likely needed on CrayonBloom requirements — capture open questions in
+          QUESTIONS.md.
+- [ ] (P1) Audit feature completeness and define v1 scope
+        Inventory every advertised feature in `README.md` against what actually works, so we
+        can declare an honest v1 surface and stop shipping half-baked features.
+
+        - Cross-check each README feature (CRUD generation, presenters, components, forms,
+          filtering/sorting, auth/sessions, generators) against the engine code + test coverage.
+        - Recent churn signals instability around **sessions/auth** (commits: "fix 500s on
+          unpersisted-session show", "fix singular-resource URLs so session login form renders",
+          "refactor and start on sessions") — treat auth as the prime suspect for "half-baked."
+        - Output: a `V1_SCOPE.md` (or section) listing IN / OUT / NEEDS-WORK per feature, with
+          rationale. Feeds [[fix-halfbaked-features]] and the README accuracy pass.
+        - This is the gate before any launch push — don't market features that 500.
+
+## 📣 Marketing & GTM
+
+- [ ] (P1) README badges + fix inaccuracies
+        The README is the storefront. Add credibility badges and remove statements that don't
+        match reality (false promises erode trust faster than missing features).
+
+        - Badges: CI status, gem version (RubyGems), license, maybe downloads.
+        - Accuracy pass against [[feature-audit-v1-scope]]: e.g. the install section claims the
+          generator adds `bcrypt, paper_trail, factory_bot_rails` — verify against the actual
+          generator + gemspec (gemspec does not declare paper_trail/factory_bot). Fix mismatches.
+        - Confirm Rails/Ruby version floors in "Prerequisites" match the gemspec/CI matrix.
+- [ ] (P2) Discoverability — Awesome Rails, RubyFlow, launch post
+        Roadmap item #6. Visibility is the other half of the mission. Sequence this AFTER ship +
+        trust (green CI, hygiene docs, working v1, live demo) so first impressions land well.
+
+        - Submit to the Awesome Ruby / Awesome Rails lists.
+        - List on Ruby Toolbox; post on RubyFlow.
+        - Write a launch blog post (the "Rails should render something by default" thesis is a
+          strong hook) and share where Rails devs gather.
+        - Depends on [[docs-site-live-demo]] for the demo link to point at.
+- [ ] (P2) Docs site + live clickable demo
+        Roadmap item #5. The single highest-converting trust artifact: let skeptics evaluate
+        CafeCar without installing it.
+
+        - Live demo: the `test/dummy` app already exists and CI even screenshots `/articles` —
+          deploy a seeded instance (Railway is wired into this session) so people can click
+          around real auto-generated CRUD.
+        - Docs site: GitHub Pages from the README to start; expand later.
+        - Gate on [[feature-audit-v1-scope]] so the demo only exposes v1-quality features.
+
+## 🛟 Ops & Support
+
+- [ ] (P1) Make CI rubocop a check-only gate, stop auto-PR noise
+        The CI `rubocop` job runs `bin/rubocop -Af github` then opens a "Rubocop Autocorrections
+        on main" PR every push (currently sitting as an `action_required` PR). Autocorrecting in
+        CI and spamming PRs looks amateurish on a public repo and hides real lint failures
+        (the job passes even when code is unformatted).
+
+        - Change the job to a check-only gate: `bin/rubocop -f github` (no `-A`, no
+          create-pull-request step) so unformatted code fails CI honestly.
+        - Close/clean the stale auto-generated rubocop PR(s) and the `rubocop/main` branch.
+        - Keep formatting enforced locally via `rake` (already green).
+        - While here: CI uses deprecated Node20 actions — bump checkout/setup actions if cheap.
+- [ ] (P1) Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY
+        Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
+        adopters look for; their absence reads as "unmaintained."
+
+        - `CONTRIBUTING.md` — dev setup (`bin/setup`, `rake`), how to run the dummy app/tests,
+          PR expectations, the one-file-per-task backlog convention.
+        - `CODE_OF_CONDUCT.md` — Contributor Covenant, owner email as contact (jeff@yak.sh).
+        - `SECURITY.md` — supported versions + private disclosure address. Coordinate with the
+          brakeman posture already in CI.
+        - Expand the thin README "Contributing" section to link these.
+- [ ] (P2) Add GitHub issue and PR templates
+        Roadmap item #4 (templates). Lowers the friction for first-time contributors and keeps
+        issues actionable.
+
+        - `.github/ISSUE_TEMPLATE/` — bug report + feature request forms (repro, Rails/Ruby
+          versions, expected vs actual).
+        - `.github/pull_request_template.md` — checklist (tests added, `rake` green, CHANGELOG
+          updated, docs touched).
+        - Depends loosely on [[oss-hygiene-docs]] for the CONTRIBUTING link.
+
 ---
 
 ## 🚧 Blocked on the user
