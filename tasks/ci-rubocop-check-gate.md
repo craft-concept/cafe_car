@@ -2,9 +2,10 @@
 id: ci-rubocop-check-gate
 title: Make CI rubocop a check-only gate, stop auto-PR noise
 priority: P1
-status: open
+status: done
 domain: Ops
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 The CI `rubocop` job runs `bin/rubocop -Af github` then opens a "Rubocop Autocorrections

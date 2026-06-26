@@ -32,19 +32,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with: {bundler-cache: true}
-      - run: bin/rubocop -Af github
-      - uses: peter-evans/create-pull-request@v7.0.5
-        # if: github.event == push
-        with:
-          base: ${{ github.ref_name }}
-          branch: rubocop/${{ github.ref_name }}
-          title: Rubocop Autocorrections on ${{ github.ref_name }}
-      # - if: github.event == pull_request
-      #   run: git commit -am "rubocop fixes" && git push
-      #   with:
-      #     base: ${{ github.base_ref }}
-      #     branch: rubocop/${{ github.ref_name }}
-      #     title: Rubocop Autocorrections on ${{ github.ref_name }}
+      # Check-only gate: fail on offenses, don't autocorrect-and-open-a-PR. Formatting is
+      # enforced locally via `rake`; CI should report lint honestly, not silently fix it.
+      - run: bin/rubocop -f github
 
   test:
     runs-on: ubuntu-latest

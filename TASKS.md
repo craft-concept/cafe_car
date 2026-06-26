@@ -45,11 +45,18 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         Authoritative list is now in `V1_SCOPE.md` (8 IN / 7 NEEDS-WORK / 2 OUT). Concrete
         must-fix items from the audit, highest leverage first:
 
-        1. **Latent 500 / auth coupling (top priority).** `Authentication` is force-included into
-           every CRUD `Controller` (`app/.../controller.rb:8`), so a host app that uses CafeCar
-           for plain CRUD but has no sessions table is one unauthorized request from a 500.
-           Decouple `Authentication` from the mandatory `Controller` include. Pairs with the
-           product decision on whether sessions ships as experimental (see QUESTIONS.md).
+        1. **Latent 500 / auth coupling (top priority).** `Controller` unconditionally
+           `include`s `Authentication` (`lib/cafe_car/controller.rb:8`), and crucially
+           `render_unauthorized` (controller.rb:174) calls the concern's `authenticated?` /
+           `request_authentication`; the latter `redirect_to new_session_path` — **a route the
+           engine never defines**. So any Pundit denial in a CRUD-only host (no sessions
+           table/route, e.g. a signed-out user hitting a `false` policy) 500s. NOTE: the fix is
+           NOT just removing the include — `render_unauthorized` depends on those methods. The
+           **direction-independent** fix is graceful degradation: respond 403 (head :forbidden /
+           generic unauthorized) when the login route + Session model aren't configured, and only
+           redirect-to-login when they are. This removes the 500 regardless of the sessions
+           product decision (see QUESTIONS.md). Land with a test simulating a CRUD-only host
+           (dummy app controller without sessions infra) that gets 403, not 500.
         2. **`sessions` generator** lies in its USAGE (claims model + policy; creates only a
            migration). Fix it to match, or cut the generator.
         3. **README false advertising** (also tracked in [[readme-badges-accuracy]]):
@@ -103,15 +110,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ## 📣 Marketing & GTM
 
-- [~] (P1) README badges + fix inaccuracies
-        The README is the storefront. Add credibility badges and remove statements that don't
-        match reality (false promises erode trust faster than missing features).
-
-        - Badges: CI status, gem version (RubyGems), license, maybe downloads.
-        - Accuracy pass against [[feature-audit-v1-scope]]: e.g. the install section claims the
-          generator adds `bcrypt, paper_trail, factory_bot_rails` — verify against the actual
-          generator + gemspec (gemspec does not declare paper_trail/factory_bot). Fix mismatches.
-        - Confirm Rails/Ruby version floors in "Prerequisites" match the gemspec/CI matrix.
 - [ ] (P2) Discoverability — Awesome Rails, RubyFlow, launch post
         Roadmap item #6. Visibility is the other half of the mission. Sequence this AFTER ship +
         trust (green CI, hygiene docs, working v1, live demo) so first impressions land well.
@@ -133,17 +131,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ## 🛟 Ops & Support
 
-- [ ] (P1) Make CI rubocop a check-only gate, stop auto-PR noise
-        The CI `rubocop` job runs `bin/rubocop -Af github` then opens a "Rubocop Autocorrections
-        on main" PR every push (currently sitting as an `action_required` PR). Autocorrecting in
-        CI and spamming PRs looks amateurish on a public repo and hides real lint failures
-        (the job passes even when code is unformatted).
-
-        - Change the job to a check-only gate: `bin/rubocop -f github` (no `-A`, no
-          create-pull-request step) so unformatted code fails CI honestly.
-        - Close/clean the stale auto-generated rubocop PR(s) and the `rubocop/main` branch.
-        - Keep formatting enforced locally via `rake` (already green).
-        - While here: CI uses deprecated Node20 actions — bump checkout/setup actions if cheap.
 - [ ] (P2) Add GitHub issue and PR templates
         Roadmap item #4 (templates). Lowers the friction for first-time contributors and keeps
         issues actionable.
@@ -193,9 +180,11 @@ the user on these.
 
 Short memory aid only — git history is the full record. Trim as this grows.
 
+- README badges + fix inaccuracies — The README is the storefront. Add credibility badges and remove statements that don't
 - Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY — Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
 - Audit feature completeness and define v1 scope — Inventory every advertised feature in `README.md` against what actually works, so we
 - Resolve Dependabot vulnerabilities (1 critical, 14 high) — GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default
 - Investigate cnc dependency, recommend keep or drop — Owner asked for a keep-or-drop recommendation on the `cnc` dependency.
+- Make CI rubocop a check-only gate, stop auto-PR noise — The CI `rubocop` job runs `bin/rubocop -Af github` then opens a "Rubocop Autocorrections
 - Write CHANGELOG.md — Roadmap item #1. A changelog is a baseline trust signal and a release prerequisite.
 

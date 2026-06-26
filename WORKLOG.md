@@ -5,6 +5,32 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Pass 3: README honesty + CI gate cleanup
+
+**Shipped (all on `main`, CI green):**
+- **README accuracy + badges** (`7ab7903`, delegated) — fixed the false-advertising
+  (`f.field(...).errors`→`.error`, `normalized_sort_key`→`normalize_sort_key`), corrected
+  the install gem-list and Prerequisites to honest tested versions (Ruby 3.3+/Rails 8.0+),
+  added CI/gem-version/license badges. Auth stack correctly left undocumented (experimental).
+- **CI rubocop gate cleanup** (conductor, this commit) — the job ran `rubocop -Af github`
+  and opened a "Rubocop Autocorrections on main" PR on every push (amateur-looking on a
+  public repo, and it masked real lint failures). Switched to a check-only gate
+  (`rubocop -f github`), removed the create-pull-request step, and deleted the stale
+  `rubocop/main` branch.
+
+**Sharpened diagnosis (for the auth fix):** the latent 500 is more entangled than "remove
+the include" — `render_unauthorized` itself calls the Authentication concern and redirects
+to `new_session_path`, a route the engine never defines. The direction-independent fix is
+graceful 403 degradation when sessions aren't configured. Recorded in
+`fix-halfbaked-features`.
+
+**Next pass:** the auth graceful-403 fix (owner-independent bug fix, but I'll likely wait
+for the sessions product direction before deciding how far to wire login); `retro-tag-releases`;
+then `gemspec-release-polish` toward a credible (owner-gated) v0.1.x publish. Owner-gated:
+cnc inline/demote, sessions direction.
+
+---
+
 ## 2026-06-26 — Pass 2: security cleanup + honest v1 scope
 
 **Shipped (all on `main`, CI green):**
