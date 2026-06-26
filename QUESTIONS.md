@@ -82,3 +82,14 @@ is yours:
 3. **Cut it entirely** — remove the sessions stack from the gem for now.
 
 Which direction? This gates `fix-halfbaked-features` and the v1 launch scope.
+
+## Minor: gem `homepage` returns 404
+
+`cafe_car.gemspec` sets `homepage = "https://concept.love/cafe_car"`, which currently
+**404s** (the domain resolves, the path doesn't). A published gem with a dead homepage
+link is a small trust ding on its RubyGems page. The gem already exposes
+`source_code_uri` → the GitHub repo, so it's not catastrophic. Options:
+1. Stand up `concept.love/cafe_car` (branding home — your call).
+2. Repoint `homepage` to the GitHub repo (or the RubyGems page) for now.
+
+I left it as-is rather than guess at your branding. Say the word and I'll repoint it.

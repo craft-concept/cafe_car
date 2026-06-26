@@ -5,6 +5,26 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Pass 4: release-prep polish
+
+**Shipped (on `main`, CI green):**
+- **Retroactive release tags** `v0.1.1` (`d73eb6f`) / `v0.1.2` (`256f822`) so the CHANGELOG
+  compare/release links resolve. Tags only — not a publish.
+- **gemspec release-polish** (`333754b`, delegated) — replaced the placeholder
+  summary/description with a real value-prop pitch, added `required_ruby_version >= 3.3`,
+  conservative `>=` floors on the direct deps (matching the lockfile), and
+  `rubygems_mfa_required` + `bug_tracker_uri` metadata. `cnc`/`potter` left bare (pre-1.0).
+  Completes roadmap item #2 **prep** — everything short of the owner-gated `gem push`.
+
+**Flagged for the owner (QUESTIONS.md):** the gem `homepage` (`concept.love/cafe_car`)
+404s — stand up the page or repoint to GitHub (left as-is, didn't guess at branding).
+
+**State:** 9 tasks done. Remaining unblocked: auth graceful-403 fix, `github-templates`,
+`triage-pr-11`. Owner-gated: cnc inline/demote, sessions direction, homepage, the actual
+publish, CrayonBloom dogfood requirements.
+
+---
+
 ## 2026-06-26 — Pass 3: README honesty + CI gate cleanup
 
 **Shipped (all on `main`, CI green):**

@@ -72,19 +72,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Every fix lands with a regression test. `rake` green before push.
         - Anything that can't reach v1 quality gets cut/labeled experimental (per V1_SCOPE), not
           shipped broken.
-- [~] (P1) Polish gemspec for a credible v0.1.2 release
-        Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's
-        RubyGems key). Make the gem metadata release-grade.
-
-        - `summary` and `description` are both "Rails UI and admin panels." — write a real,
-          distinct description that sells the auto-CRUD value prop.
-        - `changelog_uri` should point at CHANGELOG.md (see [[changelog]]); verify `homepage`
-          (`https://concept.love/cafe_car`) resolves or update it.
-        - Add `required_ruby_version` / metadata (`rubygems_mfa_required`, `bug_tracker_uri`).
-        - Pin/declare dependency version floors instead of bare `add_dependency "rails"` etc.,
-          so resolution is predictable for adopters. Coordinate with [[cnc-keep-or-drop]].
-        - Do NOT bump the version or publish without explicit owner approval — flag readiness via
-          QUESTIONS.md / holdco.
 
 ## 🧭 Product
 
@@ -174,6 +161,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - Retroactively tag v0.1.1 and v0.1.2 releases — The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
 - README badges + fix inaccuracies — The README is the storefront. Add credibility badges and remove statements that don't
 - Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY — Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
+- Polish gemspec for a credible v0.1.2 release — Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's
 - Audit feature completeness and define v1 scope — Inventory every advertised feature in `README.md` against what actually works, so we
 - Resolve Dependabot vulnerabilities (1 critical, 14 high) — GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default
 - Investigate cnc dependency, recommend keep or drop — Owner asked for a keep-or-drop recommendation on the `cnc` dependency.
