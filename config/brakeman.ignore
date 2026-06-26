@@ -3,7 +3,7 @@
     {
       "warning_type": "Dangerous Eval",
       "warning_code": 13,
-      "fingerprint": "2ffb4292b2c37c7f06711cbbc3f7c0a7d62fd147d4743f141d26ab7be2418c76",
+      "fingerprint": "9f7c27406a84219ad1d93b07b8c1acd435ad75921861a85a647e32f3d07d1289",
       "check_name": "Evaluation",
       "message": "Dynamic string evaluated as code",
       "file": "lib/cafe_car/auto_resolver.rb",
@@ -73,5 +73,5 @@
       "note": ""
     }
   ],
-  "brakeman_version": "8.0.2"
+  "brakeman_version": "8.0.4"
 }

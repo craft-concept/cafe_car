@@ -60,10 +60,10 @@ namespace :tasks do
     "Legal" => "Legal & Compliance", "Ops" => "Ops & Support"
   }.freeze unless defined?(HEADING)
 
-  CHECKBOX_TO_STATUS = { " " => "open", "~" => "wip", "x" => "done", "!" => "blocked" }.freeze unless defined?(CHECKBOX_TO_STATUS)
-  STATUS_TO_CHECKBOX = { "open" => " ", "wip" => "~", "done" => "x", "blocked" => "!" }.freeze unless defined?(STATUS_TO_CHECKBOX)
-  STATUS_ORDER      = { "open" => 0, "wip" => 1, "blocked" => 2, "done" => 3 }.freeze           unless defined?(STATUS_ORDER)
-  PRIORITY_ORDER    = { "P0" => 0, "P1" => 1, "P2" => 2 }.freeze                               unless defined?(PRIORITY_ORDER)
+  CHECKBOX_TO_STATUS = {" " => "open", "~" => "wip", "x" => "done", "!" => "blocked"}.freeze unless defined?(CHECKBOX_TO_STATUS)
+  STATUS_TO_CHECKBOX = {"open" => " ", "wip" => "~", "done" => "x", "blocked" => "!"}.freeze unless defined?(STATUS_TO_CHECKBOX)
+  STATUS_ORDER      = {"open" => 0, "wip" => 1, "blocked" => 2, "done" => 3}.freeze           unless defined?(STATUS_ORDER)
+  PRIORITY_ORDER    = {"P0" => 0, "P1" => 1, "P2" => 2}.freeze                               unless defined?(PRIORITY_ORDER)
 
   # Untriaged tasks (created via the editor flow) carry this sentinel for
   # priority *and* domain until the operating agent assigns real values. They
@@ -76,31 +76,31 @@ namespace :tasks do
     module_function
 
     def files
-      Dir.glob(File.join(TASKS_DIR, "*.md")).reject { |p| File.basename(p).start_with?("_") }.sort
+      Dir.glob(File.join(TASKS_DIR, "*.md")).reject {|p| File.basename(p).start_with?("_") }.sort
     end
 
-    def all = files.map { |path| read(path) }
+    def all = files.map {|path| read(path) }
 
     # => { meta: {string keys}, body: "..", path: ".." }
     def read(path)
       raw = File.read(path)
       if raw.start_with?("---\n")
         _, fm, body = raw.split(/^---\n/, 3)
-        meta = YAML.safe_load(fm, permitted_classes: [ Date ]) || {}
+        meta = YAML.safe_load(fm, permitted_classes: [Date]) || {}
       else
         meta = {}
         body = raw
       end
-      { meta: meta.transform_keys(&:to_s).transform_values { |v| v.is_a?(Date) ? v.iso8601 : v },
-        body: body.to_s.strip, path: path }
+      {meta: meta.transform_keys(&:to_s).transform_values {|v| v.is_a?(Date) ? v.iso8601 : v },
+        body: body.to_s.strip, path:}
     end
 
     def write(id:, meta:, body:)
       FileUtils.mkdir_p(TASKS_DIR)
       order = %w[id title priority status domain created updated blocked_on]
       fm = {}
-      order.each { |k| fm[k] = meta[k] unless meta[k].nil? || meta[k] == "" }
-      meta.each { |k, v| fm[k] = v unless order.include?(k) || v.nil? || v == "" }
+      order.each {|k| fm[k] = meta[k] unless meta[k].nil? || meta[k] == "" }
+      meta.each {|k, v| fm[k] = v unless order.include?(k) || v.nil? || v == "" }
       path = File.join(TASKS_DIR, "#{id}.md")
       File.write(path, "#{YAML.dump(fm)}---\n\n#{body.strip}\n")
       path
@@ -129,7 +129,7 @@ namespace :tasks do
 
   def sort_key(task)
     m = task[:meta]
-    [ PRIORITY_ORDER.fetch(m["priority"], 9), STATUS_ORDER.fetch(m["status"], 9), m["id"].to_s ]
+    [PRIORITY_ORDER.fetch(m["priority"], 9), STATUS_ORDER.fetch(m["status"], 9), m["id"].to_s]
   end
 
   def untriaged?(task) = task[:meta]["priority"] == UNTRIAGED || task[:meta]["domain"] == UNTRIAGED
@@ -149,14 +149,14 @@ namespace :tasks do
     body = task[:body].to_s.strip
     body = "" if body == PLACEHOLDER_BODY
     lines = body.lines.map(&:rstrip)
-    nonblank = lines.reject { |l| l.strip.empty? }
+    nonblank = lines.reject {|l| l.strip.empty? }
 
     if nonblank.size == 1 && lines.size == 1
       out << " — #{nonblank.first.strip}"
       out << "\n"
     else
       out << "\n"
-      lines.each { |l| out << (l.strip.empty? ? "\n" : "        #{l}\n") }
+      lines.each {|l| out << (l.strip.empty? ? "\n" : "        #{l}\n") }
     end
     out
   end
@@ -208,11 +208,11 @@ namespace :tasks do
   # body is clean markdown; tasks:index re-indents it consistently). Nesting is
   # preserved relative to the shallowest line.
   def dedent(lines)
-    present = lines.reject { |l| l.strip.empty? }
+    present = lines.reject {|l| l.strip.empty? }
     return lines if present.empty?
 
-    min = present.map { |l| l[/\A */].length }.min
-    lines.map { |l| l.strip.empty? ? "" : l[min..] }
+    min = present.map {|l| l[/\A */].length }.min
+    lines.map {|l| l.strip.empty? ? "" : l[min..] }
   end
 
   # Parse the current TASKS.md into [{checkbox, priority, title, body, domain, section}].
@@ -255,7 +255,7 @@ namespace :tasks do
           section = :shipped
         elsif key.include?("how to use") || key.include?("task format")
           section = :skip
-        elsif (d = DOMAIN_FROM_HEADING[key] || DOMAIN_FROM_HEADING.find { |k, _| key.start_with?(k) }&.last)
+        elsif (d = DOMAIN_FROM_HEADING[key] || DOMAIN_FROM_HEADING.find {|k, _| key.start_with?(k) }&.last)
           section = :domain
           domain = d
         else
@@ -274,14 +274,14 @@ namespace :tasks do
 
       if (m = line.match(/\A- \[(.)\] (?:\((P\d)\) )?(.*)\z/))
         finish.call
-        current = { checkbox: m[1], priority: m[2], title_line: m[3], extra: [],
-                    section: section, domain: domain }
+        current = {checkbox: m[1], priority: m[2], title_line: m[3], extra: [],
+                    section:, domain:}
       elsif section == :shipped && (m = line.match(/\A- (.+)\z/))
         # Recently-shipped entries are checkbox-less one-liners; capture each as a
         # done task so its text isn't lost.
         finish.call
-        current = { checkbox: "x", priority: nil, title_line: m[1], extra: [],
-                    section: section, domain: domain }
+        current = {checkbox: "x", priority: nil, title_line: m[1], extra: [],
+                    section:, domain:}
       elsif current
         current[:extra] << line
       end
@@ -336,10 +336,10 @@ namespace :tasks do
       priority = item[:priority] || "P1"
 
       id = Store.slug_for(title)
-      meta = { "id" => id, "title" => title, "priority" => priority, "status" => status,
-               "domain" => domain, "created" => created }
+      meta = {"id" => id, "title" => title, "priority" => priority, "status" => status,
+               "domain" => domain, "created" => created}
       meta["blocked_on"] = "user" if item[:section] == :blocked
-      Store.write(id: id, meta: meta, body: body)
+      Store.write(id:, meta:, body:)
       count += 1
     end
 
@@ -356,39 +356,39 @@ namespace :tasks do
 
     # Untriaged tasks (editor flow) surface at the very top so the agent assigns
     # priority + domain. They live in no domain section until triaged.
-    needs_triage = tasks.select { |t| untriaged?(t) && t[:meta]["status"] != "done" }
-                        .sort_by { |t| t[:meta]["created"].to_s }
+    needs_triage = tasks.select {|t| untriaged?(t) && t[:meta]["status"] != "done" }
+                        .sort_by {|t| t[:meta]["created"].to_s }
     unless needs_triage.empty?
       out << "## 🆕 Needs triage\n\n"
       out << "New tasks (created via `rake task`) awaiting priority + domain. Triage with\n" \
              "`rake tasks:triage[id,P1,Eng]`, then they move into a domain section below.\n\n"
-      needs_triage.each { |t| out << render_line(t) }
+      needs_triage.each {|t| out << render_line(t) }
       out << "\n---\n\n"
     end
 
-    by_domain = tasks.group_by { |t| t[:meta]["domain"] }
+    by_domain = tasks.group_by {|t| t[:meta]["domain"] }
     DOMAINS.each do |domain|
       group = (by_domain[domain] || [])
-              .reject { |t| t[:meta]["status"] == "done" || t[:meta]["blocked_on"] }
-              .sort_by { |t| sort_key(t) }
+              .reject {|t| t[:meta]["status"] == "done" || t[:meta]["blocked_on"] }
+              .sort_by {|t| sort_key(t) }
       next if group.empty?
 
       out << "## #{domain_heading(domain)}\n\n"
-      group.each { |t| out << render_line(t) }
+      group.each {|t| out << render_line(t) }
       out << "\n"
     end
 
     out << "---\n\n## 🚧 Blocked on the user\n\n"
     out << "Surfaced here so they're not lost in the sections above. Do the autonomous work; nudge\n" \
            "the user on these.\n\n"
-    tasks.select { |t| t[:meta]["blocked_on"] }.sort_by { |t| sort_key(t) }
-         .each { |t| out << render_line(t) }
+    tasks.select {|t| t[:meta]["blocked_on"] }.sort_by {|t| sort_key(t) }
+         .each {|t| out << render_line(t) }
     out << "\n"
 
     out << "---\n\n## Recently shipped\n\n"
     out << "Short memory aid only — git history is the full record. Trim as this grows.\n\n"
-    tasks.select { |t| t[:meta]["status"] == "done" }
-         .sort_by { |t| [ [ t[:meta]["updated"].to_s, t[:meta]["created"].to_s ].max, t[:meta]["id"].to_s ] }
+    tasks.select {|t| t[:meta]["status"] == "done" }
+         .sort_by {|t| [[t[:meta]["updated"].to_s, t[:meta]["created"].to_s].max, t[:meta]["id"].to_s] }
          .reverse
          .each do |t|
       summary = t[:body].to_s.lines.first.to_s.strip
@@ -419,13 +419,13 @@ namespace :tasks do
   # line is the title; everything after it (minus comment lines) is the body.
   # Returns ["", ""] for an empty/all-comment buffer (caller treats as abort).
   def parse_task_input(text)
-    lines = text.to_s.lines.map(&:rstrip).reject { |l| l.lstrip.start_with?("#") }
+    lines = text.to_s.lines.map(&:rstrip).reject {|l| l.lstrip.start_with?("#") }
     lines.shift while lines.first&.strip&.empty?   # drop leading blanks
-    return [ "", "" ] if lines.empty?
+    return ["", ""] if lines.empty?
 
     title = lines.shift.strip
     body = lines.join("\n").strip
-    [ title, body ]
+    [title, body]
   end
 
   # Open $VISUAL/$EDITOR (fallback: vi) on a tempfile prefilled with `template`,
@@ -439,7 +439,7 @@ namespace :tasks do
     return nil if editor.empty?
 
     require "tempfile"
-    Tempfile.create([ "task", ".md" ]) do |f|
+    Tempfile.create(["task", ".md"]) do |f|
       f.write(template)
       f.flush
       system("#{editor} #{f.path}") || abort("Editor #{editor.inspect} exited non-zero; aborting.")
@@ -457,7 +457,7 @@ namespace :tasks do
       # default — the operating agent triages priority/domain later. TITLE/BODY
       # env are the non-interactive fallback (CI, no $EDITOR).
       buffer = edit_in_editor(EDITOR_TEMPLATE)
-      title, body = buffer ? parse_task_input(buffer) : [ "", "" ]
+      title, body = buffer ? parse_task_input(buffer) : ["", ""]
       title = (title.presence || ENV["TITLE"]).to_s.strip
       body = (body.presence || ENV["BODY"]).to_s.strip
       abort "No title — nothing created. (Set EDITOR, or pass TITLE=… / rake tasks:new[\"title\"].)" if title.empty?
@@ -473,9 +473,9 @@ namespace :tasks do
 
     id = Store.slug_for(title)
     Store.write(
-      id: id, body: body.to_s.strip,
-      meta: { "id" => id, "title" => title, "priority" => priority, "status" => "open",
-              "domain" => domain, "created" => Date.today.iso8601 }
+      id:, body: body.to_s.strip,
+      meta: {"id" => id, "title" => title, "priority" => priority, "status" => "open",
+              "domain" => domain, "created" => Date.today.iso8601}
     )
     Rake::Task["tasks:index"].invoke
     puts "Created tasks/#{id}.md#{" (needs triage)" if priority == UNTRIAGED}"
@@ -492,32 +492,32 @@ namespace :tasks do
     task[:meta]["priority"] = priority
     task[:meta]["domain"] = domain
     task[:meta]["updated"] = Date.today.iso8601
-    Store.write(id: id, meta: task[:meta], body: task[:body])
+    Store.write(id:, meta: task[:meta], body: task[:body])
     Rake::Task["tasks:index"].invoke
     puts "Triaged #{id} -> #{priority} / #{domain}."
   end
 
   desc "Claim a task (status: wip): rake tasks:claim[id]"
-  task :claim, [ :id ] do |_t, args|
+  task :claim, [:id] do |_t, args|
     id = (args[:id] || ENV["ID"]).to_s.strip
     abort "Usage: rake tasks:claim[id]" if id.empty?
     task = Store.find(id)
     task[:meta]["status"] = "wip"
     task[:meta]["updated"] = Date.today.iso8601
-    Store.write(id: id, meta: task[:meta], body: task[:body])
+    Store.write(id:, meta: task[:meta], body: task[:body])
     Rake::Task["tasks:index"].invoke
     puts "Claimed #{id}."
   end
 
   desc "Mark a task done: rake tasks:done[id]"
-  task :done, [ :id ] do |_t, args|
+  task :done, [:id] do |_t, args|
     id = (args[:id] || ENV["ID"]).to_s.strip
     abort "Usage: rake tasks:done[id]" if id.empty?
     task = Store.find(id)
     task[:meta]["status"] = "done"
     task[:meta]["updated"] = Date.today.iso8601
     task[:meta].delete("blocked_on")
-    Store.write(id: id, meta: task[:meta], body: task[:body])
+    Store.write(id:, meta: task[:meta], body: task[:body])
     Rake::Task["tasks:index"].invoke
     puts "Marked #{id} done."
   end
