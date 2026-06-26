@@ -17,8 +17,9 @@ key, GitHub secret rotation) are tracked as blockers, not reasons to stall.
 
 - **`README.md`** — the canonical feature overview, installation guide, and usage reference.
   Read this first; don't duplicate it here.
-- **`cafe_car.gemspec`** — gem metadata, version, dependencies (including the private `cnc` gem
-  that must be resolved before wide OSS adoption).
+- **`cafe_car.gemspec`** — gem metadata, version, dependencies. Note `cnc` is the owner's
+  own **public** gem (not private); the open question is whether its runtime coupling earns
+  its keep — see `QUESTIONS.md` and the `cnc-inline-and-demote` task.
 - **`lib/`** — gem source: `lib/cafe_car/` for the engine internals, `lib/generators/` for
   Rails generators.
 - **`app/`** — engine's app layer: controllers, helpers, views, presenters, form builders.
@@ -35,8 +36,9 @@ The conductor's focus is adoption and trust. Key milestones:
 1. **CHANGELOG** — write a `CHANGELOG.md` documenting what's in each version.
 2. **Publish v0.1.2** — blocked on the user providing the RubyGems publish key; prep everything
    else (gemspec clean, CHANGELOG current, tests green, tag ready).
-3. **Resolve the `cnc` dependency** — `cnc` is private; document what it provides, decide
-   whether to open-source it, inline it, or stub it with a public replacement.
+3. **Resolve the `cnc` dependency** — `cnc` is a public gem, so it doesn't block install.
+   Investigation done (see `QUESTIONS.md`): recommendation is to inline the two core-ext
+   methods CafeCar uses and demote `cnc` to a dev dependency. Awaiting owner ratification.
 4. **OSS hygiene** — `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, GitHub issue +
    PR templates, README badges (CI status, gem version, license).
 5. **Docs site + live demo** — a docs site (GitHub Pages or similar) with a live, clickable
