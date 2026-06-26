@@ -2,7 +2,7 @@
 id: cut-cnc-switch-to-omakase
 title: Cut cnc wholesale; switch rubocop to rails-omakase; homepage to GH Pages
 priority: P1
-status: wip
+status: done
 domain: Eng
 created: '2026-06-26'
 updated: '2026-06-26'

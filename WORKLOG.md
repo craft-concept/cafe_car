@@ -5,6 +5,29 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Pass 6: owner decisions — cut cnc, omakase, Pages
+
+Owner ratified the pending decisions (cut cnc wholesale; rubocop→rails-omakase; sessions
+optional AND finished; homepage→GitHub Pages). Reshaped the backlog accordingly.
+
+**Shipped (on `main`, `rake` green):**
+- **Cut cnc wholesale + rubocop→omakase** (`4387c07`, delegated) — inlined the two methods
+  CafeCar used (`Hash#extract_if!`, `Module#define_class`) into `core_ext/`, removed the
+  dep from gemspec + Gemfile + install generator, switched `.rubocop.yml` to inherit
+  `rubocop-rails-omakase` (autocorrected 278 offenses across ~73 files, zero hand-fixes),
+  and repointed `homepage` to GitHub Pages. cnc grep-clean; tests 51/0.
+- **GitHub Pages landing page** (this commit) — `docs/` landing page + enabling Pages so
+  the new homepage URL resolves (partial progress on [[docs-site-live-demo]]; the live
+  clickable demo remains).
+
+**Flag for owner:** cnc still resolves **transitively via `potter`** (potter → cnc) in
+`Gemfile.lock` — out of CafeCar's own deps, but if you want cnc gone from the install tree
+entirely, `potter` would need the same treatment.
+
+**Next:** Build 2 — `sessions-optional-and-finish` (graceful 403 + complete the feature).
+
+---
+
 ## 2026-06-26 — Pass 5: GitHub templates
 
 **Shipped (on `main`, CI green):** issue forms (`bug_report.yml`, `feature_request.yml`),

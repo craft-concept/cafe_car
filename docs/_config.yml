@@ -1,0 +1,4 @@
+title: CafeCar
+description: Auto-generate CRUD admin UI for your Rails models, with sensible overridable defaults.
+theme: jekyll-theme-cayman
+show_downloads: false
