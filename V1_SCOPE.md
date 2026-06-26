@@ -1,5 +1,11 @@
 # CafeCar v1 Scope
 
+> **Update 2026-06-26:** since this audit, **sessions/auth has been made optional AND
+> finished** (engine routes, configurable `user_class_name`, honest generator, README docs,
+> tests; CRUD-only hosts now 403 instead of 500). The "OUT / EXPERIMENTAL" verdict on
+> sessions below is superseded — it's now opt-in and supported. Also: `cnc` was cut
+> wholesale and rubocop moved to rails-omakase. The rest of the audit stands.
+
 > Evidence-based feature audit. Current version: `0.1.2` (`lib/cafe_car/version.rb`).
 > Tree state at audit: `bundle exec rake` is **green** — RuboCop clean (187 files),
 > 51 runs / 80 assertions / 0 failures, Brakeman 0 warnings.

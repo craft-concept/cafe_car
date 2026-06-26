@@ -24,7 +24,24 @@ optional AND finished; homepage→GitHub Pages). Reshaped the backlog accordingl
 `Gemfile.lock` — out of CafeCar's own deps, but if you want cnc gone from the install tree
 entirely, `potter` would need the same treatment.
 
-**Next:** Build 2 — `sessions-optional-and-finish` (graceful 403 + complete the feature).
+**Sessions — optional AND finished** (`f4b1fda` Part A, `d91d2a1` Part B, delegated):
+- **Optional / 500 fix:** `render_unauthorized` now `head :forbidden` when sessions aren't
+  available (`CafeCar.sessions_available?` = login route exists AND sessions table exists,
+  **fails closed** via rescue). CRUD-only hosts get a clean 403, not a 500. Reviewed the
+  auth path directly — it fails closed, no access leak. Also fixed a latent i18n 500 in the
+  login redirect.
+- **Finished:** engine `resource :session` routes; configurable host user via
+  `CafeCar.user_class_name` (default `"User"`); logout action; honest generator + USAGE;
+  README "Sessions & Authentication" section. 9 new tests (51 → 60). `rake` + CI green.
+- Conductor fixed a one-line stale code comment (`user_class` → `user_class_name`) and
+  noted the supersession in `V1_SCOPE.md`.
+
+**All four owner decisions are now shipped.** Homepage verified live (HTTP 200 at
+craft-concept.github.io/cafe_car).
+
+**Next:** remaining backlog — `triage-pr-11`, `docs-site-live-demo` (live demo beyond the
+landing page), `discoverability-launch`, `dogfood-crayonbloom` (needs owner requirements).
+Owner-gated: the `gem push` itself, and whether to chase cnc out of the `potter` transitive.
 
 ---
 

@@ -20,7 +20,7 @@ module CafeCar
   def self.use_relative_model_naming? = true
 
   # Name of the host application's user model. Hosts with a differently named
-  # user model can override this (e.g. `CafeCar.user_class = "Account"`).
+  # user model can override this (e.g. `CafeCar.user_class_name = "Account"`).
   mattr_accessor :user_class_name, default: "User"
 
   # The host's user model, resolved lazily so the constant need not exist at

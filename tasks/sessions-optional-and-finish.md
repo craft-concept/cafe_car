@@ -2,9 +2,10 @@
 id: sessions-optional-and-finish
 title: Make sessions optional AND finish the feature
 priority: P1
-status: open
+status: done
 domain: Eng
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 Owner ratified (QUESTIONS.md): sessions/auth should be **both optional and finished** — a
