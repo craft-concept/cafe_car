@@ -103,7 +103,7 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ## 📣 Marketing & GTM
 
-- [ ] (P1) README badges + fix inaccuracies
+- [~] (P1) README badges + fix inaccuracies
         The README is the storefront. Add credibility badges and remove statements that don't
         match reality (false promises erode trust faster than missing features).
 

@@ -2,9 +2,10 @@
 id: readme-badges-accuracy
 title: README badges + fix inaccuracies
 priority: P1
-status: open
+status: wip
 domain: Marketing
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 The README is the storefront. Add credibility badges and remove statements that don't
