@@ -2,9 +2,10 @@
 id: github-templates
 title: Add GitHub issue and PR templates
 priority: P2
-status: open
+status: done
 domain: Ops
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 Roadmap item #4 (templates). Lowers the friction for first-time contributors and keeps

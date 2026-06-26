@@ -109,15 +109,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ## 🛟 Ops & Support
 
-- [ ] (P2) Add GitHub issue and PR templates
-        Roadmap item #4 (templates). Lowers the friction for first-time contributors and keeps
-        issues actionable.
-
-        - `.github/ISSUE_TEMPLATE/` — bug report + feature request forms (repro, Rails/Ruby
-          versions, expected vs actual).
-        - `.github/pull_request_template.md` — checklist (tests added, `rake` green, CHANGELOG
-          updated, docs touched).
-        - Depends loosely on [[oss-hygiene-docs]] for the CONTRIBUTING link.
 - [ ] (P2) Triage stale draft PR
         Open draft PR #11 "Render nested fields for has_many with accepts_nested_attributes_for"
         (Copilot-authored, March 2026) has sat unattended for months. A stale open PR signals an
@@ -161,6 +152,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - Retroactively tag v0.1.1 and v0.1.2 releases — The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
 - README badges + fix inaccuracies — The README is the storefront. Add credibility badges and remove statements that don't
 - Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY — Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
+- Add GitHub issue and PR templates — Roadmap item #4 (templates). Lowers the friction for first-time contributors and keeps
 - Polish gemspec for a credible v0.1.2 release — Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's
 - Audit feature completeness and define v1 scope — Inventory every advertised feature in `README.md` against what actually works, so we
 - Resolve Dependabot vulnerabilities (1 critical, 14 high) — GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default

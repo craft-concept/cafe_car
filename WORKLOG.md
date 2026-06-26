@@ -5,6 +5,18 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Pass 5: GitHub templates
+
+**Shipped (on `main`, CI green):** issue forms (`bug_report.yml`, `feature_request.yml`),
+issue-template `config.yml` (routes security reports to SECURITY.md, questions to the
+README), and a `pull_request_template.md` with the `rake`-green / tests / CHANGELOG
+checklist. Completes OSS-hygiene roadmap item #4. **10 tasks done.**
+
+Remaining unblocked: auth graceful-403 fix, `triage-pr-11`. Owner-gated: cnc inline/demote,
+sessions direction, homepage 404, the publish, CrayonBloom dogfood requirements.
+
+---
+
 ## 2026-06-26 — Pass 4: release-prep polish
 
 **Shipped (on `main`, CI green):**
