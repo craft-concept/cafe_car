@@ -38,18 +38,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ## 🟠 Engineering
 
-- [ ] (P1) Resolve Dependabot vulnerabilities (1 critical, 14 high)
-        GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default
-        branch (surfaced on push 2026-06-26). For a gem selling "trust," advertising a stack full
-        of known CVEs to every adopter is a direct contradiction of the mission.
-
-        - Review the Dependabot alerts (`gh api repos/craft-concept/cafe_car/dependabot/alerts`
-          or the Security tab). Triage critical/high first.
-        - Bump vulnerable gems via `bundle update <gem>`; keep `rake` green after each.
-        - Many will be transitive — check whether bumping direct deps (rails, etc.) clears them.
-        - Consider enabling Dependabot version-update PRs so this stays maintained.
-        - Coordinate with [[gemspec-release-polish]] (version floors) and [[cnc-keep-or-drop]]
-          (cnc drags extra transitive deps into prod).
 - [ ] (P1) Fix the half-baked features (auth/sessions first)
         Stabilize the features the audit flags as broken/incomplete. Stability is half of the
         "ship + trust" mission — a feature that 500s is worse than a missing one.
@@ -73,6 +61,18 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
           so resolution is predictable for adopters. Coordinate with [[cnc-keep-or-drop]].
         - Do NOT bump the version or publish without explicit owner approval — flag readiness via
           QUESTIONS.md / holdco.
+- [~] (P1) Resolve Dependabot vulnerabilities (1 critical, 14 high)
+        GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default
+        branch (surfaced on push 2026-06-26). For a gem selling "trust," advertising a stack full
+        of known CVEs to every adopter is a direct contradiction of the mission.
+
+        - Review the Dependabot alerts (`gh api repos/craft-concept/cafe_car/dependabot/alerts`
+          or the Security tab). Triage critical/high first.
+        - Bump vulnerable gems via `bundle update <gem>`; keep `rake` green after each.
+        - Many will be transitive — check whether bumping direct deps (rails, etc.) clears them.
+        - Consider enabling Dependabot version-update PRs so this stays maintained.
+        - Coordinate with [[gemspec-release-polish]] (version floors) and [[cnc-keep-or-drop]]
+          (cnc drags extra transitive deps into prod).
 - [ ] (P2) Retroactively tag v0.1.1 and v0.1.2 releases
         The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
         gemspec's release provenance) don't resolve. Tag the already-published versions
@@ -95,7 +95,7 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Strongest forcing function for [[fix-halfbaked-features]] and v1 scope.
         - Owner input likely needed on CrayonBloom requirements — capture open questions in
           QUESTIONS.md.
-- [ ] (P1) Audit feature completeness and define v1 scope
+- [~] (P1) Audit feature completeness and define v1 scope
         Inventory every advertised feature in `README.md` against what actually works, so we
         can declare an honest v1 surface and stop shipping half-baked features.
 

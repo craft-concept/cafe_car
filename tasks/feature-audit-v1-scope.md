@@ -2,9 +2,10 @@
 id: feature-audit-v1-scope
 title: Audit feature completeness and define v1 scope
 priority: P1
-status: open
+status: wip
 domain: Product
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 Inventory every advertised feature in `README.md` against what actually works, so we
