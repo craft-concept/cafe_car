@@ -508,6 +508,76 @@ CafeCar::Current.ip_address     # IP address
 Set in controllers via `set_current_attributes` (automatically called by
 `cafe_car`).
 
+## Sessions & Authentication
+
+Sessions are **opt-in**. CafeCar works for plain CRUD with no login at all: when
+a policy denies access and no sessions infrastructure is present, the request
+gets a plain **403 Forbidden** instead of redirecting to a login page that
+doesn't exist. Authorization (Pundit policies) is always on; *authentication*
+(knowing who the user is) is the part you turn on when you want it.
+
+### Enabling sessions
+
+1. **Run the generator** to add the `sessions` table:
+
+   ```bash
+   $ rails generate cafe_car:sessions
+   $ rails db:migrate
+   ```
+
+   The `CafeCar::Session` model and `SessionPolicy` ship with the engine, so the
+   generator only creates the migration (columns: `user`, `ip_address`,
+   `user_agent`).
+
+2. **Expose the routes.** Mounting the engine already provides them. To expose
+   login at the top level without mounting, add to `config/routes.rb`:
+
+   ```ruby
+   resource :session, only: %i[new create destroy], controller: "cafe_car/sessions"
+   ```
+
+   This gives you `new_session_path` (login form) and `session_path` (create via
+   `POST`, log out via `DELETE`).
+
+3. **Prepare your user model.** It needs `has_secure_password` and an `email`:
+
+   ```ruby
+   class User < ApplicationRecord
+     has_secure_password
+     has_many :sessions, dependent: :destroy, class_name: "CafeCar::Session"
+   end
+   ```
+
+4. **Different user model name?** Set it in an initializer (resolved lazily):
+
+   ```ruby
+   # config/initializers/cafe_car.rb
+   CafeCar.user_class_name = "Account"
+   ```
+
+Once sessions are available, an authorization failure for a signed-out visitor
+redirects to the login form (remembering where they were headed) instead of
+returning 403.
+
+### Helpers
+
+These are available in controllers and views:
+
+- `authenticated?` - truthy when someone is logged in
+- `current_user` - the logged-in user (or `nil`)
+- `current_session` - the current `CafeCar::Session`
+
+```erb
+<% if authenticated? %>
+  Signed in as <%= current_user.email %>
+<% else %>
+  <%= link_to "Log in", new_session_path %>
+<% end %>
+```
+
+Logging in (`POST /session` with `session[:email]`/`session[:password]`) sets a
+signed, http-only cookie; logging out (`DELETE /session`) clears it.
+
 ## Generators
 
 ### Resource Generator
@@ -547,6 +617,17 @@ Creates:
 - Migration for notes table
 - `Note` model
 - `Notable` concern for trackable models
+
+### Sessions Generator
+
+Enable opt-in login/logout (see [Sessions & Authentication](#sessions--authentication)):
+
+```bash
+$ rails generate cafe_car:sessions
+```
+
+Creates the `sessions` table migration. The `CafeCar::Session` model and
+`SessionPolicy` already ship with the engine.
 
 ## Configuration
 

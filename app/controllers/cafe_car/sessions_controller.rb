@@ -14,6 +14,11 @@ module CafeCar
       respond_with object, location: after_authentication_url
     end
 
+    def destroy
+      run_callbacks(:destroy) { object.destroy! }
+      respond_with object, location: main_app.root_path
+    end
+
     private
 
     def find_object

@@ -1,9 +1,17 @@
 Description:
-    Generates a Session resource that enables
+    Enables CafeCar's opt-in login/logout by creating the `sessions` table.
+
+    The Session model (CafeCar::Session) and SessionPolicy ship with the
+    engine, so this generator does NOT create a model or policy -- it only
+    adds the migration for the table they need.
 
 Example:
     bin/rails generate cafe_car:sessions
 
-    This will create:
-        app/models/session.rb
-        app/policies/session_policy.rb
+    This creates:
+        db/migrate/XXXXXXXX_create_sessions.rb   (user, ip_address, user_agent)
+
+    After running, migrate and expose the session routes (mounting the engine
+    does this automatically, or add `resource :session, only: %i[new create
+    destroy], controller: "cafe_car/sessions"`). If your user model isn't
+    `User`, set `CafeCar.user_class_name` in an initializer.

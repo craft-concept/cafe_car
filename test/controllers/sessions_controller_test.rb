@@ -32,4 +32,20 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_predicate cookies[:session_id], :present?
   end
+
+  test "logout destroys the session and clears the cookie" do
+    sign_in
+    assert_predicate cookies[:session_id], :present?
+
+    delete "/session"
+
+    assert_response :redirect
+    assert_nil cookies[:session_id].presence
+  end
+
+  test "the engine also provides the session route when mounted" do
+    get "/admin/session/new"
+
+    assert_response :success
+  end
 end
