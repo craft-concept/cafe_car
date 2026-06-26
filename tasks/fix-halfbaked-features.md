@@ -13,18 +13,9 @@ Stabilize the features the audit flags as broken/incomplete. Stability is half o
 Authoritative list is now in `V1_SCOPE.md` (8 IN / 7 NEEDS-WORK / 2 OUT). Concrete
 must-fix items from the audit, highest leverage first:
 
-1. **Latent 500 / auth coupling (top priority).** `Controller` unconditionally
-   `include`s `Authentication` (`lib/cafe_car/controller.rb:8`), and crucially
-   `render_unauthorized` (controller.rb:174) calls the concern's `authenticated?` /
-   `request_authentication`; the latter `redirect_to new_session_path` — **a route the
-   engine never defines**. So any Pundit denial in a CRUD-only host (no sessions
-   table/route, e.g. a signed-out user hitting a `false` policy) 500s. NOTE: the fix is
-   NOT just removing the include — `render_unauthorized` depends on those methods. The
-   **direction-independent** fix is graceful degradation: respond 403 (head :forbidden /
-   generic unauthorized) when the login route + Session model aren't configured, and only
-   redirect-to-login when they are. This removes the 500 regardless of the sessions
-   product decision (see QUESTIONS.md). Land with a test simulating a CRUD-only host
-   (dummy app controller without sessions infra) that gets 403, not 500.
+1. **Auth/sessions (latent 500) — now its own task: [[sessions-optional-and-finish]].**
+   Owner ratified making sessions optional AND finishing it; that work (graceful 403 +
+   completing the feature) is tracked there, not here.
 2. **`sessions` generator** lies in its USAGE (claims model + policy; creates only a
    migration). Fix it to match, or cut the generator.
 3. **README false advertising** (also tracked in [[readme-badges-accuracy]]):

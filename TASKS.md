@@ -45,18 +45,9 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         Authoritative list is now in `V1_SCOPE.md` (8 IN / 7 NEEDS-WORK / 2 OUT). Concrete
         must-fix items from the audit, highest leverage first:
 
-        1. **Latent 500 / auth coupling (top priority).** `Controller` unconditionally
-           `include`s `Authentication` (`lib/cafe_car/controller.rb:8`), and crucially
-           `render_unauthorized` (controller.rb:174) calls the concern's `authenticated?` /
-           `request_authentication`; the latter `redirect_to new_session_path` — **a route the
-           engine never defines**. So any Pundit denial in a CRUD-only host (no sessions
-           table/route, e.g. a signed-out user hitting a `false` policy) 500s. NOTE: the fix is
-           NOT just removing the include — `render_unauthorized` depends on those methods. The
-           **direction-independent** fix is graceful degradation: respond 403 (head :forbidden /
-           generic unauthorized) when the login route + Session model aren't configured, and only
-           redirect-to-login when they are. This removes the 500 regardless of the sessions
-           product decision (see QUESTIONS.md). Land with a test simulating a CRUD-only host
-           (dummy app controller without sessions infra) that gets 403, not 500.
+        1. **Auth/sessions (latent 500) — now its own task: [[sessions-optional-and-finish]].**
+           Owner ratified making sessions optional AND finishing it; that work (graceful 403 +
+           completing the feature) is tracked there, not here.
         2. **`sessions` generator** lies in its USAGE (claims model + policy; creates only a
            migration). Fix it to match, or cut the generator.
         3. **README false advertising** (also tracked in [[readme-badges-accuracy]]):
@@ -72,6 +63,57 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Every fix lands with a regression test. `rake` green before push.
         - Anything that can't reach v1 quality gets cut/labeled experimental (per V1_SCOPE), not
           shipped broken.
+- [ ] (P1) Make sessions optional AND finish the feature
+        Owner ratified (QUESTIONS.md): sessions/auth should be **both optional and finished** — a
+        CRUD-only host must never 500 for lack of sessions, and the sessions feature should be a
+        real, documented, tested capability for hosts that want it.
+
+        **Part A — make it optional (removes the latent 500).**
+        - `Controller` unconditionally `include`s `Authentication` (`lib/cafe_car/controller.rb:8`),
+          and `render_unauthorized` (controller.rb:174) calls `authenticated?` /
+          `request_authentication`, the latter redirecting to `new_session_path` — a route the
+          engine never defines. Any Pundit denial in a CRUD-only host 500s.
+        - Make the unauthorized path degrade gracefully: respond **403** (head :forbidden / generic
+          unauthorized view) when the sessions/login infrastructure isn't present, and only
+          redirect-to-login when it is. CRUD without sessions must work.
+        - Regression test: a dummy controller with no sessions infra returns 403, not 500, on denial.
+
+        **Part B — finish sessions for hosts that opt in.**
+        - Define the engine session routes (so `new_session_path` etc. resolve) and wire the
+          `sessions_controller` / views coherently.
+        - Make the host `User` coupling configurable instead of hardcoded
+          (`app/models/cafe_car/session.rb:14`) — a config point for the user class/lookup.
+        - Fix the `sessions` generator + its lying USAGE (claims model + policy; creates only a
+          migration) so opting in is a real, documented flow.
+        - Document the sessions/auth/Current stack in the README (currently undocumented).
+        - Tests covering login, logout, authenticated vs. signed-out access, and the opt-in wiring.
+
+        Supersedes item 1 of [[fix-halfbaked-features]]. Land in reviewable chunks; `rake` green
+        throughout. Sequence AFTER [[cut-cnc-switch-to-omakase]] (which resets the lint baseline).
+- [~] (P1) Cut cnc wholesale; switch rubocop to rails-omakase; homepage to GH Pages
+        Owner ratified (QUESTIONS.md): **cut cnc entirely**, use **`rubocop-rails-omakase`** instead
+        of inheriting cnc's lint config, and repoint the gem `homepage` to **GitHub Pages**.
+
+        cnc supplies BOTH the two runtime monkeypatches AND the `.rubocop.yml` config, so these move
+        together in one change:
+
+        1. **Inline the runtime methods.** CafeCar uses exactly `Hash#extract_if!` and
+           `Module#define_class` (verify with a grep for cnc-provided methods before removing). Add
+           `lib/cafe_car/core_ext/hash.rb` and `lib/cafe_car/core_ext/module.rb` (matching the style
+           of the existing `array.rb`), then drop `require "cnc/core_ext"` from
+           `lib/cafe_car/core_ext.rb` (it already globs `core_ext/*.rb`).
+        2. **Remove the dependency.** Delete `spec.add_dependency "cnc"` from `cafe_car.gemspec` and
+           `gem "cnc"` from the `Gemfile`. cnc is gone from runtime AND dev.
+        3. **Rubocop → omakase.** Replace `.rubocop.yml`'s `inherit_gem: cnc: rubocop.yml` with
+           `inherit_gem: { rubocop-rails-omakase: rubocop.yml }`; add `gem "rubocop-rails-omakase"`
+           to the Gemfile dev group. Run `rubocop -A` to settle the new baseline and hand-fix the
+           rest until `rake` is green (omakase's ruleset differs from cnc's — expect some churn).
+        4. **Homepage.** Set gemspec `homepage` to `https://craft-concept.github.io/cafe_car`
+           (standing up the actual Pages site is a separate docs follow-up; see
+           [[docs-site-live-demo]]).
+        5. `rake` green; the dummy app still boots (it relies on `define_class` via `ui`/`component`).
+
+        [[cnc-keep-or-drop]] holds the investigation. This is the execution.
 
 ## 🧭 Product
 
@@ -127,21 +169,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 Surfaced here so they're not lost in the sections above. Do the autonomous work; nudge
 the user on these.
 
-- [ ] (P1) Inline cnc's two core-ext methods, demote cnc to dev dependency
-        Execution of the [[cnc-keep-or-drop]] recommendation (see QUESTIONS.md). Blocked on the
-        owner ratifying the dependency-strategy decision they asked us to recommend on.
-
-        Plan once approved:
-        - Inline `Hash#extract_if!` and `Module#define_class` (~10 lines each, currently from
-          `cnc/core_ext`) into `lib/cafe_car/core_ext/` alongside the existing `array.rb` extras,
-          matching its style.
-        - Drop `require "cnc/core_ext"` from `lib/cafe_car/core_ext.rb`.
-        - Move `cnc` from `add_dependency` to `add_development_dependency` in the gemspec (keeps
-          `.rubocop.yml`'s `inherit_gem: cnc` for contributors; removes rubocop/thor/listen from
-          production installs).
-        - Verify callers: `component.rb:22,64`, `helpers.rb:28`, `ui.rb:8`. `rake` green.
-        - Owner decision points (QUESTIONS.md): inline-and-demote (default) vs. keep-runtime vs.
-          also-inline-the-rubocop-config-and-drop-entirely.
 
 ---
 

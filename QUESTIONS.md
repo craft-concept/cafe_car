@@ -2,6 +2,22 @@
 
 Owner-facing channel for decisions and blockers.
 
+## ✅ Resolved by owner — 2026-06-26
+
+- **cnc:** **Cut wholesale.** Inline the two methods CafeCar uses, remove the dependency
+  entirely (not even dev). → `cut-cnc-switch-to-omakase`.
+- **Rubocop config:** Stop forking via cnc; **use the `rubocop-rails-omakase` template**
+  instead. → folded into `cut-cnc-switch-to-omakase`.
+- **Sessions/auth:** **Make it optional AND finish it** — decouple so CRUD-only hosts don't
+  500, and complete the feature (engine routes, configurable host user, docs, tests).
+  → `sessions-optional-and-finish`.
+- **Homepage:** Repoint the gem `homepage` to **GitHub Pages** (and stand up a Pages site so
+  it resolves). → handled in `cut-cnc-switch-to-omakase` (URL) + docs follow-up (the site).
+
+The original analysis below is retained for reference.
+
+---
+
 ## cnc dependency — keep or drop
 
 ### What cnc provides
