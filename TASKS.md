@@ -72,7 +72,7 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Every fix lands with a regression test. `rake` green before push.
         - Anything that can't reach v1 quality gets cut/labeled experimental (per V1_SCOPE), not
           shipped broken.
-- [ ] (P1) Polish gemspec for a credible v0.1.2 release
+- [~] (P1) Polish gemspec for a credible v0.1.2 release
         Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's
         RubyGems key). Make the gem metadata release-grade.
 

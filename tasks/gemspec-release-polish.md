@@ -2,9 +2,10 @@
 id: gemspec-release-polish
 title: Polish gemspec for a credible v0.1.2 release
 priority: P1
-status: open
+status: wip
 domain: Eng
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's
