@@ -6,9 +6,26 @@ class CafeCar::PolicyGeneratorTest < Rails::Generators::TestCase
   destination Rails.root.join("tmp/generators")
   setup :prepare_destination
 
-  test "generator runs without errors" do
-    assert_nothing_raised do
-      run_generator [ "admin/payments" ]
+  test "creates a namespaced policy inheriting ApplicationPolicy" do
+    run_generator [ "admin/payment" ]
+
+    assert_file "app/policies/admin/payment_policy.rb" do |policy|
+      assert_match(/module Admin/, policy)
+      assert_match(/class Admin::PaymentPolicy < ApplicationPolicy/, policy)
+      assert_match(/def index\?\s+= admin\?/, policy)
+      assert_match(/def destroy\?\s+= update\?/, policy)
+      assert_match(/class Scope < Scope/, policy)
+    end
+  end
+
+  test "lists the permitted attributes passed as arguments" do
+    # --force skips the collision check so we can target a model the dummy app
+    # already defines (permitted_attributes only populates for a real model).
+    run_generator [ "client", "name", "email", "--force" ]
+
+    assert_file "app/policies/client_policy.rb" do |policy|
+      assert_match(/class ClientPolicy < ApplicationPolicy/, policy)
+      assert_match(/\[:name, :email\]/, policy)
     end
   end
 end
