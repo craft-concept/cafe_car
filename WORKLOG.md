@@ -5,6 +5,31 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 20 (self-paced loop): shipped CSV export row cap (DoS hardening)
+
+**Assessed:** CI green, demo healthy, board quiet (no new inbound on the holdco board). 23/26
+tasks done, no untriaged tasks. Remaining backlog is owner-gated (`discoverability-launch` —
+sequenced after publish; v0.2.0 publish itself needs the RubyGems key) or operator-gated
+(`dogfood-crayonbloom`). The one unblocked engineering item was `csv-export-streaming` (P3).
+
+**Shipped — `4f5cdc8` (CI green, `rake` green: 122 runs / 367 assertions / 0 failures, RuboCop
+clean, Brakeman clean):** bounded the `:csv` renderer against unbounded-memory exports. Was
+`Array(collection).each` materializing the whole policy-scoped, un-paginated result set — a
+memory/latency DoS vector on large tables. Now caps at `CafeCar.csv_export_row_limit` (default
+10_000); when truncated it sets `X-CafeCar-Truncated: true` + a `Rails.logger.warn`, no fake CSV
+row so columns stay aligned. Policy-scoped column basis + formula-injection guard untouched.
+
+**Decision:** rejected `find_each`/`in_batches` (the task's first-listed option) — they force
+primary-key ordering and would silently break the export's filtered+sorted order, a correctness
+regression. Limiting the relation preserves order. Cap is configurable for adopters with larger
+admin tables.
+
+**In flight / next:** backlog of unblocked work is drained. v0.2.0 remains release-ready and
+owner-gated on the RubyGems key (QUESTIONS.md). Holding pattern until the key lands or new
+inbound work appears.
+
+---
+
 ## 2026-06-27 — Pass 19 (self-paced loop): steady-state; flagged v0.2.0 release-readiness
 
 **Assessed:** CI green, 0 issues / 0 PRs, demo healthy, board quiet (no new CrayonBloom reqs —
