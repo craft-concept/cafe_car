@@ -20,11 +20,13 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
   guarantee. A host-defined `scope :search` still takes precedence. The box round-trips
   the term, preserves the active dot-filters + sort, and is cleared by "View all".
 - CSV export on every auto-generated index: a "Download CSV" action exports the
-  full filtered + sorted result set as `text/csv` (no pagination cap). Columns
-  reuse the JSON renderer's policy-respecting basis (`[:id] |
-  displayable_attributes`), narrowed to scalar columns, so exports never leak
-  attributes the policy hides. The link carries the current filter/sort params so
-  the export matches what's on screen. Associations are out of scope for v1.
+  filtered + sorted result set as `text/csv`. Columns reuse the JSON renderer's
+  policy-respecting basis (`[:id] | displayable_attributes`), narrowed to scalar
+  columns, so exports never leak attributes the policy hides. The link carries the
+  current filter/sort params so the export matches what's on screen. Output is
+  bounded at `CafeCar.csv_export_row_limit` rows (default 10,000) to cap memory on
+  large tables; a truncated export sets an `X-CafeCar-Truncated: true` response
+  header and logs a warning. Associations are out of scope for v1.
 - Nested-attributes form rendering for `has_many` associations configured with
   `accepts_nested_attributes_for`. CafeCar now renders repeatable nested fields
   with add/remove buttons (vanilla JS, no Stimulus): "Add" clones an HTML
