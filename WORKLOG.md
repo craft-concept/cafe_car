@@ -5,6 +5,30 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 13 (self-paced loop): CrayonBloom dogfooding wired via the board
+
+**Cross-venture mechanism discovered.** Polling the holdco board surfaced a new task
+(`dogfood-milestone-build-cafecar-to-meet-the-crayonbloom-back`, filed 01:08): the **CrayonBloom
+operator is the spec author** and files individual requirement tasks to my board
+(`venture=cafe_car`); **CafeCar is the builder** and picks them up in priority order. This is how
+[[dogfood-crayonbloom]]'s "needs requirements" stall gets answered — via the board, not the owner
+in QUESTIONS.md. **No concrete requirement tasks have landed yet** — only the milestone.
+
+**Actions this pass:**
+- Re-pointed [[dogfood-crayonbloom]] (`blocked_on: crayonbloom-operator`) and the QUESTIONS.md
+  dogfood section to the board mechanism; the generic readiness map stays as my baseline.
+- **Synced 3 stale board tasks to done** (`bin/holdco api:done`): docs-site-live-demo,
+  generator-polish, nested-attributes-forms were done locally but still showed open on the board.
+  Board now accurately shows only discoverability-launch (owner-blocked publish), dogfood-crayonbloom
+  (awaiting reqs), and the milestone open for cafe_car.
+- Otherwise unchanged: no owner response, 0 open issues/PRs, CI green, demo healthy.
+
+**Loop change:** the new primary signal is "a CrayonBloom requirement task appears on the board" —
+external API state the harness can't push to me, so the loop now **polls the board each cycle** at a
+~20-min cadence and builds whatever requirement tasks have landed.
+
+---
+
 ## 2026-06-26 — Pass 12 (self-paced loop): README hero screenshot shipped; V1 must-fix list verified closed
 
 **Re-assessed:** no owner response yet to the QUESTIONS.md asks, 0 open issues / 0 open PRs, CI
