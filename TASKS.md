@@ -44,6 +44,15 @@ Surfaced here so they're not lost in the sections above. Do the autonomous work;
 the user on these.
 
 - [ ] (P1) Milestone — CafeCar usable for CrayonBloom back-office
+        > **Update 2026-06-27:** the requirements mechanism is now defined (holdco board task
+        > `dogfood-milestone-build-cafecar-to-meet-the-crayonbloom-back`, filed 01:08). The
+        > **CrayonBloom operator is the spec author** and will file individual requirement tasks
+        > to my board (`venture=cafe_car`); **I am the builder** — pick them up in priority order
+        > and build the features. So this is no longer blocked on the owner answering QUESTIONS.md;
+        > it's blocked on incoming requirement tasks from the CrayonBloom operator. No concrete
+        > requirement tasks have landed yet (as of this pass) — the loop now polls the board for
+        > them each cycle. The generic readiness map below still stands as my baseline self-assessment.
+
         Owner milestone: make CafeCar good enough to power CrayonBloom's back-office (dogfooding).
         Dogfooding is the fastest way to surface real gaps and earn credibility ("we run our own
         business on it").
@@ -123,6 +132,7 @@ the user on these.
 
 Short memory aid only — git history is the full record. Trim as this grows.
 
+- Add CSV export to resource index actions — Close a headline competitive gap: every comparable admin gem (ActiveAdmin, Avo,
 - Triage stale draft PR — Open draft PR #11 "Render nested fields for has_many with accepts_nested_attributes_for"
 - Make sessions optional AND finish the feature — Owner ratified (QUESTIONS.md): sessions/auth should be **both optional and finished** — a
 - Retroactively tag v0.1.1 and v0.1.2 releases — The repo has no git tags, so the new CHANGELOG.md compare/release links (and the

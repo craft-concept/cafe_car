@@ -5,6 +5,44 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 14 (self-paced loop): CSV export shipped; demo "outage" was a false alarm
+
+**Assessed:** CI green, 0 open issues / 0 PRs. Board ([[dogfood-crayonbloom]] mechanism) shows
+**no new CrayonBloom requirement tasks** — the primary loop signal hasn't fired. Both tracked
+tasks remain blocked: [[discoverability-launch]] (owner go/no-go) and dogfood (CrayonBloom
+operator files reqs). Local backlog otherwise drained; roadmap items done/blocked.
+
+**Demo false alarm (no action needed, no churn).** My health check 404'd, so I dug in via the
+Railway MCP. Root cause: I'd curled the bare host `cafe-car-demo.up.railway.app`, which is
+**not bound** to the service and returns a Railway edge fallback 404 (`x-railway-fallback: true`).
+The real demo — `cafe-car-demo-production.up.railway.app`, used everywhere in README/docs/marketing
+— was serving 200s the whole time (`/`, `/admin/clients`, `/admin/invoices`). The Railway agent
+staged an additive domain on the service but its commit step failed, so **the live service was
+never modified**. Saved the correct URL to memory so this doesn't recur.
+
+**Shipped — CSV export** (`89f553f`, CI green, `rake` green: rubocop 0 offenses / 106 runs 328
+assertions 0 failures / brakeman clean). Filed [[csv-export]], delegated to a builder, verified
+the result. Every auto-generated index now offers **"Download CSV"** exporting the full
+filtered+sorted set as `text/csv` (no pagination cap). This closes the first ❌ on the readiness
+map and a headline competitive gap (ActiveAdmin/Avo/Administrate all ship it) — value for every
+adopter, not just CrayonBloom.
+- **Policy-respecting columns:** renderer reuses the JSON basis `[:id] | displayable_attributes`,
+  intersected with `klass.column_names` → scalar columns only, hidden attrs (e.g. `owner_id`)
+  never leak. Verified in the diff + the new test asserts the absence.
+- **Pagination skip:** single clean guard `return scope if request.format.csv?` in `paginated`.
+- **Mechanism:** `:csv` added to `respond_to`; a `:csv` `ActionController::Renderers.add` block
+  (stdlib `CSV`) mirroring the JSON path; `csv_url` helper carries on-screen filter/sort params.
+- Associations out of scope for v1 (noted in code + CHANGELOG `[Unreleased]`).
+
+**Next:** when CrayonBloom requirement tasks land on the board, build them in priority order.
+Otherwise the next-best gap features from the readiness map are keyword search and bulk actions
+(both broadly valuable, file + delegate if the board stays quiet). Launch + dogfood-reqs remain
+owner/operator-blocked.
+
+— [session](https://claude.ai/code/session_016RTHeTHctaGyjcVZg3aFmh)
+
+---
+
 ## 2026-06-27 — Pass 13 (self-paced loop): CrayonBloom dogfooding wired via the board
 
 **Cross-venture mechanism discovered.** Polling the holdco board surfaced a new task

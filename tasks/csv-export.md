@@ -2,9 +2,10 @@
 id: csv-export
 title: Add CSV export to resource index actions
 priority: P2
-status: open
+status: done
 domain: Eng
-created: 2026-06-27
+created: '2026-06-27'
+updated: '2026-06-27'
 ---
 
 Close a headline competitive gap: every comparable admin gem (ActiveAdmin, Avo,
