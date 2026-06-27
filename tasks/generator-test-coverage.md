@@ -2,7 +2,7 @@
 id: generator-test-coverage
 title: Add test coverage for the generators
 priority: P1
-status: wip
+status: done
 domain: Eng
 created: '2026-06-26'
 updated: '2026-06-26'

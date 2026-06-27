@@ -38,47 +38,37 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ## 🟠 Engineering
 
-- [ ] (P1) Fix the half-baked features (auth/sessions first)
+- [~] (P1) Fix the half-baked features (auth/sessions first)
         Stabilize the features the audit flags as broken/incomplete. Stability is half of the
         "ship + trust" mission — a feature that 500s is worse than a missing one.
 
-        Authoritative list is now in `V1_SCOPE.md` (8 IN / 7 NEEDS-WORK / 2 OUT). Concrete
-        must-fix items from the audit, highest leverage first:
+        Authoritative list is in `V1_SCOPE.md`. Most items are now shipped — only item 5 remains:
 
-        1. **Auth/sessions (latent 500) — now its own task: [[sessions-optional-and-finish]].**
-           Owner ratified making sessions optional AND finishing it; that work (graceful 403 +
-           completing the feature) is tracked there, not here.
-        2. **`sessions` generator** lies in its USAGE (claims model + policy; creates only a
-           migration). Fix it to match, or cut the generator.
-        3. **README false advertising** (also tracked in [[readme-badges-accuracy]]):
-           `f.field(:price).errors` → `error` (singular); `normalized_sort_key()` →
-           `normalize_sort_key`; document or caveat the undocumented auth/sessions/Current stack;
-           fix the install gem-list.
-        4. **Missing generator tests** — `install`/`resource`/`controller`/`notes` are uncovered
-           (install/notes test files are empty stubs). The Gemfile-mutating `install` generator is
-           the riskiest untested path.
-        5. Add tests for advertised-but-unverified paths: `turbo_stream` + `json` responses, a
-           direct presenter render, and a sort/paginate test.
+        1. ✅ Auth/sessions latent 500 → done via [[sessions-optional-and-finish]] (graceful 403 +
+           feature finished).
+        2. ✅ `sessions` generator USAGE → fixed in the sessions work.
+        3. ✅ README false advertising → fixed via [[readme-badges-accuracy]].
+        4. ✅ Missing generator tests → done via [[generator-test-coverage]] (3 → 21 generator tests).
+        5. **REMAINING:** add tests for advertised-but-unverified paths — `turbo_stream` + `json`
+           responses end-to-end, a direct presenter render (`present(obj)` → HTML), and a
+           sort/paginate controller test. These are core advertised features with no direct coverage.
 
         - Every fix lands with a regression test. `rake` green before push.
-        - Anything that can't reach v1 quality gets cut/labeled experimental (per V1_SCOPE), not
-          shipped broken.
-- [~] (P1) Add test coverage for the generators
-        The feature audit (`V1_SCOPE.md`) flagged the generators as a major coverage gap:
-        `install` / `resource` / `controller` / `notes` are uncovered (install/notes test files
-        are empty stubs). The **`install` generator is the riskiest untested path** — it mutates
-        the host's Gemfile, routes, and ApplicationController. Generators are the first thing a new
-        adopter runs; if they break, trust is gone on contact.
+- [ ] (P2) Generator polish — destination/namespace/delegation consistency
+        Three non-blocking issues the generator tests surfaced (no functional adopter-facing bug;
+        all confirmed working in a real host app). Cleanup for consistency and dev-safety.
 
-        - Add `Rails::Generators::TestCase` coverage for each generator under `test/generators/`.
-        - `install`: assert it injects the expected deps, mounts the engine, creates the policy,
-          adds `CafeCar::Controller`, and wires JS imports — without duplicating on re-run.
-        - `resource` / `controller` / `policy`: assert the generated files + content.
-        - `notes`: assert migration + model + concern.
-        - `sessions`: a test likely already exists from the recent sessions work — extend if thin.
-        - Fill in the empty stub test files. `rake` green.
-
-        Supersedes item 4 of [[fix-halfbaked-features]].
+        1. **`resource` pollutes the engine repo when run from the engine root.** Its inline
+           sub-generators (`model`/`controller`/`policy`) use `Dir.pwd`, ignoring the destination —
+           running `rails g cafe_car:resource` in the engine dir mutates `config/routes.rb` and
+           creates stray `app/`/`db/`/`test/` files. Harmless for adopters (they run it in their
+           host app), but a footgun for contributors. Make the inline delegation honor a destination.
+        2. **`notes` shells out** to `rails generate cafe_car:policy/controller` as a subprocess
+           (no `inline: true`), unlike `resource`. Works in a host (has `bin/rails`) but is
+           inconsistent and aborts in the test harness. Align with `resource`'s inline style.
+        3. **`policy` double-namespaces** namespaced policies — `admin/payment` emits
+           `module Admin; class Admin::PaymentPolicy`. Loads fine, just redundant; the controller
+           generator already avoids this by overriding `class_name`. Apply the same to policy.
 - [ ] (P2) Nested-attributes form rendering for has_many
         Implement first-class form rendering for `has_many` + `accepts_nested_attributes_for`
         (repeatable nested fields with add/remove). Strengthens the "smart forms" value prop.
@@ -149,6 +139,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - README badges + fix inaccuracies — The README is the storefront. Add credibility badges and remove statements that don't
 - Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY — Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
 - Add GitHub issue and PR templates — Roadmap item #4 (templates). Lowers the friction for first-time contributors and keeps
+- Add test coverage for the generators — The feature audit (`V1_SCOPE.md`) flagged the generators as a major coverage gap:
 - Polish gemspec for a credible v0.1.2 release — Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's
 - Audit feature completeness and define v1 scope — Inventory every advertised feature in `README.md` against what actually works, so we
 - Resolve Dependabot vulnerabilities (1 critical, 14 high) — GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default

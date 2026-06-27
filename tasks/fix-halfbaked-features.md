@@ -2,32 +2,24 @@
 id: fix-halfbaked-features
 title: Fix the half-baked features (auth/sessions first)
 priority: P1
-status: open
+status: wip
 domain: Eng
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 Stabilize the features the audit flags as broken/incomplete. Stability is half of the
 "ship + trust" mission — a feature that 500s is worse than a missing one.
 
-Authoritative list is now in `V1_SCOPE.md` (8 IN / 7 NEEDS-WORK / 2 OUT). Concrete
-must-fix items from the audit, highest leverage first:
+Authoritative list is in `V1_SCOPE.md`. Most items are now shipped — only item 5 remains:
 
-1. **Auth/sessions (latent 500) — now its own task: [[sessions-optional-and-finish]].**
-   Owner ratified making sessions optional AND finishing it; that work (graceful 403 +
-   completing the feature) is tracked there, not here.
-2. **`sessions` generator** lies in its USAGE (claims model + policy; creates only a
-   migration). Fix it to match, or cut the generator.
-3. **README false advertising** (also tracked in [[readme-badges-accuracy]]):
-   `f.field(:price).errors` → `error` (singular); `normalized_sort_key()` →
-   `normalize_sort_key`; document or caveat the undocumented auth/sessions/Current stack;
-   fix the install gem-list.
-4. **Missing generator tests** — `install`/`resource`/`controller`/`notes` are uncovered
-   (install/notes test files are empty stubs). The Gemfile-mutating `install` generator is
-   the riskiest untested path.
-5. Add tests for advertised-but-unverified paths: `turbo_stream` + `json` responses, a
-   direct presenter render, and a sort/paginate test.
+1. ✅ Auth/sessions latent 500 → done via [[sessions-optional-and-finish]] (graceful 403 +
+   feature finished).
+2. ✅ `sessions` generator USAGE → fixed in the sessions work.
+3. ✅ README false advertising → fixed via [[readme-badges-accuracy]].
+4. ✅ Missing generator tests → done via [[generator-test-coverage]] (3 → 21 generator tests).
+5. **REMAINING:** add tests for advertised-but-unverified paths — `turbo_stream` + `json`
+   responses end-to-end, a direct presenter render (`present(obj)` → HTML), and a
+   sort/paginate controller test. These are core advertised features with no direct coverage.
 
 - Every fix lands with a regression test. `rake` green before push.
-- Anything that can't reach v1 quality gets cut/labeled experimental (per V1_SCOPE), not
-  shipped broken.

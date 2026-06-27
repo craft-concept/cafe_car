@@ -5,6 +5,26 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Pass 7+ (self-paced loop): PR triage + generator tests
+
+Running as a self-paced operating loop. Progress:
+- **Closed stale draft PR #11** (nested has_many fields) with a courteous, specific
+  explanation; filed [[nested-attributes-forms]] to reimplement it properly with tests
+  (PR was untested + stale against a diverged main). Responsive-maintainer signal.
+- **Generator test coverage** (`f6ae7ed`, delegated) — generator tests **3 → 21**, full
+  suite **60 → 78**, `rake` + CI green. Covered install (Gemfile/routes/AppController
+  injections), resource, controller, policy, notes.
+- Surfaced 3 non-blocking generator issues → filed [[generator-polish]]: `resource`
+  pollutes the engine repo when run from root; `notes` shells out instead of `inline: true`;
+  `policy` double-namespaces. None are adopter-facing bugs.
+- `fix-halfbaked-features` items 1–4 now done; only item 5 (tests for advertised
+  turbo_stream/json/presenter/sort-paginate paths) remains — claimed next.
+
+**Next:** advertised-path test coverage; then the live demo (owner-gated: needs Railway
+account + deploy go-ahead) and the gem publish (owner-gated).
+
+---
+
 ## 2026-06-26 — Pass 6: owner decisions — cut cnc, omakase, Pages
 
 Owner ratified the pending decisions (cut cnc wholesale; rubocop→rails-omakase; sessions
