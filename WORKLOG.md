@@ -5,6 +5,39 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 18 (self-paced loop): adversarial review of the session's work + hardening
+
+**Assessed:** CI green, 0 issues / 0 PRs, demo healthy, board quiet (no new CrayonBloom reqs).
+Rather than build a speculative mutating feature (bulk actions), spent the pass **adversarially
+reviewing the six commits shipped this session** — they touch SQL (search), data export (CSV),
+and authorization (the footgun move), so verification > new surface.
+
+**Review verdict: ship-as-is, no blocker.** The two security-critical surfaces are CLEAN:
+- **SQL injection in keyword search** — term flows through `sanitize_sql_like` into Arel
+  `#matches` (parameter-bound); column names come from the schema, never the request.
+- **Auth-scoping change** — the actual enforcement primitives (`authorize!`, `policy_scope`)
+  were always only in the `cafe_car` macro; the moved `verify_*` are just Pundit's
+  forgot-to-authorize net. No controller that was enforcing auth now skips it; `policy_scope`
+  still applies to HTML + CSV index results. No exposure.
+
+**Landed the concrete follow-ups** (`35f13ea`, CI green, `rake` green: 120 runs 363 assertions
+0 failures, brakeman clean):
+- **Real bug fixed** — a crafted non-string `q` (`?q[x]=y` Hash / `?q[]=a` Array) reached the
+  query DSL and raised an **unhandled 500** (`cafe_car` doesn't rescue ArgumentError). Now only a
+  String counts as a search term; the rest are ignored. Regression test added.
+- **CSV formula injection** neutralized — text values with a leading `= + - @` (tab/CR) are
+  quote-prefixed so spreadsheets treat them as text; guarded to text columns only so numeric
+  values aren't mangled. Test added.
+- **Doc honesty** — softened the CSV "respects your Pundit policy" claim to match reality (mirrors
+  the JSON index's filtered attribute set; not per-role/visible-table hiding).
+- Filed P3 [[csv-export-streaming]] for the unbounded-export concern (buffers whole table; fine
+  for small admin tables, revisit before touting CSV at scale).
+
+**Next:** board poll. Bulk actions still held for a concrete driver. Launch + dogfood-reqs
+owner/operator-blocked; Sentry-on-demo offer open to the owner.
+
+---
+
 ## 2026-06-27 — Pass 17 (self-paced loop): fixed the Pundit-verification footgun
 
 **Assessed:** CI green, 0 issues / 0 PRs, demo healthy (verified `/passwords/new` 200 live after
