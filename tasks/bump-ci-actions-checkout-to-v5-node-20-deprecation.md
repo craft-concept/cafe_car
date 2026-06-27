@@ -2,9 +2,10 @@
 id: bump-ci-actions-checkout-to-v5-node-20-deprecation
 title: Bump CI actions/checkout to v5 (Node 20 deprecation)
 priority: P2
-status: open
+status: done
 domain: Eng
 created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 CI logs a deprecation warning: `actions/checkout@v4` targets Node.js 20, which GitHub

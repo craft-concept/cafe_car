@@ -38,14 +38,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ## 🟠 Engineering
 
-- [ ] (P2) Bump CI actions/checkout to v5 (Node 20 deprecation)
-        CI logs a deprecation warning: `actions/checkout@v4` targets Node.js 20, which GitHub
-        Actions runners now force onto Node 24 (deprecation of Node 20 on runners). Not a failure
-        yet, but it will break when Node 20 support is removed.
-
-        - Bump `actions/checkout@v4` → `@v5` (and any other `@v*` actions on Node 20) in
-          `.github/workflows/ci.yml` and `copilot-setup-steps.yml`.
-        - Acceptance: CI green with no Node-version deprecation warnings in the logs.
 - [ ] (P2) Generator polish — destination/namespace/delegation consistency
         Three non-blocking issues the generator tests surfaced (no functional adopter-facing bug;
         all confirmed working in a real host app). Cleanup for consistency and dev-safety.
@@ -126,4 +118,5 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - Investigate cnc dependency, recommend keep or drop — Owner asked for a keep-or-drop recommendation on the `cnc` dependency.
 - Make CI rubocop a check-only gate, stop auto-PR noise — The CI `rubocop` job runs `bin/rubocop -Af github` then opens a "Rubocop Autocorrections
 - Write CHANGELOG.md — Roadmap item #1. A changelog is a baseline trust signal and a release prerequisite.
+- Bump CI actions/checkout to v5 (Node 20 deprecation) — CI logs a deprecation warning: `actions/checkout@v4` targets Node.js 20, which GitHub
 
