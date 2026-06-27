@@ -2,20 +2,21 @@ require "rails/generators/resource_helpers"
 
 class CafeCar::ResourceGenerator < Rails::Generators::NamedBase
   include Rails::Generators::ResourceHelpers
+  include CafeCar::Generators
 
   source_root File.expand_path("templates", __dir__)
   argument :attributes, type: :array, default: [], banner: "field[:type][:index] field[:type][:index]"
 
   def create_model
-    generate "model", file_path, *attributes, force, inline: true
+    generate "model", file_path, *attributes, force
   end
 
   def create_controller
-    generate "cafe_car:controller", controller_name, force, inline: true
+    generate "cafe_car:controller", controller_name, force
   end
 
   def create_policy
-    generate "cafe_car:policy", file_path, force, inline: true
+    generate "cafe_car:policy", file_path, force
   end
 
   private

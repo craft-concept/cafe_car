@@ -1,26 +1,27 @@
 require "test_helper"
 require "generators/cafe_car/resource/resource_generator"
+require_relative "host_skeleton"
 
 # The resource generator is a thin orchestrator: it delegates to the model,
 # cafe_car:controller, and cafe_car:policy generators (each covered by its own
-# test). Running those inline would write outside the test destination, so we
-# capture the delegations and assert resource wires them up with the right
-# names instead.
+# test). Here we capture the delegations and assert resource wires them up with
+# the right names. Capturing on a subclass (rather than prepending the shared
+# generator) keeps the stub from leaking into the inline test below.
 class CafeCar::ResourceGeneratorTest < Rails::Generators::TestCase
-  tests CafeCar::ResourceGenerator
-  destination Rails.root.join("tmp/generators")
-  setup :prepare_destination
-
   GENERATE_CALLS = []
 
-  module CaptureGenerate
+  class CapturingResourceGenerator < CafeCar::ResourceGenerator
+    private
+
     def generate(what, *args)
-      CafeCar::ResourceGeneratorTest::GENERATE_CALLS << [ what, args ]
+      GENERATE_CALLS << [ what, args ]
       nil
     end
   end
 
-  setup { CafeCar::ResourceGenerator.prepend(CaptureGenerate) }
+  tests CapturingResourceGenerator
+  destination Rails.root.join("tmp/generators")
+  setup :prepare_destination
   setup { GENERATE_CALLS.clear }
 
   def call_for(what) = GENERATE_CALLS.find { |name, _| name == what }
@@ -55,5 +56,45 @@ class CafeCar::ResourceGeneratorTest < Rails::Generators::TestCase
     assert call_for("model"), "expected the model generator to run"
     assert call_for("cafe_car:controller"), "expected the controller generator to run"
     assert call_for("cafe_car:policy"), "expected the policy generator to run"
+  end
+end
+
+# Runs the sub-generators for real (no capture) to prove the inline delegation
+# writes into THIS generator's destination instead of leaking into the engine
+# repo via Rails::Command.root.
+class CafeCar::ResourceGeneratorInlineTest < Rails::Generators::TestCase
+  include HostSkeleton
+
+  tests CafeCar::ResourceGenerator
+  destination Rails.root.join("tmp/generators")
+  setup :prepare_destination
+  setup :build_host_skeleton
+
+  ENGINE_ROUTES = CafeCar::Engine.root.join("config/routes.rb")
+
+  # Uses a name the dummy app doesn't already define, so the sub-generators'
+  # class-collision checks don't fire on the test fixtures. The model
+  # delegation is a stock Rails `hook_for :orm` pass-through that no-ops when no
+  # ORM is configured (as in this dummy app), so we assert on the controller and
+  # policy delegations — both prove the inline run writes into the destination.
+  test "writes its sub-generators into the destination" do
+    run_generator [ "admin/widgets", "size:integer" ]
+
+    assert_file "app/controllers/admin/widgets_controller.rb"
+    assert_file "app/policies/admin/widget_policy.rb"
+
+    # The controller's route landed in the destination's routes file...
+    assert_file "config/routes.rb" do |routes|
+      assert_match(/resources :widgets/, routes)
+    end
+  end
+
+  test "leaves the engine's own config/routes.rb untouched" do
+    before = ENGINE_ROUTES.read
+
+    run_generator [ "admin/widgets" ]
+
+    assert_equal before, ENGINE_ROUTES.read,
+      "resource generator must not mutate the engine's own config/routes.rb"
   end
 end

@@ -36,24 +36,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ---
 
-## 🟠 Engineering
-
-- [ ] (P2) Generator polish — destination/namespace/delegation consistency
-        Three non-blocking issues the generator tests surfaced (no functional adopter-facing bug;
-        all confirmed working in a real host app). Cleanup for consistency and dev-safety.
-
-        1. **`resource` pollutes the engine repo when run from the engine root.** Its inline
-           sub-generators (`model`/`controller`/`policy`) use `Dir.pwd`, ignoring the destination —
-           running `rails g cafe_car:resource` in the engine dir mutates `config/routes.rb` and
-           creates stray `app/`/`db/`/`test/` files. Harmless for adopters (they run it in their
-           host app), but a footgun for contributors. Make the inline delegation honor a destination.
-        2. **`notes` shells out** to `rails generate cafe_car:policy/controller` as a subprocess
-           (no `inline: true`), unlike `resource`. Works in a host (has `bin/rails`) but is
-           inconsistent and aborts in the test harness. Align with `resource`'s inline style.
-        3. **`policy` double-namespaces** namespaced policies — `admin/payment` emits
-           `module Admin; class Admin::PaymentPolicy`. Loads fine, just redundant; the controller
-           generator already avoids this by overriding `class_name`. Apply the same to policy.
-
 ## 🧭 Product
 
 - [ ] (P1) Milestone — CafeCar usable for CrayonBloom back-office
@@ -121,6 +103,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - Nested-attributes form rendering for has_many — Implement first-class form rendering for `has_many` + `accepts_nested_attributes_for`
 - Add GitHub issue and PR templates — Roadmap item #4 (templates). Lowers the friction for first-time contributors and keeps
 - Add test coverage for the generators — The feature audit (`V1_SCOPE.md`) flagged the generators as a major coverage gap:
+- Generator polish — destination/namespace/delegation consistency — Three non-blocking issues the generator tests surfaced (no functional adopter-facing bug;
 - Polish gemspec for a credible v0.1.2 release — Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's
 - Fix the half-baked features (auth/sessions first) — Stabilize the features the audit flags as broken/incomplete. Stability is half of the
 - Audit feature completeness and define v1 scope — Inventory every advertised feature in `README.md` against what actually works, so we

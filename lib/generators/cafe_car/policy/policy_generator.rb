@@ -13,9 +13,14 @@ class CafeCar::PolicyGenerator < Rails::Generators::NamedBase
 
   private
 
+  # Use the leaf name inside the template; module_namespacing already emits the
+  # surrounding `module Admin`, so the full path would double-namespace it
+  # (`module Admin; class Admin::PaymentPolicy`). Mirrors the controller generator.
+  def class_name = file_name.camelize
+
   def base_policy_name = "ApplicationPolicy"
 
-  def model_class = class_name.classify.safe_constantize
+  def model_class = file_path.classify.safe_constantize
 
   def model  = @model ||= CafeCar[:ModelInfo].new(model_class)
 

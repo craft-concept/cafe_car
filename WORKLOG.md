@@ -5,6 +5,28 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Generator polish (destination/namespace/delegation consistency)
+
+Fixed the three non-blocking generator footguns in [[generator-polish]] at the root (none was
+an adopter-facing bug; all confirmed working in a host app). Suite grew 99 → **102 runs / 316
+assertions / 0 failures**; full `rake` green (rubocop 200 files / 0 offenses, brakeman 0 warnings).
+
+- **Destination leak:** added a shared inline `generate` helper to `CafeCar::Generators` that
+  delegates via `Rails::Generators.invoke(..., destination_root:)` instead of Rails' built-in
+  `generate`, which recomputes the destination from `Rails::Command.root` and leaks writes into
+  the engine repo / escapes the test destination. `ResourceGenerator` now includes the concern and
+  drops the redundant `inline: true`.
+- **`notes` subprocess shell-out:** now flows through the same inline helper — consistent with
+  `resource` and runnable in the harness.
+- **Policy double-namespace:** `PolicyGenerator` overrides `class_name = file_name.camelize`
+  (mirrors the controller generator) so `module_namespacing` supplies the single `module Admin`;
+  `model_class` now looks up by `file_path` to keep namespaced lookups intact.
+
+Tests for each fix; the resource/notes capture stubs moved onto subclasses so they no longer leak
+into the new real-inline tests.
+
+---
+
 ## 2026-06-26 — Pass 10 (self-paced loop): discoverability/launch kit PREPARED (roadmap #6)
 
 With the live demo up (pass 9), [[discoverability-launch]]'s prerequisites (CI green, hygiene

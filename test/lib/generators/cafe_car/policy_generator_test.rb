@@ -11,7 +11,10 @@ class CafeCar::PolicyGeneratorTest < Rails::Generators::TestCase
 
     assert_file "app/policies/admin/payment_policy.rb" do |policy|
       assert_match(/module Admin/, policy)
-      assert_match(/class Admin::PaymentPolicy < ApplicationPolicy/, policy)
+      assert_match(/class PaymentPolicy < ApplicationPolicy/, policy)
+      # module_namespacing already supplies `module Admin`, so the class name
+      # must not repeat it (`class Admin::PaymentPolicy` would double-namespace).
+      refute_match(/class Admin::PaymentPolicy/, policy)
       assert_match(/def index\?\s+= admin\?/, policy)
       assert_match(/def destroy\?\s+= update\?/, policy)
       assert_match(/class Scope < Scope/, policy)
