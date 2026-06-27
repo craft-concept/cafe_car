@@ -12,6 +12,19 @@ layout: default
 > into a real auto-generated admin (clients, invoices, articles, users, notes). No signup;
 > the data resets periodically.
 
+<p align="center">
+  <a href="https://cafe-car-demo-production.up.railway.app/admin/invoices">
+    <img src="images/admin-invoices-index.png"
+         alt="CafeCar's auto-generated admin: an invoices index with sortable columns, currency formatting, association links, sender avatars, and pagination — all rendered straight from the model with no view code."
+         width="900">
+  </a>
+</p>
+<p align="center">
+  <em>A complete admin index — sortable columns, formatted values, association links, and
+  pagination — auto-generated from a model with one line of controller code.
+  <a href="https://cafe-car-demo-production.up.railway.app">Try the live demo →</a></em>
+</p>
+
 **CafeCar is a Rails engine that auto-generates CRUD admin UI from your models** —
 complete index, show, new, and edit interfaces with no boilerplate. Sensible defaults
 cover authorization, presenters, filtering, sorting, pagination, and Hotwire-ready forms,

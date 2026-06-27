@@ -8,6 +8,19 @@
 > into a real auto-generated admin (clients, invoices, articles, users, notes). No signup;
 > the data resets periodically.
 
+<p align="center">
+  <a href="https://cafe-car-demo-production.up.railway.app/admin/invoices">
+    <img src="https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/admin-invoices-index.png"
+         alt="CafeCar's auto-generated admin: an invoices index with sortable columns, currency formatting, association links, sender avatars, and pagination — all rendered straight from the model with no view code."
+         width="900">
+  </a>
+</p>
+<p align="center">
+  <em>A complete admin index — sortable columns, formatted values, association links, and
+  pagination — auto-generated from a model with one line of controller code.
+  <a href="https://cafe-car-demo-production.up.railway.app">Try the live demo →</a></em>
+</p>
+
 CafeCar is a Rails engine that extends the MVC "view" layer to provide automatic
 CRUD UI generation with sensible defaults. Its philosophy is rooted in the idea
 that Rails should render _something_ that represents the CRUD operations of your
@@ -347,6 +360,18 @@ end
 ### Forms
 
 CafeCar provides an enhanced form builder with smart field detection.
+
+<p align="center">
+  <a href="https://cafe-car-demo-production.up.railway.app/admin/invoices/new">
+    <img src="https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/admin-invoice-form.png"
+         alt="CafeCar's auto-generated new-invoice form with a client association select, typed inputs, and nested has_many line items (add/remove rows)."
+         width="760">
+  </a>
+</p>
+<p align="center">
+  <em>An auto-generated form with a typed date field, an association select, and nested
+  <code>has_many</code> line items — add and remove rows inline.</em>
+</p>
 
 **Basic forms:**
 

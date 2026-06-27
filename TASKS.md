@@ -36,7 +36,12 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ---
 
-## 🧭 Product
+---
+
+## 🚧 Blocked on the user
+
+Surfaced here so they're not lost in the sections above. Do the autonomous work; nudge
+the user on these.
 
 - [ ] (P1) Milestone — CafeCar usable for CrayonBloom back-office
         Owner milestone: make CafeCar good enough to power CrayonBloom's back-office (dogfooding).
@@ -49,13 +54,36 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Owner input likely needed on CrayonBloom requirements — capture open questions in
           QUESTIONS.md.
 
----
+        ## Back-office readiness map — 2026-06-26 (generic; awaiting CrayonBloom specifics)
 
-## 🚧 Blocked on the user
+        What a typical business back-office needs vs. what CafeCar demonstrably does today
+        (evidence: `V1_SCOPE.md` + the live demo's clients/invoices/line-items/articles admin).
+        The ❌/⚠️ rows are the deltas that become Eng tasks **if CrayonBloom needs them** —
+        held until the owner confirms scope (see QUESTIONS.md).
 
-Surfaced here so they're not lost in the sections above. Do the autonomous work; nudge
-the user on these.
+        | Back-office need | CafeCar today | Status |
+        |---|---|---|
+        | Resource CRUD (index/show/new/edit) | `cafe_car` one-liner, all 7 actions | ✅ proven (demo) |
+        | Authorization + roles | Pundit policies, attribute-level perms, scopes | ✅ (the role model itself is host-supplied) |
+        | Auth / login | opt-in sessions (finished; CRUD-only hosts 403 not 500) | ✅ opt-in |
+        | Filtering | query DSL — ranges, operators, association counts | ✅ |
+        | Full-text / keyword search | — (only attribute filters) | ⚠️ gap |
+        | Sorting + pagination | Kaminari-backed | ✅ |
+        | Associations incl. nested forms | belongs_to selects + has_many nested attrs | ✅ (closed issue #10) |
+        | File / image uploads | Active Storage (avatars in demo) | ✅ (host-wired) |
+        | Rich text | Action Text | ✅ |
+        | Audit log / versioning | PaperTrail CRUD'd as a resource | ✅ (host-supplied) |
+        | CSV / data export | JSON responses only | ❌ gap |
+        | Bulk actions (multi-select ops) | — | ❌ gap |
+        | Dashboard / metrics / charts | — | ❌ out of current scope |
 
+        **Gap-derived candidate Eng tasks** (file only if CrayonBloom needs them): CSV/data export,
+        bulk actions, keyword search, dashboard widgets. None blocks generic CRUD-admin dogfooding —
+        the ✅ rows already cover a clients/invoices-style back-office (the demo proves it).
+
+        **Status:** the generic enumeration is done; the milestone is now blocked on CrayonBloom's
+        concrete requirements (resources, roles, must-have capabilities, and whether there's a repo
+        to read). Questions filed in QUESTIONS.md → `blocked_on: user`.
 - [ ] (P2) Discoverability — Awesome Rails, RubyFlow, launch post
         ## Prepared (2026-06-26)
 
@@ -98,6 +126,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - Triage stale draft PR — Open draft PR #11 "Render nested fields for has_many with accepts_nested_attributes_for"
 - Make sessions optional AND finish the feature — Owner ratified (QUESTIONS.md): sessions/auth should be **both optional and finished** — a
 - Retroactively tag v0.1.1 and v0.1.2 releases — The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
+- README hero screenshot of the live auto-generated admin — Proactive trust/conversion artifact. The README (the source of truth users land on) and
 - README badges + fix inaccuracies — The README is the storefront. Add credibility badges and remove statements that don't
 - Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY — Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
 - Nested-attributes form rendering for has_many — Implement first-class form rendering for `has_many` + `accepts_nested_attributes_for`
