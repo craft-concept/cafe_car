@@ -132,6 +132,7 @@ the user on these.
 
 Short memory aid only — git history is the full record. Trim as this grows.
 
+- Turnkey keyword search across resource indexes — Make keyword search work out-of-the-box on every auto-generated index. The plumbing is
 - Add CSV export to resource index actions — Close a headline competitive gap: every comparable admin gem (ActiveAdmin, Avo,
 - Triage stale draft PR — Open draft PR #11 "Render nested fields for has_many with accepts_nested_attributes_for"
 - Make sessions optional AND finish the feature — Owner ratified (QUESTIONS.md): sessions/auth should be **both optional and finished** — a

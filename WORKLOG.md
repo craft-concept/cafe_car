@@ -5,6 +5,46 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 15 (self-paced loop): turnkey keyword search shipped
+
+**Assessed:** CI green, 0 issues / 0 PRs, demo healthy (`-production` URL, 200s). Board still
+shows **no new CrayonBloom requirement tasks** — primary signal quiet; the 3 open board items
+([[dogfood-crayonbloom]], the dogfood milestone, [[discoverability-launch]]) stay
+owner/operator-blocked. Backlog drained otherwise.
+
+**Shipped — turnkey keyword search** (`34aaa53`, CI green, `rake` green: rubocop 202 files 0
+offenses / 114 runs 353 assertions 0 failures / brakeman clean). Filed [[keyword-search]],
+delegated, verified. The `search!` hook was half-wired — it required each host model to
+hand-write `scope :search` (only dummy `Article`/`User` did) and there was **no search box**.
+Now every auto-generated index ships a search box with zero per-model setup. Second readiness-map
+gap closed (after [[csv-export]]); every comparable admin gem (ActiveAdmin/Avo/Administrate)
+ships search.
+- **Default search:** `Queryable#default_search` ORs Arel `#matches` across the model's
+  string/text columns (ILIKE on PG, LIKE on SQLite/MySQL — DB-portable), term run through
+  `sanitize_sql_like`. `search!` now picks `respond_to?(:search) ? search : default_search`, so
+  host-defined `scope :search` still wins (Article/User unchanged). Named `default_search` (not
+  `search`) because AR's `scope` macro raises if a same-named class method already exists.
+- **Policy-respecting — verified sound:** `searchable_columns` rejects columns via
+  `inspection_filter.filter_param`, the *same* predicate `Policy#filtered_attribute?` uses. Since
+  `displayable_attributes` is `permitted_keys ∪ all_columns` minus filtered minus `id`, its
+  string/text subset is exactly the unfiltered string/text columns — so the search basis equals
+  the displayable basis with no user/policy context needed. No hidden-column leak (CafeCar does
+  no per-role column hiding beyond the inspection filter). I checked policy.rb:27 directly.
+- **Param wiring:** the bare-`""` ParamParser path is a dead end (a root String can't
+  `deep_merge`), so a dedicated `q` param is read **raw** (no comma/range parsing) and funneled
+  via `filtered` as `[parsed_params[""], search_term].compact_blank` into the query DSL's Array
+  branch — AND-composes with dot-filters + sort, no DSL changes. Box is a GET form carrying `q` +
+  hidden dot-filter/sort fields; "View all" clears everything.
+
+**Next:** readiness-map gaps remaining are **bulk actions** (multi-select destroy/update — higher
+risk, mutating + auth-sensitive) and dashboard widgets (out of current scope). I'll pace these —
+two features shipped this session is a healthy cadence; bulk actions next pass if the board stays
+quiet. Launch + dogfood-reqs remain owner/operator-blocked.
+
+— [session](https://claude.ai/code/session_016RTHeTHctaGyjcVZg3aFmh)
+
+---
+
 ## 2026-06-27 — Pass 14 (self-paced loop): CSV export shipped; demo "outage" was a false alarm
 
 **Assessed:** CI green, 0 open issues / 0 PRs. Board ([[dogfood-crayonbloom]] mechanism) shows

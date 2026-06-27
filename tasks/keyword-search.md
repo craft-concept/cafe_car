@@ -2,9 +2,10 @@
 id: keyword-search
 title: Turnkey keyword search across resource indexes
 priority: P2
-status: open
+status: done
 domain: Eng
-created: 2026-06-27
+created: '2026-06-27'
+updated: '2026-06-27'
 ---
 
 Make keyword search work out-of-the-box on every auto-generated index. The plumbing is
