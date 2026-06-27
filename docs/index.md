@@ -8,6 +8,10 @@ layout: default
 [![Gem Version](https://img.shields.io/gem/v/cafe_car)](https://rubygems.org/gems/cafe_car)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
+> 🚀 **[Live demo →](https://cafe-car-demo-production.up.railway.app)** — click straight
+> into a real auto-generated admin (clients, invoices, articles, users, notes). No signup;
+> the data resets periodically.
+
 **CafeCar is a Rails engine that auto-generates CRUD admin UI from your models** —
 complete index, show, new, and edit interfaces with no boilerplate. Sensible defaults
 cover authorization, presenters, filtering, sorting, pagination, and Hotwire-ready forms,
