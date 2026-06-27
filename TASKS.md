@@ -38,6 +38,14 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ## 🟠 Engineering
 
+- [ ] (P2) Bump CI actions/checkout to v5 (Node 20 deprecation)
+        CI logs a deprecation warning: `actions/checkout@v4` targets Node.js 20, which GitHub
+        Actions runners now force onto Node 24 (deprecation of Node 20 on runners). Not a failure
+        yet, but it will break when Node 20 support is removed.
+
+        - Bump `actions/checkout@v4` → `@v5` (and any other `@v*` actions on Node 20) in
+          `.github/workflows/ci.yml` and `copilot-setup-steps.yml`.
+        - Acceptance: CI green with no Node-version deprecation warnings in the logs.
 - [ ] (P2) Generator polish — destination/namespace/delegation consistency
         Three non-blocking issues the generator tests surfaced (no functional adopter-facing bug;
         all confirmed working in a real host app). Cleanup for consistency and dev-safety.
@@ -53,21 +61,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         3. **`policy` double-namespaces** namespaced policies — `admin/payment` emits
            `module Admin; class Admin::PaymentPolicy`. Loads fine, just redundant; the controller
            generator already avoids this by overriding `class_name`. Apply the same to policy.
-- [~] (P2) Nested-attributes form rendering for has_many
-        Implement first-class form rendering for `has_many` + `accepts_nested_attributes_for`
-        (repeatable nested fields with add/remove). Strengthens the "smart forms" value prop.
-
-        - **Reference:** the closed draft PR #11 (`copilot/fix-nested-fields-for-has-many`) had a
-          reasonable approach — a `_nested_field.html.haml` partial using `fields_for` with a
-          `<template>` for new records, vanilla-JS add/remove in `app/javascript/cafe_car.js`
-          (handling `_destroy`), and reordering `FieldInfo#type` to try `nested_attributes_type`
-          first. Closed because it was a stale, untested draft against a since-diverged main.
-        - Reimplement on current main **with tests** and a CHANGELOG entry.
-        - **Regression risk:** moving `nested_attributes_type` to the front of the `type`
-          resolution chain changes detection priority for has_many — prove existing association
-          rendering (e.g. belongs_to selects, plain has_many) is unaffected. `nested_attributes_type`
-          must return nil unless `accepts_nested_attributes_for` is actually configured.
-        - Likely owner-visible product addition — fine to ship once tested, but flag in WORKLOG.
 
 ## 🧭 Product
 
@@ -122,6 +115,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - Retroactively tag v0.1.1 and v0.1.2 releases — The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
 - README badges + fix inaccuracies — The README is the storefront. Add credibility badges and remove statements that don't
 - Add CONTRIBUTING, CODE_OF_CONDUCT, SECURITY — Roadmap item #4 (community files). These are the table-stakes trust signals GitHub and
+- Nested-attributes form rendering for has_many — Implement first-class form rendering for `has_many` + `accepts_nested_attributes_for`
 - Add GitHub issue and PR templates — Roadmap item #4 (templates). Lowers the friction for first-time contributors and keeps
 - Add test coverage for the generators — The feature audit (`V1_SCOPE.md`) flagged the generators as a major coverage gap:
 - Polish gemspec for a credible v0.1.2 release — Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's

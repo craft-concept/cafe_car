@@ -2,7 +2,7 @@
 id: nested-attributes-forms
 title: Nested-attributes form rendering for has_many
 priority: P2
-status: wip
+status: done
 domain: Eng
 created: '2026-06-26'
 updated: '2026-06-26'

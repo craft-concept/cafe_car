@@ -5,6 +5,44 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Pass 8 (self-paced loop): v0.1.2 SHIPPED — release reconciliation + nested-attributes
+
+**Owner published v0.1.2 to RubyGems** (uploaded 2026-06-27T01:00Z, built from `6b4f269`).
+Roadmap milestones #1 (CHANGELOG) and #2 (publish v0.1.2) are **done**. The loop did not
+freeze (per `6b4f269`); it reconciled the release and shipped the next feature.
+
+**Release reconciliation** (the published 0.1.2 = current main, but the tag/CHANGELOG were
+71 commits behind reality):
+- Owner decisions: next dev version **0.2.0** (minor); **move the stale `v0.1.2` tag** to the
+  shipped commit + cut GitHub releases.
+- CHANGELOG honest 0.1.2 entry mined from the 71 shipped commits; `version.rb` → `0.2.0`;
+  fresh empty `[Unreleased]` (`d583882`, `af1c1cb` lockfile sync; delegated). `rake` green.
+- Moved `v0.1.2` tag → `6b4f269` (force, pushed). Cut GitHub releases for **v0.1.2** (Latest)
+  and **v0.1.1** for a complete page.
+- Housekeeping: `*.gem` build artifacts now gitignored, removed the stray `cafe_car-0.1.2.gem`
+  (`b9f1ff5`).
+
+**Nested-attributes form rendering** (`7896820`, delegated) — first-class `has_many` +
+`accepts_nested_attributes_for` forms: `_nested_field.html.haml` (`fields_for` + `<template>`
+for new rows), vanilla-JS add/remove with `_destroy` handling, `nested_attributes_type`
+moved to front of `FieldInfo#type`. Tests **90 → 99**, `rake` + CI green. Regression guard
+verified: `nested_attributes_type` returns `nil` unless `accepts_nested_attributes_for` is
+configured, so belongs_to/plain-has_many rendering is unaffected. Closes
+[[nested-attributes-forms]] (the reimplementation of closed PR #11, done right with tests).
+
+**Filed:** [[bump-ci-actions-checkout-to-v5-node-20-deprecation]] (P2) — CI logs a Node 20
+deprecation warning on `actions/checkout@v4` (not failing yet).
+
+**Decisions/assumptions:** Builder subagent types `coder`/`designer` aren't registered in this
+environment → used `general-purpose` for builds (same full abilities, scoped prompt). The
+published 0.1.2 commit was identified as `6b4f269` (session-start HEAD with the owner's built
+`.gem` sitting untracked).
+
+**Next:** backlog is now P2 long-tail (generator-polish, docs-site/demo deploy — gate is
+owner go-ahead + Railway cost, discoverability — sequence after demo). Loop continues.
+
+---
+
 ## 2026-06-26 — Pass 7+ (self-paced loop): PR triage + generator tests
 
 Running as a self-paced operating loop. Progress:
