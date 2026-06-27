@@ -154,9 +154,8 @@ module CafeCar
     end
 
     def search!(term)
-      @scope.search!(term) if @scope.respond_to?(:search!)
       @scope.query!("body~": term) if @scope < ::ActionText::RichText
-      update! { _1.search(term) }
+      update! { _1.respond_to?(:search) ? _1.search(term) : _1.default_search(term) }
     end
 
     def query!(params = nil)

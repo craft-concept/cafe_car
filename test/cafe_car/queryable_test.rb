@@ -33,5 +33,35 @@ module CafeCar
     # test "time spans" do
     #   assert_empty User.query("created_at >": "today")
     # end
+
+    test "default search matches string/text columns case-insensitively" do
+      owner = create(:user)
+      alpha = create(:client, name: "Alpha Corp", owner:)
+      beta  = create(:client, name: "Beta LLC",   owner:)
+
+      assert_equal [ alpha ], Client.query("alpha").to_a
+      assert_equal [ alpha ], Client.query("ALPHA").to_a
+      assert_empty Client.query("nomatch")
+      assert_includes Client.query("alpha").to_sql, %("clients"."name")
+    end
+
+    test "default search spans every searchable column" do
+      invoice = create(:invoice, note: "urgent rush job")
+
+      assert_equal [ invoice ], Invoice.query("rush").to_a
+    end
+
+    test "custom scope :search takes precedence over the default" do
+      bob = create(:article, title: "Bob writes", summary: "nothing here")
+      create(:article, title: "Other", summary: "mentions bob deep inside")
+
+      # Article's custom scope only searches `title`; the default would also hit `summary`.
+      assert_equal [ bob ], Article.query("bob").to_a
+    end
+
+    test "searchable columns exclude parameter-filtered columns (policy-respected)" do
+      assert_equal %w[email name], User.searchable_columns.sort
+      refute_includes User.searchable_columns, "password_digest"
+    end
   end
 end

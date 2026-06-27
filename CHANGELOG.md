@@ -12,6 +12,13 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Added
 
+- Turnkey keyword search on every auto-generated index: a search box filters the
+  table by matching a term across the model's string/text columns, case-insensitively
+  and DB-portably (Arel `#matches` emits `ILIKE` on Postgres, `LIKE` on SQLite/MySQL).
+  Works out of the box with no per-model setup; columns the parameter filter hides
+  (passwords, tokens, ...) are never searched, mirroring the policy's displayable
+  guarantee. A host-defined `scope :search` still takes precedence. The box round-trips
+  the term, preserves the active dot-filters + sort, and is cleared by "View all".
 - CSV export on every auto-generated index: a "Download CSV" action exports the
   full filtered + sorted result set as `text/csv` (no pagination cap). Columns
   reuse the JSON renderer's policy-respecting basis (`[:id] |
