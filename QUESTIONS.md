@@ -2,6 +2,26 @@
 
 Owner-facing channel for decisions and blockers.
 
+## 🚀 Launch go/no-go — 2026-06-26 (needs owner)
+
+Discoverability assets are drafted and committed under `marketing/` (launch post,
+Awesome-list entries, RubyFlow + Ruby Toolbox blurbs, and an ordered
+`SUBMISSION-CHECKLIST.md`). Nothing has been published. Before firing it off I need:
+
+- **(a) Go-ahead to submit** — confirm you want to launch now (CI green, v1 audited,
+  live demo up). This unblocks every external action in the checklist.
+- **(b) Where to host the blog post** — do you have a blog / Medium / dev.to? The post
+  needs a canonical home before it can be linked from RubyFlow/HN/Reddit. (No URL,
+  no link to share.)
+- **(c) Which channels** — confirm the announce surfaces you want: r/rails, r/ruby,
+  Hacker News "Show HN", Ruby Discord/Slack, X/Mastodon. I'll only prep what you greenlight.
+- **(d) Demo can take a spike** — confirm the Railway demo
+  (cafe-car-demo-production.up.railway.app) is OK to take an HN/Reddit traffic spike
+  (and that periodic data reset is acceptable for public eyes).
+
+Owner-only because each external submission needs your accounts/credentials and your
+name on the post. See `marketing/SUBMISSION-CHECKLIST.md` for the exact steps.
+
 ## ✅ Resolved by owner — 2026-06-26
 
 - **cnc:** **Cut wholesale.** Inline the two methods CafeCar uses, remove the dependency

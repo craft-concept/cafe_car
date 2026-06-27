@@ -67,9 +67,37 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Owner input likely needed on CrayonBloom requirements — capture open questions in
           QUESTIONS.md.
 
-## 📣 Marketing & GTM
+---
+
+## 🚧 Blocked on the user
+
+Surfaced here so they're not lost in the sections above. Do the autonomous work; nudge
+the user on these.
 
 - [ ] (P2) Discoverability — Awesome Rails, RubyFlow, launch post
+        ## Prepared (2026-06-26)
+
+        All launch assets are drafted, committed, and ready under `marketing/` — nothing
+        has been published. Awaiting owner go-ahead (the publish step is owner-only;
+        every venue needs the owner's accounts/credentials and their name on the post).
+
+        Ready to fire:
+        - `marketing/launch-post.md` — ~850-word launch blog post. Angle: "Rails should
+          render something by default." Killer `cafe_car` + `rails g cafe_car:resource`
+          snippets, demo/repo/RubyGems links. Needs a host URL (owner decision).
+        - `marketing/awesome-list-entries.md` — paste-ready lines for **Awesome Ruby**
+          (Admin Interface section) and **Awesome Rails** (Gems section), matched to each
+          list's format. Flags Awesome Ruby's ~30k-download bar (gate that PR on downloads).
+        - `marketing/rubyflow-and-toolbox.md` — RubyFlow post (title+body) and Ruby
+          Toolbox listing (auto-indexed; category PR to `rubytoolbox/catalog` →
+          `rails_admin_interfaces.yml`).
+        - `marketing/SUBMISSION-CHECKLIST.md` — ordered owner action list (Ruby Toolbox,
+          Awesome Rails/Ruby PRs, RubyFlow, Show HN, r/rails + r/ruby, Discord/Slack,
+          X/Mastodon), each with URL, paste text, and which account it needs.
+
+        Owner decisions tracked in `QUESTIONS.md` (go-ahead, blog host, channels,
+        demo-spike OK). Status stays `open`, blocked on user for the publish step.
+
         Roadmap item #6. Visibility is the other half of the mission. Sequence this AFTER ship +
         trust (green CI, hygiene docs, working v1, live demo) so first impressions land well.
 
@@ -78,23 +106,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Write a launch blog post (the "Rails should render something by default" thesis is a
           strong hook) and share where Rails devs gather.
         - Depends on [[docs-site-live-demo]] for the demo link to point at.
-- [ ] (P2) Docs site + live clickable demo
-        Roadmap item #5. The single highest-converting trust artifact: let skeptics evaluate
-        CafeCar without installing it.
-
-        - Live demo: the `test/dummy` app already exists and CI even screenshots `/articles` —
-          deploy a seeded instance (Railway is wired into this session) so people can click
-          around real auto-generated CRUD.
-        - Docs site: GitHub Pages from the README to start; expand later.
-        - Gate on [[feature-audit-v1-scope]] so the demo only exposes v1-quality features.
-
----
-
-## 🚧 Blocked on the user
-
-Surfaced here so they're not lost in the sections above. Do the autonomous work; nudge
-the user on these.
-
 
 ---
 
@@ -113,6 +124,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - Polish gemspec for a credible v0.1.2 release — Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's
 - Fix the half-baked features (auth/sessions first) — Stabilize the features the audit flags as broken/incomplete. Stability is half of the
 - Audit feature completeness and define v1 scope — Inventory every advertised feature in `README.md` against what actually works, so we
+- Docs site + live clickable demo — Roadmap item #5. The single highest-converting trust artifact: let skeptics evaluate
 - Resolve Dependabot vulnerabilities (1 critical, 14 high) — GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default
 - Cut cnc wholesale; switch rubocop to rails-omakase; homepage to GH Pages — Owner ratified (QUESTIONS.md): **cut cnc entirely**, use **`rubocop-rails-omakase`** instead
 - Investigate cnc dependency, recommend keep or drop — Owner asked for a keep-or-drop recommendation on the `cnc` dependency.
