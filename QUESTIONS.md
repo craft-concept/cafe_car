@@ -2,6 +2,15 @@
 
 Owner-facing channel for decisions and blockers.
 
+## 🖼️ OG/social card ready — one-time GitHub Settings upload (owner) — 2026-06-27
+
+A brand-grounded OG/social card now lives at `docs/images/og-card.png` (committed `51ef230`) so
+shared repo and launch-post links render a professional preview. **One-time owner step:** GitHub's
+social preview can't be set via the API — upload it manually at **Settings → General → Social
+preview** on `craft-concept/cafe_car`. (Launch-post `og:image` can reference the raw URL:
+`https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/og-card.png`.) Not
+blocking; the asset is ready whenever you do the upload.
+
 ## 📦 v0.2.0 is ready to publish — needs the RubyGems key (owner) — 2026-06-27
 
 `version.rb` is already at **0.2.0** and **33 commits** have landed since the published

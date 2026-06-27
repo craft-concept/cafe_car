@@ -5,6 +5,32 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 27 (self-paced loop): first OG/social card, brand-grounded
+
+**Assessed:** CI green on the BRAND.md commit. No issues/PRs. A new P2 Design task announced the
+fleet `imagegen` skill (now on PATH; bills the Codex subscription, runs headless/parallel). Verified
+it works.
+
+**Shipped — `51ef230` (designer, pushed):** CafeCar's clearest visual gap was an OG/social card so
+shared repo + launch-post links render a professional preview — direct support for the prepped
+[[discoverability-launch]]. Delegated to the `designer` agent, grounded in the day-old BRAND.md.
+It generated 3 parallel `imagegen` variants and shipped the strongest: a clean developer-tool card
+(wordmark + Ruby-red diamond, the BRAND.md-verbatim tagline, and a realistic auto-generated admin
+table with sortable headers/status badges/avatars). It *shows* the CRUD output instead of claiming
+it — on-voice. I reviewed the rendered PNG: legible, on-brand, crop-safe for GitHub's 2:1 trim.
+Asset at `docs/images/og-card.png` (1731×909).
+
+**Owner wiring noted (QUESTIONS.md):** GitHub social preview isn't API-settable — it's a one-time
+Settings → Social preview upload. Launch-post `og:image` can use the raw GitHub URL. Not blocking.
+
+**Filed follow-up** (within `tasks/visual-assets-og-card.md`): logo/icon + favicon, to sequence with
+the launch and the pending designer-persona refresh so the whole visual identity is consistent.
+
+**Next:** confirm CI; watch for the designer-persona restart (unblocks the BRAND.md voice sweep) and
+CrayonBloom's requirement tasks. v0.2.0 stays owner-gated on the RubyGems key.
+
+---
+
 ## 2026-06-27 — Pass 26 (self-paced loop): authored CafeCar's BRAND.md voice guide
 
 **Assessed:** CI green on all pass-25 commits (faker drop verified). No issues/PRs. A **new P1
