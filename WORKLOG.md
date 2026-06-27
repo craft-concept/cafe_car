@@ -5,6 +5,39 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Pass 12 (self-paced loop): README hero screenshot shipped; V1 must-fix list verified closed
+
+**Re-assessed:** no owner response yet to the QUESTIONS.md asks, 0 open issues / 0 open PRs, CI
+green, live demo healthy (root + `/admin/clients` 200). Owner-blocked items still blocked.
+
+**Record correction:** verified the V1_SCOPE "must-fix" list is now **fully closed** — item 5
+(coverage for advertised paths) was done but [[fix-halfbaked-features]]'s note still said
+"REMAINING". Confirmed `test/controllers/{json_responses,turbo_stream,sort_and_paginate}_test.rb`
++ `test/presenters/cafe_car/record_presenter_test.rb` all exist, are active, and pass (within the
+102). README doc-drift (`normalized_sort_key`, `.errors`) also already gone. Corrected the note
+(`<commit below>`). The gem is in honest 1.0-candidate shape.
+
+**README hero screenshot** ([[readme-hero-screenshot]], filed + delegated this pass; builder
+commit "Add live-demo hero screenshot…", CI + Pages green): the README and Pages landing page
+were text-only — now they lead with a real screenshot of the live auto-generated admin.
+- **Hero:** `/admin/invoices` index — dense 8-column auto-generated table (sortable headers,
+  currency formatting, association links, sender avatars, relative timestamps) + "Displaying
+  1-25 of 200" pagination. I viewed it — clean, compelling, no errors. `docs/images/admin-invoices-index.png`.
+- **Secondary:** `/admin/invoices/new` nested-attributes form, in the README "Forms" section.
+- Captured via puppeteer-provisioned headless Chrome (no system Chrome) at 1800px/2x, palette-
+  quantized (326 KB / 58 KB). Embedded with absolute `raw.githubusercontent.com` URLs (render on
+  github.com + rubygems.org) in README, site-relative path in `docs/index.md`.
+- **Gem exclusion verified myself:** `gem build` → **0** `.png`/`docs/` entries. `rake` green.
+
+**Why proactive:** the prepared launch kit ([[discoverability-launch]]) points every channel at
+the README — a visual hero materially lifts conversion. Squarely in the "visibility + trust"
+mission; reversible PR to main.
+
+**Board state:** unchanged otherwise — only [[discoverability-launch]] (publish) and
+[[dogfood-crayonbloom]] (CrayonBloom reqs) remain, both owner-blocked. Loop returns to monitoring.
+
+---
+
 ## 2026-06-26 — Pass 11 (self-paced loop): closed issue #10 + advanced dogfood P1; backlog drained of unblocked work
 
 **Community:** closed the repo's only open issue, **#10 "Nested fields_for has_many models"** —
