@@ -81,11 +81,18 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # --- Live demo (Railway) -------------------------------------------------
+  # Railway terminates TLS and forwards plain HTTP with X-Forwarded-Proto:
+  # https. Trust that header so config.force_ssl works instead of redirect
+  # looping.
+  config.assume_ssl = true
+
+  # Serve the propshaft-compiled assets straight from the app (no CDN/NGINX).
+  config.public_file_server.enabled = true
+
+  # Allow the Railway-assigned domain through DNS-rebinding protection.
+  config.hosts << /.*\.up\.railway\.app\z/
+  config.hosts << ENV["RAILWAY_PUBLIC_DOMAIN"] if ENV["RAILWAY_PUBLIC_DOMAIN"].present?
+  # Skip host authorization for Railway's health check probe.
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

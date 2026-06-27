@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Boot script for the CafeCar live demo on Railway.
+#
+# The demo runs on an ephemeral SQLite database that is wiped and reseeded on
+# every container start, so any visitor edits self-clean on the next restart /
+# deploy. `db:prepare` loads the schema and runs db/seeds.rb in one step.
+set -e
+
+cd "$(dirname "$0")/../test/dummy"
+
+echo "==> Resetting + seeding ephemeral demo database"
+rm -f storage/production*.sqlite3*
+bin/rails db:prepare
+
+echo "==> Starting Puma on port ${PORT:-3000}"
+exec bin/rails server -b 0.0.0.0 -p "${PORT:-3000}"
