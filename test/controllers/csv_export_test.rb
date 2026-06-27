@@ -52,6 +52,15 @@ class CsvExportTest < ActionDispatch::IntegrationTest
     assert_equal "C08", names.last
   end
 
+  test "text values that look like spreadsheet formulas are neutralized" do
+    create(:client, name: '=HYPERLINK("http://evil")', owner: create(:user))
+
+    get "/admin/clients.csv"
+
+    # The leading `=` is prefixed with a quote so spreadsheets treat it as text.
+    assert_equal %('=HYPERLINK("http://evil")), names.first
+  end
+
   private
 
   def rows = CSV.parse(response.body)

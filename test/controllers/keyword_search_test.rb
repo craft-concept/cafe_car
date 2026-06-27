@@ -47,4 +47,17 @@ class KeywordSearchTest < ActionDispatch::IntegrationTest
     assert_response :success
     refute_includes response.body, "Zephyr rising"
   end
+
+  test "a crafted non-string q is ignored, not a 500" do
+    create(:client, name: "Zephyr Corp", owner: create(:user))
+
+    # A Hash (?q[x]=y) or Array (?q[]=a) must not reach the query DSL (it would
+    # raise) — it's ignored and the index renders unfiltered.
+    get "/admin/clients", params: { q: { x: "y" } }
+    assert_response :success
+    assert_includes response.body, "Zephyr Corp"
+
+    get "/admin/clients", params: { q: %w[a b] }
+    assert_response :success
+  end
 end

@@ -90,10 +90,18 @@ module CafeCar
         klass   = collection.respond_to?(:klass) ? collection.klass : collection.class
         basis   = options[:only] || [ :id ] | policy(klass.new).displayable_attributes
         columns = basis & klass.column_names.map(&:to_sym)
+        text    = columns.select { klass.columns_hash[_1.to_s]&.type.in?(%i[string text]) }
+
+        # Neutralize CSV formula injection: a text value a spreadsheet would treat as
+        # a formula (leading = + - @, tab, CR) is prefixed with a quote. Guard only
+        # text columns so numeric values (e.g. negative amounts) aren't mangled.
+        cell = ->(col, value) do
+          text.include?(col) && value.to_s.match?(/\A[=+\-@\t\r]/) ? "'#{value}" : value
+        end
 
         data = CSV.generate do |csv|
           csv << columns.map { klass.human_attribute_name(_1) }
-          Array(collection).each { |record| csv << columns.map { record.public_send(_1) } }
+          Array(collection).each { |record| csv << columns.map { cell.(_1, record.public_send(_1)) } }
         end
 
         self.content_type              ||= Mime[:csv]

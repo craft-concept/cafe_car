@@ -474,8 +474,9 @@ searched.
 
 Every index also renders as CSV — append `.csv` or click the "Download CSV"
 link. The export honors the current filters and sort and includes **every**
-matching record (not just the page on screen). Columns respect your Pundit
-policy, so attributes a user can't see never leak into the file:
+matching record (not just the page on screen). Columns mirror the JSON index —
+the same filtered attribute set — so protected columns (passwords, tokens) and
+association foreign keys never appear in the file:
 
 ```
 /products.csv?category=tools&sort=-price

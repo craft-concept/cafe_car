@@ -42,6 +42,11 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
   passwords/sessions, custom pages, health checks — 500 on
   `Pundit::PolicyScopingNotPerformedError`; verification now ships with the
   auto-CRUD it guards. `cafe_car` resource controllers still authorize + verify.
+- Keyword search: a crafted non-string `q` param (e.g. `?q[x]=y` or `?q[]=a`) is
+  now ignored instead of raising an unhandled 500.
+- CSV export: text values that look like spreadsheet formulas (leading `=`, `+`,
+  `-`, `@`) are prefixed with a quote, neutralizing CSV formula injection when an
+  exported file is opened in Excel/Sheets.
 
 ## [0.1.2] - 2026-06-26
 
