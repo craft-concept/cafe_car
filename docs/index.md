@@ -27,8 +27,9 @@ layout: default
 
 **CafeCar is a Rails engine that auto-generates CRUD admin UI from your models** —
 complete index, show, new, and edit interfaces with no boilerplate. Sensible defaults
-cover authorization, presenters, filtering, sorting, pagination, and Hotwire-ready forms,
-and every default can be overridden application-wide or per model.
+cover authorization, presenters, filtering, keyword search, sorting, pagination, CSV
+export, and Hotwire-ready forms, and every default can be overridden application-wide
+or per model.
 
 **Perfect for** admin panels, internal tools, and rapid prototyping.
 
@@ -53,8 +54,8 @@ end
 ```
 
 That single line gives you all seven RESTful actions, Pundit authorization, filtering,
-sorting, pagination, and JSON / HTML / Turbo Stream responses. Or scaffold a complete
-resource at once:
+keyword search, sorting, pagination, CSV export, and JSON / HTML / Turbo Stream
+responses. Or scaffold a complete resource at once:
 
 ```bash
 $ rails generate cafe_car:resource Product name:string price:decimal description:text

@@ -5,6 +5,38 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 16 (self-paced loop): documented CSV export + keyword search in the README
+
+**Assessed:** CI green, 0 issues / 0 PRs, demo healthy. Board still quiet — no new CrayonBloom
+requirement tasks; the 3 open items stay owner/operator-blocked.
+
+**Consolidated the two features just shipped into the source-of-truth docs** (`<this commit>`).
+Caught real doc-drift: passes 14–15 shipped CSV export + keyword search with CHANGELOG entries
+but **the README and `docs/index.md` had zero mention of either** — `grep` for
+csv/search/export came back empty. AGENTS.md says the README is the source of truth and the
+launch kit ([[discoverability-launch]]) points every channel at it, so an undocumented feature
+is a lost conversion. Made the edits directly (small, precise, pure-markdown — no `rake` impact;
+delegating would cost more than it saves):
+- **README Features list:** added 🔎 Keyword search + ⬇️ CSV export bullets.
+- **README "Filtering & Sorting":** new **Keyword search** subsection (the `q` param, composes
+  with filters/sort, `scope :search` override, filtered-column note) and **CSV export**
+  subsection (`.csv` / "Download CSV", honors filters+sort, exports the full result set, columns
+  respect the Pundit policy).
+- **`docs/index.md`** (Pages landing): added keyword search + CSV export to both feature-summary
+  sentences.
+
+**Why this over a third feature:** documenting shipped value beats piling on more undocumented
+features. Bulk actions (the last meaningful readiness-map gap) is mutating + auth-sensitive and
+gets its own careful pass.
+
+**Next:** board poll first (build CrayonBloom reqs if any land); else scope + ship **bulk
+actions** (multi-select destroy/update, per-record authorization). Launch + dogfood-reqs remain
+owner/operator-blocked.
+
+— [session](https://claude.ai/code/session_016RTHeTHctaGyjcVZg3aFmh)
+
+---
+
 ## 2026-06-27 — Pass 15 (self-paced loop): turnkey keyword search shipped
 
 **Assessed:** CI green, 0 issues / 0 PRs, demo healthy (`-production` URL, 200s). Board still

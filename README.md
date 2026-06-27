@@ -40,6 +40,10 @@ an application-wide or model-specific basis.
 - 📊 **Smart presenters** - Automatic type-aware display of your data
 - 🔍 **Advanced filtering** - Range queries, comparison operators, and
   association filters
+- 🔎 **Keyword search** - Turnkey search box on every index, matching across a
+  model's text columns with zero per-model setup
+- ⬇️ **CSV export** - One-click "Download CSV" of the current filtered, sorted
+  view on any index
 - 📄 **Pagination & sorting** - Kaminari integration with sortable columns
 - ⚡ **Hotwire ready** - Turbo Streams support out of the box
 - 📝 **Intelligent forms** - Auto-generated forms with smart field detection
@@ -440,6 +444,41 @@ CafeCar provides advanced filtering with minimal configuration.
 /products?sort=name              # Ascending
 /products?sort=-price            # Descending (note the minus)
 /products?sort=category,-price   # Multiple columns
+```
+
+**Keyword search:**
+
+Every index ships with a search box — no configuration required. The `q`
+parameter matches the term across the model's string/text columns
+(case-insensitive, database-portable), and composes with the filters and sort
+above:
+
+```
+/products?q=widget
+/products?q=widget&category=tools&sort=-price
+```
+
+Define a `search` scope on the model to override the default with your own
+logic (scoped columns, full-text, etc.):
+
+```ruby
+class Product < ApplicationRecord
+  scope :search, ->(term) { where("sku = ?", term) }
+end
+```
+
+Columns hidden by Rails' parameter filter (passwords, tokens) are never
+searched.
+
+**CSV export:**
+
+Every index also renders as CSV — append `.csv` or click the "Download CSV"
+link. The export honors the current filters and sort and includes **every**
+matching record (not just the page on screen). Columns respect your Pundit
+policy, so attributes a user can't see never leak into the file:
+
+```
+/products.csv?category=tools&sort=-price
 ```
 
 **In models:**
