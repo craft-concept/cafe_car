@@ -17,6 +17,12 @@ key, GitHub secret rotation) are tracked as blockers, not reasons to stall.
 
 - **`README.md`** — the canonical feature overview, installation guide, and usage reference.
   Read this first; don't duplicate it here.
+- **`BRAND.md`** (repo root) — the venture's brand-voice guide: 3–5 behavioral voice adjectives,
+  do/don't rules, an Always/Sometimes/Never lexicon, on-voice/off-voice example pairs, per-channel
+  notes. For an OSS gem the customer-visible surface is the README, gem description, docs, and any
+  demo/landing copy. Authored by the conductor at greenlight (out of the positioning work). Grounds
+  every copy pass through the voice gate (`/copy`); the universal anti-slop rules live in the
+  `designer` persona, so `BRAND.md` holds only what's specific to CafeCar.
 - **`cafe_car.gemspec`** — gem metadata, version, dependencies. Note `cnc` is the owner's
   own **public** gem (not private); the open question is whether its runtime coupling earns
   its keep — see `QUESTIONS.md` and the `cnc-inline-and-demote` task.
@@ -54,6 +60,11 @@ The conductor's focus is adoption and trust. Key milestones:
   must be green. "Green on my files" ≠ green CI — run the full suite.
 - **Deploy model:** publishing to RubyGems.org is manual (`gem push`) and requires the owner's
   API key. A `git push` does NOT auto-publish. CI runs on every push via `.github/workflows/`.
+- **All customer-visible copy passes the voice gate.** Every customer-visible string — the README,
+  the gem description, docs, and any demo/landing copy — goes through the designer's voice gate
+  (`/copy`) against **`BRAND.md`** before it ships. The designer carries the universal anti-slop
+  kit (kill AI-assistant tells); `BRAND.md` carries CafeCar's specific voice. Don't let copy that
+  sounds like an AI wrote it reach a user.
 - **Commit and push** your own work unless told not to — always push after you commit. Keep
   commits focused; don't bundle unrelated changes.
 - Finish honestly: verify before marking a task done (`rake tasks:done[id]`), run the full

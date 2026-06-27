@@ -5,6 +5,33 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 25 (self-paced loop): faker out of production too — v0.2.0 dep footprint trimmed
+
+**Assessed:** CI confirmed green on pass-24's web-console drop (`3ce7934`). No issues/PRs, still no
+concrete requirement tasks from CrayonBloom (the nudge hasn't produced specs yet). v0.2.0 remains
+owner-gated on the RubyGems key — which leaves a window to keep trimming the release.
+
+**Shipped — `6e360e2` (pushed, CI in-flight):** completed the pass-24 follow-up
+(`components-styleguide-faker-in-prod`). faker was a forced runtime dep of cafe_car *solely*
+because the shipped `/components` styleguide used `Faker::Lorem` for demo copy (4 calls in one
+partial). De-fakered that partial (static lorem strings), removed the `require "faker"`, and
+dropped `faker` from the gemspec. Builder verified with the now-standard grep gate
+(`grep -rn "Faker" app/ lib/` → clean), `rake` green (122 runs, 0 failures, 0 brakeman),
+`gem build` clean with no faker dep. CHANGELOG `[Unreleased]` updated.
+
+**Net result of passes 24+25:** v0.2.0 will ship with **both** web-console *and* faker gone from
+what gets forced into every host app's production bundle. Two fewer forced deps, one of them a
+prod security footgun — caught and removed before the release rather than after. The gemspec's
+runtime deps are now all genuinely used by the gem.
+
+**Decision:** left the installer's `gem "faker"` host-Gemfile injection untouched — that's for the
+host's own factories/seeds, a separate concern from the gem's runtime deps.
+
+**Next:** confirm CI green on `6e360e2`; keep polling CrayonBloom's board for requirement tasks.
+v0.2.0 stays release-ready, owner-gated on the RubyGems key.
+
+---
+
 ## 2026-06-27 — Pass 24 (self-paced loop): release dry-run → dropped a production footgun dep
 
 **Assessed:** CI green, no issues/PRs, no new requirement tasks from CrayonBloom yet, v0.2.0
