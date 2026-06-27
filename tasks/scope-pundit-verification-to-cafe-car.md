@@ -2,9 +2,10 @@
 id: scope-pundit-verification-to-cafe-car
 title: Scope Pundit verify_authorized/policy_scoped to the cafe_car macro (fix footgun)
 priority: P1
-status: open
+status: done
 domain: Eng
-created: 2026-06-27
+created: '2026-06-27'
+updated: '2026-06-27'
 ---
 
 **Adoption footgun, found live on the demo (2026-06-27).** `CafeCar::Controller`'s `included`

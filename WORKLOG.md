@@ -5,6 +5,36 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 17 (self-paced loop): fixed the Pundit-verification footgun
+
+**Assessed:** CI green, 0 issues / 0 PRs, demo healthy (verified `/passwords/new` 200 live after
+the debug-pass deploy). Board still quiet — no new CrayonBloom requirement tasks; 3 open items
+owner/operator-blocked.
+
+**Shipped — scoped Pundit verification to the `cafe_car` macro** (`ca07d64`, CI green, `rake`
+green: rubocop 204 files 0 offenses / 118 runs 358 assertions 0 failures / brakeman clean). This
+is the root-cause fix for the footgun the demo debug exposed: `CafeCar::Controller`'s `included`
+block forced `verify_authorized`/`verify_policy_scoped` on **every** including controller, so the
+obvious adoption path (include in `ApplicationController`) made plain controllers 500 on
+`Pundit::PolicyScopingNotPerformedError` unless they manually skipped — a real trust/adoption trap.
+- **Fix:** moved the two `after_action`s out of `included do` and into the `cafe_car` class method
+  (beside `before_action :authorize!`). Verification now ships with the auto-CRUD it guards —
+  `cafe_car` resource controllers still authorize + verify; plain controllers need no skips.
+- **Proven:** removed the now-redundant skips in the dummy (Pages/Passwords `before_action`,
+  Denials `skip_after_action`) — Denials still raises `NotAuthorizedError` so `render_unauthorized`
+  stays tested. New `pages_controller_test` asserts a non-`cafe_car` controller renders 2xx with no
+  skips (confirmed it 500s without the fix). Existing authorization/sessions/all-controllers tests
+  stay green.
+- **Behavior change, owner FYI in QUESTIONS.md** — only relaxes surprising enforcement on
+  non-`cafe_car` controllers; one-commit revert if the global design was intended.
+
+**Next:** board poll first. Remaining readiness-map gap is **bulk actions** (mutating +
+auth-sensitive — hold for a concrete driver rather than build speculatively). Launch +
+dogfood-reqs owner/operator-blocked. Open offer to the owner: add Sentry to the demo for error
+visibility (no reporting wired today).
+
+---
+
 ## 2026-06-27 — Demo debug (owner-driven): fixed password-route 500s; demo was 5 commits stale
 
 **Owner reported hitting 500s on the demo and asked if it reports to Sentry.** It does **not** —

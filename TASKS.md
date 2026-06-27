@@ -132,6 +132,7 @@ the user on these.
 
 Short memory aid only — git history is the full record. Trim as this grows.
 
+- Scope Pundit verify_authorized/policy_scoped to the cafe_car macro (fix footgun) — **Adoption footgun, found live on the demo (2026-06-27).** `CafeCar::Controller`'s `included`
 - Turnkey keyword search across resource indexes — Make keyword search work out-of-the-box on every auto-generated index. The plumbing is
 - Add CSV export to resource index actions — Close a headline competitive gap: every comparable admin gem (ActiveAdmin, Avo,
 - Triage stale draft PR — Open draft PR #11 "Render nested fields for has_many with accepts_nested_attributes_for"
