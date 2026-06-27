@@ -2,9 +2,10 @@
 id: csv-export-streaming
 title: Stream CSV export instead of loading the whole table into memory
 priority: P3
-status: open
+status: done
 domain: Eng
-created: 2026-06-27
+created: '2026-06-27'
+updated: '2026-06-27'
 ---
 
 Follow-up from the 2026-06-27 security/correctness review of [[csv-export]]. The `:csv`

@@ -61,7 +61,35 @@ class CsvExportTest < ActionDispatch::IntegrationTest
     assert_equal %('=HYPERLINK("http://evil")), names.first
   end
 
+  test "export under the row cap returns every row without a truncation signal" do
+    owner = create(:user)
+    3.times { |i| create(:client, name: "C%02d" % i, owner:) }
+
+    with_csv_cap(5) { get "/admin/clients.csv", params: { sort: "name" } }
+
+    assert_equal %w[C00 C01 C02], names
+    assert_nil response.headers["X-CafeCar-Truncated"]
+  end
+
+  test "export over the row cap is truncated to exactly the cap and signals it" do
+    owner = create(:user)
+    5.times { |i| create(:client, name: "C%02d" % i, owner:) }
+
+    with_csv_cap(3) { get "/admin/clients.csv", params: { sort: "name" } }
+
+    assert_equal %w[C00 C01 C02], names, "exports exactly the cap, in sorted order"
+    assert_equal "true", response.headers["X-CafeCar-Truncated"]
+  end
+
   private
+
+  def with_csv_cap(cap)
+    original = CafeCar.csv_export_row_limit
+    CafeCar.csv_export_row_limit = cap
+    yield
+  ensure
+    CafeCar.csv_export_row_limit = original
+  end
 
   def rows = CSV.parse(response.body)
   def header = rows.first

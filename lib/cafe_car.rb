@@ -23,6 +23,10 @@ module CafeCar
   # user model can override this (e.g. `CafeCar.user_class_name = "Account"`).
   mattr_accessor :user_class_name, default: "User"
 
+  # Maximum number of rows a CSV export will emit. Bounds the memory/latency cost
+  # of exporting a large table; truncated exports signal `X-CafeCar-Truncated`.
+  mattr_accessor :csv_export_row_limit, default: 10_000
+
   # The host's user model, resolved lazily so the constant need not exist at
   # boot. Used by CafeCar::Session for authentication.
   def self.user_class = user_class_name.to_s.constantize

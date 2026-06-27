@@ -36,20 +36,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ---
 
-## 🟠 Engineering
-
-- [ ] Stream CSV export instead of loading the whole table into memory
-        Follow-up from the 2026-06-27 security/correctness review of [[csv-export]]. The `:csv`
-        renderer (`lib/cafe_car/engine.rb`) does `Array(collection).each { … }`, materializing the
-        entire policy-scoped, un-paginated result set in memory before sending. On a large table this is
-        a memory/latency DoS vector (an admin exporting a 1M-row resource).
-
-        - Switch to row-streaming: `find_each` + an enumerator/`response.stream`, or cap exported rows
-          with a clear truncation signal (and `log`/document the cap).
-        - Keep the policy-scoped column basis and the formula-injection guard already in place.
-        - Low priority — fine for the small admin tables CafeCar targets today; revisit before touting
-          CSV for large datasets.
-
 ---
 
 ## 🚧 Blocked on the user
@@ -148,6 +134,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 
 - Scope Pundit verify_authorized/policy_scoped to the cafe_car macro (fix footgun) — **Adoption footgun, found live on the demo (2026-06-27).** `CafeCar::Controller`'s `included`
 - Turnkey keyword search across resource indexes — Make keyword search work out-of-the-box on every auto-generated index. The plumbing is
+- Stream CSV export instead of loading the whole table into memory — Follow-up from the 2026-06-27 security/correctness review of [[csv-export]]. The `:csv`
 - Add CSV export to resource index actions — Close a headline competitive gap: every comparable admin gem (ActiveAdmin, Avo,
 - Triage stale draft PR — Open draft PR #11 "Render nested fields for has_many with accepts_nested_attributes_for"
 - Make sessions optional AND finish the feature — Owner ratified (QUESTIONS.md): sessions/auth should be **both optional and finished** — a

@@ -99,9 +99,22 @@ module CafeCar
           text.include?(col) && value.to_s.match?(/\A[=+\-@\t\r]/) ? "'#{value}" : value
         end
 
+        # Bound the export: cap rows so a huge table can't materialize unbounded
+        # in memory. We deliberately limit (not `find_each`) to preserve the
+        # filtered+sorted order the export exists to mirror. A truncated export
+        # is signalled out-of-band so the data columns stay aligned.
+        cap   = CafeCar.csv_export_row_limit
+        scope = collection.respond_to?(:limit) ? collection.limit(cap) : Array(collection).first(cap)
+        rows  = 0
+
         data = CSV.generate do |csv|
           csv << columns.map { klass.human_attribute_name(_1) }
-          Array(collection).each { |record| csv << columns.map { cell.(_1, record.public_send(_1)) } }
+          scope.each { |record| csv << columns.map { cell.(_1, record.public_send(_1)) }; rows += 1 }
+        end
+
+        if rows == cap
+          Rails.logger.warn("CafeCar CSV export of #{klass.name} truncated at #{cap} rows")
+          headers["X-CafeCar-Truncated"] = "true"
         end
 
         self.content_type              ||= Mime[:csv]
