@@ -2,7 +2,7 @@
 id: components-styleguide-faker-in-prod
 title: /components styleguide forces faker into hosts' production bundle
 priority: P2
-status: open
+status: done
 domain: Eng
 created: 2026-06-27
 ---

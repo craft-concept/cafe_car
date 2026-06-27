@@ -12,6 +12,11 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Removed
 
+- Dropped `faker` as a runtime dependency. It was a hard runtime requirement solely
+  because the shipped, routed `/components` UI styleguide used `Faker::Lorem` for the
+  Alert demo copy. That partial now uses static sample lorem text, so host apps no
+  longer get faker forced into their production bundle. (faker remains a dev/test
+  dependency, and the installer still adds it to host Gemfiles for factories/seeds.)
 - Dropped the unused `web-console` runtime dependency from the gemspec. It was a
   development/debugging gem never referenced by CafeCar's own code, and shipping it
   as a runtime dependency forced an interactive console into host applications'

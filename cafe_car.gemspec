@@ -42,5 +42,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency "chronic", ">= 0.10"
 
   spec.add_dependency "rouge", ">= 4.0"
-  spec.add_dependency "faker", ">= 3.0"
 end

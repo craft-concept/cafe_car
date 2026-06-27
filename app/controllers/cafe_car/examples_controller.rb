@@ -1,5 +1,4 @@
 require "rouge"
-require "faker"
 
 module CafeCar
   class ExamplesController < const(:ApplicationController)
