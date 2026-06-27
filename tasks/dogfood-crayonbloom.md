@@ -40,20 +40,36 @@ held until the owner confirms scope (see QUESTIONS.md).
 | Authorization + roles | Pundit policies, attribute-level perms, scopes | ✅ (the role model itself is host-supplied) |
 | Auth / login | opt-in sessions (finished; CRUD-only hosts 403 not 500) | ✅ opt-in |
 | Filtering | query DSL — ranges, operators, association counts | ✅ |
-| Full-text / keyword search | — (only attribute filters) | ⚠️ gap |
+| Full-text / keyword search | turnkey keyword search (shipped) | ✅ |
 | Sorting + pagination | Kaminari-backed | ✅ |
 | Associations incl. nested forms | belongs_to selects + has_many nested attrs | ✅ (closed issue #10) |
 | File / image uploads | Active Storage (avatars in demo) | ✅ (host-wired) |
 | Rich text | Action Text | ✅ |
 | Audit log / versioning | PaperTrail CRUD'd as a resource | ✅ (host-supplied) |
-| CSV / data export | JSON responses only | ❌ gap |
+| CSV / data export | bounded CSV export, configurable row cap (shipped) | ✅ |
 | Bulk actions (multi-select ops) | — | ❌ gap |
+| Custom member/collection actions (approve/reject) | macro generates 7 RESTful actions only | ⚠️ gap |
 | Dashboard / metrics / charts | — | ❌ out of current scope |
 
-**Gap-derived candidate Eng tasks** (file only if CrayonBloom needs them): CSV/data export,
-bulk actions, keyword search, dashboard widgets. None blocks generic CRUD-admin dogfooding —
-the ✅ rows already cover a clients/invoices-style back-office (the demo proves it).
+**Gap-derived candidate Eng tasks** (file only if CrayonBloom needs them): bulk actions,
+custom member/collection actions, dashboard widgets. CSV export and keyword search are now
+shipped (✅). None blocks generic CRUD-admin dogfooding — the ✅ rows already cover a
+clients/invoices-style back-office (the demo proves it).
 
-**Status:** the generic enumeration is done; the milestone is now blocked on CrayonBloom's
-concrete requirements (resources, roles, must-have capabilities, and whether there's a repo
-to read). Questions filed in QUESTIONS.md → `blocked_on: user`.
+## Concrete use case surfaced — 2026-06-27 (pass 23, from CrayonBloom's board)
+
+Mined CrayonBloom's board instead of waiting passively. Their back-office is a **public-gallery
+submission-moderation queue** (board task "Public gallery + admin approval back-office", `wip`):
+admins triage AI-generated kids' images and approve/reject them. Their spec-author task
+"Define the back-office requirements for the CafeCar dogfood" is still **`open`** on their side —
+that's why no requirement tasks have landed on my board yet. The milestone gate is their spec,
+not the owner.
+
+From that use case the **anticipated CafeCar deltas** are: (1) custom member/collection actions
+(one-click approve/reject — the macro only generates the 7 RESTful actions), (2) bulk actions
+(approve/reject many), (3) index-level Active Storage thumbnails for queue triage. None built yet —
+holding until they confirm, to avoid speculative scope creep.
+
+**Action taken (pass 23):** filed a capability-snapshot + anticipated-deltas task to their board
+(`cafecar-dogfood-capability-snapshot-anticipated-deltas-for-y`) so they spec against current
+reality and we parallelize. Now blocked on their concrete requirement tasks landing here.

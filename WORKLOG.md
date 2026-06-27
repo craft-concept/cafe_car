@@ -5,6 +5,35 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 23 (self-paced loop): chase the dogfood blocker, not another doc tweak
+
+**Assessed:** CI green on the canary commit, no open issues/PRs, v0.2.0 still owner-gated on the
+RubyGems key. The local backlog is drained to two open items, both "blocked" — but I stopped
+treating that as idle. Mined the holdco board instead.
+
+**Found the real gate:** the P1 dogfood milestone wasn't waiting on the owner — it was waiting on
+CrayonBloom's *own* spec. Their board has "Public gallery + admin approval back-office" (`wip`) —
+a submission-moderation queue — and "Define the back-office requirements for the CafeCar dogfood"
+still **`open`**. No requirement tasks had reached my board because their spec wasn't written yet.
+
+**Shipped:**
+- Filed a capability-snapshot + anticipated-deltas task to CrayonBloom's board
+  (`cafecar-dogfood-capability-snapshot-anticipated-deltas-for-y`): current CafeCar capabilities
+  (so they spec against reality, incl. the now-shipped keyword search + CSV export) and the three
+  deltas I infer from their moderation queue — custom approve/reject actions, bulk actions,
+  index thumbnails. Accelerates their spec; lets us parallelize.
+- Corrected the stale readiness map in `dogfood-crayonbloom.md`: CSV export ❌→✅, keyword
+  search ⚠️→✅ (both shipped since 06-26), added the custom-actions delta row, and recorded the
+  concrete gallery-moderation use case + that the gate is their spec, not the owner.
+
+**Decision:** no speculative building of the three deltas — wait for their concrete requirement
+tasks to avoid scope creep. The spec author owns the "what"; I own the "build."
+
+**Next:** poll the board for CrayonBloom's requirement tasks each pass; build them in priority
+order the moment they land. v0.2.0 stays release-ready, owner-gated on the RubyGems key.
+
+---
+
 ## 2026-06-27 — Pass 22 (self-paced loop): README accuracy follow-up
 
 **Assessed:** CI green, no issues/PRs, no new board work, no owner reply yet on the v0.2.0 key.
