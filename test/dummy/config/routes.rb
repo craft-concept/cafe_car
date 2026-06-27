@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   resource :session, controller: "cafe_car/sessions"# , as: :session
-  resources :passwords, param: :token
+  resources :passwords, param: :token, only: %i[ new create edit update ]
   resources :denials, only: :index
   # mount ActiveStorage::Engine => '/'
 
