@@ -1,68 +1,79 @@
 # CafeCar — Brand Voice Guide
 
-> **Operator fills this at greenlight.** This is the per-venture voice guide that grounds every
-> customer-visible string — write it as part of the BUSINESS-PLAN greenlight, when the
-> positioning is fresh (the voice falls straight out of the positioning work). It is **not**
-> holdco's job, same as the business plan.
->
-> **Write it for an LLM, not a brand book.** Be explicit, specific, and example-heavy — a model
-> can't infer what you mean from vibes; it needs behavioral rules and real examples. Keep the
-> whole thing to ~one page so it's cheap to prepend to every copy pass. Replace every `{{...}}`
-> and every _italic prompt_ below; delete this banner when done.
->
-> This file deliberately does **not** repeat the universal AI-slop ban list (banned lexicon,
-> antithesis tic, rule-of-three, em-dash overuse, detail-free upbeat tone) — that lives in the
-> `designer` persona and every venture inherits it. Here you capture only what's specific to
-> **CafeCar**.
+CafeCar's specific voice. The universal AI-slop ban list (banned lexicon, antithesis tic,
+rule-of-three, em-dash overuse, detail-free upbeat tone) lives in the `designer` persona and is
+inherited — this file captures only what's specific to CafeCar.
 
 ## Who we're talking to
 
-_The audience in one or two sentences: who they are, what they want, how they already talk._
+Rails developers who need an admin panel, internal tool, or back-office and don't want to
+hand-roll CRUD views or adopt a heavyweight admin framework. They're fluent in Rails, read code
+faster than prose, trust convention over configuration, and are skeptical of magic and marketing.
+They already talk in `model`/`controller`/`Turbo`/`Pundit` — meet them there.
 
-## Voice adjectives (3–5, each defined behaviorally)
+## Voice adjectives (each defined behaviorally)
 
-_Adjectives alone are useless — every brand thinks it's "conversational but professional." Say
-what each one means **in practice**, as a behavior the writer can follow or break._
-
-- **{{ADJECTIVE 1}}** = _e.g. "Direct = lead with the point in sentence one; never bury it in
-  paragraph three."_
-- **{{ADJECTIVE 2}}** = _behavioral definition_
-- **{{ADJECTIVE 3}}** = _behavioral definition_
-- _(4–5 optional)_
+- **Rails-native** = speak in Rails idioms and assume Rails fluency. Name real concepts
+  (controllers, Pundit policies, Turbo Streams, Kaminari) directly; never dumb them down or
+  explain Rails basics. It should read like it was written by someone who ships Rails apps.
+- **Show, don't claim** = prove every capability with a code snippet or the live demo, not an
+  adjective. Replace "powerful filtering" with the actual query: `?total=>100`.
+- **Opinionated** = state the thesis and the default plainly ("Rails should render something by
+  default"). Recommend the one right way instead of enumerating options. Take a position.
+- **Terse** = lead with the payoff, cut throat-clearing. One line of controller code, one
+  sentence of why. The reader is busy.
+- **Unhyped** = describe what it does at face value. Confidence comes from precision, not volume —
+  no intensifiers, no exclamation-driven enthusiasm.
 
 ## Behavioral do / don't
 
-_Concrete, checkable rules — "two-sentence paragraphs" beats "concise," "lead with the
-counter-intuitive finding" beats "engaging." Cover paragraph length, opener style, CTA style,
-punctuation, capitalization, emoji policy._
-
-- **Do:** _e.g. "Open with a concrete number or a customer's own words."_
-- **Do:** _…_
-- **Don't:** _e.g. "Never end on a tidy 'In conclusion' wrap-up."_
-- **Don't:** _…_
+- **Do:** open with the one line of code or the concrete result ("One line generates index, show,
+  new, and edit").
+- **Do:** name the real mechanism — Pundit, Kaminari, Turbo Streams, Rouge — credibility comes
+  from specificity.
+- **Do:** write code identifiers exactly (`cafe_car`, `rails g cafe_car:resource`); prefer a
+  runnable snippet over a description of one.
+- **Do:** use sentence case and plain periods; keep paragraphs to one or two sentences.
+- **Don't:** use marketing intensifiers — effortless, seamless, blazing-fast, magical, powerful,
+  revolutionary, game-changer, supercharge.
+- **Don't:** manufacture excitement with exclamation points. (The README's emoji feature-bullets
+  are the ceiling, not the floor; prose stays calm.)
+- **Don't:** hedge ("might," "could possibly help") or hand-wave with "simply" / "just."
 
 ## Lexicon
 
 | Always use | Sometimes use | Never use |
 |---|---|---|
-| _on-brand words/phrases_ | _ok in context_ | _banned for this brand (on top of the universal slop list)_ |
+| Rails engine; auto-generated; one line; override; sensible defaults; the `cafe_car` macro; back-office / admin / internal tools; convention | turnkey (as in the keyword-search bullet); zero-config (only when literally true); emoji (feature-bullet lists only) | effortless(ly); seamless(ly); blazing-fast; magical / magic; revolutionary; game-changer; supercharge; "powerful" as a standalone claim; leverage (as a verb) |
 
-## On-voice / off-voice examples (6–10 pairs — the highest-signal part)
+## On-voice / off-voice examples
 
-_Real before/after pairs. These double as few-shot exemplars for every copy pass, so make them
-representative across formats (headline, body, CTA, error string, email opener)._
-
-- **Off:** _"A new feature was launched to improve operational efficiency."_
-  **On:** _"We shipped a small fix that saves teams a few hours a week."_
-- **Off:** _…_  **On:** _…_
-- _(add 4–8 more, spanning the channels below)_
+- **Off:** "Supercharge your Rails admin with effortless CRUD generation!"
+  **On:** "A complete Rails admin from one line of controller code."
+- **Off:** "CafeCar is a powerful, flexible solution that revolutionizes how you build admin panels."
+  **On:** "Rails should render something for your models by default. CafeCar does — then gets out of the way when you override it."
+- **Off:** "Enjoy blazing-fast, magical filtering capabilities."
+  **On:** "Filter any index by range, comparison, or association count: `?created_at=>2024-01-01`."
+- **Off:** "Get started today and transform your workflow!"
+  **On:** "Add `gem \"cafe_car\"`, run the installer, point it at a model."
+- **Off (error):** "Oops! Something went wrong. Please try again later."
+  **On (error):** "Couldn't save: title can't be blank. Fix that field and resubmit."
+- **Off (empty state):** "No data yet — start your journey!"
+  **On (empty state):** "No invoices yet. \"New invoice\" fills this table."
+- **Off (transactional email):** "We're thrilled to let you know your export is ready!"
+  **On (transactional email):** "Your CSV export is ready: 1,240 rows. Link below, expires in 24h."
+- **Off (social):** "🚀🚀 Game-changing Rails gem that will revolutionize your admin panels!! 🚀🚀"
+  **On (social):** "Hand-rolled one more admin CRUD view? Try `cafe_car`: one line gives you index/show/new/edit. Demo (no signup) in the README."
 
 ## Per-channel notes
 
-_How the voice shifts by surface. Same brand, different register._
-
-- **Landing headline:** _…_
-- **Product UI / microcopy (buttons, empty states, tooltips):** _…_
-- **Error messages:** _e.g. "Plain, specific, blame the system not the user, say the next step."_
-- **Transactional email:** _…_
-- **Marketing email / social:** _…_
+- **Landing headline:** one sentence; lead with the outcome (a full admin) and the cost (one
+  line). No exclamation.
+- **Product UI / microcopy (buttons, empty states, tooltips):** imperative and short ("New
+  invoice," "Download CSV," "Edit"); match Rails scaffold conventions; sentence case.
+- **Error messages:** plain and specific; name the field and the next step; blame the system or
+  state, not the user; never "Oops."
+- **Transactional email:** lead with the fact (what's ready or done), include the concrete number
+  and the link; no enthusiasm padding.
+- **Marketing email / social:** developer-to-developer. A real snippet or the demo link does the
+  selling; at most one emoji; no hype stacking.

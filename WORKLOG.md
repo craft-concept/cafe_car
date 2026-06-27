@@ -5,6 +5,34 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 26 (self-paced loop): authored CafeCar's BRAND.md voice guide
+
+**Assessed:** CI green on all pass-25 commits (faker drop verified). No issues/PRs. A **new P1
+Brand task** landed on the board (`author-brand-md-voice-guide-route-all-customer-visible-copy-`,
+filed 22:24): the fleet anti-AI-slop voice-gate machinery shipped to this repo (designer persona
+carries the anti-slop kit; `BRAND.md` stub, `/copy` command, AGENTS voice-gate rule). Two
+operator-owned follow-ups.
+
+**Shipped — Part 1 (BRAND.md authored):** filled the stub with CafeCar's actual voice, grounded
+in the shipped README + gem description rather than invented. Five behaviorally-defined adjectives
+(Rails-native, show-don't-claim, opinionated, terse, unhyped), do/don't rules, an
+Always/Sometimes/Never lexicon, 8 on-voice/off-voice pairs spanning headline → body → CTA → error
+→ empty-state → email → social, and per-channel notes. Authoring this is squarely the operator's
+job — it falls out of positioning I own. Left the universal slop list out (it lives in the designer
+persona).
+
+**Part 2 (one-time voice sweep) — deferred, by design.** Routing all customer-visible copy through
+`/copy` against BRAND.md needs the *updated* designer persona, and the board task notes the persona
+changed and a graceful operator restart is needed (holdco sequences it). Running the sweep against a
+stale persona would be wrong, so it waits for the restart. Tracked in
+`tasks/brand-voice-guide-and-sweep.md` (`blocked_on: designer-persona-restart`).
+
+**Next:** confirm CI; when the designer-persona restart lands, run the voice sweep (README + gem
+description first). Keep polling for CrayonBloom's requirement tasks. v0.2.0 stays owner-gated on
+the RubyGems key.
+
+---
+
 ## 2026-06-27 — Pass 25 (self-paced loop): faker out of production too — v0.2.0 dep footprint trimmed
 
 **Assessed:** CI confirmed green on pass-24's web-console drop (`3ce7934`). No issues/PRs, still no
