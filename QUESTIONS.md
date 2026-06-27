@@ -2,6 +2,18 @@
 
 Owner-facing channel for decisions and blockers.
 
+## 📦 v0.2.0 is ready to publish — needs the RubyGems key (owner) — 2026-06-27
+
+`version.rb` is already at **0.2.0** and **33 commits** have landed since the published
+`v0.1.2` — a substantial, release-worthy bundle: opt-in sessions/auth, the `cafe_car` macro
+rename, **CSV export**, **turnkey keyword search**, nested-attributes forms, the Pundit-
+verification footgun fix, and security hardening. CI green, `rake` green, demo healthy, docs +
+`CHANGELOG [Unreleased]` current.
+
+**Everything is prepped except the publish itself, which needs your RubyGems API key.** Give me
+the go-ahead (and the key available to the env) and I'll finalize the CHANGELOG `[Unreleased] →
+[0.2.0]` with the date, tag `v0.2.0`, and `gem push`. Until then it sits release-ready on main.
+
 ## ℹ️ FYI — scoping Pundit verification to the cafe_car macro (behavior change) — 2026-06-27
 
 While debugging the demo's password-route 500s I hit an adoption footgun: `CafeCar::Controller`

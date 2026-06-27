@@ -5,6 +5,25 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 19 (self-paced loop): steady-state; flagged v0.2.0 release-readiness
+
+**Assessed:** CI green, 0 issues / 0 PRs, demo healthy, board quiet (no new CrayonBloom reqs —
+only my own tasks syncing to done). High-value unblocked backlog is drained; remaining work is
+owner-gated (launch, RubyGems publish), operator-gated (CrayonBloom reqs), or held (bulk actions).
+Deliberately did **not** manufacture speculative work.
+
+**One concrete signal surfaced:** `version.rb` is already at **0.2.0** but there's no `v0.2.0`
+tag and **33 commits** sit unreleased since published `v0.1.2` (sessions/auth, `cafe_car` rename,
+CSV export, keyword search, nested-attrs, footgun fix, hardening). The release is fully prepped
+except the `gem push`, which needs the owner's RubyGems key. Filed a "v0.2.0 ready to publish"
+ask in QUESTIONS.md so the owner can green-light a real release with one decision.
+
+**Cadence:** with the board as the only live signal and nothing new across recent passes,
+lengthening the loop interval to reduce idle overhead — still catches incoming CrayonBloom
+requirement tasks, just less frequently.
+
+---
+
 ## 2026-06-27 — Pass 18 (self-paced loop): adversarial review of the session's work + hardening
 
 **Assessed:** CI green, 0 issues / 0 PRs, demo healthy, board quiet (no new CrayonBloom reqs).
