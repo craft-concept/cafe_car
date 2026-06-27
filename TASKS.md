@@ -63,6 +63,37 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Every fix lands with a regression test. `rake` green before push.
         - Anything that can't reach v1 quality gets cut/labeled experimental (per V1_SCOPE), not
           shipped broken.
+- [~] (P1) Add test coverage for the generators
+        The feature audit (`V1_SCOPE.md`) flagged the generators as a major coverage gap:
+        `install` / `resource` / `controller` / `notes` are uncovered (install/notes test files
+        are empty stubs). The **`install` generator is the riskiest untested path** — it mutates
+        the host's Gemfile, routes, and ApplicationController. Generators are the first thing a new
+        adopter runs; if they break, trust is gone on contact.
+
+        - Add `Rails::Generators::TestCase` coverage for each generator under `test/generators/`.
+        - `install`: assert it injects the expected deps, mounts the engine, creates the policy,
+          adds `CafeCar::Controller`, and wires JS imports — without duplicating on re-run.
+        - `resource` / `controller` / `policy`: assert the generated files + content.
+        - `notes`: assert migration + model + concern.
+        - `sessions`: a test likely already exists from the recent sessions work — extend if thin.
+        - Fill in the empty stub test files. `rake` green.
+
+        Supersedes item 4 of [[fix-halfbaked-features]].
+- [ ] (P2) Nested-attributes form rendering for has_many
+        Implement first-class form rendering for `has_many` + `accepts_nested_attributes_for`
+        (repeatable nested fields with add/remove). Strengthens the "smart forms" value prop.
+
+        - **Reference:** the closed draft PR #11 (`copilot/fix-nested-fields-for-has-many`) had a
+          reasonable approach — a `_nested_field.html.haml` partial using `fields_for` with a
+          `<template>` for new records, vanilla-JS add/remove in `app/javascript/cafe_car.js`
+          (handling `_destroy`), and reordering `FieldInfo#type` to try `nested_attributes_type`
+          first. Closed because it was a stale, untested draft against a since-diverged main.
+        - Reimplement on current main **with tests** and a CHANGELOG entry.
+        - **Regression risk:** moving `nested_attributes_type` to the front of the `type`
+          resolution chain changes detection priority for has_many — prove existing association
+          rendering (e.g. belongs_to selects, plain has_many) is unaffected. `nested_attributes_type`
+          must return nil unless `accepts_nested_attributes_for` is actually configured.
+        - Likely owner-visible product addition — fine to ship once tested, but flag in WORKLOG.
 
 ## 🧭 Product
 
@@ -98,19 +129,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Docs site: GitHub Pages from the README to start; expand later.
         - Gate on [[feature-audit-v1-scope]] so the demo only exposes v1-quality features.
 
-## 🛟 Ops & Support
-
-- [ ] (P2) Triage stale draft PR
-        Open draft PR #11 "Render nested fields for has_many with accepts_nested_attributes_for"
-        (Copilot-authored, March 2026) has sat unattended for months. A stale open PR signals an
-        unmaintained repo — triage it as part of being a responsive maintainer.
-
-        - Review the diff: is the feature wanted, correct, and tested? `accepts_nested_attributes_for`
-          support in the form builder is a plausibly valuable feature.
-        - Decide: finish + merge (with tests + CHANGELOG entry), or close with a courteous
-          explanation. Either way, don't leave it hanging.
-        - Good first signal for the discoverability push that the repo is alive.
-
 ---
 
 ## 🚧 Blocked on the user
@@ -125,6 +143,7 @@ the user on these.
 
 Short memory aid only — git history is the full record. Trim as this grows.
 
+- Triage stale draft PR — Open draft PR #11 "Render nested fields for has_many with accepts_nested_attributes_for"
 - Make sessions optional AND finish the feature — Owner ratified (QUESTIONS.md): sessions/auth should be **both optional and finished** — a
 - Retroactively tag v0.1.1 and v0.1.2 releases — The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
 - README badges + fix inaccuracies — The README is the storefront. Add credibility badges and remove statements that don't

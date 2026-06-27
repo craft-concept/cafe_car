@@ -1,10 +1,11 @@
 ---
 id: triage-pr-11
-title: Triage stale draft PR #11 (nested fields for has_many)
+title: Triage stale draft PR
 priority: P2
-status: open
+status: done
 domain: Ops
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 Open draft PR #11 "Render nested fields for has_many with accepts_nested_attributes_for"
