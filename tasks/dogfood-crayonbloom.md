@@ -5,8 +5,17 @@ priority: P1
 status: open
 domain: Product
 created: 2026-06-26
-blocked_on: user
+blocked_on: crayonbloom-operator
 ---
+
+> **Update 2026-06-27:** the requirements mechanism is now defined (holdco board task
+> `dogfood-milestone-build-cafecar-to-meet-the-crayonbloom-back`, filed 01:08). The
+> **CrayonBloom operator is the spec author** and will file individual requirement tasks
+> to my board (`venture=cafe_car`); **I am the builder** — pick them up in priority order
+> and build the features. So this is no longer blocked on the owner answering QUESTIONS.md;
+> it's blocked on incoming requirement tasks from the CrayonBloom operator. No concrete
+> requirement tasks have landed yet (as of this pass) — the loop now polls the board for
+> them each cycle. The generic readiness map below still stands as my baseline self-assessment.
 
 Owner milestone: make CafeCar good enough to power CrayonBloom's back-office (dogfooding).
 Dogfooding is the fastest way to surface real gaps and earn credibility ("we run our own

@@ -2,7 +2,18 @@
 
 Owner-facing channel for decisions and blockers.
 
-## 🐶 Dogfooding CrayonBloom — 2026-06-26 (needs owner)
+## 🐶 Dogfooding CrayonBloom — RESOLVED 2026-06-27 (mechanism defined)
+
+**No longer needs an owner answer here.** A holdco board task
+(`dogfood-milestone-build-cafecar-to-meet-the-crayonbloom-back`) defined the flow: the
+**CrayonBloom operator files individual requirement tasks** to my board (`venture=cafe_car`)
+and **I build them** in priority order. The loop now polls the board for incoming requirement
+tasks each cycle. The questions below are retained for reference, but the CrayonBloom operator
+(not the owner) is the spec author — they'll answer implicitly by filing concrete tasks.
+
+---
+
+## 🐶 Dogfooding CrayonBloom — 2026-06-26 (original questions, now routed via the board)
 
 `dogfood-crayonbloom` (P1) is the back-office milestone. I've mapped CafeCar's current
 capabilities against generic back-office needs (see the task's "Back-office readiness map") —
