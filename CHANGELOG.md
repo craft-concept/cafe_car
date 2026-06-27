@@ -33,6 +33,16 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
   `allow_destroy` is set). Association detection still falls back to the prior
   behavior unless `accepts_nested_attributes_for` is actually configured.
 
+### Fixed
+
+- Pundit's `verify_authorized`/`verify_policy_scoped` are now scoped to the
+  `cafe_car` macro instead of firing for every controller that merely includes
+  `CafeCar::Controller`. Wiring the concern into `ApplicationController` (the
+  obvious adoption path) no longer makes plain controllers — Rails-generated
+  passwords/sessions, custom pages, health checks — 500 on
+  `Pundit::PolicyScopingNotPerformedError`; verification now ships with the
+  auto-CRUD it guards. `cafe_car` resource controllers still authorize + verify.
+
 ## [0.1.2] - 2026-06-26
 
 ### Added

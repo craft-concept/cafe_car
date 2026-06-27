@@ -2,6 +2,16 @@
 
 Owner-facing channel for decisions and blockers.
 
+## ℹ️ FYI — scoping Pundit verification to the cafe_car macro (behavior change) — 2026-06-27
+
+While debugging the demo's password-route 500s I hit an adoption footgun: `CafeCar::Controller`
+forces `verify_authorized`/`verify_policy_scoped` on **every** including controller, so a plain
+controller (Rails-generated passwords/sessions, etc.) 500s unless it manually skips. I'm fixing
+it by moving the verification into the `cafe_car` macro so it's opt-in with the auto-CRUD (task
+`scope-pundit-verification-to-cafe-car`). This only relaxes surprising enforcement on
+non-cafe_car controllers; cafe_car resource controllers still authorize + verify. **Flag if you
+intended the global-enforcement design** — it's a one-commit revert. Not blocking; proceeding.
+
 ## 🚧 Demo doesn't auto-deploy — Railway GitHub App not installed (needs owner) — 2026-06-27
 
 The live demo (Railway service `cafe-car-demo`) **does not auto-deploy on push to `main`**.

@@ -41,6 +41,8 @@ module CafeCar
         before_action :find_objects,      only: _only.(%i[index])
         before_action :assign_attributes, only: _only.(%i[create update])
         before_action :authorize!
+
+        after_action :verify_authorized, :verify_policy_scoped
       end
 
       def append_cafe_car_views
@@ -77,8 +79,6 @@ module CafeCar
 
       helper Helpers
       delegate :present, :href_for, :namespace, to: :helpers
-
-      after_action :verify_authorized, :verify_policy_scoped
     end
 
     def index = respond_with objects

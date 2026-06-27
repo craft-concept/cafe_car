@@ -3,8 +3,6 @@
 # sessions/login infrastructure is or isn't available.
 class DenialsController < ApplicationController
   rescue_from Pundit::NotAuthorizedError, with: :render_unauthorized
-  skip_after_action :verify_authorized, raise: false
-  skip_after_action :verify_policy_scoped, raise: false
 
   def index
     raise Pundit::NotAuthorizedError, "denied"

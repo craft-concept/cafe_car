@@ -1,10 +1,10 @@
 require "test_helper"
 
 # PasswordsController is plain Rails auth scaffolding that includes
-# CafeCar::Controller (via ApplicationController). It must opt out of CafeCar's
-# Pundit verification and must not inherit the resource `index` action — that
-# action infers a model from the controller name ("Password"), which doesn't
-# exist. Regression guard for both 500s.
+# CafeCar::Controller (via ApplicationController) without calling `cafe_car`, so
+# it gets no Pundit verification. It must also not inherit the resource `index`
+# action — that action infers a model from the controller name ("Password"),
+# which doesn't exist. Regression guard for both 500s.
 class PasswordsControllerTest < ActionDispatch::IntegrationTest
   test "new renders the reset-request form without a 500" do
     get "/passwords/new"
