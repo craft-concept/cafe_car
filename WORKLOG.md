@@ -5,6 +5,40 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Demo debug (owner-driven): fixed password-route 500s; demo was 5 commits stale
+
+**Owner reported hitting 500s on the demo and asked if it reports to Sentry.** It does **not** —
+no sentry gem/initializer/DSN anywhere; errors live only in Railway runtime logs
+(`mcp__railway__get-logs`). Pulled the logs, reproduced locally on current main.
+
+**Root finding: the demo was running stale code** (deploy `fdae9155` from 01:45, commit
+035d558) — **5 pushes never deployed**. Cause: the **Railway GitHub App isn't installed** on
+`craft-concept/cafe_car` (`NO_INSTALLATION`), so nothing auto-deploys. Owner blocker filed in
+QUESTIONS.md + memory; **demo deploys are manual** via Railway MCP until the app is installed.
+
+**Three errors triaged:**
+- `/articles`, `/authors` template ArgumentErrors ("given 3, expected 0..1" / "given 1,
+  expected 0") — **already fixed on main** (views rewritten); only the stale demo showed them.
+- `/passwords*` 500s — **genuine bug, fixed** (`5bcd7ed`, `rake` green: 117 runs 0 failures):
+  `PasswordsController` (plain Rails auth scaffolding) inherits `CafeCar::Controller` via
+  `ApplicationController`. `GET /passwords` fell through to CafeCar's resource `index`, which
+  infers a model from the controller name → `const_get("Password")` → NameError. And every
+  action 500'd on `Pundit::PolicyScopingNotPerformedError` (never authorizes). Fix: restrict
+  `resources :passwords` to implemented actions, add `skip_authorization`/`skip_policy_scope`
+  (matching Pages/Denials), add the missing new/edit views + a regression test.
+
+**Triggered a manual deploy** (`175a408a`, SUCCESS, from `5bcd7ed`) — verified the LIVE demo:
+`/articles` `/authors` `/passwords/new` 200, `/passwords` 404 (NameError gone), and the
+session's new features now live (`/admin/clients?q=…` search 200, `/admin/clients.csv` 200).
+
+**Latent gem footgun noted (not changed):** including `CafeCar::Controller` in
+`ApplicationController` forces `verify_authorized`/`verify_policy_scoped` on every controller, so
+any plain controller 500s unless it explicitly skips. The author's pattern is skip-per-controller
+(Pages/Denials do). Worth considering moving the verification into the `cafe_car` macro so it's
+opt-in with `authorize!` — candidate gem-hardening task.
+
+---
+
 ## 2026-06-27 — Pass 16 (self-paced loop): documented CSV export + keyword search in the README
 
 **Assessed:** CI green, 0 issues / 0 PRs, demo healthy. Board still quiet — no new CrayonBloom
