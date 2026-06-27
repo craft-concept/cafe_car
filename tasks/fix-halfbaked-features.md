@@ -18,8 +18,10 @@ Authoritative list is in `V1_SCOPE.md`. Most items are now shipped — only item
 2. ✅ `sessions` generator USAGE → fixed in the sessions work.
 3. ✅ README false advertising → fixed via [[readme-badges-accuracy]].
 4. ✅ Missing generator tests → done via [[generator-test-coverage]] (3 → 21 generator tests).
-5. **REMAINING:** add tests for advertised-but-unverified paths — `turbo_stream` + `json`
-   responses end-to-end, a direct presenter render (`present(obj)` → HTML), and a
-   sort/paginate controller test. These are core advertised features with no direct coverage.
+5. ✅ Coverage for advertised-but-unverified paths → done. Verified 2026-06-26:
+   `test/controllers/json_responses_test.rb` (2 tests), `turbo_stream_test.rb` (3),
+   `sort_and_paginate_test.rb` (3), and `test/presenters/cafe_car/record_presenter_test.rb`
+   (4, direct `present(obj)` render) all exist, are active, and pass. The whole V1_SCOPE
+   "must-fix" list is now closed.
 
 - Every fix lands with a regression test. `rake` green before push.
