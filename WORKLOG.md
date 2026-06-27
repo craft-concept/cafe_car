@@ -5,6 +5,42 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 24 (self-paced loop): release dry-run → dropped a production footgun dep
+
+**Assessed:** CI green, no issues/PRs, no new requirement tasks from CrayonBloom yet, v0.2.0
+still owner-gated on the RubyGems key. Rather than another doc tweak, ran a **v0.2.0 release
+dry-run** (`gem build`) to de-risk the owner's publish moment.
+
+**Found:** the build flagged an open-ended `faker` runtime dep. Auditing the gemspec's runtime
+deps surfaced two that looked unused — `faker` and `web-console`. Delegated the removal to a
+builder with a grep verification gate.
+
+**The verification gate earned its keep.** The builder caught that my faker analysis was wrong:
+my `Faker\.` (dot) grep missed the `Faker::Lorem` (scope-resolution) calls in the shipped,
+unconditionally-routed `/components` styleguide (`examples_controller.rb` does `require "faker"`).
+faker is a **genuine runtime dep** — removing it would 500 `/components` in hosts' production, and
+`rake` would NOT catch it (faker is in the root Gemfile). It stopped and reported instead of
+proceeding. Lesson logged in the task file: the grep gate, not `rake`, is the real safety check.
+
+**Shipped — `e795e47` (committed; push pending DNS, see below):** dropped only the genuinely-unused
+`web-console` runtime dep from `cafe_car.gemspec` — a dev/debug gem never used by the gem and a
+**production footgun** (interactive console forced onto every host). Builder also updated
+`Gemfile.lock` (correct companion) and added a CHANGELOG `[Unreleased]` Removed entry. `rake`
+green (122 runs, 0 failures, 0 brakeman warnings); `gem build` clean, no web-console warning.
+
+**Filed follow-up `components-styleguide-faker-in-prod` (P2):** the `/components` styleguide forces
+faker into every host's *production* bundle just to render sample copy. Recommend de-fakering the
+styleguide (static strings) post-v0.2.0 so faker can leave the runtime deps too. Not a v0.2.0
+blocker.
+
+**⚠️ Push blocked on a DNS outage:** `github.com` is currently unresolvable from this environment
+(distinct from the harmless SSH signing warning). Commits `e795e47` + this worklog are local,
+1+ ahead of origin. Will push on the next pass once DNS recovers.
+
+**Next:** push the queued commits when connectivity returns; keep polling CrayonBloom's board.
+
+---
+
 ## 2026-06-27 — Pass 23 (self-paced loop): chase the dogfood blocker, not another doc tweak
 
 **Assessed:** CI green on the canary commit, no open issues/PRs, v0.2.0 still owner-gated on the
