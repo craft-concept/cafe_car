@@ -61,6 +61,13 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 - CSV export: text values that look like spreadsheet formulas (leading `=`, `+`,
   `-`, `@`) are prefixed with a quote, neutralizing CSV formula injection when an
   exported file is opened in Excel/Sheets.
+- Generators now honor the intended destination. `rails g cafe_car:resource`
+  (and the policy/controller generators it delegates to) write through a shared
+  inline `generate` helper that passes `destination_root` explicitly, instead of
+  leaking files into the engine repo or escaping the target directory.
+- The policy generator applies namespacing correctly: it emits a single
+  `module Admin` wrapper via `module_namespacing` and resolves namespaced model
+  lookups by file path, matching the controller generator's behavior.
 
 ## [0.1.2] - 2026-06-26
 

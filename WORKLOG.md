@@ -5,6 +5,28 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 28 (self-paced loop): CHANGELOG release-accuracy audit
+
+**Assessed:** CI green on the OG-card commit. No issues/PRs. No designer-persona restart yet
+(voice sweep still gated), no CrayonBloom requirement tasks yet. Everything open is externally
+gated — so instead of churn, audited v0.2.0 release-readiness.
+
+**Audited the CHANGELOG `[Unreleased]` against every commit since `v0.1.2`.** Resolved the
+QUESTIONS.md "33 vs 45 commits" discrepancy: the extra commits are loop/worklog/asset noise, and
+the "opt-in sessions/auth" + "`cafe_car` macro rename" items it mentioned actually shipped in
+0.1.x (they don't appear in `v0.1.2..HEAD`), so they correctly aren't in `[Unreleased]`.
+
+**Found + fixed one genuine gap:** the `Generator polish` commit (`df1543a`) fixed three
+user-facing generator footguns — a destination leak (generators wrote files into the wrong
+place / escaped the target dir) and policy-generator namespacing — but none of it was in the
+changelog. Added a `Fixed` entry in the existing plain technical style so v0.2.0's release notes
+are complete and accurate. Doc-only; no code paths touched.
+
+**Next:** v0.2.0 release notes are now complete and verified. Still owner-gated on the RubyGems
+key. Watching for the designer-persona restart (voice sweep) and CrayonBloom's requirements.
+
+---
+
 ## 2026-06-27 — Pass 27 (self-paced loop): first OG/social card, brand-grounded
 
 **Assessed:** CI green on the BRAND.md commit. No issues/PRs. A new P2 Design task announced the
