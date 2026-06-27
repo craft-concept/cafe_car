@@ -5,6 +5,20 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 22 (self-paced loop): README accuracy follow-up
+
+**Assessed:** CI green, no issues/PRs, no new board work, no owner reply yet on the v0.2.0 key.
+Holding pattern — but caught one more stale doc surface.
+
+**Shipped — `74518c7`:** the README's CSV export section still claimed it includes "every"
+matching record, stale after pass 20's cap. Rewrote it to describe the bounded behavior and
+documented the `CafeCar.csv_export_row_limit` knob (default 10,000) + the `X-CafeCar-Truncated`
+header. The CSV cap is now consistent across code, CHANGELOG, and the source-of-truth README.
+
+**Next:** holding. v0.2.0 stays release-ready, owner-gated on the RubyGems key.
+
+---
+
 ## 2026-06-27 — Pass 21 (self-paced loop): CHANGELOG accuracy follow-up
 
 **Assessed:** CI green, no open issues/PRs, no new inbound on the holdco board (same
