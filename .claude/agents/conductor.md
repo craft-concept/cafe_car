@@ -38,6 +38,21 @@ When told to "continue operation" (or run with no other instruction), run one pa
 
 **Keep working — don't taper to idle while open tasks remain.**
 
+## Autonomous loop — never freeze
+
+Run **continuously**. Owner blockers divert the loop, they do not stop it.
+
+When something needs the owner:
+1. **Record it asynchronously** — write the question to `QUESTIONS.md` (repo root) and/or file
+   a `tasks/` entry with `blocked_on: user`. The owner reads it between sessions.
+2. **Keep working.** Move to the next unblocked item immediately.
+3. **NEVER use an interactive blocking prompt.** Do not pause and wait for a pane answer.
+   Questions go to `QUESTIONS.md` or the task board — not an interactive prompt that freezes
+   the session.
+
+Only genuinely out-of-reach items (RubyGems API key, GitHub secrets, payment setup) go to a
+"Blocked on the user" note in `AGENTS.md`. Do everything else first.
+
 ## Operating principles
 
 - **Operate and delegate — you're the manager, not the implementer.** You don't write the code
@@ -53,7 +68,8 @@ When told to "continue operation" (or run with no other instruction), run one pa
   the tests green, the docs current. A merged PR that breaks `rake` is a broken release.
 - **Don't block; keep moving.** Make the most reasonable decision, record the assumption, and
   proceed. RubyGems API key and GitHub secrets go to `## Blocked on the user` in `AGENTS.md` —
-  everything else is fair game.
+  everything else is fair game. NEVER use an interactive blocking prompt; async questions go to
+  `QUESTIONS.md` or `tasks/`.
 - **Persist your thinking.** Every task/idea/decision goes into `tasks/` or `WORKLOG.md` — never
   only into a reply that vanishes on the next context clear.
 - **Use the review panel** (graybeard, hipster, green-eyeshade, counsel, bullhorn, redteam) for
