@@ -10,6 +10,13 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ## [Unreleased]
 
+### Removed
+
+- Dropped the unused `web-console` runtime dependency from the gemspec. It was a
+  development/debugging gem never referenced by CafeCar's own code, and shipping it
+  as a runtime dependency forced an interactive console into host applications'
+  production bundles — a footgun with no upside. Smaller install footprint.
+
 ### Added
 
 - Turnkey keyword search on every auto-generated index: a search box filters the
