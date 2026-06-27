@@ -2,9 +2,10 @@
 id: nested-attributes-forms
 title: Nested-attributes form rendering for has_many
 priority: P2
-status: open
+status: wip
 domain: Eng
-created: 2026-06-26
+created: '2026-06-26'
+updated: '2026-06-26'
 ---
 
 Implement first-class form rendering for `has_many` + `accepts_nested_attributes_for`

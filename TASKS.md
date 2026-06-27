@@ -53,7 +53,7 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         3. **`policy` double-namespaces** namespaced policies — `admin/payment` emits
            `module Admin; class Admin::PaymentPolicy`. Loads fine, just redundant; the controller
            generator already avoids this by overriding `class_name`. Apply the same to policy.
-- [ ] (P2) Nested-attributes form rendering for has_many
+- [~] (P2) Nested-attributes form rendering for has_many
         Implement first-class form rendering for `has_many` + `accepts_nested_attributes_for`
         (repeatable nested fields with add/remove). Strengthens the "smart forms" value prop.
 
