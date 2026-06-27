@@ -2,6 +2,18 @@
 
 Owner-facing channel for decisions and blockers.
 
+## 🚧 Demo doesn't auto-deploy — Railway GitHub App not installed (needs owner) — 2026-06-27
+
+The live demo (Railway service `cafe-car-demo`) **does not auto-deploy on push to `main`**.
+Root cause (via Railway agent): `NO_INSTALLATION` — the **Railway GitHub App is not installed
+on `craft-concept/cafe_car`**, so there's no webhook from GitHub to Railway. The demo sat on a
+stale 01:45 deploy through 5 pushes until I triggered a manual deploy.
+
+**Owner action:** install the Railway GitHub App on the repo
+(https://github.com/apps/railway), then enable auto-deploy on the service. One-time setup.
+**Until then I must trigger demo deploys manually** (Railway MCP `deploy`/railway-agent) after
+pushing demo-affecting changes. Recorded in memory so I don't forget to redeploy.
+
 ## 🐶 Dogfooding CrayonBloom — RESOLVED 2026-06-27 (mechanism defined)
 
 **No longer needs an owner answer here.** A holdco board task
