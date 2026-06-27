@@ -5,6 +5,20 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 21 (self-paced loop): CHANGELOG accuracy follow-up
+
+**Assessed:** CI green, no open issues/PRs, no new inbound on the holdco board (same
+owner/operator-gated items). Unblocked engineering backlog stays drained.
+
+**Shipped — `8aae127`:** the `[Unreleased]` CSV export entry still claimed "no pagination cap,"
+stale after pass 20 bounded it. Rewrote it to describe the feature as it ships — capped at
+`CafeCar.csv_export_row_limit` (default 10,000) with the `X-CafeCar-Truncated` header — so the
+release-ready bundle's docs are honest. Doc-only; no code paths touched.
+
+**Next:** holding pattern. v0.2.0 stays release-ready, owner-gated on the RubyGems key.
+
+---
+
 ## 2026-06-27 — Pass 20 (self-paced loop): shipped CSV export row cap (DoS hardening)
 
 **Assessed:** CI green, demo healthy, board quiet (no new inbound on the holdco board). 23/26
