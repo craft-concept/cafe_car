@@ -5,6 +5,39 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Pass 11 (self-paced loop): closed issue #10 + advanced dogfood P1; backlog drained of unblocked work
+
+**Community:** closed the repo's only open issue, **#10 "Nested fields_for has_many models"** —
+it asked for exactly what pass 8 shipped (`7896820`). Verified the feature works end-to-end
+(the live demo's `/admin/invoices/new` renders nested line-item fields: 22 `line_items_attributes`,
+a `<template>`, the `+ Line item` button; Invoice `has_many :line_items` +
+`accepts_nested_attributes_for ..., allow_destroy: true`) and that the override path the issue
+requested is implemented (`app/views/<plural>/_fields.html.haml` overrides the default — see
+`_nested_field.html.haml`). Closed with a usage writeup citing the live demo. **Repo now has 0
+open issues / 0 open PRs.**
+
+**Generator polish verified** (`df1543a`, delegated earlier this session): all three footguns
+fixed at the root, each with a test; suite **99 → 102 runs / 316 assertions / 0 failures**, CI
+green. (Builder report accurate this time — re-ran the suite myself to confirm.)
+
+**Dogfood P1 advanced** ([[dogfood-crayonbloom]]): did the unblocked half — a back-office
+readiness map (CafeCar capabilities vs. generic back-office needs) on the task file. The ✅ rows
+(CRUD, Pundit auth+roles, opt-in sessions, filtering, sort/paginate, nested assoc forms, Active
+Storage, Action Text, PaperTrail) already cover a clients/invoices-style admin — proven on the
+demo. Deltas (CSV export, bulk actions, keyword search, dashboards) are flagged as candidate Eng
+tasks *only if CrayonBloom needs them*. Filed 5 concrete requirement questions to QUESTIONS.md →
+task `blocked_on: user`.
+
+**Board state:** every unblocked task is now done. The only two open tasks are owner-blocked —
+[[discoverability-launch]] (publish go-ahead + blog host) and [[dogfood-crayonbloom]]
+(CrayonBloom requirements). Both have clear owner asks in QUESTIONS.md.
+
+**What's next:** nothing actionable until the owner responds. The loop stays alive on a longer
+monitoring cadence to catch owner answers, new issues/PRs, CI breakage, and cross-venture tasks
+on the holdco board.
+
+---
+
 ## 2026-06-26 — Generator polish (destination/namespace/delegation consistency)
 
 Fixed the three non-blocking generator footguns in [[generator-polish]] at the root (none was

@@ -2,6 +2,27 @@
 
 Owner-facing channel for decisions and blockers.
 
+## 🐶 Dogfooding CrayonBloom — 2026-06-26 (needs owner)
+
+`dogfood-crayonbloom` (P1) is the back-office milestone. I've mapped CafeCar's current
+capabilities against generic back-office needs (see the task's "Back-office readiness map") —
+the ✅ rows already cover a clients/invoices-style admin, proven on the live demo. To turn the
+remaining deltas into real Eng tasks (or confirm none are needed), I need CrayonBloom specifics:
+
+- **(1) Repo?** Is there a CrayonBloom codebase I can read to map requirements concretely
+  (where is it / can I have access)? Existing Rails app to bolt CafeCar onto, or greenfield?
+- **(2) Resources** — what does the back-office manage? (products/coloring books, orders,
+  customers, generated assets, print/fulfillment, subscriptions…?)
+- **(3) Users & roles** — single admin, staff tiers, read-only? (CafeCar does the auth/policy
+  enforcement; the role model is yours to define.)
+- **(4) Must-have capabilities beyond CRUD** — which of these are required: **CSV/data export**,
+  **bulk actions**, **keyword search**, **dashboard/metrics**? (These are the current gaps; I'll
+  file Eng tasks only for the ones you need.)
+- **(5) Integrations** the back-office must surface (Stripe/payments, print vendor, email)?
+
+Answer any subset and I'll convert the deltas into scoped Eng tasks. Until then the milestone is
+`blocked_on: user` on requirements.
+
 ## 🚀 Launch go/no-go — 2026-06-26 (needs owner)
 
 Discoverability assets are drafted and committed under `marketing/` (launch post,
