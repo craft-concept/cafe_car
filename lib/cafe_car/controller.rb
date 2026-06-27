@@ -32,7 +32,7 @@ module CafeCar
 
         append_cafe_car_views
 
-        respond_to :json, :html, :turbo_stream
+        respond_to :json, :html, :turbo_stream, :csv
 
         before_action :set_current_attributes
 
@@ -122,6 +122,7 @@ module CafeCar
     end
 
     def paginated(scope, page: params[:page], per: params[:per])
+      return scope if request.format.csv? # CSV exports the full filtered+sorted set
       scope.page(page).per(per)
     end
 

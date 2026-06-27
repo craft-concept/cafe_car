@@ -79,6 +79,29 @@ module CafeCar
       config.responders.flash_keys = [ :success, :error ]
     end
 
+    initializer "cafe_car.csv_renderer" do
+      require "csv"
+
+      # CSV export of an index's filtered+sorted collection. Columns mirror the
+      # JSON renderer's policy-respecting basis (`[:id] | displayable_attributes`)
+      # so exports never leak attributes the policy hides, narrowed to scalar DB
+      # columns. Associations are out of scope for v1 (only scalar values).
+      ActionController::Renderers.add :csv do |collection, options|
+        klass   = collection.respond_to?(:klass) ? collection.klass : collection.class
+        basis   = options[:only] || [ :id ] | policy(klass.new).displayable_attributes
+        columns = basis & klass.column_names.map(&:to_sym)
+
+        data = CSV.generate do |csv|
+          csv << columns.map { klass.human_attribute_name(_1) }
+          Array(collection).each { |record| csv << columns.map { record.public_send(_1) } }
+        end
+
+        self.content_type              ||= Mime[:csv]
+        headers["Content-Disposition"] ||= %(attachment; filename="#{controller_name}.csv")
+        data
+      end
+    end
+
     initializer "cafe_car.field_with_errors" do
       ActionView::Base.field_error_proc = proc { _1.html_safe }
     end

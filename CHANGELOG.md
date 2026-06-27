@@ -12,6 +12,12 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Added
 
+- CSV export on every auto-generated index: a "Download CSV" action exports the
+  full filtered + sorted result set as `text/csv` (no pagination cap). Columns
+  reuse the JSON renderer's policy-respecting basis (`[:id] |
+  displayable_attributes`), narrowed to scalar columns, so exports never leak
+  attributes the policy hides. The link carries the current filter/sort params so
+  the export matches what's on screen. Associations are out of scope for v1.
 - Nested-attributes form rendering for `has_many` associations configured with
   `accepts_nested_attributes_for`. CafeCar now renders repeatable nested fields
   with add/remove buttons (vanilla JS, no Stimulus): "Add" clones an HTML

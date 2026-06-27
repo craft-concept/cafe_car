@@ -77,6 +77,10 @@ module CafeCar
       url_for(params)
     end
 
+    # Current index URL as `.csv`, carrying the on-screen filter + sort params so
+    # the export matches the view. Pagination is dropped (CSV exports the full set).
+    def csv_url = url_for(request.params.except("page", "per").merge(format: :csv))
+
     def context(name = nil, &)
       @context ||= []
 
