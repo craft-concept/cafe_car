@@ -473,13 +473,22 @@ searched.
 **CSV export:**
 
 Every index also renders as CSV — append `.csv` or click the "Download CSV"
-link. The export honors the current filters and sort and includes **every**
-matching record (not just the page on screen). Columns mirror the JSON index —
-the same filtered attribute set — so protected columns (passwords, tokens) and
-association foreign keys never appear in the file:
+link. The export honors the current filters and sort and includes matching
+records across the whole result set (not just the page on screen). Columns
+mirror the JSON index — the same filtered attribute set — so protected columns
+(passwords, tokens) and association foreign keys never appear in the file:
 
 ```
 /products.csv?category=tools&sort=-price
+```
+
+To keep a large export from materializing an unbounded result set in memory, the
+output is capped at `CafeCar.csv_export_row_limit` rows (default `10_000`). When a
+download is truncated, CafeCar sets an `X-CafeCar-Truncated: true` response header
+and logs a warning. Raise the limit in an initializer if your tables are larger:
+
+```ruby
+CafeCar.csv_export_row_limit = 50_000
 ```
 
 **In models:**
