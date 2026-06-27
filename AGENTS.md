@@ -100,16 +100,15 @@ a glance, e.g. `[CafeCar] shipped: …`, `[CafeCar] decision: …`, `[CafeCar] d
 
 ### Sharing files (Tailscale file server)
 
-Your whole home dir (`/home/yaks`) is served read-only over the owner's **private Tailscale
-tailnet** at `https://claude.ibis-micro.ts.net` (tailnet-only, not public internet). Any file
-under home gets a clickable link: **strip the `/home/yaks/` prefix off its absolute path and
-append the rest to the base URL.** Example: `~/code/cafe_car/shared/prototype.html` →
-`https://claude.ibis-micro.ts.net/code/cafe_car/shared/prototype.html`.
+The `~/shared` tree (`/home/yaks/shared`) is served read-only over the owner's **private Tailscale
+tailnet** at `https://claude.ibis-micro.ts.net` (tailnet-only, not public internet). A file under
+`~/shared` gets a clickable link: **strip the `/home/yaks/shared/` prefix off its absolute path and
+append the rest to the base URL.** Example: `~/shared/cafe_car/proto.html` →
+`https://claude.ibis-micro.ts.net/cafe_car/proto.html`.
 
-- **The file must live under `~` (`/home/yaks`) to be linkable.** Your repo qualifies
-  (`~/code/cafe_car/…`); your `/tmp/...` scratchpad does **not** — so save anything the owner
-  should see **under home first** (in the repo, e.g. a `shared/` or `public/` dir, or under
-  `~/.claude/...`), **then** link it.
-- **NEVER link secrets.** The entire home dir is reachable on the tailnet, including `.env` files,
-  `~/.claude/` credentials, and SSH keys. Only ever link **intended artifacts** (prototypes,
-  reports, generated assets) — never an `.env`, a credential, a private key, or anything sensitive.
+- **The file must live under `~/shared` to be linkable.** Write or copy shareable artifacts into
+  your venture's subdir `~/shared/cafe_car/` first, **then** link it; a `/tmp/...` scratchpad or a
+  path inside your repo is **not** served.
+- **NEVER link secrets.** Only ever link **intended artifacts** (prototypes, reports, generated
+  assets) — never an `.env`, a credential, a private key, or anything sensitive. Secrets are NO
+  LONGER served: the serve was scoped from `~` down to `~/shared` on 2026-06-27.
