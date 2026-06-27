@@ -5,6 +5,39 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Pass 10 (self-paced loop): discoverability/launch kit PREPARED (roadmap #6)
+
+With the live demo up (pass 9), [[discoverability-launch]]'s prerequisites (CI green, hygiene
+docs, audited v1, live demo) are all met — so I had a builder draft the full launch kit.
+**Prepared only, nothing published** — the publish step is owner-blocked.
+
+**Shipped** (`c69d697`, delegated; CI green): a new top-level `marketing/` dir (excluded from
+the built gem — gemspec globs `{app,config,db,lib}`):
+- `launch-post.md` — ~850-word post, thesis **"Rails should render something by default"**:
+  your models already describe a resource, so Rails should render a real, overridable CRUD
+  admin from them — not throwaway scaffolds, not a heavyweight second framework. Honest about
+  pre-1.0, leads with the demo, accurate `cafe_car` + generator snippets. (Reviewed it myself —
+  genuinely good, no overselling.)
+- `awesome-list-entries.md`, `rubyflow-and-toolbox.md`, `SUBMISSION-CHECKLIST.md` — paste-ready
+  entries + an ordered owner-action list (Ruby Toolbox, Awesome Rails/Ruby PRs, RubyFlow,
+  Show HN, Reddit, Discord/Slack, X/Mastodon), each with URL + what to paste.
+
+**Owner decisions filed** (QUESTIONS.md "🚀 Launch go/no-go"): (a) go-ahead to submit, (b) where
+to host the blog post (canonical URL everything links to), (c) which channels, (d) confirm the
+demo can take an HN/Reddit spike. Task → `blocked_on: user` (stays `open`).
+
+**Flagged risk:** Awesome Ruby enforces a ~30k-download minimum — CafeCar is below it today, so
+that one PR is recommended to wait until downloads clear the bar; the other venues have no gate.
+
+**Verify note:** the builder misreported "51 tests" — actual suite is **99 runs / 299 assertions
+/ 0 failures** (ran it myself), CI green, tree clean. Deliverable sound; just a sloppy number.
+
+**What's next:** [[generator-polish]] (P2, the only remaining unblocked code task — contributor
+dev-safety footguns: destination/namespace/delegation consistency). Then the long tail is
+owner-blocked: [[discoverability-launch]] (publish), [[dogfood-crayonbloom]] (CrayonBloom reqs).
+
+---
+
 ## 2026-06-26 — Pass 9 (self-paced loop): LIVE DEMO shipped — roadmap item #5
 
 **The CafeCar live clickable demo is public and verified.** Roadmap item #5 — "the single
