@@ -59,7 +59,7 @@ module CafeCar
 
     def nested_attributes_type
       key = @method.to_s.chomp("_attributes").to_sym
-      model.nested_attributes_options.key?(key) && :nested
+      :nested if model.nested_attributes_options.key?(key)
     end
 
     def polymorphic_methods = [ reflection.foreign_type, reflection.foreign_key ]
@@ -85,8 +85,8 @@ module CafeCar
 
     def type
       return if @method.nil?
-      @type ||= reflection_type || attribute_type || digest_type || attachment_type ||
-                default_type || nested_attributes_type ||
+      @type ||= nested_attributes_type || reflection_type || attribute_type || digest_type ||
+                attachment_type || default_type ||
                 raise(NoMethodError.new "Can't find attribute :#{@method} on #{model_name}", @method)
     end
 

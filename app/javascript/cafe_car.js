@@ -33,6 +33,34 @@ addEventListener("keydown", event => {
   }
 })
 
+// Nested-attributes forms: add/remove repeatable `fields_for` rows. The add
+// button clones the <template> (swapping the placeholder index for a unique
+// one); the remove button drops unsaved rows from the DOM, or marks persisted
+// rows for destruction by flipping their `_destroy` hidden field to "1".
+addEventListener("click", event => {
+  let add = event.target.closest("[data-nested-add]")
+  if (add) {
+    let wrapper   = add.closest("[data-nested-wrapper]")
+    let template  = wrapper.querySelector("template[data-nested-template]")
+    let container = wrapper.querySelector("[data-nested-container]")
+    let html      = template.innerHTML.replaceAll("CAFE_CAR_NEW_RECORD", Date.now())
+    container.insertAdjacentHTML("beforeend", html)
+    return
+  }
+
+  let remove = event.target.closest("[data-nested-remove]")
+  if (remove) {
+    let item    = remove.closest("[data-nested-item]")
+    let destroy = item.querySelector("input[name*='[_destroy]']")
+    if (destroy) {
+      destroy.value = "1"
+      item.hidden = true
+    } else {
+      item.remove()
+    }
+  }
+})
+
 function animationEnd({ target }) {
   if (target.matches(".remove")) target.remove()
   else if (target.matches(".popup")) {

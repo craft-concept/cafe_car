@@ -10,7 +10,15 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ## [Unreleased]
 
-<!-- Add new entries here. -->
+### Added
+
+- Nested-attributes form rendering for `has_many` associations configured with
+  `accepts_nested_attributes_for`. CafeCar now renders repeatable nested fields
+  with add/remove buttons (vanilla JS, no Stimulus): "Add" clones an HTML
+  `<template>` for a new record, and "Remove" drops unsaved rows or marks
+  persisted rows for destruction via their `_destroy` field (when
+  `allow_destroy` is set). Association detection still falls back to the prior
+  behavior unless `accepts_nested_attributes_for` is actually configured.
 
 ## [0.1.2] - 2026-06-26
 
