@@ -5,6 +5,45 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-26 — Pass 9 (self-paced loop): LIVE DEMO shipped — roadmap item #5
+
+**The CafeCar live clickable demo is public and verified.** Roadmap item #5 — "the single
+highest-converting trust artifact" — is done: skeptics can now evaluate the gem without
+installing it.
+
+**Live demo:** https://cafe-car-demo-production.up.railway.app — one click ("Enter the
+demo →") into the auto-generated `/admin` CRUD for clients, invoices, articles, users, notes,
+all seeded with FactoryBot data. Independently verified: root + `/admin/{clients,invoices}`
+all 200, 10 seeded client rows render (no login wall), assets load, `http→https` 301.
+
+**What shipped** (delegated to a `general-purpose` builder; commits on main):
+- `035d558` — root `Dockerfile` (builds the whole repo since the dummy loads the gem via
+  `gemspec`; precompiles assets), `.dockerignore`, `bin/railway-demo` (reseeds ephemeral
+  SQLite on every boot → visitor edits self-clean on restart), `test/dummy` `production.rb`
+  (`assume_ssl`, static-file serving, Railway host-authorization), home-page one-click CTA +
+  "data resets periodically" banner.
+- `d02dd38` — "🚀 Live demo" callout near the top of README + `docs/index.md`; task → done.
+- **No gem auth changes** — the dummy's Pundit `ApplicationPolicy#admin? => true` already
+  grants access. `lib/`/`app/`/gemspec untouched, as required. `rake` green (rubocop 0,
+  99 tests, brakeman 0); CI green on both commits.
+
+**Railway:** project "CafeCar Demo" (`73ddf2a2…`), service `cafe-car-demo` (`aef404ac…`),
+small single web service, no Postgres. `SECRET_KEY_BASE` stored as a Railway service var.
+
+**Decisions/assumptions:** SQLite + boot-time reseed (no volume) — vandalism self-cleans on
+each restart; no timer-based reset (add a scheduled redeploy if a guaranteed cadence is
+wanted). Verified the builder's stale follow-up: **GitHub Pages is already live** (`status:
+built`, serving `main` `/docs`) — corrected the task note; no action needed.
+
+**What's next:** [[discoverability-launch]] (roadmap #6) is now **unblocked** — the demo link
+exists to point launch posts at. Its outward actions (Awesome Rails/Ruby PRs, RubyFlow post,
+launch blog post) are publish-to-external and need the owner's accounts/go-ahead, so next pass
+I'll *prepare* the artifacts (draft post + Awesome-list entry) without publishing, and file an
+owner question for where to host/announce. Long-tail open: [[generator-polish]] (P2, dev-safety
+cleanups), [[dogfood-crayonbloom]] (P1, owner/CrayonBloom-blocked).
+
+---
+
 ## 2026-06-26 — Pass 8 (self-paced loop): v0.1.2 SHIPPED — release reconciliation + nested-attributes
 
 **Owner published v0.1.2 to RubyGems** (uploaded 2026-06-27T01:00Z, built from `6b4f269`).

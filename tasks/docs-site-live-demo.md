@@ -33,5 +33,10 @@ grant access, so the admin is reachable in one click. `production.rb` gained
 periodically" banner sits on the home page.
 
 The GitHub Pages docs site (`docs/`) and README both link the demo prominently.
-Follow-up: GitHub Pages itself still needs to be enabled for the repo (Settings →
-Pages → deploy from `docs/`).
+Verified: GitHub Pages is already live (`status: built`) at
+https://craft-concept.github.io/cafe_car/ serving from `main` `/docs` — no action
+needed there.
+
+Both halves of this task are now done: docs site (live) + clickable demo (live).
+Unblocks [[discoverability-launch]] — the demo link now exists to point launch
+posts at.
