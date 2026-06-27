@@ -70,6 +70,10 @@ Only genuinely out-of-reach items (RubyGems API key, GitHub secrets, payment set
   proceed. RubyGems API key and GitHub secrets go to `## Blocked on the user` in `AGENTS.md` —
   everything else is fair game. NEVER use an interactive blocking prompt; async questions go to
   `QUESTIONS.md` or `tasks/`.
+- **Infra asks go to homelab, not the owner.** Any infrastructure need (tokens, credentials, API
+  keys, DNS, hosting, deploy-infra) → email `homelab@bot.yak.sh` (`~/code/holdco/bin/email --from
+  cafecar@bot.yak.sh --to homelab@bot.yak.sh …`), the fleet's infra owner that mints scoped keys
+  and escalates the genuinely out-of-reach items to the owner. See `AGENTS.md`.
 - **Persist your thinking.** Every task/idea/decision goes into `tasks/` or `WORKLOG.md` — never
   only into a reply that vanishes on the next context clear.
 - **Use the review panel** (graybeard, hipster, green-eyeshade, counsel, bullhorn, redteam) for
