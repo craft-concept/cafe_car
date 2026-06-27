@@ -20,8 +20,26 @@ Running as a self-paced operating loop. Progress:
 - `fix-halfbaked-features` items 1–4 now done; only item 5 (tests for advertised
   turbo_stream/json/presenter/sort-paginate paths) remains — claimed next.
 
-**Next:** advertised-path test coverage; then the live demo (owner-gated: needs Railway
-account + deploy go-ahead) and the gem publish (owner-gated).
+**Advertised-path tests** (`3c673a2`, delegated) — turbo_stream, json (confirms
+non-displayable attrs don't leak), presenter render, sort/paginate. Suite **78 → 90**, no
+broken paths found. `fix-halfbaked-features` done.
+
+### Loop paused — gem is publish-ready
+
+Autonomous, clearly-safe quality work is exhausted. State: CI green, 0 vulns, full OSS
+hygiene + live Pages, honest v1 scope, cnc cut, rubocop-omakase, sessions optional+finished,
+**90 tests** (generators + every advertised path). ~17 tasks done this session.
+
+Remaining backlog is **owner-gated or low-value**, so the loop is paused (no point
+idle-ticking on decisions only the owner can make):
+- **Owner-gated:** `gem push` v0.1.x (RubyGems key); `docs-site-live-demo` (Railway deploy —
+  cost/account + go-ahead); `dogfood-crayonbloom` (needs requirements); `potter`→cnc
+  transitive; sessions homepage already resolved.
+- **Owner-visible / discretionary:** `nested-attributes-forms` (a new feature — don't ship
+  unprompted); `discoverability-launch` (sequence after publish + demo); `generator-polish`
+  (P2 cosmetic; changing generator delegation isn't worth the regression risk unprompted).
+
+Resumes on the owner's next message (answering a gate re-engages the highest-value work).
 
 ---
 

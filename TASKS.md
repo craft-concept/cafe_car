@@ -38,22 +38,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ## 🟠 Engineering
 
-- [~] (P1) Fix the half-baked features (auth/sessions first)
-        Stabilize the features the audit flags as broken/incomplete. Stability is half of the
-        "ship + trust" mission — a feature that 500s is worse than a missing one.
-
-        Authoritative list is in `V1_SCOPE.md`. Most items are now shipped — only item 5 remains:
-
-        1. ✅ Auth/sessions latent 500 → done via [[sessions-optional-and-finish]] (graceful 403 +
-           feature finished).
-        2. ✅ `sessions` generator USAGE → fixed in the sessions work.
-        3. ✅ README false advertising → fixed via [[readme-badges-accuracy]].
-        4. ✅ Missing generator tests → done via [[generator-test-coverage]] (3 → 21 generator tests).
-        5. **REMAINING:** add tests for advertised-but-unverified paths — `turbo_stream` + `json`
-           responses end-to-end, a direct presenter render (`present(obj)` → HTML), and a
-           sort/paginate controller test. These are core advertised features with no direct coverage.
-
-        - Every fix lands with a regression test. `rake` green before push.
 - [ ] (P2) Generator polish — destination/namespace/delegation consistency
         Three non-blocking issues the generator tests surfaced (no functional adopter-facing bug;
         all confirmed working in a real host app). Cleanup for consistency and dev-safety.
@@ -141,6 +125,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - Add GitHub issue and PR templates — Roadmap item #4 (templates). Lowers the friction for first-time contributors and keeps
 - Add test coverage for the generators — The feature audit (`V1_SCOPE.md`) flagged the generators as a major coverage gap:
 - Polish gemspec for a credible v0.1.2 release — Roadmap item #2 prep (everything short of the actual `gem push`, which needs the owner's
+- Fix the half-baked features (auth/sessions first) — Stabilize the features the audit flags as broken/incomplete. Stability is half of the
 - Audit feature completeness and define v1 scope — Inventory every advertised feature in `README.md` against what actually works, so we
 - Resolve Dependabot vulnerabilities (1 critical, 14 high) — GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default
 - Cut cnc wholesale; switch rubocop to rails-omakase; homepage to GH Pages — Owner ratified (QUESTIONS.md): **cut cnc entirely**, use **`rubocop-rails-omakase`** instead

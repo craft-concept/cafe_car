@@ -2,7 +2,7 @@
 id: fix-halfbaked-features
 title: Fix the half-baked features (auth/sessions first)
 priority: P1
-status: wip
+status: done
 domain: Eng
 created: '2026-06-26'
 updated: '2026-06-26'
