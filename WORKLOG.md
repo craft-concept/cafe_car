@@ -73,6 +73,13 @@ clusters on an explicit `WEB_CONCURRENCY > 1`. `rake` green, pushed. Emailed hom
 confirm "single mode" in the boot log. **Lesson:** Puma consumes `WEB_CONCURRENCY` directly — don't
 set it as a config-feeding env var expecting a guard to gate it.
 
+**✅ VERIFIED CLOSED (homelab, `540898c` → deploy `6023e556`):** boot log now reads "Puma starting
+in single mode" — no cluster line, no "Workers: 1", no single-worker warning, no extra master
+process. HTTP 200 throughout. Full arc done: 48→single process (cost bleed solved), Dockerfile
+builder pinned at the service level (no more Railpack flip), `WEB_CONCURRENCY` gone (true
+single-mode). Remaining trace: the one-time owner/dashboard action to make `railway.toml`
+authoritative (QUESTIONS.md) — non-blocking, homelab's service-level pin holds it stable. P1 done.
+
 **Next:** await homelab's redeploy + boot-log verification (loop back if it still clusters). Still
 owner-gated on the RubyGems key (v0.2.0 release-ready) and the OG-card Social-preview upload.
 Watching for the designer-persona restart (unblocks the copy voice sweep) and CrayonBloom
