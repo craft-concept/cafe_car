@@ -5,6 +5,44 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-28 — Pass 30 (cold/reactive): demo Puma memory cap (P1, ~$30/mo)
+
+**Cadence:** cold/reactive fallback loop re-armed — cron `3 */8 * * *` →
+`/clear Continue CafeCar operation.` (job `90514895`, session-only safety net; real cadence is
+holdco nudges + inbound email, not this 8h tick).
+
+**Assessed:** CI green, no open PRs/issues, tree clean. Local backlog all done except 3
+externally-gated items (brand voice-sweep → designer-persona restart; discoverability → owner
+publish; dogfood-crayonbloom → CrayonBloom spec). Polled the holdco board and caught a **new P1
+not yet mirrored locally**: `cafe-car-demo: durably cap memory` (filed by homelab 2026-06-28 07:05)
+— the highest-leverage *unblocked* move.
+
+**Root cause (homelab diagnosed, confirmed in-repo):** `test/dummy/config/puma.rb` defaulted the
+production `worker_count` to `Concurrent.physical_processor_count`, so the demo container booted one
+Puma worker per host core (16–48 → 3GB+ RSS), burning ~$30/mo against the Railway spend cap. The
+Railway service var `WEB_CONCURRENCY=1` was set but **not reaching the process** at runtime.
+
+**Shipped (`372af21`):** delegated to a builder. Two-pronged, builder-agnostic fix: (1)
+`puma.rb` fallback default `physical_processor_count` → literal `1` (the durable root-cause fix —
+survives a Dockerfile→RAILPACK builder flip, doesn't depend on the service var propagating, keeps
+the `>1` override path so explicit `WEB_CONCURRENCY` still clusters; dropped the now-dead
+`require "concurrent-ruby"`); (2) `Dockerfile` ENV `WEB_CONCURRENCY=1` as belt-and-suspenders for
+the Docker builder path. `rake` green (rubocop 204/0, 122 tests/367 assertions/0 fail, brakeman 0);
+CI green on main. Logic verified by eval: no-var→1 worker (single), `=1`→single, `=4`→clusters.
+
+**Decisions/assumptions:** the puma-config default change is the load-bearing fix because homelab
+warned the Railway builder switches Dockerfile↔RAILPACK by commit — a Dockerfile-only ENV would be
+bypassed under RAILPACK. Did NOT deploy (homelab owns the Railway service); emailed homelab that
+the fix is on main + CI-green and they should redeploy and confirm boot logs show single-process
+mode. Board task + local `tasks/demo-cap-puma-memory.md` marked done.
+
+**Next:** await homelab's redeploy + boot-log verification (loop back if it still clusters). Still
+owner-gated on the RubyGems key (v0.2.0 release-ready) and the OG-card Social-preview upload.
+Watching for the designer-persona restart (unblocks the copy voice sweep) and CrayonBloom
+requirement tasks. Going idle after this — wake on nudge/email.
+
+---
+
 ## 2026-06-27 — Pass 29 (cold/reactive): brand mark + branded demo favicon
 
 **Cadence:** entered the cold/reactive fallback loop — set cron `7 */8 * * *` →
