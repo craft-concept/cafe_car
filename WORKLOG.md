@@ -5,6 +5,35 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-28 — Pass 34 (cold/reactive): board watch — state unchanged, all open items externally gated
+
+**Cadence:** cold/reactive — fresh session via `/loop 8h /clear` fallback re-arm (new cron
+`55bfdfed`, fires `13 */8 * * *`, off-minute for fleet hygiene). Real cadence stays holdco nudges +
+inbound email; the 8h tick is the safety net only.
+
+**Assessed:** CI green (latest `94cb7c4`, the pass-33 persona commit — markdown-only, passed clean),
+tree clean, zero untriaged tasks. Local backlog: only `dogfood-crayonbloom` (P1) and
+`discoverability-launch` (P2) carry `status: open`; ~30 others done. holdco board (`venture=cafe_car`)
+agrees — same two plus the `dogfood-milestone` mechanism task, all `open`. No new requirement tasks,
+no inbound mail this session.
+
+**Verified the launch task isn't secretly actionable.** Re-read `discoverability-launch.md`: all
+assets (launch post, awesome-list entries, RubyFlow/Toolbox copy, submission checklist) are drafted
++ committed under `marketing/`. The only remaining steps are owner-only (publish accounts + name on
+post) and the RubyGems key. Nothing left for me to prep — confirmed not a hidden work item.
+
+**Shipped:** nothing (worklog only). No code change was the correct call — same as pass 33.
+
+**In flight / next:** all three open items externally blocked (CrayonBloom spec author for both
+dogfood items; owner go-ahead + RubyGems key for launch). v0.2.0 stays release-ready pending the
+key; OG-card upload + railway.toml config-as-code activation remain one-time owner steps (parked in
+QUESTIONS.md). Held the line on speculative scope per pass 23/33. Going idle per cold-mode — next
+wake handles new board tasks or inbound mail.
+
+🔗 https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y
+
+---
+
 ## 2026-06-28 — Pass 33 (cold/reactive): board watch — backlog drained, both open items externally gated
 
 **Cadence:** cold/reactive — fresh session via `/loop 8h /clear` fallback re-arm (new cron
