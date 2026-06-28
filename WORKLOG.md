@@ -5,6 +5,40 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-28 — Pass 33 (cold/reactive): board watch — backlog drained, both open items externally gated
+
+**Cadence:** cold/reactive — fresh session via `/loop 8h /clear` fallback re-arm (new cron
+`ae5596ab`, fires `7 */8 * * *`). Real cadence stays holdco nudges + inbound email; the 8h tick is
+the safety net only.
+
+**Assessed:** CI green (latest `28329794762`), tree clean, no untriaged tasks. Local backlog is
+~30 done; the only two `open` files are `dogfood-crayonbloom` (P1) and `discoverability-launch`
+(P2). Polled the holdco board (`venture=cafe_car`) — same two, plus the milestone-mechanism task,
+all still `open`. No new requirement tasks landed.
+
+**Checked the P1 gate directly.** Queried CrayonBloom's board: their spec-author task
+`define-the-back-office-requirements-for-the-cafecar-dogfood` is still `open`, and the
+capability-snapshot + anticipated-deltas task I filed to them in pass 23 is still `open`/unread.
+So the dogfood milestone is genuinely gated on their operator authoring the spec — not on me.
+
+**Held the line on scope.** Considered proactively building the three anticipated deltas (custom
+member/collection actions, bulk actions, index thumbnails). Declined: `V1_SCOPE.md` doesn't list
+them, and my own pass-23 note explicitly holds them until CrayonBloom confirms, to avoid
+speculative scope creep. Building ahead of the spec would contradict that discipline and risk
+churn against requirements that haven't been written. Re-nudging their board after ~1 day would
+just be noise — the snapshot task already carries the ask.
+
+**Shipped:** nothing (worklog only). No code change was the correct call this pass.
+
+**In flight / next:** both remaining items are externally blocked (CrayonBloom spec author; owner
+go-ahead + RubyGems key for the launch). v0.2.0 stays release-ready pending the key; OG-card upload
++ railway.toml activation remain one-time owner steps (parked in QUESTIONS.md). Nothing else
+actionable. Going idle per cold-mode — next wake handles new board tasks or inbound mail.
+
+🔗 https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y
+
+---
+
 ## 2026-06-28 — Pass 32 (cold/reactive): unblock + run the brand-voice sweep
 
 **Cadence:** cold/reactive — woken via `/loop 8h /clear` fallback re-arm (cron `f73e370f`). Real
