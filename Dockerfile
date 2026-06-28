@@ -24,6 +24,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 ENV RAILS_ENV=production \
+    WEB_CONCURRENCY=1 \
     BUNDLE_DEPLOYMENT=1 \
     BUNDLE_WITHOUT=development \
     BUNDLE_PATH=/usr/local/bundle \
