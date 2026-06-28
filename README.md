@@ -1,4 +1,8 @@
-# CafeCar
+<h1>
+  <img src="https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/logo.png"
+       alt="" width="40" valign="middle">
+  CafeCar
+</h1>
 
 [![CI](https://img.shields.io/github/actions/workflow/status/craft-concept/cafe_car/ci.yml?branch=main&label=CI)](https://github.com/craft-concept/cafe_car/actions/workflows/ci.yml)
 [![Gem Version](https://img.shields.io/gem/v/cafe_car)](https://rubygems.org/gems/cafe_car)
