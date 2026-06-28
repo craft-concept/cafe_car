@@ -36,6 +36,15 @@ bypassed under RAILPACK. Did NOT deploy (homelab owns the Railway service); emai
 the fix is on main + CI-green and they should redeploy and confirm boot logs show single-process
 mode. Board task + local `tasks/demo-cap-puma-memory.md` marked done.
 
+**Update (same day):** homelab redeployed (`28c3dcd7` on `93bf7fa`) and verified — boot now shows
+1 worker (was 16–48), demo HTTP 200 throughout, memory drops accordingly. Root cause of the lag:
+the prior live build was still on `dfae209` (no Railway GitHub App → no auto-deploy; owner/dashboard
+action, already in QUESTIONS.md — keep emailing homelab to redeploy until installed). Homelab's
+optional "true single-mode (workers=0)" suggestion needs **no action**: the shipped config already
+runs single mode (`workers` is only called when `WEB_CONCURRENCY > 1`; at the demo's value of 1 it's
+never called → single process, no cluster overhead). Replied to homelab confirming. **P1 fully
+closed.**
+
 **Next:** await homelab's redeploy + boot-log verification (loop back if it still clusters). Still
 owner-gated on the RubyGems key (v0.2.0 release-ready) and the OG-card Social-preview upload.
 Watching for the designer-persona restart (unblocks the copy voice sweep) and CrayonBloom
