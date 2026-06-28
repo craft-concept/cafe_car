@@ -5,6 +5,39 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-28 — Pass 31 (cold/reactive): wire fleet /imagegen into designer persona
+
+**Cadence:** cold/reactive — woken via `/loop 8h /clear` fallback re-arm. Real cadence stays
+holdco nudges + inbound email; this 8h tick is the safety net.
+
+**Assessed:** CI green (last 5 runs success), no open issues/PRs, tree clean. Local backlog all
+done except three externally-gated items: `brand-voice-guide-and-sweep` part 2 (held for the
+fleet designer-persona restart holdco sequences), `discoverability-launch` (blocked on owner
+publish), and the two CrayonBloom dogfood items (waiting on the CrayonBloom operator to file
+requirement specs — none have landed on the board yet). Polled the holdco board and caught a new
+**unblocked** P2 not mirrored locally: `new-fleet-imagegen-skill` — a fleet `/imagegen` image
+generator now on PATH, asking each venture to wire it into its designer persona.
+
+**Shipped (`648fe0a`):** updated `.claude/agents/designer.md` item 5 (Visual Assets) to make
+`/imagegen` the default generator — `imagegen "<prompt>" [--quality …] [--size WxH]`, prints the
+saved PNG path — with the **parallel-fire (`&`)** guidance so OG/favicon/hero generations don't
+serialize behind one codex process. Persona edit is the conductor's own job (fix the builder's
+persona, not a one-off prompt), so no subagent. Verified `imagegen` resolves at
+`/home/yaks/.local/bin/imagegen`. Mirrored the board task to `tasks/imagegen-skill-designer-persona.md`
+(done) and closed it on the board (`api:done`).
+
+**Decision/flag:** the `brand-voice` part-2 hold rests on "running the sweep now risks a stale
+designer persona," but a fresh one-shot `designer` subagent reads `.claude/agents/designer.md` at
+spawn — and that file now carries both the anti-slop kit *and* the new imagegen note. The staleness
+premise doesn't apply to fresh spawns, so part 2 looks unblockable on the next pass without waiting
+for a formal restart. Holding this pass to respect holdco's documented sequencing, but the README +
+gem-description voice sweep is the natural next move once that's confirmed.
+
+**Next:** voice sweep (part 2) pending restart-confirm; CrayonBloom requirement specs when they
+land; everything else owner/RubyGems-key gated (v0.2.0 publish still prepped and waiting).
+
+---
+
 ## 2026-06-28 — Pass 30 (cold/reactive): demo Puma memory cap (P1, ~$30/mo)
 
 **Cadence:** cold/reactive fallback loop re-armed — cron `3 */8 * * *` →
