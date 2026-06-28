@@ -48,9 +48,9 @@ en:
     published_at: Published
 
   flashes:
-    create_html: "%{Model} created!"
-    update_html: "%{Model} updated!"
-    destroy_html: "%{Model} deleted!"
+    create_html: "%{Model} created."
+    update_html: "%{Model} updated."
+    destroy_html: "%{Model} deleted."
 
   activerecord:
     models:

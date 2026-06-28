@@ -35,3 +35,9 @@ needed to pick up the updated anti-slop kit — **holdco will sequence that rest
 sweep now risks using a stale persona. Hold part 2 until the restart lands, then run the sweep
 (delegate to the refreshed `designer`) and route the README + gem description first (highest-traffic
 customer-visible copy), then the rest.
+
+**Unblock rationale (pass 32, 2026-06-28):** the staleness risk is structurally satisfied. A
+one-shot `designer` subagent reads `.claude/agents/designer.md` fresh from disk on every spawn —
+the persona file is timestamped today 09:01, after the anti-slop/voice-gate kit shipped. The
+"restart" framing assumed a *persistent* designer teammate holding stale context; a fresh spawn
+has none. Proceeding with the sweep via a fresh `designer`, README + gemspec description first.

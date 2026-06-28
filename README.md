@@ -111,7 +111,7 @@ $ rails db:migrate
 $ rails server
 ```
 
-Navigate to `/products` and you'll see a fully functional CRUD interface!
+Navigate to `/products` and you'll see a working CRUD interface.
 
 ### Manual Setup
 
