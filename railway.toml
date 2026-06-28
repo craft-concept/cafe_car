@@ -1,0 +1,19 @@
+# Railway config-as-code for the CafeCar live demo.
+#
+# Why this file exists: the demo's Rails app is NESTED in test/dummy (the gem
+# itself lives at the repo root), so the start command must cd there and boot via
+# bin/railway-demo. Railway's auto-detecting Railpack/Nixpacks builders cannot
+# intuit a nested Rails app — when one was selected it booted Puma in cluster mode
+# from the wrong path, ignoring our Dockerfile and test/dummy/config/puma.rb. We
+# pin the Dockerfile builder so the carefully-constructed Dockerfile is always
+# authoritative and the demo boots single-process within the Railway memory cap.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+# Reseed the ephemeral SQLite DB and boot single-process Puma (see bin/railway-demo
+# + test/dummy/config/puma.rb). Pinned here so no auto-generated start command can
+# override it.
+startCommand = "bin/railway-demo"

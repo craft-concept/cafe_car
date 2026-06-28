@@ -40,3 +40,19 @@ booted 48 workers).
   "Worker N booted"). Demo stays HTTP 200 on `cafe-car-demo-production.up.railway.app`.
 
 Notify homelab once the in-repo fix lands on main so they redeploy + confirm.
+
+## Follow-up (2026-06-28): root cause was the BUILDER, not just worker count
+
+Homelab redeployed and the memory cost is solved (48→1), but the boot log still literally read
+"Puma starting in cluster mode" + "WARNING: cluster mode with 1 worker" — which contradicts
+`test/dummy/config/puma.rb` (only calls `workers` when `WEB_CONCURRENCY > 1`). Removing the leftover
+`WEB_CONCURRENCY=1` service var didn't change it. Root cause: **the live deploy was being built by
+Railpack, not our Dockerfile.** The Rails app is nested in `test/dummy`, which Railpack can't intuit
+— it auto-generated a start command + loaded a Puma config that forces cluster mode, bypassing our
+Dockerfile and puma.rb entirely. So the "builder-agnostic via puma.rb" assumption was wrong; the
+real fix is to remove builder ambiguity.
+
+**Fix:** added `railway.toml` pinning `[build] builder = "DOCKERFILE"` + `[deploy] startCommand =
+"bin/railway-demo"`, so the Dockerfile (which correctly cds into test/dummy, reseeds, and boots
+single-process Puma) is always authoritative. This also resolves the original task's builder-flip
+concern. Homelab to redeploy + confirm build uses the Dockerfile and boot shows single mode.
