@@ -23,8 +23,13 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+# Do NOT set WEB_CONCURRENCY here: Puma reads it natively and boots a *cluster*
+# with that many workers (even WEB_CONCURRENCY=1 → cluster-mode-with-1-worker,
+# carrying master-process overhead). Leaving it unset lets the demo boot true
+# single-process — test/dummy/config/puma.rb only opts into cluster mode when an
+# explicit WEB_CONCURRENCY > 1 is provided. This keeps the demo within the
+# Railway memory cap (one worker per host core was the original 3GB+ RSS bug).
 ENV RAILS_ENV=production \
-    WEB_CONCURRENCY=1 \
     BUNDLE_DEPLOYMENT=1 \
     BUNDLE_WITHOUT=development \
     BUNDLE_PATH=/usr/local/bundle \
