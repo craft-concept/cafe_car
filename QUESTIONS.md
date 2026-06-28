@@ -2,6 +2,18 @@
 
 Owner-facing channel for decisions and blockers.
 
+## ⚙️ Activate `railway.toml` config-as-code on the demo service (owner/dashboard) — 2026-06-28
+
+The repo now has a `railway.toml` pinning the demo to the Dockerfile builder
+(`builder = "DOCKERFILE"` + `startCommand = "bin/railway-demo"`) — the durable fix for the
+Railpack-vs-Dockerfile builder instability that was booting the demo from the wrong path. **But
+Railway is not reading it:** the deploy metadata shows `configFile: null`, so the toml is currently
+inert (config-as-code is disabled for this service and can't be enabled via API). Homelab pinned the
+**equivalent settings at the service level** (build.dockerfilePath + deploy.startCommand), so the
+demo is stable on the Dockerfile *now* — but the toml won't be the source of truth until someone
+**points the service's config file at `railway.toml` in the Railway dashboard** (Service → Settings →
+Config-as-code). One-time owner/dashboard action; not blocking — the service-level pin already holds.
+
 ## 🖼️ OG/social card ready — one-time GitHub Settings upload (owner) — 2026-06-27
 
 A brand-grounded OG/social card now lives at `docs/images/og-card.png` (committed `51ef230`) so

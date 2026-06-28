@@ -59,6 +59,20 @@ boot reads "single mode". Caveat surfaced to homelab: if the service's builder i
 to Railpack, a dashboard flip may be needed if the toml doesn't override. **Cost win intact; this is
 the cleanliness/correctness close.**
 
+**Two more homelab verifications + the actual single-mode fix (`540898c`):** (1) Builder confirmed
+FIXED — deploy now runs the full 8-step Docker build + `bin/railway-demo` reseed. BUT the
+`railway.toml` is inert: Railway shows `configFile: null` (config-as-code disabled for the service,
+not enableable via API). Homelab pinned the equivalent at the **service level** (dockerfilePath +
+startCommand), so it's stable; logged the dashboard config-as-code activation as a one-time owner
+action in QUESTIONS.md so the toml becomes the real source of truth. (2) Single-mode was still
+cluster-1 — **my own bug:** the "belt-and-suspenders" `ENV WEB_CONCURRENCY=1` I'd baked into the
+Dockerfile is read **natively by Puma**, which clusters on it before ever consulting the puma.rb
+`> 1` guard. The workaround was the bug. Fix: dropped `WEB_CONCURRENCY` from the Dockerfile ENV (+ a
+comment so it's not re-added) → no env var → Puma boots true single-mode (workers=0); puma.rb still
+clusters on an explicit `WEB_CONCURRENCY > 1`. `rake` green, pushed. Emailed homelab to redeploy +
+confirm "single mode" in the boot log. **Lesson:** Puma consumes `WEB_CONCURRENCY` directly — don't
+set it as a config-feeding env var expecting a guard to gate it.
+
 **Next:** await homelab's redeploy + boot-log verification (loop back if it still clusters). Still
 owner-gated on the RubyGems key (v0.2.0 release-ready) and the OG-card Social-preview upload.
 Watching for the designer-persona restart (unblocks the copy voice sweep) and CrayonBloom
