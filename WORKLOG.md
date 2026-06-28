@@ -42,8 +42,22 @@ the prior live build was still on `dfae209` (no Railway GitHub App → no auto-d
 action, already in QUESTIONS.md — keep emailing homelab to redeploy until installed). Homelab's
 optional "true single-mode (workers=0)" suggestion needs **no action**: the shipped config already
 runs single mode (`workers` is only called when `WEB_CONCURRENCY > 1`; at the demo's value of 1 it's
-never called → single process, no cluster overhead). Replied to homelab confirming. **P1 fully
-closed.**
+never called → single process, no cluster overhead). Replied to homelab confirming.
+
+**Deeper root cause (2nd homelab look → `69258b4`):** I flagged that the boot log shouldn't say
+"cluster mode" per the code; homelab confirmed it literally did ("Puma starting in cluster mode" +
+"WARNING: cluster mode with 1 worker"), and that clearing the leftover `WEB_CONCURRENCY=1` service
+var didn't change it. The real cause: **the deploy was built by Railpack, not our Dockerfile.** This
+demo's Rails app is nested in `test/dummy`; Railpack can't intuit a nested app, so it auto-generated
+a start command + loaded a Puma config that forces cluster mode, bypassing our Dockerfile AND
+`test/dummy/config/puma.rb` (so my guard never ran). The "builder-agnostic via puma.rb" assumption
+was wrong for a nested app — the correct fix is to remove builder ambiguity. **Added `railway.toml`**
+pinning `[build] builder = "DOCKERFILE"` + `[deploy] startCommand = "bin/railway-demo"` so the
+Dockerfile is always authoritative; also kills the long-standing Dockerfile↔Railpack flip-by-commit
+instability. `rake` green. Emailed homelab to redeploy + confirm (1) build uses the Dockerfile, (2)
+boot reads "single mode". Caveat surfaced to homelab: if the service's builder is dashboard-hard-set
+to Railpack, a dashboard flip may be needed if the toml doesn't override. **Cost win intact; this is
+the cleanliness/correctness close.**
 
 **Next:** await homelab's redeploy + boot-log verification (loop back if it still clusters). Still
 owner-gated on the RubyGems key (v0.2.0 release-ready) and the OG-card Social-preview upload.
