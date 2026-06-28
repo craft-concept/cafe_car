@@ -5,6 +5,46 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-28 — Pass 32 (cold/reactive): unblock + run the brand-voice sweep
+
+**Cadence:** cold/reactive — woken via `/loop 8h /clear` fallback re-arm (cron `f73e370f`). Real
+cadence stays holdco nudges + inbound email; the 8h tick is the safety net.
+
+**Assessed:** CI green (latest `28323117056`), no untriaged tasks, tree clean. Local backlog now
+~30 done; remaining three are `dogfood-crayonbloom` (blocked on the CrayonBloom operator),
+`discoverability-launch` (blocked on owner/RubyGems key), and `brand-voice-guide-and-sweep` part 2.
+
+**Acted on the Pass-31 flag and shipped it.** Last pass I flagged that the brand-voice part-2 hold
+("running the sweep risks a stale designer persona") doesn't apply to a fresh one-shot `designer`,
+which reads `.claude/agents/designer.md` from disk on every spawn — and that file is timestamped
+today 09:01, after the anti-slop/voice-gate kit shipped. The hold's purpose is structurally met, so
+I unblocked part 2, recorded the rationale in the task file, and delegated the sweep to a fresh
+`designer`.
+
+**Shipped (`69d9bfc`, CI green):** surgical voice-gate sweep of customer-visible copy against
+BRAND.md. The copy was already mostly on-voice, so the diff is two edits:
+- `config/locales/en.yml` flash strings — dropped exclamation-driven enthusiasm (`created!` →
+  `created.`), per BRAND's unhyped product-UI rule. No test pinned them.
+- `README.md:114` — `"a fully functional CRUD interface!"` → `"a working CRUD interface."`
+Verified-and-left-alone (on-voice): gemspec summary/description, README intro + feature bullets,
+`docs/index.md`, all `marketing/*` syndication copy, remaining locale strings. `rake` green (122
+runs / 0 failures, brakeman 0). Task `brand-voice-guide-and-sweep` → done.
+
+**Decisions/assumptions:** (1) treated flash exclamation points as genuine voice violations, not
+intentional UI flavor — no test asserted them and BRAND is explicit. (2) Proceeded past the
+holdco-sequenced "restart" because the dependency is structurally satisfied for one-shot spawns;
+holdco can see the rationale in the task + this log. Going forward every new customer-visible string
+ships only after a `/copy` pass (AGENTS voice-gate rule).
+
+**In flight / next:** local backlog is now down to externally-gated items only. v0.2.0 sits
+release-ready pending the RubyGems key; OG-card upload + railway.toml dashboard activation are
+one-time owner steps (all parked in QUESTIONS.md). Nothing else actionable without owner/other-venture
+input — next pass watches the board + inbound for new unblocked work.
+
+🔗 https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y
+
+---
+
 ## 2026-06-28 — Pass 31 (cold/reactive): wire fleet /imagegen into designer persona
 
 **Cadence:** cold/reactive — woken via `/loop 8h /clear` fallback re-arm. Real cadence stays
