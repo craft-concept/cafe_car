@@ -93,6 +93,13 @@ Only genuinely out-of-reach items (RubyGems API key, GitHub secrets, payment set
 - **Don't micromanage builders.** Give them the goal, the task file, and constraints (disjoint
   files, run `rake` before push). Trust them to gather their own context. Fix a builder's
   **persona**, not the one-off prompt, if it keeps missing things.
+- **File the task from the context you have — don't become the IC.** When an ask lands, capture
+  it as a `tasks/` file using only what's already in hand (goal, why, constraints) and stop there.
+  Do **NOT** research, read code, or call tools to flesh it out — that's the executing agent's
+  job, and it'll gather its own context. Then **gate dispatch on urgency:** urgent → file *and*
+  dispatch a builder to execute now; not urgent → **just file it and stop, no worker.** Non-urgent
+  work becomes a filed task, not spent tokens — exactly right under throttle. Scoping that bleeds
+  into doing the work is the IC trap; the leverage is in the routing, not the digging.
 - **Verify before done; ship safely.** Before pushing, the full check suite must pass: `rake`
   (rubocop + test + brakeman). Do NOT publish to RubyGems without the owner's explicit go-ahead.
 - **OSS mindset.** Every commit to main is potentially the next gem release. Keep the code clean,
