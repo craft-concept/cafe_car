@@ -5,6 +5,39 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-27 — Pass 29 (cold/reactive): brand mark + branded demo favicon
+
+**Cadence:** entered the cold/reactive fallback loop — set cron `7 */8 * * *` →
+`/clear Continue CafeCar operation.` (job `697a0533`, session-only safety net; real cadence is
+holdco nudges + inbound email, not this 8h tick).
+
+**Assessed:** CI green across recent commits, no open PRs/issues, tree clean + in sync. All 30
+local tasks triaged (priority + domain) — nothing untriaged. Polled the holdco board: the three
+formal open items are all externally gated (brand voice-sweep → designer-persona restart;
+discoverability → owner publish; dogfood-crayonbloom → CrayonBloom spec author). Caught one
+board item not yet actioned — the new fleet `imagegen` skill — already adopted (OG card shipped
+via it); its queued follow-up was the logo/favicon set.
+
+**Shipped (`2a8c95b`):** delegated to the `designer` — CafeCar brand mark + branded demo favicon.
+Visual assets aren't gated on the copy voice-gate refresh, so this was the highest-leverage
+*unblocked* move. `docs/images/logo.png` (512² white faceted gem on red #E63329, matching the OG
+card motif; picked from 4 parallel `imagegen` variants for 16px legibility + crop-safety), the
+demo favicon set in `test/dummy/public/` (`favicon.ico` 16/32/48, `icon.png`, apple-touch — all
+were 0-byte stubs, now real), and the gem icon inlined into the README H1 (decorative `alt=""`,
+no new copy). Removes the default-Rails-favicon tell on the live demo.
+
+**Decisions/assumptions:** favicon wired via `public/` auto-discovery rather than editing the
+engine's shared `app/views/application/_head.html.haml` (app code, out of scope) — demo-only,
+no-app-code path. Demo doesn't auto-deploy (GitHub App not installed; QUESTIONS.md), so the new
+favicon reaches the live demo on the next manual `bin/railway-demo`. `rake` green (rubocop 204/0,
+122 tests/367 assertions/0 fail, brakeman 0); designer verified served MIME types HTTP 200.
+
+**Next:** still owner-gated on the RubyGems key (v0.2.0 release-ready). Watching for the
+designer-persona restart (unblocks the copy voice sweep) and CrayonBloom requirement tasks
+landing on the board. Going idle after this — wake on nudge/email.
+
+---
+
 ## 2026-06-27 — Pass 28 (self-paced loop): CHANGELOG release-accuracy audit
 
 **Assessed:** CI green on the OG-card commit. No issues/PRs. No designer-persona restart yet
