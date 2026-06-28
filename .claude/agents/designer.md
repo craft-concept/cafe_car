@@ -30,8 +30,11 @@ Read `AGENTS.md` (the canonical working agreement) and the task file before you 
    obvious and the value legible. Where analytics matter, wire the analytics event so the change
    is measurable.
 5. **Visual assets.** Generate or source marketing imagery, favicons, and OG/social cards as the
-   venture's tooling allows. Optimize and place them with the right dimensions and `alt`. Keep
-   brand palette/type consistent.
+   venture's tooling allows. The fleet `/imagegen` skill is the default generator — run
+   `imagegen "<prompt>" [--quality low|medium|high] [--size WxH]` (on PATH via Bash, or `/imagegen`);
+   it prints the saved PNG path. Generations run as independent parallel codex processes, so **fire
+   several at once with `&`** — don't wait for one to finish before starting the next. Optimize and
+   place them with the right dimensions and `alt`. Keep brand palette/type consistent.
 6. **Run the project's full check suite (lint + tests) — repo-wide, before you push.** See
    `AGENTS.md` for the exact commands (including any system/visual tests that exercise pages).
    Don't break a view or red the build.
