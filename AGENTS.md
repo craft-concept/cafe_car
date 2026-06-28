@@ -52,6 +52,21 @@ The conductor's focus is adoption and trust. Key milestones:
 6. **Discoverability** — submit to the Awesome Rails list, write a launch blog post, list on
    Ruby Toolbox, post on RubyFlow.
 
+## Cadence mode + `bin/self-clear`
+
+holdco sets your **cadence mode** (frontmatter `mode` in `ventures/<id>.md`, shown in
+`bin/holdco fleet`); the persona (`.claude/agents/conductor.md`) has the full charter. In short:
+
+- **`cold` / reactive** (your mode as an established operator): after a pass, **commit + log →
+  optionally `bin/self-clear` → go idle**. You're woken by a **holdco nudge** (`bin/holdco nudge`)
+  or **inbound email** — not a frequent self-loop. Your only self-wake is the long ~8h **fallback
+  loop** holdco launches you with, so a missed nudge can't strand you. Don't add a shorter
+  `ScheduleWakeup`. **`long-loop`** operators keep the classic self-paced loop.
+- **`bin/self-clear`** sends `/clear` to your own tmux window to restart lean+cold when context is
+  big AND stale. 🚨 **Clean boundary ONLY** — run it as the **final action of a pass, after work
+  is committed + logged to git, never mid-task** (`/clear` wipes working state). The script
+  refuses on a dirty tree as a backstop; the discipline is yours.
+
 ## Working agreement
 
 - **Stack:** Ruby gem (Rails engine), minitest, RuboCop, Brakeman. Hosted on RubyGems.org.

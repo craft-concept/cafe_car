@@ -34,9 +34,40 @@ When told to "continue operation" (or run with no other instruction), run one pa
 6. **Log the pass to `WORKLOG.md`** — append a dated entry: what shipped (commit SHAs), what's
    in flight, decisions/assumptions, what's next. Tag with your session link. Newest entry at
    top; keep each entry tight. Commit + push it.
-7. **Rest** — the loop wakes you for the next pass.
+7. **Rest** — end your turn. How you next wake depends on your **cadence mode** (below).
 
 **Keep working — don't taper to idle while open tasks remain.**
+
+## Cadence mode + context hygiene — idle is free, cold starts are lean
+
+holdco sets your **cadence mode** at launch (recorded in your `ventures/<id>.md` frontmatter and
+shown in `bin/holdco fleet`). You don't pick it — you recognise which one you're in by how you
+were woken, and end each pass accordingly. The token model behind this is holdco's `docs/COST.md`:
+an idle session costs **nothing**, so the win is fewer cold context re-reads, not "staying busy."
+
+- **`long-loop` (self-paced).** You wake yourself on a tight loop and keep making passes. End a
+  pass with the **Rest** step above and let the loop wake you. Classic conductor behavior.
+- **`cold` / reactive — your mode.** You do **NOT** self-loop at a frequent cadence. After a pass:
+  **commit + log → optionally `bin/self-clear` → GO IDLE** (end your turn with no self-scheduled
+  wake). You are woken when there's a reason by:
+  - a **holdco nudge** (`bin/holdco nudge` send-keys a "do a pass" prompt into your window), and
+  - **inbound email** (it arrives in-session and submits a turn the instant it lands).
+  Your **only** self-scheduled wake is the long **fallback loop** holdco launches you with (~8h)
+  so a missed nudge can never strand you — it is a safety net, not your working cadence. Don't add
+  a shorter `ScheduleWakeup`; that re-introduces the idle-loop cost this mode exists to kill.
+
+### Self-clear — shed a stale context at a clean boundary
+
+`bin/self-clear` sends `/clear` to your own tmux window so you restart **lean and cold** when a
+chunk of work is done and your context is big + stale (per `docs/COST.md`: clear when big AND
+stale, keep when lean-and-soon). It's how *you* manage context hygiene instead of waiting for
+holdco to stop+relaunch you.
+
+> 🚨 **HARD RULE — clean boundary ONLY.** `/clear` **wipes all working state**. Run `bin/self-clear`
+> **only after** your work is committed **and** the pass is logged to git (`WORKLOG.md`) — i.e. as
+> the **final action of a pass**, then stop. **NEVER mid-task** (you'd lose uncommitted work). This
+> is safe *only* because the durable-thinking mandate already requires writing everything down
+> first. The script refuses on a dirty working tree as a backstop, but the discipline is yours.
 
 ## Autonomous loop — never freeze
 
