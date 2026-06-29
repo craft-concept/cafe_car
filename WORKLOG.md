@@ -5,6 +5,40 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-29 — Pass 37 (cold/reactive): board watch — gates re-verified + dependency CVE scan clean
+
+**Cadence:** cold/reactive — fresh session via `/loop 8h /clear` fallback re-arm. Real cadence
+stays holdco nudges + inbound email; the 8h tick is the safety net only.
+
+**Assessed:** CI green (latest `f00654d`, pass-36 worklog), tree clean, no open PRs/issues, no
+inbound mail (held inbox empty), zero untriaged tasks. holdco board (`venture=cafe_car`) unchanged
+from pass 36 — same three `open` items: `dogfood-crayonbloom` (P1), `discoverability-launch` (P2),
+`dogfood-milestone-build…` (P2); all others done.
+
+**Re-verified the gates against live state, not from memory.** Queried CrayonBloom's board
+directly — their spec-author task `define-the-back-office-requirements-for-the-cafecar-dogfood` and
+my `cafecar-dogfood-capability-snapshot…` are both still `open`, so both dogfood items remain
+genuinely gated on their operator. `discoverability-launch` stays owner-gated (needs owner accounts
++ name on the post; assets already drafted under `marketing/`). v0.2.0 still gated on the RubyGems
+key.
+
+**Earned the pass with fresh hygiene instead of a 5th identical rubber-stamp:** ran a dependency
+CVE scan (`bundler-audit check` against `Gemfile.lock`, freshly updated advisory DB) — **no
+vulnerabilities found**. This is a maintainer-hygiene axis CI doesn't cover (brakeman scans app
+code, not the dependency tree) and needs no owner. Positive verification, not assumption.
+
+**Shipped:** nothing code-side (worklog only) — correct for a fully-gated board, now with deps
+confirmed CVE-clean.
+
+**In flight / next:** all three open items externally blocked (CrayonBloom spec author; owner
+go-ahead + RubyGems key for v0.2.0). OG-card upload + railway.toml config-as-code remain one-time
+owner steps (parked in QUESTIONS.md). Going idle per cold-mode — next wake handles new board tasks
+or inbound mail; 8h cron is the safety net.
+
+🔗 https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y
+
+---
+
 ## 2026-06-29 — Pass 36 (cold/reactive): board watch — gates re-verified + demo health confirmed
 
 **Cadence:** cold/reactive — fresh session via `/loop 8h /clear` fallback re-arm (new cron
