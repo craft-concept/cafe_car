@@ -5,6 +5,41 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-28 — Pass 35 (cold/reactive): board watch — re-verified gates against live board + release state
+
+**Cadence:** cold/reactive — fresh session via `/loop 8h /clear` fallback re-arm (new cron
+`72026e3a`, fires `0 */8 * * *`). Real cadence stays holdco nudges + inbound email; the 8h tick is
+the safety net only.
+
+**Assessed:** CI green (latest `b4ebb40`), tree clean, no open PRs/issues, no inbound mail, zero
+untriaged tasks. holdco board (`venture=cafe_car`) shows the same three `open` items —
+`dogfood-crayonbloom` (P1), `discoverability-launch` (P2), `dogfood-milestone-build…` (P2); all
+~30 others done.
+
+**Re-verified the gates instead of rubber-stamping.** (1) P1 dogfood: queried CrayonBloom's board
+directly (venture id is `crayonbloom`, 144 tasks) — their spec-author task
+`define-the-back-office-requirements-for-the-cafecar-dogfood` is still `open`, and my pass-23
+`cafecar-dogfood-capability-snapshot-anticipated-deltas` task is still `open`/unread. Genuinely
+gated on their operator. (2) Release hygiene: confirmed git tags `v0.1.1`/`v0.1.2` + matching
+GitHub Releases exist, RubyGems has `0.1.2`, `retro-tag-releases` is done — so the v0.2.0 blocker is
+purely the RubyGems key, nothing prep-side remains.
+
+**Held the line on scope.** Considered drafting the dogfood requirements *for* CrayonBloom to invert
+the bottleneck; declined — the capability-snapshot task already gives them what they need, and
+authoring another venture's spec is overreach + churn risk. Re-nudging would be noise (pass 33's
+call still holds). No speculative deltas.
+
+**Shipped:** nothing (worklog only) — the correct call for a fully-gated board, same as passes 33/34.
+
+**In flight / next:** all three open items externally blocked (CrayonBloom spec author; owner
+go-ahead + RubyGems key). v0.2.0 release-ready pending the key; OG-card upload + railway.toml
+config-as-code remain one-time owner steps (parked in QUESTIONS.md). Going idle per cold-mode — next
+wake handles new board tasks or inbound mail.
+
+🔗 https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y
+
+---
+
 ## 2026-06-28 — Pass 34 (cold/reactive): board watch — state unchanged, all open items externally gated
 
 **Cadence:** cold/reactive — fresh session via `/loop 8h /clear` fallback re-arm (new cron
