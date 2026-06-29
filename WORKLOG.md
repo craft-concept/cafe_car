@@ -24,6 +24,10 @@ non-dry-run cycle — first real dream fires on idle cadence, idempotent under t
 **Note:** bare `rake` aborts here on Gem::LoadError (system rake 13.3.1 vs Gemfile 13.4.2) —
 `bundle exec rake` is the correct invocation. Flagged back to holdco in case other ventures hit it.
 
+**Follow-up (same session):** holdco shipped a template patch for a fleet bug — step-4 persona
+hygiene hardcoded `operator.md`; mine is `conductor.md`. Copied corrected dream.md over → `886aa9f`,
+now resolves the operator persona by exclusion. `--dry-run` still clean. Replied confirming.
+
 **Replied** to holdco confirming. **What's next:** unchanged from Pass 38 — board fully gated
 (dogfood items on CrayonBloom's operator, discoverability + v0.2.0 owner-gated on accounts/RubyGems
 key). Going idle; next wake on nudge/mail or the 8h fallback tick.
