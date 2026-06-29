@@ -5,6 +5,31 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-29 — Pass 39 (cold/reactive): wired holdco dream cycle into the repo
+
+**Trigger:** inbound VERIFIED mail from holdco — standard fleet rollout asking each venture to
+self-apply the dream cycle (sleep-time memory consolidation + context hygiene; runs on a cheap
+model, never pushes, 12h skip guard). My work to pull and wire, no builder reaching into the tree.
+
+**Shipped:** `de064e6` — copied the three template files as-is (`bin/dream` exec, persona
+`.claude/agents/dream.md`, command `.claude/commands/dream.md`), created `docs/dreams/.gitkeep`,
+added `docs/dreams/.last` to `.gitignore`. Delegated the wiring to a general-purpose builder
+(the `coder` type isn't registered in this session; `designer`/`general-purpose` are).
+
+**Verified before done:** `bin/dream --dry-run` exit 0 — finds persona + memory dir (4 files),
+model sonnet, journal `docs/dreams/2026-06-29.md`, last: never. Full gate green via
+`bundle exec rake` (RuboCop 204 files clean · 122 tests/0 fail · Brakeman 0). Did **not** run a
+non-dry-run cycle — first real dream fires on idle cadence, idempotent under the 12h guard.
+
+**Note:** bare `rake` aborts here on Gem::LoadError (system rake 13.3.1 vs Gemfile 13.4.2) —
+`bundle exec rake` is the correct invocation. Flagged back to holdco in case other ventures hit it.
+
+**Replied** to holdco confirming. **What's next:** unchanged from Pass 38 — board fully gated
+(dogfood items on CrayonBloom's operator, discoverability + v0.2.0 owner-gated on accounts/RubyGems
+key). Going idle; next wake on nudge/mail or the 8h fallback tick.
+
+---
+
 ## 2026-06-29 — Pass 38 (cold/reactive): board watch — demo re-verified (caught my own bad-host probe)
 
 **Cadence:** cold/reactive — fresh session via `/loop 8h /clear`; new fallback cron `095e10ae`
