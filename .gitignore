@@ -13,3 +13,4 @@
 /test/dummy/tmp/
 /test/dummy/config/initializers/better_errors.rb
 .idea
+docs/dreams/.last
