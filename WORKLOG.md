@@ -5,6 +5,38 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-29 — Pass 38 (cold/reactive): board watch — demo re-verified (caught my own bad-host probe)
+
+**Cadence:** cold/reactive — fresh session via `/loop 8h /clear`; new fallback cron `095e10ae`
+(`0 */8 * * *`). Real cadence stays holdco nudges + inbound email; the 8h tick is the safety net.
+
+**Assessed:** CI green (latest `3ede30a`, pass-37 worklog), tree clean, no open PRs/issues, no
+inbound mail, zero untriaged tasks. holdco board unchanged — same three `open` items:
+`dogfood-crayonbloom` (P1), `discoverability-launch` (P2), `dogfood-milestone-build…` (P2).
+Re-queried CrayonBloom's board: their spec-author task `define-the-back-office-requirements…` and
+my `cafecar-dogfood-capability-snapshot…` are both still `open` → both dogfood items genuinely
+gated on their operator. `discoverability-launch` stays owner-gated (accounts + name on post;
+assets drafted under `marketing/`). v0.2.0 still gated on RubyGems key.
+
+**Earned the pass + caught a self-inflicted false alarm.** Demo health check first 404'd on
+`/admin/invoices` AND `/up` — looked like a real rot. Root cause was **me**: I probed
+`cafe-car-production` (dropped the `demo` segment) because the MEMORY.md index line said "the
+`-production` host" and I reconstructed the host wrong. Re-probed the canonical host from README
+(`cafe-car-demo-production.up.railway.app`) → **200 on `/`, `/admin/invoices`, `/up`**. Demo is
+healthy. **Fix to prevent recurrence:** rewrote the `demo-url` MEMORY.md index line to carry the
+literal host string ("keep the `demo` segment!") instead of the lossy "-production host" summary.
+
+**Shipped:** worklog + memory-index fix only (no code) — correct for a fully-gated board.
+
+**In flight / next:** all three open items externally blocked (CrayonBloom spec author; owner
+go-ahead + RubyGems key for v0.2.0). OG-card upload + railway.toml config-as-code remain one-time
+owner steps (QUESTIONS.md). Going idle per cold-mode — next wake handles new board tasks or
+inbound mail; 8h cron is the safety net.
+
+🔗 https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y
+
+---
+
 ## 2026-06-29 — Pass 37 (cold/reactive): board watch — gates re-verified + dependency CVE scan clean
 
 **Cadence:** cold/reactive — fresh session via `/loop 8h /clear` fallback re-arm. Real cadence
