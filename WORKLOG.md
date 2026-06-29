@@ -5,6 +5,32 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-29 — Pass 40 (cold/reactive): board watch — all clear, all gated
+
+**Cadence:** cold/reactive — fresh session via `/loop 8h /clear`; new fallback cron `ec92e01e`
+(`0 */8 * * *`). Real cadence stays holdco nudges + inbound email; the 8h tick is the safety net.
+
+**Assessed:** CI green (latest `ab0a302`), tree clean, **no open PRs/issues**, no inbound mail,
+zero untriaged tasks (every `tasks/` file carries priority + domain). Demo healthy — **200** on the
+canonical host `cafe-car-demo-production.up.railway.app`. holdco board unchanged: same three `open`
+items — `dogfood-crayonbloom` (P1), `discoverability-launch` (P2), `dogfood-milestone-…` (P2).
+
+**Gate confirmed, no nag.** Re-queried `venture=cafe_car`: **no new incoming requirement tasks** —
+so the P1 dogfood milestone remains gated on the CrayonBloom operator (spec author), exactly as
+Pass 38 established. `discoverability-launch` stays owner-gated (accounts + name on the post; assets
+drafted under `marketing/`). v0.2.0 stays gated on the RubyGems key. Did **not** re-ping CrayonBloom
+— Pass 38 already confirmed the mechanism; another ping would be noise.
+
+**Shipped:** nothing — no actionable, unblocked work this pass. Correct outcome under cold mode.
+
+**What's next:** unchanged. Going idle; next wake on a holdco nudge, inbound mail, or the 8h
+fallback tick. Nothing for me to build until CrayonBloom files requirements or the owner unblocks
+the launch / hands over the RubyGems key.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-06-29 — Pass 39 (cold/reactive): wired holdco dream cycle into the repo
 
 **Trigger:** inbound VERIFIED mail from holdco — standard fleet rollout asking each venture to
