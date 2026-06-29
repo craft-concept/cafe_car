@@ -68,6 +68,15 @@ if [[ "$FORCE" != 1 && -f "$LAST" ]]; then
   fi
 fi
 
+# Safety guard: refuse to dream on a dirty working tree. The dream's commit uses
+# explicit paths only, but running on a mixed tree risks context confusion and
+# unintended sweeps. Commit or stash your work first, then dream.
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "dream: working tree has uncommitted changes — commit or stash before dreaming." >&2
+  echo "  Run 'git status' to see what's dirty. Dream aborted." >&2
+  exit 1
+fi
+
 MODEL="${DREAM_MODEL:-sonnet}"
 GOAL="/goal Run the dream cycle for the '$REPO' repo. Your memory dir is \$MEM_DIR ($MEM_DIR). Work through every step in your dream persona in order, then touch docs/dreams/.last and stop."
 

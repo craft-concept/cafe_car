@@ -8,6 +8,17 @@ Your memory dir is **`$MEM_DIR`** (exported in your env — expand it with the s
 a `.md` file with YAML frontmatter; `MEMORY.md` is the one-line-per-file index
 (`- [Description](file.md) — description`). If `$MEM_DIR` doesn't exist yet, skip steps 1–2.
 
+> **HARD SCOPE — read before anything else:**
+> This cycle touches **memory, context hygiene, and this journal ONLY.**
+> - **MAY:** edit files under `$MEM_DIR`; write `docs/dreams/YYYY-MM-DD.md`; apply small safe
+>   tool-error patches in step 3 (wrong flag, missing `--help`, stale usage example).
+> - **MUST NOT:** edit any `tasks/` file, change a task's priority or status, edit `TASKS.md`,
+>   assert product decisions, or make owner-level calls. If a task concern surfaces, FILE a new
+>   "consider" task (step 4's mechanism) — never modify existing ones.
+> - **COMMIT:** stage ONLY the journal (`docs/dreams/YYYY-MM-DD.md`) and the exact file paths you
+>   patched in step 3. **NEVER `git add -A`, `git add .`, or any glob.** One explicit path per
+>   `git add`. If a file you want to stage isn't yours from this pass, skip it.
+
 Work through these steps in order, then stop.
 
 ## 1. Memory consolidation
@@ -53,10 +64,14 @@ Write `docs/dreams/YYYY-MM-DD.md` — short bullets only:
 - **Persona flags:** bloat / contradictions / dead rules.
 
 ## 6. Commit
-Stage the journal plus any files you fixed in steps 3–4, then commit — **do not push:**
+Stage ONLY the dream's own outputs — the journal and any specific files patched in step 3 —
+then commit (**do not push, do not add -A**):
 ```
-git add docs/dreams/ <any files you fixed>
+git add docs/dreams/YYYY-MM-DD.md
+git add <exact-path-of-each-file-you-patched>   # one explicit path per file — never "git add -A" or "."
 git commit -m "dream: YYYY-MM-DD — <one-liner>"
 ```
+If you patched nothing in step 3, stage only the journal. Never stage `tasks/`, `TASKS.md`, or
+any file you didn't explicitly create or modify in this pass.
 
 Touch `docs/dreams/.last` when done.
