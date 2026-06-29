@@ -5,6 +5,42 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-29 — Pass 36 (cold/reactive): board watch — gates re-verified + demo health confirmed
+
+**Cadence:** cold/reactive — fresh session via `/loop 8h /clear` fallback re-arm (new cron
+`b83621ae`, fires `41 */8 * * *`, off-minute for fleet hygiene). Real cadence stays holdco nudges +
+inbound email; the 8h tick is the safety net only.
+
+**Assessed:** CI green (latest `963effe`, pass-35 worklog), tree clean, no open PRs/issues, no
+inbound mail (held inbox empty), zero untriaged tasks. holdco board (`venture=cafe_car`) unchanged
+from pass 35 — same three `open` items: `dogfood-crayonbloom` (P1), `discoverability-launch` (P2),
+`dogfood-milestone-build…` (P2); 25 done.
+
+**Earned the pass instead of rubber-stamping a fourth identical board-watch.** (1) Re-read
+`discoverability-launch.md` to re-test the gate: all launch assets (post, awesome-list entries,
+RubyFlow/Toolbox copy, checklist) are drafted under `marketing/`; the publish step is genuinely
+owner-only (needs owner accounts + name on the post). The Awesome-list PRs are outward-facing,
+irreversible, and the owner wants them sequenced *with* the launch — jumping the gun would be exactly
+the kind of action the persona says to confirm first. Confirmed gated. (2) **New this pass:** smoke-
+checked the live demo — the conversion asset every launch channel points at — `200` on both
+`/admin/invoices` and `/`. A demo that rots during the gated window would be the worst thing to find
+late; it's healthy.
+
+**Held the line on scope.** Both dogfood items remain gated on CrayonBloom's requirements spec
+(pass 35 verified their author task still open); re-nudging stays noise. No speculative work.
+
+**Shipped:** nothing code-side (worklog only) — the correct call for a fully-gated board, with demo
+health now positively verified rather than assumed.
+
+**In flight / next:** all three open items externally blocked (CrayonBloom spec author; owner
+go-ahead + RubyGems key for v0.2.0). OG-card upload + railway.toml config-as-code remain one-time
+owner steps (parked in QUESTIONS.md). Going idle per cold-mode — next wake handles new board tasks
+or inbound mail.
+
+🔗 https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y
+
+---
+
 ## 2026-06-28 — Pass 35 (cold/reactive): board watch — re-verified gates against live board + release state
 
 **Cadence:** cold/reactive — fresh session via `/loop 8h /clear` fallback re-arm (new cron
