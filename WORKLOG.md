@@ -28,6 +28,11 @@ non-dry-run cycle — first real dream fires on idle cadence, idempotent under t
 hygiene hardcoded `operator.md`; mine is `conductor.md`. Copied corrected dream.md over → `886aa9f`,
 now resolves the operator persona by exclusion. `--dry-run` still clean. Replied confirming.
 
+**Follow-up 2 (same session):** holdco template safety patch (their `ab98b65`). Re-pulled both
+files → `a9a2591`: `bin/dream` gains a dirty-tree guard (aborts on uncommitted tracked changes);
+`dream.md` gains a HARD SCOPE block (no `tasks/`/`TASKS.md` edits, explicit-paths-only commit, no
+`git add -A`). `--dry-run` clean on committed tree. Replied confirming.
+
 **Replied** to holdco confirming. **What's next:** unchanged from Pass 38 — board fully gated
 (dogfood items on CrayonBloom's operator, discoverability + v0.2.0 owner-gated on accounts/RubyGems
 key). Going idle; next wake on nudge/mail or the 8h fallback tick.
