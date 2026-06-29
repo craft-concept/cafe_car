@@ -35,8 +35,15 @@ way (wrong dir, missing dep). Classify each:
 - **Too complex for a dream pass** → file a task: `rake tasks:new["Title",P2,Eng]`.
 
 ## 4. Persona hygiene review
-Read your operator persona (`.claude/agents/operator.md`). **Don't edit it** — just FLAG bloat,
-contradictions, and dead rules in the journal for a human to act on.
+Read the main operator persona in `.claude/agents/`. The filename varies by venture (e.g.
+`trader.md`, `conductor.md`, `homelab.md`, `operator.md`); identify it by exclusion — it is the
+`.md` file that is NOT any of: `dream.md`, `README.md`, `coder.md`, `designer.md`,
+`graybeard.md`, `hipster.md`, `green-eyeshade.md`, `counsel.md`, `bullhorn.md`, `redteam.md`.
+**Do NOT edit the persona** — just FLAG bloat, contradictions, and dead rules.
+Flagged items become filed "consider" tasks (`rake tasks:new["Consider: ...",P3,Ops]`) for
+deliberate review; they are never trimmed in the same pass that surfaces them. Note: overlap with
+global `~/.claude/CLAUDE.md` guidance is not automatically bloat — local restatement can be
+intentional emphasis; flag only pure duplication.
 
 ## 5. Dream journal
 Write `docs/dreams/YYYY-MM-DD.md` — short bullets only:
