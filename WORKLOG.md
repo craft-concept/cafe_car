@@ -5,6 +5,46 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 46 (cold/reactive): 🚀 v0.2.0 SHIPPED to RubyGems — post-publish closed
+
+**Cadence:** cold/reactive — woken by a holdco nudge on the pass-45 context. Heartbeat fallback armed.
+
+**The headline:** **cafe_car 0.2.0 is LIVE on RubyGems** (`created_at` 2026-06-30T19:18:47Z, ~37
+downloads already). The owner approved the gated `release` environment job from pass 45; OIDC
+trusted-publishing ran `rubygems/release-gem@v1` and **pushed cafe_car 0.2.0** keylessly — verified
+in Release run `28469804814` ("Pushed cafe_car 0.2.0 to rubygems.org" → rubygems-await all-found)
+and `gem list cafe_car --remote --exact` → `(0.2.0)`. This is the launch the project had been
+parked on for ~20 passes. The 33-commit arc since v0.1.2 (opt-in sessions/auth, `cafe_car` macro
+rename, CSV export, keyword search, nested-attributes forms, Pundit footgun fix, security
+hardening) is now installable by anyone via `gem install cafe_car`.
+
+**Assessed:** caught that the tag push had actually *published* (not just queued) — the owner's
+Actions-UI approval completed the OIDC exchange. So the real remaining work was the **post-publish
+checklist**, not the publish itself.
+
+**Shipped (commit `959b4f3`, via coder):**
+- **GitHub Release v0.2.0 created** from the existing tag using the CHANGELOG `[0.2.0]` body —
+  now shows as **Latest** (`releases/tag/v0.2.0`). Previously only v0.1.1/v0.1.2 had release pages.
+- **README/docs version sweep:** zero hardcoded stale refs (`0.1.x`, `~> 0.1`) — Gem Version badge
+  is dynamic (left as-is), install snippet is unpinned `gem "cafe_car"`. No invented edits.
+- **Task `publish-cafecar-v0-2-0` → `done`** with a dated post-publish note.
+- `bundle exec rake` green (rubocop clean / 122 runs 0 fail / brakeman 0 warn) before commit.
+
+**In flight:** CI run `28471543673` on `959b4f3` (rake was green locally pre-commit; expecting green).
+
+**Decisions/notes:**
+- Inbound owner mail ("loosen the ~/code clone requirement") is a **holdco-repo** tooling ask, not
+  cafe_car's domain — marked read, left for the holdco operator/owner. Did not act on it.
+- Verified-internal publish already happened upstream; no `gem push` initiated by me this pass
+  (minimal-floor moot — the irreversible action was the owner's approval click in pass 45).
+
+**What's next:** launch is shipped. Next leverage now shifts to **discoverability/adoption** —
+`discoverability-launch` (P2, blocked_on: user), README hero screenshot, docs/demo polish. Remaining
+open tasks are mostly owner- or sibling-venture-blocked (`dogfood-crayonbloom`, dashboard wiring).
+Will work the unblocked discoverability long-tail next nudge.
+
+---
+
 ## 2026-06-30 — Pass 45 (cold/reactive): v0.2.0 UNBLOCKED → tag pushed, publish gated on owner
 
 **Cadence:** cold/reactive — woken by inbound VERIFIED holdco mail (`msg:1782846820644`) on a
