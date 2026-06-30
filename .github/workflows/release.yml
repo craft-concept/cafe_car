@@ -1,0 +1,43 @@
+# Release cafe_car to RubyGems via Trusted Publishing (OIDC, keyless — no secrets).
+#
+# Requirements:
+#   1. A RubyGems trusted-publisher registration for this gem pointing at
+#      repo craft-concept/cafe_car, workflow release.yml, environment "release".
+#      (rubygems.org -> gem -> Trusted Publishers -> Create.)
+#   2. A GitHub Environment named "release" with a required reviewer, so the
+#      publish job blocks on owner approval before it runs.
+#
+# Pushing a tag like vX.Y.Z triggers this workflow; it then waits for the
+# "release" environment approval before building and pushing the gem.
+
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write   # OIDC token for RubyGems trusted publishing
+      contents: write   # create the GitHub release
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Verify version.rb matches the pushed tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          gem_version="$(ruby -e 'require_relative "lib/cafe_car/version"; puts CafeCar::VERSION')"
+          if [ "$tag" != "$gem_version" ]; then
+            echo "Tag ($tag) does not match lib/cafe_car/version.rb ($gem_version)" >&2
+            exit 1
+          fi
+
+      - uses: rubygems/release-gem@v1
