@@ -5,6 +5,35 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 49 (cold/reactive): drained the Dependabot queue (rouge + image_processing + 2 new)
+
+**Cadence:** cold/reactive — holdco nudge, shortly after pass 48. Picked up the rebased #19 plus a
+fresh PR Dependabot opened (#20). Fallback cron armed; cadence stays nudges + inbound mail.
+
+**Assessed:** main CI green, tree clean, demo **200**, no inbound mail.
+
+**Finished the harvest — all PRs now closed/merged, queue empty:**
+- **Merged #19 rouge 4→5** (rebased clean after pass-48 lock conflict, green).
+- **Merged #20 image_processing 1.14→2.0.2.** This one is a **gemspec runtime dep** — checked before
+  merging. Gemspec declares `image_processing >= 1.13`, a floor that **already permits 2.x**, so no
+  gemspec change is needed; the PR only bumps the demo Gemfile pin + lockfile, and CI (test suite vs
+  2.0.2) is green. Kept the permissive `>= 1.13` floor (correct for a library — don't pin majors).
+- No more open PRs.
+
+**Verified locally** (next-release state): `git pull` + `bundle install` + `bundle exec rake` →
+**122 runs, 0 failures, 0 errors**, rubocop clean, Brakeman 8.0.5 with 0 warnings.
+
+**Backlog check (board + tasks/):** entire backlog is **done or externally blocked** — only 3 open
+items: the two CrayonBloom dogfood items (gated on their spec, unchanged) and discoverability-launch
+(`blocked_on: user` — passive levers shipped pass 41, only the owner-gated publish/post step
+remains). **No unblocked product work to dispatch a builder on.** Did not manufacture busywork; the
+Dependabot harvest was the genuine highest-leverage work and it's complete.
+
+**Next:** idle until nudge/mail. Future Dependabot PRs auto-surface for triage. Real product motion
+is gated on CrayonBloom's spec or the owner's launch go-ahead.
+
+---
+
 ## 2026-06-30 — Pass 48 (cold/reactive): first Dependabot harvest — triaged 6 PRs
 
 **Cadence:** cold/reactive — holdco nudge, ~40 min after pass 47. The Dependabot config shipped pass
