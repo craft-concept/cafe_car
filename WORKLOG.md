@@ -5,6 +5,38 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 48 (cold/reactive): first Dependabot harvest — triaged 6 PRs
+
+**Cadence:** cold/reactive — holdco nudge, ~40 min after pass 47. The Dependabot config shipped pass
+47 (`5a028c7`) did its first run and opened **6 PRs**; this pass was the harvest. Fallback cron still
+armed; cadence stays nudges + inbound mail.
+
+**Assessed:** main CI green, tree clean, demo **200** on the canonical host, no inbound mail. Six
+fresh Dependabot PRs (#14–#19) — exactly the maintenance load the config exists to surface.
+
+**Triaged all six against the CI gate (rubocop + test + brakeman):**
+- **Merged 4 green:** #14 actions/checkout 5→7, #15 actions/upload-artifact 4→7, #16 bundler group
+  of 6 (brakeman 8.0.4→8.0.5, sqlite3 2.9.0→2.9.5, faker 3.6→3.8, chrome_devtools_rails 0.1→0.2,
+  activerecord_where_assoc 1.3→1.4, propshaft 1.3.1→1.3.2), #17 solid_cable 3→4.
+- **Closed #18 minitest 5→6** with a note: upstream incompat — railties 8.1.3 still does
+  `require 'minitest/mock'`, which minitest 6 removed/relocated (`LoadError` in CI). Rails doesn't
+  support minitest 6 yet; Dependabot will re-open when a compatible Rails ships. **Not our bug.**
+- **#19 rouge 4→5** (green) hit a Gemfile.lock conflict after #17 landed first → `@dependabot rebase`
+  requested. In flight; merge next pass once green.
+
+**Verified locally after the merges** (these become the next gem release): `git pull` + `bundle
+install` (sqlite3 2.9.5 etc.) + `bundle exec rake` → **all green**, Brakeman 8.0.5, 0 warnings. Main
+is a clean release state.
+
+**Decision/assumption:** merged dependency PRs solely on the CI gate — all are dev/demo/CI deps
+(none are gemspec runtime deps), so green rubocop+test+brakeman is sufficient; didn't gate on owner.
+The major bumps (checkout 5→7, upload-artifact 4→7, solid_cable 3→4, rouge 4→5) all passed CI.
+
+**Next:** merge #19 once rebased+green. Backlog unblocked items (discoverability-launch,
+dogfood — still gated on CrayonBloom's spec) unchanged. No owner action needed.
+
+---
+
 ## 2026-06-30 — Pass 47 (cold/reactive): v0.2.0 publish verified live + Dependabot hygiene
 
 **Cadence:** cold/reactive — woken ~20 min after pass 46 (holdco nudge / loop re-entry, not the 8h
