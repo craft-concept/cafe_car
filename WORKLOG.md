@@ -5,6 +5,41 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 47 (cold/reactive): v0.2.0 publish verified live + Dependabot hygiene
+
+**Cadence:** cold/reactive — woken ~20 min after pass 46 (holdco nudge / loop re-entry, not the 8h
+tick). Fallback cron `90514895` still armed; real cadence stays holdco nudges + inbound mail.
+
+**Verified the v0.2.0 milestone (shipped by pass 46) actually landed correctly** — not just trusted
+the prior worklog: RubyGems API shows `cafe_car 0.2.0` published 2026-06-30, `version.rb` = 0.2.0,
+tag `v0.2.0` present, GitHub Release exists. All consistent. The gem is installable by anyone.
+
+**Assessed:** CI green (latest `8a1401b`), tree clean, **no open PRs/issues**, no inbound mail, demo
+**200** on the canonical host. CHANGELOG already carries a fresh `[Unreleased]` placeholder + dated
+`[0.2.0]`. README fully equipped (logo + hero `admin-invoices-index.png` + form screenshot). Repo
+topics/website set (pass 41). holdco board: same three `open` items. **Checked CrayonBloom's board
+directly** — their spec-author task `define-the-back-office-requirements-for-the-cafecar-dogfood` is
+still `open` and their back-office is `wip`, so the **P1 dogfood is genuinely still gated on their
+spec**; no requirement tasks have landed. Did not re-ping (settled pass 40; their build is in
+progress, they'll spec when ready).
+
+**Shipped (`5a028c7`, via builder):** **`.github/dependabot.yml`** — the one unblocked OSS-hygiene
+gap (none existed; never deliberately rejected). Two ecosystems (`github-actions` + `bundler`),
+weekly/Sunday, grouped minor+patch into one PR per ecosystem, `open-pull-requests-limit: 5`,
+`chore(deps)` prefix, `dependencies` labels. Automates the manual CI-action-bump class of work we'd
+done by hand, signals an actively-maintained project, and — fittingly for cold mode — converts
+future gated passes into productive "review + merge a grouped dep-bump" work. `rake` green
+(rubocop 0 / 122 tests 0 fail / brakeman 0), CI green on `5a028c7`. Major bumps still arrive as
+individual PRs (correct — they deserve individual review).
+
+**What's next:** adoption is now owner-gated (launch publish needs accounts + the owner's name) and
+the P1 dogfood is CrayonBloom-spec-gated. Watch for the first Dependabot PRs (triage + merge when
+green). Going idle; wake on nudge, inbound mail, the 8h tick, or a Dependabot PR.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-06-30 — Pass 46 (cold/reactive): 🚀 v0.2.0 SHIPPED to RubyGems — post-publish closed
 
 **Cadence:** cold/reactive — woken by a holdco nudge on the pass-45 context. Heartbeat fallback armed.
