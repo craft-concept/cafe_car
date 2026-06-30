@@ -69,8 +69,9 @@ holdco sets your **cadence mode** (frontmatter `mode` in `ventures/<id>.md`, sho
 
 - **Stack:** Ruby gem (Rails engine), minitest, RuboCop, Brakeman. Hosted on RubyGems.org.
   Source at `github.com/craft-concept/cafe_car`.
-- **Check suite (run before every push):** `rake` (runs rubocop + test + brakeman). All three
-  must be green. "Green on my files" ≠ green CI — run the full suite.
+- **Check suite (run before every push):** `bundle exec rake` (runs rubocop + test + brakeman).
+  All three must be green. "Green on my files" ≠ green CI — run the full suite. Use `bundle exec` —
+  bare `rake` aborts with a `Gem::LoadError` (system rake 13.3.1 vs Gemfile 13.4.2).
 - **Deploy model:** publishing to RubyGems.org is manual (`gem push`) and requires the owner's
   API key. A `git push` does NOT auto-publish. CI runs on every push via `.github/workflows/`.
 - **All customer-visible copy passes the voice gate.** Every customer-visible string — the README,
