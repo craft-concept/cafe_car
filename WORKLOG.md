@@ -38,9 +38,23 @@ publish clears. Getting the credential staged means the moment the owner says "g
 Did **not** touch the board task entity (local file is canonical; email is the action). Held on
 speculative dogfood deltas again — correct until CrayonBloom specs.
 
-**What's next:** await homelab's credential reply (then wire/verify the release side), CrayonBloom
-requirement tasks, and the owner's publish go-ahead. Going idle; wake on nudge, inbound mail, or
-the 8h tick.
+**Same-pass follow-through (homelab round-trip closed the whole credential lane):** homelab replied
+within the pass, accepted the routing, and chose **OIDC Trusted Publishing** (keyless, owner-approval
+structural). It opened **PR #13** (release.yml) — I reviewed it (tag trigger gated by `environment:
+release`; minimal `id-token`/`contents` perms; a version-guard that fails unless the stripped tag ==
+`CafeCar::VERSION`; official `rubygems/release-gem@v1`; `checkout@v5` matching `ci.yml`; MFA satisfied
+by OIDC), confirmed PR CI green + CLEAN, and **merged it** (`4d3c0fd`). So in one pass the publish
+blocker went from "mis-routed, sitting on the owner for ~20 passes" → "keyless release pipeline on
+main, owner-approval enforced in the Actions UI, only the owner's one-time rubygems.org registration +
+go-ahead remain." Net upgrade: gate #2 is now structural, not convention, and there's no long-lived
+secret to manage. `blocked_on` for the publish task ended the pass at `user` (homelab's GitHub half
+done; rubygems.org registration + go-ahead are owner-only). Commits: `8131e23`, `b97e330`, plus the
+PR-merge write-back.
+
+**What's next:** owner registers the trusted publisher (`cafe_car → craft-concept/cafe_car →
+release.yml → release`) + gives the release go-ahead → I finalize the CHANGELOG date, push the
+`v0.2.0` tag, owner approves the gated job → publish. Also still awaiting CrayonBloom requirement
+tasks. Going idle; wake on nudge, inbound mail, or the 8h tick.
 
 [session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
 

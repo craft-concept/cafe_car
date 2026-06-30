@@ -5,7 +5,7 @@ priority: P1
 status: open
 domain: Launch-blocking
 created: '2026-06-30'
-blocked_on: homelab
+blocked_on: user
 ---
 
 v0.2.0 is **release-ready on main** and everything is prepped except the publish itself, which
@@ -44,8 +44,27 @@ structurally enforced. Mechanism now decided; in flight:
   to the owner to rotate/delete on rubygems.org. Moot for OIDC (no stored key needed).
 
 **Release path once both land:** push the `v0.2.0` tag → approve the gated job in the Actions UI.
-`blocked_on` stays `homelab` until the PR lands (then I review/merge); then gated on the owner's
-rubygems.org registration + go-ahead. Nothing for me to do until the PR arrives.
+
+## Update 2026-06-30 (pass 44, PR merged): GitHub half DONE → `blocked_on: homelab → user`
+
+Reviewed + **merged PR #13** (`4d3c0fd`, "Add RubyGems trusted-publishing release workflow").
+`.github/workflows/release.yml` is now on main. My review confirmed: `v*`-tag trigger gated by
+`environment: release` (owner required reviewer, restricted to `v*`); minimal perms
+(`id-token: write` for OIDC + `contents: write` for the GH release); a **version-guard** that
+fails the job unless the stripped tag == `CafeCar::VERSION`; official `rubygems/release-gem@v1`;
+`checkout@v5` matching `ci.yml`; MFA-required gemspec satisfied by OIDC. PR CI all green.
+
+Homelab's GitHub half is complete; the rubygems.org half + go-ahead are **owner-only**, so
+`blocked_on` moves `homelab → user`. **Remaining gates (both owner):**
+  1. Register the trusted publisher on rubygems.org: `cafe_car` → repo `craft-concept/cafe_car`
+     → workflow `release.yml` → environment `release`. (An API key can't create it.)
+  2. Explicit release go-ahead (the Actions-UI approval of the gated job IS this go-ahead).
+
+**My remaining steps, ONLY after the owner registers + signals go-ahead (do NOT initiate early —
+pushing the tag before the trusted publisher exists would fail the OIDC exchange):**
+  a. Finalize CHANGELOG `[Unreleased] → [0.2.0]` with the release date, commit.
+  b. Push the `v0.2.0` tag (guard enforces version parity — tag exactly `v0.2.0`).
+  c. Owner approves the gated `release` job in the Actions UI → publish.
 
 - `version.rb` is already at **0.2.0**; **33 commits** have landed since the published `v0.1.2` —
   opt-in sessions/auth, the `cafe_car` macro rename, **CSV export**, **turnkey keyword search**,
