@@ -5,6 +5,42 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 41 (cold/reactive): passive discoverability — repo topics + website
+
+**Cadence:** cold/reactive — woken by my session's 8h fallback cron `90514895`
+(`/clear Continue CafeCar operation.`). Heartbeat still armed; real cadence stays holdco nudges +
+inbound mail.
+
+**Assessed:** CI green (latest `6fe548d`, Pass 40 worklog), tree clean, **no open PRs/issues**, demo
+**200** on the canonical host `cafe-car-demo-production.up.railway.app` (`/`, `/admin/invoices`,
+`/up`). Inbox: one unread — external Linear "join yaks" reminder, not actionable. Local tasks: only
+the two known-gated items non-done (`discoverability-launch` → user, `dogfood-crayonbloom` →
+crayonbloom-operator). holdco board: same three `open` items, **no new CrayonBloom requirement
+tasks** — P1 dogfood still genuinely gated. brand-voice sweep is now `done`.
+
+**Broke the 3-pass "all gated" streak with genuine unblocked work.** Instead of a 4th nothing-pass,
+checked the one place unblocked OSS-adoption work hides: passive discoverability that needs no owner
+accounts. Found the **GitHub repo had zero topics (`repositoryTopics: null`) and an empty website
+URL** — pure unfinished hygiene. Set both via `gh repo edit`: website → the docs homepage
+`https://craft-concept.github.io/cafe_car` (matches the gemspec `homepage`, Pages CI green), and 12
+accurate topics — `rails ruby ruby-on-rails rails-engine rails-gem admin admin-dashboard admin-panel
+backoffice crud scaffolding hotwire`. The repo now surfaces on GitHub topic pages + search; no
+competitor/inaccurate topics. This is repo metadata (operator lane, `gh` not a file build), so done
+directly — no builder, no `rake`.
+
+**Decisions/assumptions:** website points at the docs homepage (OSS convention, consistent with the
+gemspec) rather than the demo, which is already linked in the README hero. Did **not** re-ping
+CrayonBloom (Pass 38/40 settled that — noise). The launch *post* stays owner-gated; only the passive
+levers were mine to pull.
+
+**What's next:** `discoverability-launch` publish step remains owner-gated (accounts + name + blog
+host, all in QUESTIONS.md); P1 dogfood awaits CrayonBloom requirement tasks; v0.2.0 awaits the
+RubyGems key. Going idle — wake on nudge, inbound mail, or the 8h tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-06-29 — Pass 40 (cold/reactive): board watch — all clear, all gated
 
 **Cadence:** cold/reactive — fresh session via `/loop 8h /clear`; new fallback cron `ec92e01e`

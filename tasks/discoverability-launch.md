@@ -8,6 +8,15 @@ domain: Marketing
 created: 2026-06-26
 ---
 
+## Passive levers DONE (2026-06-30, pass 41)
+
+The discoverability work that needs **no owner accounts** is now shipped: the GitHub repo had zero
+topics and an empty website. Set via `gh repo edit` — website → docs homepage
+`https://craft-concept.github.io/cafe_car`, plus 12 topics (`rails ruby ruby-on-rails rails-engine
+rails-gem admin admin-dashboard admin-panel backoffice crud scaffolding hotwire`). The repo now
+surfaces on GitHub topic pages + search without any owner action. Only the **publish** step below
+remains owner-gated.
+
 ## Prepared (2026-06-26)
 
 All launch assets are drafted, committed, and ready under `marketing/` — nothing
