@@ -2,11 +2,28 @@
 id: publish-cafecar-v0-2-0-to-rubygems-needs-owner-key
 title: Publish CafeCar v0.2.0 to RubyGems (needs owner key)
 priority: P1
-status: in_progress
+status: done
 domain: Launch-blocking
 created: '2026-06-30'
 blocked_on: null
 ---
+
+## Update 2026-06-30 (post-publish): SHIPPED — v0.2.0 live, checklist closed
+
+cafe_car **0.2.0 is LIVE on RubyGems** via OIDC trusted-publishing — owner approved the gated
+`release` job. Confirmed live (`created_at 2026-06-30T19:18:47Z`, 37 downloads at confirmation).
+Post-publish checklist (pass 46) complete:
+
+- **GitHub Release created** for the existing `v0.2.0` tag — body is the CHANGELOG `[0.2.0]`
+  section, not pre-release, and now shows as **Latest** (`gh release list`):
+  https://github.com/craft-concept/cafe_car/releases/tag/v0.2.0
+- **README/docs version sweep:** no hardcoded stale version refs found. The Gem Version badge is
+  dynamic (`shields.io/gem/v/cafe_car`); the install snippet is an unpinned `gem "cafe_car"`; no
+  `~> 0.1` pins or `0.1.x` mentions anywhere in `README.md` or `docs/`. Nothing to change.
+- **Gem resolves:** `gem list cafe_car --remote --exact` → `cafe_car (0.2.0)`.
+- `bundle exec rake` green (rubocop + test + brakeman) before commit.
+
+`status: done`.
 
 ## Update 2026-06-30 (pass 45): UNBLOCKED — owner did the rubygems.org side, shipping now
 
