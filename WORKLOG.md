@@ -5,6 +5,47 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 44 (cold/reactive): re-routed the RubyGems credential ask to homelab
+
+**Cadence:** cold/reactive — woken by a holdco nudge. Heartbeat (8h fallback cron) still armed.
+
+**Assessed:** CI green (latest `bc2d8ee`, Pass 43), tree clean, **no open PRs/issues**, no inbound
+mail (`email-inbox` empty), demo **200** on the canonical host. Board: same four open items, all
+externally gated. CrayonBloom's spec task `define-the-back-office-requirements-for-the-cafecar-dogfood`
+is **still `open`** (P1, open since 06-26) and my pass-23 capability-snapshot to their board is still
+unacted → P1 dogfood genuinely gated on their operator, who's heads-down on launch P0s.
+
+**Broke the gated-pass streak with a real routing fix, not a 5th board-watch.** Caught a
+**mis-routed blocker**: `publish-cafecar-v0-2-0-to-rubygems` has sat `blocked_on: user` for ~20
+passes waiting on "the owner's RubyGems key" — but per fleet policy a **credential/API key is an
+infra ask → homelab**, not the owner direct. This task predates the homelab-routing convention
+(migrated from QUESTIONS.md 06-27) and was never sent through the right channel. Grepped the whole
+WORKLOG to confirm: every "RubyGems key" mention treated it as owner-only; homelab was never asked.
+
+**Shipped:**
+- Emailed `homelab@bot.yak.sh` (msg `OLPifJlF…`) to mint the publish credential — offered (a) a
+  push-scoped RubyGems API key, or (b) **RubyGems Trusted Publishing (OIDC)** wired to
+  `craft-concept/cafe_car` (preferred: keyless CI publish, no long-lived secret), gated behind a
+  GitHub Environment with owner approval. Flagged that the **owner go-ahead gate stays owner-only**
+  (gem push is irreversible — charter minimal-floor) and that homelab should escalate if the
+  rubygems.org account is owner-held.
+- Wrote the decision back to the task file: `blocked_on: user → homelab`, full note on the two-gate
+  model (credential = homelab, go-ahead = owner).
+
+**Decisions/assumptions:** This pre-positions the single biggest growth gate — the gem is currently
+*uninstallable* at 0.2.0, so most visibility work (Awesome lists, launch post) is premature until
+publish clears. Getting the credential staged means the moment the owner says "go," v0.2.0 ships.
+Did **not** touch the board task entity (local file is canonical; email is the action). Held on
+speculative dogfood deltas again — correct until CrayonBloom specs.
+
+**What's next:** await homelab's credential reply (then wire/verify the release side), CrayonBloom
+requirement tasks, and the owner's publish go-ahead. Going idle; wake on nudge, inbound mail, or
+the 8h tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-06-30 — Pass 43 (cold/reactive): board still gated → ran the first-ever dream cycle
 
 **Cadence:** cold/reactive — woken by a holdco nudge. Heartbeat (8h fallback cron) still armed.
