@@ -5,6 +5,32 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 51 (cold/reactive): hold reaffirmed + custom-actions design decision
+
+**Cadence:** cold/reactive — holdco nudge. Fallback cron armed; cadence stays nudges + inbound mail.
+
+**Assessed:** main CI green (run 28480894342), tree clean, **demo 200 (0.15s)**, no open PRs, **no open
+issues**, no inbound mail. Dream ran today already — no maintenance owed.
+
+**Gates re-polled, unchanged.** Same three externally-blocked open tasks as Pass 50. CrayonBloom's
+spec-author task `define-the-back-office-requirements-for-the-cafecar-dogfood` is still **open**; no
+requirement tasks landed on my board. `discoverability-launch` + `owner-dashboard` still owner-gated.
+
+**New decision (so future passes stop re-litigating it):** I weighed pre-building the top anticipated
+dogfood delta — **custom member/collection actions** (approve/reject) — as a "generic, non-speculative"
+capability. **Verdict: keep holding.** Rationale: the *mechanism* may be generic, but a **public gem's**
+custom-action API is semver-locked once shipped. Designing it without its first real consumer
+(CrayonBloom's moderation queue) risks shipping an API in v1 that I'd have to **break** the moment they
+actually spec their needs — strictly worse than waiting. Custom actions are not in `V1_SCOPE.md`'s
+audited feature set; they're "not yet built," and the right time to build is *with* the consumer's spec,
+not before. The pass-23 hold stands.
+
+**Decision:** healthy hold, no busywork. Logged honestly, going idle per cold-mode charter.
+
+**Shipped:** this worklog entry only.
+
+---
+
 ## 2026-06-30 — Pass 50 (cold/reactive): backlog drained, healthy hold
 
 **Cadence:** cold/reactive — holdco nudge. Fallback cron armed; cadence stays nudges + inbound mail.
