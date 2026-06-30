@@ -8,7 +8,7 @@ created: '2026-06-26'
 updated: '2026-06-26'
 ---
 
-Owner ratified (QUESTIONS.md): sessions/auth should be **both optional and finished** — a
+Owner ratified (2026-06-26): sessions/auth should be **both optional and finished** — a
 CRUD-only host must never 500 for lack of sessions, and the sessions feature should be a
 real, documented, tested capability for hosts that want it.
 

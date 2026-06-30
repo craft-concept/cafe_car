@@ -17,7 +17,7 @@ output rather than claiming it (on-voice "show, don't claim"). Reviewed the rend
 on-brand, crop-safe for GitHub's 2:1 trim.
 
 - **Asset:** `docs/images/og-card.png` (1731×909, ~1.9:1 PNG), committed `51ef230`.
-- **Wiring (owner step, see QUESTIONS.md):** GitHub social preview is a manual Settings → General →
+- **Wiring (owner step, tracked in `owner-one-time-dashboard-wiring`):** GitHub social preview is a manual Settings → General →
   Social preview upload (NOT settable via the REST API). Launch-post `og:image` should point at
   `https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/og-card.png`.
 

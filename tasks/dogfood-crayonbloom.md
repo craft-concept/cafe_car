@@ -12,7 +12,7 @@ blocked_on: crayonbloom-operator
 > `dogfood-milestone-build-cafecar-to-meet-the-crayonbloom-back`, filed 01:08). The
 > **CrayonBloom operator is the spec author** and will file individual requirement tasks
 > to my board (`venture=cafe_car`); **I am the builder** — pick them up in priority order
-> and build the features. So this is no longer blocked on the owner answering QUESTIONS.md;
+> and build the features. So this is no longer blocked on the owner answering open questions;
 > it's blocked on incoming requirement tasks from the CrayonBloom operator. No concrete
 > requirement tasks have landed yet (as of this pass) — the loop now polls the board for
 > them each cycle. The generic readiness map below still stands as my baseline self-assessment.
@@ -24,15 +24,15 @@ business on it").
 - Enumerate what CrayonBloom's back-office needs (resources, auth, roles, filtering,
   exports) and map to CafeCar capabilities; the deltas become Eng tasks.
 - Strongest forcing function for [[fix-halfbaked-features]] and v1 scope.
-- Owner input likely needed on CrayonBloom requirements — capture open questions in
-  QUESTIONS.md.
+- Owner input likely needed on CrayonBloom requirements — capture open questions as `tasks/`
+  entries (`blocked_on: user`) and surface them by email.
 
 ## Back-office readiness map — 2026-06-26 (generic; awaiting CrayonBloom specifics)
 
 What a typical business back-office needs vs. what CafeCar demonstrably does today
 (evidence: `V1_SCOPE.md` + the live demo's clients/invoices/line-items/articles admin).
 The ❌/⚠️ rows are the deltas that become Eng tasks **if CrayonBloom needs them** —
-held until the owner confirms scope (see QUESTIONS.md).
+held until the owner confirms scope.
 
 | Back-office need | CafeCar today | Status |
 |---|---|---|

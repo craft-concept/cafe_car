@@ -19,4 +19,4 @@ RubyGems key). Make the gem metadata release-grade.
 - Pin/declare dependency version floors instead of bare `add_dependency "rails"` etc.,
   so resolution is predictable for adopters. Coordinate with [[cnc-keep-or-drop]].
 - Do NOT bump the version or publish without explicit owner approval — flag readiness via
-  QUESTIONS.md / holdco.
+  email to the owner + the task board.

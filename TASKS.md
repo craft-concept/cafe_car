@@ -48,7 +48,7 @@ the user on these.
         > `dogfood-milestone-build-cafecar-to-meet-the-crayonbloom-back`, filed 01:08). The
         > **CrayonBloom operator is the spec author** and will file individual requirement tasks
         > to my board (`venture=cafe_car`); **I am the builder** — pick them up in priority order
-        > and build the features. So this is no longer blocked on the owner answering QUESTIONS.md;
+        > and build the features. So this is no longer blocked on the owner answering open questions;
         > it's blocked on incoming requirement tasks from the CrayonBloom operator. No concrete
         > requirement tasks have landed yet (as of this pass) — the loop now polls the board for
         > them each cycle. The generic readiness map below still stands as my baseline self-assessment.
@@ -60,15 +60,15 @@ the user on these.
         - Enumerate what CrayonBloom's back-office needs (resources, auth, roles, filtering,
           exports) and map to CafeCar capabilities; the deltas become Eng tasks.
         - Strongest forcing function for [[fix-halfbaked-features]] and v1 scope.
-        - Owner input likely needed on CrayonBloom requirements — capture open questions in
-          QUESTIONS.md.
+        - Owner input likely needed on CrayonBloom requirements — capture open questions as `tasks/`
+          entries (`blocked_on: user`) and surface them by email.
 
         ## Back-office readiness map — 2026-06-26 (generic; awaiting CrayonBloom specifics)
 
         What a typical business back-office needs vs. what CafeCar demonstrably does today
         (evidence: `V1_SCOPE.md` + the live demo's clients/invoices/line-items/articles admin).
         The ❌/⚠️ rows are the deltas that become Eng tasks **if CrayonBloom needs them** —
-        held until the owner confirms scope (see QUESTIONS.md).
+        held until the owner confirms scope.
 
         | Back-office need | CafeCar today | Status |
         |---|---|---|
@@ -76,24 +76,160 @@ the user on these.
         | Authorization + roles | Pundit policies, attribute-level perms, scopes | ✅ (the role model itself is host-supplied) |
         | Auth / login | opt-in sessions (finished; CRUD-only hosts 403 not 500) | ✅ opt-in |
         | Filtering | query DSL — ranges, operators, association counts | ✅ |
-        | Full-text / keyword search | — (only attribute filters) | ⚠️ gap |
+        | Full-text / keyword search | turnkey keyword search (shipped) | ✅ |
         | Sorting + pagination | Kaminari-backed | ✅ |
         | Associations incl. nested forms | belongs_to selects + has_many nested attrs | ✅ (closed issue #10) |
         | File / image uploads | Active Storage (avatars in demo) | ✅ (host-wired) |
         | Rich text | Action Text | ✅ |
         | Audit log / versioning | PaperTrail CRUD'd as a resource | ✅ (host-supplied) |
-        | CSV / data export | JSON responses only | ❌ gap |
+        | CSV / data export | bounded CSV export, configurable row cap (shipped) | ✅ |
         | Bulk actions (multi-select ops) | — | ❌ gap |
+        | Custom member/collection actions (approve/reject) | macro generates 7 RESTful actions only | ⚠️ gap |
         | Dashboard / metrics / charts | — | ❌ out of current scope |
 
-        **Gap-derived candidate Eng tasks** (file only if CrayonBloom needs them): CSV/data export,
-        bulk actions, keyword search, dashboard widgets. None blocks generic CRUD-admin dogfooding —
-        the ✅ rows already cover a clients/invoices-style back-office (the demo proves it).
+        **Gap-derived candidate Eng tasks** (file only if CrayonBloom needs them): bulk actions,
+        custom member/collection actions, dashboard widgets. CSV export and keyword search are now
+        shipped (✅). None blocks generic CRUD-admin dogfooding — the ✅ rows already cover a
+        clients/invoices-style back-office (the demo proves it).
 
-        **Status:** the generic enumeration is done; the milestone is now blocked on CrayonBloom's
-        concrete requirements (resources, roles, must-have capabilities, and whether there's a repo
-        to read). Questions filed in QUESTIONS.md → `blocked_on: user`.
+        ## Concrete use case surfaced — 2026-06-27 (pass 23, from CrayonBloom's board)
+
+        Mined CrayonBloom's board instead of waiting passively. Their back-office is a **public-gallery
+        submission-moderation queue** (board task "Public gallery + admin approval back-office", `wip`):
+        admins triage AI-generated kids' images and approve/reject them. Their spec-author task
+        "Define the back-office requirements for the CafeCar dogfood" is still **`open`** on their side —
+        that's why no requirement tasks have landed on my board yet. The milestone gate is their spec,
+        not the owner.
+
+        From that use case the **anticipated CafeCar deltas** are: (1) custom member/collection actions
+        (one-click approve/reject — the macro only generates the 7 RESTful actions), (2) bulk actions
+        (approve/reject many), (3) index-level Active Storage thumbnails for queue triage. None built yet —
+        holding until they confirm, to avoid speculative scope creep.
+
+        **Action taken (pass 23):** filed a capability-snapshot + anticipated-deltas task to their board
+        (`cafecar-dogfood-capability-snapshot-anticipated-deltas-for-y`) so they spec against current
+        reality and we parallelize. Now blocked on their concrete requirement tasks landing here.
+- [ ] (P1) Publish CafeCar v0.2.0 to RubyGems (needs owner key)
+        v0.2.0 is **release-ready on main** and everything is prepped except the publish itself, which
+        needs the owner's RubyGems API key. `gem push` is an un-unwindable external action — owner-gated.
+
+        _Migrated from the retired QUESTIONS.md (entry "📦 v0.2.0 is ready to publish", 2026-06-27)._
+
+        - `version.rb` is already at **0.2.0**; **33 commits** have landed since the published `v0.1.2` —
+          opt-in sessions/auth, the `cafe_car` macro rename, **CSV export**, **turnkey keyword search**,
+          nested-attributes forms, the Pundit-verification footgun fix, and security hardening.
+        - CI green, `rake` green, demo healthy, docs + `CHANGELOG [Unreleased]` current.
+        - **On owner go-ahead + key in env:** finalize the CHANGELOG `[Unreleased] → [0.2.0]` with the
+          date, tag `v0.2.0`, and `gem push`. Until then it sits release-ready on main.
+        - Apply the minimal-floor risk-check before pushing even on a verified owner go-ahead — a
+          `gem push` is irreversible.
+- [x] (P1) Author BRAND.md + one-time voice sweep of customer-visible copy
+        Mirrors holdco board task `author-brand-md-voice-guide-route-all-customer-visible-copy-`
+        (filed 2026-06-27 22:24). Fleet anti-AI-slop voice-gate machinery shipped to this repo: the
+        `designer` persona now carries the anti-slop kit + voice-gate mode, there's a `BRAND.md` stub,
+        a `/copy` command, and an AGENTS voice-gate rule (`AGENTS.md` §"All customer-visible copy passes
+        the voice gate"). Two operator-owned follow-ups:
+
+        ## Part 1 — Author BRAND.md — DONE (pass 26)
+
+        Filled the `BRAND.md` stub with CafeCar's actual voice, grounded in the shipped README + gem
+        description (not invented). Captured: audience (Rails devs who need an admin and won't hand-roll
+        CRUD), 5 behaviorally-defined voice adjectives (Rails-native, show-don't-claim, opinionated,
+        terse, unhyped), do/don't rules, an Always/Sometimes/Never lexicon, 8 on-voice/off-voice pairs
+        spanning headline → body → CTA → error → empty-state → email → social, and per-channel notes.
+        The universal slop list is intentionally NOT repeated (it lives in the designer persona).
+
+        ## Part 2 — One-time voice sweep — PENDING designer-persona restart
+
+        Route all existing customer-visible copy through the voice gate (`/copy`) against the new
+        BRAND.md: README, gem description/summary, docs, demo/landing copy, product UI microcopy, error
+        strings, and any transactional/marketing email. From then on every customer-visible string ships
+        only after a `/copy` pass.
+
+        **Blocked:** the board task notes the designer persona changed, so a graceful operator restart is
+        needed to pick up the updated anti-slop kit — **holdco will sequence that restart**. Running the
+        sweep now risks using a stale persona. Hold part 2 until the restart lands, then run the sweep
+        (delegate to the refreshed `designer`) and route the README + gem description first (highest-traffic
+        customer-visible copy), then the rest.
+
+        **Unblock rationale (pass 32, 2026-06-28):** the staleness risk is structurally satisfied. A
+        one-shot `designer` subagent reads `.claude/agents/designer.md` fresh from disk on every spawn —
+        the persona file is timestamped today 09:01, after the anti-slop/voice-gate kit shipped. The
+        "restart" framing assumed a *persistent* designer teammate holding stale context; a fresh spawn
+        has none. Proceeding with the sweep via a fresh `designer`, README + gemspec description first.
+
+        ## Part 2 — DONE (pass 32, 2026-06-28, commit `69d9bfc`)
+
+        Fresh `designer` swept all customer-visible copy against BRAND.md via the voice gate. Result was
+        a tight, surgical diff (the copy was already mostly on-voice):
+        - `config/locales/en.yml` flash strings: dropped exclamation-driven enthusiasm
+          (`"created!"` → `"created."`) — BRAND's unhyped product-UI rule.
+        - `README.md:114`: `"a fully functional CRUD interface!"` → `"a working CRUD interface."` —
+          removed inflated adjective + lone prose exclamation.
+        - Verified already on-voice and left byte-for-byte: gemspec summary/description, README intro +
+          feature bullets, `docs/index.md`, `marketing/*` launch/syndication copy, remaining locale
+          strings. No "Oops"/journey-speak found anywhere.
+        - `rake` green (122 runs / 0 failures, brakeman 0 warnings), pushed to main.
+
+        From here every new customer-visible string ships only after a `/copy` pass (AGENTS voice-gate rule).
+- [x] (P1) Cap demo Puma memory — force single-process (was 48 workers / 3GB+ RSS)
+        Mirrors holdco board task `cafe-car-demo-durably-cap-memory-was-3gb-and-climbing` (P1, filed
+        2026-06-28 07:05 by homelab). Demo was burning ~$30/mo against the Railway spend cap.
+
+        ## Root cause (homelab diagnosis, confirmed in-repo)
+
+        `test/dummy/config/puma.rb` boots Puma in **cluster mode** in production with one worker per host
+        CPU core: `worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { Concurrent.physical_processor_count })`.
+        The container sees the host's 16–48 cores → 16–48 Rails workers → 3GB+ RSS. Homelab set the Railway
+        service var `WEB_CONCURRENCY=1` and redeployed 3× but it did **not** reach Puma at runtime (still
+        booted 48 workers).
+
+        ## Fix (two-pronged, builder-agnostic)
+
+        1. **`test/dummy/config/puma.rb`** — change the production fallback default from
+           `Concurrent.physical_processor_count` to `1`. This is the root-cause fix: the demo never wants
+           more than one worker on shared/capped infra, and it survives a Dockerfile→RAILPACK builder
+           switch (homelab warned the builder flips by commit). `concurrent-ruby` require can stay or go;
+           with default 1 it's only needed when WEB_CONCURRENCY is explicitly set high.
+        2. **`Dockerfile`** — add `WEB_CONCURRENCY=1` to the `ENV` block so it's baked into the image and
+           present at runtime regardless of Railway var propagation (belt-and-suspenders under the Docker
+           builder).
+
+        `MALLOC_ARENA_MAX=2` is already set on the service and stays.
+
+        ## Verify
+
+        - `rake` green (rubocop + test + brakeman).
+        - After merge, homelab redeploys; boot logs must show single-process mode (NO "cluster mode", NO
+          "Worker N booted"). Demo stays HTTP 200 on `cafe-car-demo-production.up.railway.app`.
+
+        Notify homelab once the in-repo fix lands on main so they redeploy + confirm.
+
+        ## Follow-up (2026-06-28): root cause was the BUILDER, not just worker count
+
+        Homelab redeployed and the memory cost is solved (48→1), but the boot log still literally read
+        "Puma starting in cluster mode" + "WARNING: cluster mode with 1 worker" — which contradicts
+        `test/dummy/config/puma.rb` (only calls `workers` when `WEB_CONCURRENCY > 1`). Removing the leftover
+        `WEB_CONCURRENCY=1` service var didn't change it. Root cause: **the live deploy was being built by
+        Railpack, not our Dockerfile.** The Rails app is nested in `test/dummy`, which Railpack can't intuit
+        — it auto-generated a start command + loaded a Puma config that forces cluster mode, bypassing our
+        Dockerfile and puma.rb entirely. So the "builder-agnostic via puma.rb" assumption was wrong; the
+        real fix is to remove builder ambiguity.
+
+        **Fix:** added `railway.toml` pinning `[build] builder = "DOCKERFILE"` + `[deploy] startCommand =
+        "bin/railway-demo"`, so the Dockerfile (which correctly cds into test/dummy, reseeds, and boots
+        single-process Puma) is always authoritative. This also resolves the original task's builder-flip
+        concern. Homelab to redeploy + confirm build uses the Dockerfile and boot shows single mode.
 - [ ] (P2) Discoverability — Awesome Rails, RubyFlow, launch post
+        ## Passive levers DONE (2026-06-30, pass 41)
+
+        The discoverability work that needs **no owner accounts** is now shipped: the GitHub repo had zero
+        topics and an empty website. Set via `gh repo edit` — website → docs homepage
+        `https://craft-concept.github.io/cafe_car`, plus 12 topics (`rails ruby ruby-on-rails rails-engine
+        rails-gem admin admin-dashboard admin-panel backoffice crud scaffolding hotwire`). The repo now
+        surfaces on GitHub topic pages + search without any owner action. Only the **publish** step below
+        remains owner-gated.
+
         ## Prepared (2026-06-26)
 
         All launch assets are drafted, committed, and ready under `marketing/` — nothing
@@ -114,7 +250,7 @@ the user on these.
           Awesome Rails/Ruby PRs, RubyFlow, Show HN, r/rails + r/ruby, Discord/Slack,
           X/Mastodon), each with URL, paste text, and which account it needs.
 
-        Owner decisions tracked in `QUESTIONS.md` (go-ahead, blog host, channels,
+        Owner decisions tracked in this task + surfaced by email (go-ahead, blog host, channels,
         demo-spike OK). Status stays `open`, blocked on user for the publish step.
 
         Roadmap item #6. Visibility is the other half of the mission. Sequence this AFTER ship +
@@ -125,6 +261,44 @@ the user on these.
         - Write a launch blog post (the "Rails should render something by default" thesis is a
           strong hook) and share where Rails devs gather.
         - Depends on [[docs-site-live-demo]] for the demo link to point at.
+- [ ] (P2) Owner one-time dashboard wiring (Railway config-as-code, GitHub App auto-deploy, OG social card upload)
+        Three one-time owner/dashboard actions, all **non-blocking** (workarounds hold), grouped so they
+        don't get lost. None needs code; each is a console/settings click only the owner can do.
+
+        _Migrated from the retired QUESTIONS.md (entries dated 2026-06-27/28). Detail preserved below._
+
+        1. **Activate `railway.toml` config-as-code on the demo service.** The repo has a `railway.toml`
+           pinning the demo to the Dockerfile builder (`builder = "DOCKERFILE"` + `startCommand =
+           "bin/railway-demo"`), but Railway shows `configFile: null` — the toml is inert (config-as-code
+           is disabled for this service and can't be enabled via API). Homelab pinned the equivalent
+           settings at the service level, so the demo is stable **now**; the toml won't be the source of
+           truth until someone points the service's config file at `railway.toml` (Service → Settings →
+           Config-as-code). Non-blocking — the service-level pin already holds.
+
+        2. **Install the Railway GitHub App for auto-deploy.** The live demo (`cafe-car-demo`) does **not**
+           auto-deploy on push to `main`: root cause `NO_INSTALLATION` — the Railway GitHub App is not
+           installed on `craft-concept/cafe_car`, so there's no GitHub→Railway webhook. Owner action:
+           install https://github.com/apps/railway on the repo, then enable auto-deploy on the service.
+           Until then, demo deploys are triggered manually (Railway MCP / homelab) after demo-affecting
+           pushes.
+
+        3. **Upload the OG/social card to GitHub.** A brand-grounded OG card lives at
+           `docs/images/og-card.png` (committed `51ef230`) so shared links render a professional preview.
+           GitHub's social preview can't be set via API — upload it manually at Settings → General →
+           Social preview on `craft-concept/cafe_car`. (Launch-post `og:image` can reference the raw URL:
+           `https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/og-card.png`.)
+           Tracked as the wiring step of `visual-assets-og-card`.
+- [x] (P2) Note the fleet /imagegen skill in the designer persona
+        Mirrors holdco board task `new-fleet-imagegen-skill-use-it-for-visual-assets-run-imageg`.
+
+        A new fleet `/imagegen` skill is on PATH (`imagegen "<prompt>" [--quality low|medium|high]
+        [--size WxH]`, also `/imagegen`); it generates icons, mockups, hero/marketing images, and
+        OG/social cards, printing the saved PNG path. Generations run as **independent parallel codex
+        processes** — fire several at once with `&`, don't wait for one to finish.
+
+        **Done:** wired the tool into `.claude/agents/designer.md` item 5 ("Visual assets") as the default
+        generator, with the parallel-fire guidance, so every future designer spawn reaches for it on visual
+        work. Verified `imagegen` resolves on PATH (`/home/yaks/.local/bin/imagegen`).
 
 ---
 
@@ -132,12 +306,19 @@ the user on these.
 
 Short memory aid only — git history is the full record. Trim as this grows.
 
+- Note the fleet /imagegen skill in the designer persona — Mirrors holdco board task `new-fleet-imagegen-skill-use-it-for-visual-assets-run-imageg`.
+- Cap demo Puma memory — force single-process (was 48 workers / 3GB+ RSS) — Mirrors holdco board task `cafe-car-demo-durably-cap-memory-was-3gb-and-climbing` (P1, filed
+- Generate CafeCar visual assets (OG/social card first) via the imagegen skill — ## DONE (pass 27) — OG card delivered
+- CafeCar brand mark (logo/icon) + branded demo favicon — Follow-up visual set flagged in the imagegen-adoption note (OG card was the first asset,
 - Scope Pundit verify_authorized/policy_scoped to the cafe_car macro (fix footgun) — **Adoption footgun, found live on the demo (2026-06-27).** `CafeCar::Controller`'s `included`
 - Turnkey keyword search across resource indexes — Make keyword search work out-of-the-box on every auto-generated index. The plumbing is
+- Drop the spurious web-console runtime dep from the gemspec — Pre-v0.2.0 release hygiene. A `gem build` dry-run (pass 24) prompted an audit of
 - Stream CSV export instead of loading the whole table into memory — Follow-up from the 2026-06-27 security/correctness review of [[csv-export]]. The `:csv`
 - Add CSV export to resource index actions — Close a headline competitive gap: every comparable admin gem (ActiveAdmin, Avo,
+- /components styleguide forces faker into hosts' production bundle — Surfaced during the pass-24 gemspec audit ([[gemspec-drop-spurious-runtime-deps]]).
+- Author BRAND.md + one-time voice sweep of customer-visible copy — Mirrors holdco board task `author-brand-md-voice-guide-route-all-customer-visible-copy-`
 - Triage stale draft PR — Open draft PR #11 "Render nested fields for has_many with accepts_nested_attributes_for"
-- Make sessions optional AND finish the feature — Owner ratified (QUESTIONS.md): sessions/auth should be **both optional and finished** — a
+- Make sessions optional AND finish the feature — Owner ratified (2026-06-26): sessions/auth should be **both optional and finished** — a
 - Retroactively tag v0.1.1 and v0.1.2 releases — The repo has no git tags, so the new CHANGELOG.md compare/release links (and the
 - README hero screenshot of the live auto-generated admin — Proactive trust/conversion artifact. The README (the source of truth users land on) and
 - README badges + fix inaccuracies — The README is the storefront. Add credibility badges and remove statements that don't
@@ -151,7 +332,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - Audit feature completeness and define v1 scope — Inventory every advertised feature in `README.md` against what actually works, so we
 - Docs site + live clickable demo — Roadmap item #5. The single highest-converting trust artifact: let skeptics evaluate
 - Resolve Dependabot vulnerabilities (1 critical, 14 high) — GitHub Dependabot reports **56 vulnerabilities (1 critical, 14 high)** on the default
-- Cut cnc wholesale; switch rubocop to rails-omakase; homepage to GH Pages — Owner ratified (QUESTIONS.md): **cut cnc entirely**, use **`rubocop-rails-omakase`** instead
+- Cut cnc wholesale; switch rubocop to rails-omakase; homepage to GH Pages — Owner ratified (2026-06-26): **cut cnc entirely**, use **`rubocop-rails-omakase`** instead
 - Investigate cnc dependency, recommend keep or drop — Owner asked for a keep-or-drop recommendation on the `cnc` dependency.
 - Make CI rubocop a check-only gate, stop auto-PR noise — The CI `rubocop` job runs `bin/rubocop -Af github` then opens a "Rubocop Autocorrections
 - Write CHANGELOG.md — Roadmap item #1. A changelog is a baseline trust signal and a release prerequisite.

@@ -43,4 +43,4 @@ a plain controller that merely includes `CafeCar::Controller` does not.
   verification (no skips needed).
 - `cafe_car` resource controllers still enforce authorization + verification (existing tests pass).
 - Dummy's redundant skips removed; Denials still tests `render_unauthorized`.
-- `rake` green; committed + pushed. (Behavior change — owner FYI noted in QUESTIONS.md.)
+- `rake` green; committed + pushed. (Behavior change — owner FYI sent by email.)

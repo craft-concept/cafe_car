@@ -8,7 +8,7 @@ created: '2026-06-26'
 updated: '2026-06-26'
 ---
 
-Owner ratified (QUESTIONS.md): **cut cnc entirely**, use **`rubocop-rails-omakase`** instead
+Owner ratified (2026-06-26): **cut cnc entirely**, use **`rubocop-rails-omakase`** instead
 of inheriting cnc's lint config, and repoint the gem `homepage` to **GitHub Pages**.
 
 cnc supplies BOTH the two runtime monkeypatches AND the `.rubocop.yml` config, so these move

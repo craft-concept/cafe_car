@@ -11,8 +11,9 @@ were opened, no posts submitted, no accounts created.
 
 ## Step 0 — Prerequisites (do these first)
 
-- [ ] **Decide go/no-go** and answer the four questions in `QUESTIONS.md`
-      (go-ahead, blog host, channels, demo-spike OK). The whole launch is blocked on (a).
+- [ ] **Decide go/no-go** and answer the four launch questions tracked in the
+      `discoverability-launch` task (go-ahead, blog host, channels, demo-spike OK). The whole
+      launch is blocked on (a).
 - [ ] **Host the blog post.** `marketing/launch-post.md` needs a canonical URL before
       anything can link to it. Publish it on your blog / Medium / dev.to. **Account: your
       blog platform.** → This URL is referenced as `BLOG_URL` everywhere below.

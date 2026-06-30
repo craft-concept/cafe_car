@@ -19,4 +19,4 @@ Owner asked for a keep-or-drop recommendation on the `cnc` dependency.
   convention likely came from cnc too. Audit `lib/`/`app/` for `Cnc`/`cnc` usage.
 - Recommend: keep (document the coupling), inline the small bits we use, or drop. Weigh
   adoption friction (extra transitive dep, owner-controlled) vs. maintenance cost.
-- Deliver the recommendation to the owner via QUESTIONS.md / holdco, not just a reply.
+- Deliver the recommendation to the owner via email + the task board, not just a reply.

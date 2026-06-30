@@ -37,7 +37,7 @@ Ready to fire:
   Awesome Rails/Ruby PRs, RubyFlow, Show HN, r/rails + r/ruby, Discord/Slack,
   X/Mastodon), each with URL, paste text, and which account it needs.
 
-Owner decisions tracked in `QUESTIONS.md` (go-ahead, blog host, channels,
+Owner decisions tracked in this task + surfaced by email (go-ahead, blog host, channels,
 demo-spike OK). Status stays `open`, blocked on user for the publish step.
 
 Roadmap item #6. Visibility is the other half of the mission. Sequence this AFTER ship +
