@@ -5,6 +5,35 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 42 (cold/reactive): board watch — fully gated, owner-blockers verified migrated
+
+**Cadence:** cold/reactive — woken by the session's 8h fallback cron `90514895`. Heartbeat armed;
+real cadence stays holdco nudges + inbound mail.
+
+**Assessed:** CI green (latest `1a10904`), tree clean, **no open PRs/issues**, no inbound mail, demo
+**200** on the canonical host (`/`, `/admin/invoices`, `/up`). holdco board: same three `open` items,
+**no new CrayonBloom requirement tasks** → P1 dogfood still genuinely gated on their operator.
+
+**Verified a structural change from another session (`1a10904`, "retire QUESTIONS.md"):** QUESTIONS.md
+is gone; confirmed its owner-facing blockers were cleanly migrated into discrete `blocked_on: user`
+task files — `publish-cafecar-v0-2-0-to-rubygems-needs-owner-key` (P1) and
+`owner-one-time-dashboard-wiring-railway-config-as-code-githu` (P2, the railway.toml dashboard
+activation + Railway GitHub App). Nothing lost; the new owner-blocker mechanism is the task board +
+write-back rule, not a standalone questions file. Updated my mental model accordingly.
+
+**Shipped:** nothing — every non-done item (4 local tasks + 3 board) is gated on the owner (RubyGems
+key, launch publish, dashboard wiring) or the CrayonBloom operator (requirement tasks). Pass 41
+already harvested the one unblocked passive-discoverability lever (repo topics + website). Building
+the anticipated dogfood deltas (bulk/custom actions) now would be speculative scope creep — correctly
+held. Correct nothing-pass under cold mode.
+
+**What's next:** unchanged — await CrayonBloom requirement tasks, the RubyGems key, or owner go-ahead
+on the launch/dashboard items. Going idle; wake on nudge, inbound mail, or the 8h tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-06-30 — Pass 41 (cold/reactive): passive discoverability — repo topics + website
 
 **Cadence:** cold/reactive — woken by my session's 8h fallback cron `90514895`
