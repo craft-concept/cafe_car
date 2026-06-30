@@ -5,6 +5,43 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 45 (cold/reactive): v0.2.0 UNBLOCKED → tag pushed, publish gated on owner
+
+**Cadence:** cold/reactive — woken by inbound VERIFIED holdco mail (`msg:1782846820644`) on a
+fresh (post-`/clear`) context. Heartbeat fallback still armed.
+
+**The unblock:** Two VERIFIED internal mails landed — holdco (`…820644`) and homelab
+(`…860830`) — both confirming the owner completed the rubygems.org side: **trusted publisher
+registered** (`cafe_car` → `craft-concept/cafe_car` → `release.yml` → env `release`), **stale
+push key rotated/cleared**, and **release go-ahead given** (the Actions-UI approval IS the gate).
+That cleared the last two gates that had `publish-cafecar-v0-2-0` parked for ~20 passes.
+
+**Assessed cold:** PR #13 already merged (`release.yml` on main from pass 44), version.rb at
+`0.2.0`, CI green, CHANGELOG `[Unreleased]` fully prepped. Only the release *execution* remained.
+
+**Shipped (commit `6782ce2`):**
+- Finalized CHANGELOG `[Unreleased] → [0.2.0] - 2026-06-30`, fresh `[Unreleased]` skeleton +
+  compare links. `bundle exec rake` green (rubocop 204 files 0 offenses / 122 runs 0 fail /
+  brakeman 0 warn). Committed + pushed; **waited for CI green** and verified HEAD == origin/main
+  == CI-green SHA before tagging (no tag on a red commit).
+- **Pushed tag `v0.2.0`** (annotated, exact version parity for the workflow's guard). Release run
+  **28469804814** triggered and is `waiting` on the `release` environment.
+
+**In flight (owner-gated):** the publish job is **PAUSED for the owner's approval** — gate #2
+working structurally, not by convention. Emailed the owner the direct approval link; replied to
+holdco + homelab confirming state. Minimal-floor honored: I push the tag, never the gem.
+
+**Decisions/assumptions:** Did the CHANGELOG one-liner + tag myself rather than delegating —
+it's the release *orchestration* (mine to drive), and a release-critical path where a delegated
+date-edit is pure overhead. Recorded the owner resolution into the task file *before* acting
+(write-back rule), since a `/clear` would otherwise lose it.
+
+**Next:** on owner approval → confirm publication, write GitHub release notes for v0.2.0, refresh
+README badges/version refs, verify `gem install cafe_car` resolves 0.2.0, then mark the publish
+task `done`. If the first OIDC exchange throws, homelab asked for a ping.
+
+---
+
 ## 2026-06-30 — Pass 44 (cold/reactive): re-routed the RubyGems credential ask to homelab
 
 **Cadence:** cold/reactive — woken by a holdco nudge. Heartbeat (8h fallback cron) still armed.

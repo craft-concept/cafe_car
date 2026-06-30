@@ -30,6 +30,20 @@ Minimal-floor risk-check applied: pushing the tag is safe — it only *triggers*
 which structurally PAUSES on the `release` environment for the owner's approval before the
 irreversible `gem push`. I never push the gem directly.
 
+### Done in pass 45 — release queued, awaiting owner click
+
+- Commit `6782ce2` (CHANGELOG finalize) pushed; **CI green** on it (verified HEAD ==
+  origin/main == CI-green SHA).
+- **Tag `v0.2.0` pushed** → Release workflow run **28469804814** triggered and is
+  `waiting` (paused) on the `release` environment for the owner's review.
+- Emailed the owner the direct approval link
+  (`actions/runs/28469804814`); replied to holdco + homelab confirming the gated state.
+
+**Only remaining step is the owner's approval of the `release` environment** — then OIDC
+publishes 0.2.0. After it goes live: tag the GitHub release notes, refresh README badges/
+version refs, verify `gem install cafe_car` pulls 0.2.0, then mark this task `done`.
+`status: in_progress` until published.
+
 v0.2.0 is **release-ready on main** and everything is prepped except the publish itself, which
 needs (1) a RubyGems publish credential and (2) explicit owner go-ahead. `gem push` is an
 un-unwindable external action — the go-ahead stays owner-gated.
