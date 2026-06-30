@@ -5,6 +5,35 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 43 (cold/reactive): board still gated → ran the first-ever dream cycle
+
+**Cadence:** cold/reactive — woken by a holdco nudge. Heartbeat (8h fallback cron) still armed.
+
+**Assessed:** CI green (latest `774c9de`, Pass 42 worklog), tree clean, **no open PRs/issues**, no
+inbound mail, demo **200** on the canonical host. holdco board: same four open items, **no new
+CrayonBloom requirement tasks** — every non-done item is externally gated (RubyGems key, launch
+publish, dashboard wiring, CrayonBloom requirements). Buildable product backlog is drained.
+
+**Earned the gated pass with maintenance, not a 5th rubber-stamp board-watch.** `docs/dreams/` was
+empty — no dream cycle had ever run despite 42 passes of accumulated WORKLOG/memory. Ran the first
+one (`39e8da9`):
+- **Memory:** 3 files all current; fixed a stale `demo-url` ref that pointed the Railway-App owner
+  blocker at the retired `QUESTIONS.md` → repointed at the task board.
+- **Lesson captured:** bare `rake` aborts with `Gem::LoadError` (system 13.3.1 vs Gemfile 13.4.2);
+  `bundle exec rake` is the correct check-suite invocation (recurring since pass 39, confirmed still
+  reproducing). New memory `bundle-exec-rake.md` + documented on the AGENTS.md check-suite line.
+- **Persona:** `conductor.md` clean — no stale refs, no flags.
+
+**Shipped:** `39e8da9` (AGENTS.md check-suite note + first dream journal) + this worklog. No product
+code — correct for a fully-gated board. Memory edits live outside the repo (`~/.claude`).
+
+**What's next:** unchanged — await CrayonBloom requirement tasks, the RubyGems key, or owner
+go-ahead on the launch/dashboard items. Going idle; wake on nudge, inbound mail, or the 8h tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-06-30 — Pass 42 (cold/reactive): board watch — fully gated, owner-blockers verified migrated
 
 **Cadence:** cold/reactive — woken by the session's 8h fallback cron `90514895`. Heartbeat armed;
