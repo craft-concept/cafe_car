@@ -2,11 +2,33 @@
 id: publish-cafecar-v0-2-0-to-rubygems-needs-owner-key
 title: Publish CafeCar v0.2.0 to RubyGems (needs owner key)
 priority: P1
-status: open
+status: in_progress
 domain: Launch-blocking
 created: '2026-06-30'
-blocked_on: user
+blocked_on: null
 ---
+
+## Update 2026-06-30 (pass 45): UNBLOCKED — owner did the rubygems.org side, shipping now
+
+Both gates cleared, confirmed by **two VERIFIED internal mails** (holdco
+`msg:1782846820644`, homelab `msg:1782846860830`):
+  1. **Trusted publisher REGISTERED** on rubygems.org: `cafe_car` → repo
+     `craft-concept/cafe_car` → workflow `release.yml` → environment `release`.
+  2. **Stale cafe_car push key ROTATED/cleared** on rubygems.org (moot for OIDC anyway).
+  3. **Owner go-ahead given** — the Actions-UI approval of the gated `release` job IS the
+     final gate, and the owner is expecting it.
+
+Executing the release sequence (pass 45):
+  a. ✅ Finalized CHANGELOG `[Unreleased] → [0.2.0] - 2026-06-30`, fresh `[Unreleased]`
+     skeleton + compare links. `bundle exec rake` green (rubocop clean / 122 runs 0 fail /
+     brakeman 0 warn).
+  b. Commit + push CHANGELOG → wait for CI green on main.
+  c. Push the `v0.2.0` tag (guard enforces tag==version parity).
+  d. **Owner approves the gated `release` job in the Actions UI** → OIDC publish.
+
+Minimal-floor risk-check applied: pushing the tag is safe — it only *triggers* the job,
+which structurally PAUSES on the `release` environment for the owner's approval before the
+irreversible `gem push`. I never push the gem directly.
 
 v0.2.0 is **release-ready on main** and everything is prepped except the publish itself, which
 needs (1) a RubyGems publish credential and (2) explicit owner go-ahead. `gem push` is an

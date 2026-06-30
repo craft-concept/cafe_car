@@ -10,6 +10,8 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-30
+
 ### Removed
 
 - Dropped `faker` as a runtime dependency. It was a hard runtime requirement solely
@@ -149,7 +151,8 @@ defaults for admin panels, internal tools, and rapid prototyping.
 
 - Adopted the `responders` gem for response handling.
 
-[Unreleased]: https://github.com/craft-concept/cafe_car/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/craft-concept/cafe_car/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/craft-concept/cafe_car/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/craft-concept/cafe_car/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/craft-concept/cafe_car/releases/tag/v0.1.1
 </content>
