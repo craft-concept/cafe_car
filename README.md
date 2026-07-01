@@ -33,6 +33,28 @@ an application-wide or model-specific basis.
 
 **Perfect for**: Admin panels, internal tools, and rapid prototyping.
 
+## How CafeCar compares
+
+CafeCar is convention-first. Rather than a separate admin app with its own DSL,
+it extends Rails' own view layer: a plain model renders a working admin with
+essentially no configuration, and you extend it with the Rails you already know
+— controllers, Pundit policies, presenters, and ERB. There's no new query
+language or admin framework to learn; you stay in Rails.
+
+The established alternatives are all solid, and each fits a different taste.
+Reach for one of them when its model matches how you want to work:
+
+| Gem | Reach for it when… | Trade-off |
+| --- | --- | --- |
+| **ActiveAdmin** | You want a mature, batteries-included admin with a rich registration DSL. | You author screens in its Arbre/Ruby DSL rather than plain Rails views. |
+| **Avo** | You prefer defining resources through configuration and want polished paid Pro features. | Config-driven, and the richer tiers are commercial. |
+| **Administrate** | You want to scaffold controllers and views you fully own and edit. | You maintain the generated code as your app grows. |
+| **RailsAdmin** | You want an admin mounted as an engine with almost zero setup. | Heavy runtime introspection and less conventional customization. |
+| **Trestle** | You like a modular, DSL-driven admin with a built-in UI toolkit. | Another admin DSL to learn alongside Rails. |
+
+Reach for CafeCar when you want a Rails-native, convention-over-configuration
+admin that you extend with ordinary Rails code.
+
 ## Features
 
 - 🚀 **Auto-generated CRUD interfaces** - One line of code generates complete
