@@ -2,3 +2,24 @@ title: CafeCar
 description: Auto-generate CRUD admin UI for your Rails models, with sensible overridable defaults.
 theme: jekyll-theme-cayman
 show_downloads: false
+
+# Social / SEO metadata.
+# The cayman theme's layout calls {% seo %} (jekyll-seo-tag, an always-on GitHub Pages
+# plugin), which renders og:title / og:description / og:url / og:type, twitter:title /
+# twitter:description, and <link rel="canonical"> straight from `title` / `description`
+# above. Setting the default `image` below makes it also emit og:image + twitter:image and
+# upgrade the Twitter card to summary_large_image — so we wire the shared OG card here
+# rather than hand-rolling duplicate <meta> tags in _includes/head-custom.html.
+defaults:
+  - scope:
+      path: ""
+    values:
+      image:
+        path: https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/og-card.png
+        width: 1731
+        height: 909
+        alt: "CafeCar — auto-generated CRUD admin UI for Rails, with overridable defaults"
+
+# jekyll-sitemap (GitHub-Pages-supported, no Gemfile change) generates /sitemap.xml.
+plugins:
+  - jekyll-sitemap
