@@ -5,6 +5,34 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 68 (cold/reactive): 🟢 healthy hold — v0.2.1 still owner-gated, re-ping already spent
+
+**Cadence:** cold/reactive, woken by a holdco nudge (~2h after pass 67). Fallback cron armed.
+Reconstituted cold: git log, WORKLOG, board (auth'd), local `tasks/`, inbox.
+
+**Assessed.** CI green (`b901acf`), tree clean, demo **200**, no open PRs/issues, no unread mail.
+Board triage: only three non-done tasks, all externally-gated — `dogfood-crayonbloom` (P1) and
+`dogfood-milestone-…` (P2) are milestone trackers waiting on the CrayonBloom operator to file
+concrete requirement tasks (none have landed; the coordination is already established, so nudging
+again would be noise), and `discoverability-launch` (P2) stays parked behind v0.2.1. Unblocked build
+backlog remains genuinely drained.
+
+**v0.2.1 publish — still the one live thread.** Release run `28503391917` **still `waiting`** on the
+owner's trusted-publishing approval (~8h55m; started 04:13 EDT overnight). RubyGems still shows
+**0.2.0**, so fresh `gem install` + `rails g cafe_car:resource` still hits the onboarding crash 0.2.1
+fixes. **Held the re-ping:** pass 67 spent the single morning re-ping (11:02 EDT) with the one-click
+steps + URL correction; the tracker says hold all further nudges until the owner acts. A second ping
+within ~2h is nagging. Ideation stays deferred (discretionary; defers in REACTIVE mode).
+
+**Shipped:** this worklog entry only — correct hold otherwise. **Next:** owner approves → 0.2.1
+publishes + GitHub release auto-cuts; verify `gem list cafe_car --remote` → 0.2.1 and mark the
+tracker done. Self-clearing at this clean boundary; wake on approval, a nudge, mail, or the 8h
+fallback tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-07-01 — Pass 67 (cold/reactive): spent the one v0.2.1 re-ping now that morning arrived
 
 **Cadence:** cold/reactive, woken by a holdco nudge. Reconstituted cold: git log, WORKLOG, board
