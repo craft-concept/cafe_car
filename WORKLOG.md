@@ -5,6 +5,45 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 63 (cold/reactive): 🔴→🟢 bullhorn audit caught a first-touch crash → staged v0.2.1
+
+**Cadence:** cold/reactive. Fallback cron `90514895` armed. After ~10 hold passes with the board
+fully gated, used the sustained-hold capacity for a proactive on-mission audit instead of an 11th
+nothing-pass — the review panel became available this session (`ec62aea` roster repair).
+
+**Ran a `bullhorn` GTM audit** for UNBLOCKED adoption levers. It paid for itself immediately: it
+downloaded the actual published `cafe_car-0.2.0.gem` and read its generator source, catching a
+**trust-critical blocker** — the README's headline quickstart (`rails g cafe_car:resource ...`)
+**crashes on the installed gem** (policy-generator `ArgumentError` → `/products` 500s). So every cold
+Rails dev who `gem install`s today hits a stack trace on their first hands-on try. **Verified myself:**
+the fix (3 compounding onboarding bugs) is already merged to `main` (`cbda67c`) and sits in CHANGELOG
+`[Unreleased]`, but no 0.2.1 had shipped.
+
+**Shipped — staged the v0.2.1 patch (root-cause fix, not a README band-aid):**
+- coder cut it: `version.rb` → 0.2.1, CHANGELOG `[Unreleased]`→`[0.2.1] - 2026-07-01` + fresh
+  Unreleased + footnote links (`0beb6ad`), `rake` green (125 tests, up from 122 — the fix's coverage).
+- **Caught + fixed a release-blocking CI failure:** the version bump changed the path-gem gemspec but
+  `Gemfile.lock` still pinned 0.2.0; CI/release run bundler **frozen** → "gemspecs for path gems
+  changed … frozen mode is set". The coder's local `rake` had regenerated the lock but (scoped to two
+  files) left it uncommitted. Committed the lock (`04aa1f6`), **moved the `v0.2.1` tag** to the green
+  commit, cancelled the stale release run. CI now green on `04aa1f6`. Added a guard comment to
+  `release.yml` + a [[version-bump-needs-gemfile-lock]] memory so this doesn't recur.
+- **Release run is `waiting` on owner approval** (OIDC trusted-publishing, `release` env). Emailed the
+  owner (+ a correction after the re-tag) requesting the approval click — framed trust-critical.
+
+**Also filed** `tasks/adoption-polish-from-bullhorn-audit.md` — the audit's remaining unblocked
+findings (README hero rewrite, gemspec SEO summary, docs `head-custom.html` OG/sitemap, brand tagline,
+star CTA), ranked, split copy(voice-gate)/technical(coder). This converts future hold-passes into a
+real unblocked adoption backlog.
+
+**What's next:** owner approves v0.2.1 → it publishes + GitHub release auto-creates (watch for it).
+Then work the adoption-polish backlog down over coming passes. Going idle; wake on the approval,
+nudge, mail, or the 8h tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-07-01 — Pass 62 (cold/reactive): backported dream v2 + repaired broken agent roster
 
 **Cadence:** cold/reactive. Fallback cron armed.

@@ -9,6 +9,12 @@
 #
 # Pushing a tag like vX.Y.Z triggers this workflow; it then waits for the
 # "release" environment approval before building and pushing the gem.
+#
+# When cutting a release: bump lib/cafe_car/version.rb AND regenerate Gemfile.lock
+# in the SAME commit (run `bundle install` after the bump). The version bump changes
+# this path gem's gemspec, and CI/this workflow run bundler in frozen mode — a stale
+# Gemfile.lock (still pinning the old version) aborts with "gemspecs for path gems
+# changed, but the lockfile can't be updated because frozen mode is set".
 
 name: Release
 
