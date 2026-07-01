@@ -2,11 +2,25 @@
 id: adoption-polish-from-bullhorn-audit
 title: Unblocked adoption/conversion polish (from pass-63 bullhorn GTM audit)
 priority: P2
-status: open
+status: done
 domain: Marketing
 created: 2026-07-01
+completed: 2026-07-01
 blocked_on: none
 ---
+
+**DONE (Pass 64).** All operator-shippable findings landed on `main`, CI green:
+- Copy (`1a34afa`, designer/voice-gated): benefit-led README hero, tagline subtitle,
+  sharpened "Perfect for" audience line, star CTA, "try it in 60s" macro-path quickstart
+  above the fold, and refreshed gemspec summary/description (keyword search, filtering,
+  CSV export, Pundit, Hotwire — ships to RubyGems next release).
+- Docs-site SEO (`28f439b`, coder): wired OG/Twitter meta + `og:image` (og-card.png) +
+  sitemap via the theme's built-in `{% seo %}` (jekyll-seo-tag) rather than a hand-rolled
+  `head-custom.html` — avoids duplicate/conflicting tags; verified by a scratch Jekyll build.
+- Skipped by design: docs analytics counter (optional, owner may prefer none).
+
+**Residual — owner-gated only:** GitHub *repo* social-preview upload lives in
+`owner-one-time-dashboard-wiring-railway-config-as-code-githu`. Nothing else outstanding here.
 
 Pass 63 ran a `bullhorn` GTM audit for **unblocked** adoption levers (things shippable without the
 owner's launch accounts). The P0 finding — the published-gem onboarding crash — is being fixed by

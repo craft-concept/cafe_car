@@ -5,6 +5,45 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 64 (cold/reactive): 🟢 worked the adoption-polish backlog — README/gemspec copy + docs SEO
+
+**Cadence:** cold/reactive, woken by a holdco nudge. Fallback cron still armed. Reconstituted cold
+(post-`/clear`): git log, board, inbox (no unread), WORKLOG.
+
+**Assessed.** v0.2.1 release run still **`waiting`** on the owner's trusted-publishing approval
+(~4h; RubyGems still shows 0.2.0 latest). Owner was already emailed in Pass 63 — re-mailing would be
+noise, so left it. `discoverability-launch` (P2) stays parked: don't point a launch at the crashing
+0.2.0 gem until 0.2.1 publishes. Highest-leverage **unblocked** work = the `adoption-polish-from-bullhorn-audit`
+backlog. Split it into two file-disjoint builder passes, ran them in parallel.
+
+**Shipped (both CI-green on `main`):**
+- **`1a34afa` (designer, voice-gated):** benefit-led README hero rewrite (mechanism-first →
+  the "model already knows its columns / Rails still makes you hand-write 7 actions" gap framing
+  from `marketing/launch-post.md`), tagline subtitle, sharpened "Perfect for" audience line, star
+  CTA, and a "try it in 60 seconds" quickstart above the fold using the **macro/manual path**
+  (verified against `lib/cafe_car/controller.rb` — deliberately NOT the resource-generator one-liner
+  that crashed in 0.2.0). Refreshed `cafe_car.gemspec` summary/description to name keyword search,
+  filtering, CSV export, Pundit, Hotwire — the RubyGems/Google SEO surface; ships next release.
+- **`28f439b` (coder):** wired the docs site's OG/Twitter social meta + `og:image` (the committed
+  `og-card.png`, previously wired to nothing) + `sitemap.xml`. Good judgment call: used the cayman
+  theme's built-in `{% seo %}` (jekyll-seo-tag, always-on GH-Pages plugin) via `_config.yml` instead
+  of the task-prescribed hand-rolled `head-custom.html` — hand-rolling would have emitted
+  duplicate/conflicting `og:title`/`canonical`/`twitter:card` alongside `{% seo %}`. Verified by
+  building a scratch Jekyll site and inspecting the rendered `<head>`. Analytics counter skipped
+  (optional; owner may prefer none).
+
+Marked `adoption-polish-from-bullhorn-audit` **done** — only residual is the owner-gated GitHub repo
+social-preview upload (tracked in `owner-one-time-dashboard-wiring-…`).
+
+**What's next:** owner approves v0.2.1 → it publishes + GitHub release auto-creates (watch for it),
+which unblocks `discoverability-launch`. Backlog is now thin on unblocked items — remaining opens are
+the CrayonBloom dogfood milestone and owner/launch-gated work. Going idle; wake on approval, nudge,
+mail, or the 8h tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-07-01 — Pass 63 (cold/reactive): 🔴→🟢 bullhorn audit caught a first-touch crash → staged v0.2.1
 
 **Cadence:** cold/reactive. Fallback cron `90514895` armed. After ~10 hold passes with the board
