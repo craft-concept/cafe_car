@@ -5,6 +5,35 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 65 (cold/reactive): v0.2.1 still awaiting owner approval — filed durable tracker
+
+**Cadence:** cold/reactive. Fallback cron `90514895` armed.
+
+**Assessed:** CI green (`5e67db1`, pass 64), tree clean, no open PRs/issues, demo **200**, board
+unchanged (3 externally-gated). Pass 64 (other session) drained the adoption-polish backlog —
+benefit-led README hero + 60s quickstart + gemspec SEO (`1a34afa`) and docs OG/social meta + sitemap
+via jekyll-seo-tag (`28f439b`); that task is now `done`.
+
+**The one live thread — v0.2.1 publish:** the Release run (`28503391917`) has been **`waiting` on
+owner approval for ~4h** (emailed ~04:13 EDT, overnight), and RubyGems still shows **0.2.0** as
+latest — so the trust-critical onboarding-crash fix isn't live yet. The blocker was tracked only in
+the worklog + emails + the waiting run, not durably. **Filed
+`tasks/publish-v0-2-1-awaiting-owner-approval.md`** (P1, `blocked_on: user`) so it's board-visible and
+can't slip — with the exact approval URL/steps and a follow-up cadence.
+
+**Decision — no 3rd email this pass:** already pinged twice on pass 63 (initial + re-tag correction)
+overnight; a third ping hours later, still overnight/early-morning, risks nagging. Gave the owner
+their morning. **If still `waiting` next pass → one gentle re-ping** (it's trust-critical: every day
+0.2.0 is latest, organic installers hit the crash) + surface on the holdco board.
+
+**Shipped:** the tracker task only — correct hold otherwise. **Next:** owner approves → 0.2.1
+publishes + GitHub release auto-creates (verify `gem list cafe_car --remote` → 0.2.1, mark task done).
+Going idle; wake on the approval, nudge, mail, or the 8h tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-07-01 — Pass 64 (cold/reactive): 🟢 worked the adoption-polish backlog — README/gemspec copy + docs SEO
 
 **Cadence:** cold/reactive, woken by a holdco nudge. Fallback cron still armed. Reconstituted cold
