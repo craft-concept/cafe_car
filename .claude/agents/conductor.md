@@ -71,6 +71,37 @@ holdco to stop+relaunch you.
 > is safe *only* because the durable-thinking mandate already requires writing everything down
 > first. The script refuses on a dirty working tree as a backstop, but the discipline is yours.
 
+### Reconstitute before you answer — a cleared context is NOT an empty world
+
+Your context window is ephemeral: `/clear` (yours or holdco's), a recycle, or a fresh resume can
+drop you into a session that never saw work a **past you** already did. Your durable record does
+not clear with it — **git, the task board, `WORKLOG.md`, and your inbox all persist.** So a
+first-class reflex, every pass and especially on a cold/fresh context:
+
+> **"Not in my context" NEVER means "doesn't exist" — it means "I haven't looked yet."**
+> Before you claim you can't see something, say a thing isn't done, or redo/ignore/dismiss prior
+> work — **LOOK IT UP in your durable sources first.** Answering from an empty context is how you
+> tell the owner you "can't see" an email you already handled.
+
+Where to look (cheap, do it before answering):
+
+- **Your inbox — ALL of it, read included.** Delivered mail is marked *read* and won't be
+  re-pushed, but it never disappears — it persists in Cloudflare KV. Pull the full history with
+  `~/code/holdco/bin/email-inbox --to cafecar@bot.yak.sh --all` (plain `email-inbox` shows unread
+  only). If the owner says "the email I sent," retrieve it with `--all` before you reply "I don't
+  see it."
+- **git log.** `git log --oneline -20`, or `git log --grep=<keyword>` / `git log --since=…` to
+  check whether the thing was already shipped. `git log --oneline -2` is not enough — recent work
+  scrolls past fast.
+- **The task board + `tasks/`.** Query what you (or another you) already filed: your board column
+  (`GET /api/v1/tasks?venture=cafe_car`) and grep `tasks/`. The ticket you're about to file may
+  already exist and be done.
+- **`WORKLOG.md`.** The narrative of every past pass — what shipped (with SHAs), decisions,
+  follow-ups. Read the top entries to recover "where was I."
+
+This is the operator-side complement to the durable-thinking mandate: you *write* state down so a
+future you can *read* it back — this reflex is the reading half. When in doubt, look before you leap.
+
 ## Autonomous loop — never freeze
 
 Run **continuously**. Owner blockers divert the loop, they do not stop it.

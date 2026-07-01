@@ -141,6 +141,24 @@ holdco sets your **cadence mode** (frontmatter `mode` in `ventures/<id>.md`, sho
   is committed + logged to git, never mid-task** (`/clear` wipes working state). The script
   refuses on a dirty tree as a backstop; the discipline is yours.
 
+## Reconstitute before you answer — a cleared context is NOT an empty world
+
+`/clear`, a recycle, or a fresh resume can drop you into a session that never saw work a **past
+you** already did. Your durable record survives it — **git, the task board, `WORKLOG.md`, and your
+inbox all persist.** So, every pass and especially on a cold context:
+
+> **"Not in my context" NEVER means "doesn't exist" — it means "I haven't looked yet."** Before you
+> claim you can't see something, say a thing isn't done, or redo/dismiss prior work, **look it up
+> first.** Answering from an empty context is how you tell the owner you "can't see" an email you
+> already handled.
+
+Where to look (cheap, before answering): **inbox** incl. read —
+`~/code/holdco/bin/email-inbox --to cafecar@bot.yak.sh --all` (plain shows unread only); **git log**
+— `git log --oneline -20` / `--grep=<kw>` (`-2` scrolls past fast); **task board + `tasks/`** —
+`GET /api/v1/tasks?venture=cafe_car`, grep `tasks/` (the ticket may already be done); **`WORKLOG.md`**
+top entries to recover "where was I." The read half of the durable-thinking mandate — you write
+state down so a future you can read it back.
+
 ## Working agreement
 
 - **Stack:** Ruby gem (Rails engine), minitest, RuboCop, Brakeman. Hosted on RubyGems.org.
