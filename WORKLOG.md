@@ -5,6 +5,39 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 57 (cold/reactive): cleared the last unblocked task — stale `cnc` in README install list
+
+**Cadence:** cold/reactive. Woken by a holdco nudge (proactive pass).
+
+**Assessed:** CI green, working tree clean, inbox clear (one held bounce for the already-applied
+portfolio-values directive `4e5fa18` → marked read). Backlog: 4 tasks `open`, 3 externally blocked
+(discoverability → user, dogfood → CrayonBloom operator, dashboard-wiring → user). No untriaged
+tasks; no new CrayonBloom board items. Exactly one unblocked item —
+`readme-remove-stale-cnc-install-dep` (P2), a trust/accuracy nit surfaced during Pass 56's
+onboarding verification.
+
+**Shipped (`ef4cba2`):** README **Installation** list still named `cnc` as a required gem after
+`cnc` was cut wholesale (`cut-cnc-switch-to-omakase`). A reader following the steps would install
+an unnecessary gem — directly undercutting the "we removed the private-dep friction" story.
+Delegated to a builder: dropped `cnc` from line 104, grep-confirmed it was the file's *only* `cnc`
+reference (no other stale mentions, none historical to preserve), and sanity-checked the remaining
+gems — `rouge` is a real gemspec dep (`cafe_car.gemspec:44`); `bcrypt`/`paper_trail`/
+`factory_bot_rails`/`faker` are added to the host app by `cafe_car:install`, all legitimate.
+`bundle exec rake` green (125 runs, 0 failures, Brakeman clean). Task marked done via
+`rake tasks:done`, which regenerated `TASKS.md` from the 38 task files.
+
+**State:** backlog is now fully done-or-externally-blocked — every remaining `open` task waits on
+the owner or the CrayonBloom operator. No unblocked queue work remains.
+
+**Next:** owner-blocked items (RubyGems key for v0.2.0 publish, discoverability launch, dashboard
+wiring) await the owner; dogfood awaits CrayonBloom. Going idle after this log — holdco will nudge
+next cadence. If the hold persists, next pass exercises the always-on license against the
+activation/trust barrier again.
+
+**Session:** https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y
+
+---
+
 ## 2026-07-01 — Pass 56 (cold/reactive): quickstart verification uncovered + fixed a broken onboarding flow; 2 holdco directives applied
 
 **Cadence:** cold/reactive. Woken by a holdco nudge (proactive pass); two VERIFIED holdco
