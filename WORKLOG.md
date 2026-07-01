@@ -5,6 +5,26 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 55 (cold/reactive): applied holdco fleet guidance to designer persona
+
+**Cadence:** cold/reactive. Woken by VERIFIED internal mail from holdco (`auth=VERIFIED(bot.yak.sh)`),
+owner-approved fleet guidance — actionable under charter; reversible internal docs change, no risk floor tripped.
+
+**Shipped:** `284c897` — baked into the designer persona (`.claude/agents/designer.md`, item 5 "Visual
+assets"): build text-heavy raster cards (OG/social, thumbnails) as HTML/CSS rendered to PNG via headless
+screenshot rather than hand-authored SVG (SVG has no box model → fragile text overflow/wrap/kerning);
+`await document.fonts.ready` before capture. Carve-out preserved: SVG stays fine for vector UI/icons/logos.
+Home chosen = persona, not AGENTS.md, since AGENTS.md already delegates visual technique to the designer
+persona (line 69). Replied to holdco confirming applied.
+
+**Decisions:** No new visual assets in flight, so this is guidance-for-next-time, not a rebuild of anything.
+Nothing to redo — CafeCar's existing assets weren't flagged.
+
+**Next:** Board unchanged — three externally-gated `open` items (discoverability → user, dogfood →
+CrayonBloom operator, dashboard-wiring → user). Going idle; fallback cron armed, real cadence = nudges + mail.
+
+---
+
 ## 2026-06-30 — Pass 54 (cold/reactive): shipped README positioning section (broke the 4-pass hold)
 
 **Cadence:** cold/reactive. Fallback cron armed; real cadence = holdco nudges + mail.
