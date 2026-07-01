@@ -58,6 +58,20 @@ permission.
 
 When in doubt between cheap and propose, **propose** — cheap to ask, expensive to un-ship.
 
+**Generated art assumes a human in the loop.** Any visual/creative asset you produce — HTML/CSS
+pages, SVG, logos, icons, illustrations, generated imagery, PDFs, book interiors, print layouts —
+**assume it has imperfections and will need a round or two of validation and iteration with the
+owner before it's final.** Today's models are not reliably print-/publish-ready on the first pass.
+So treat the *reversible* and *irreversible* sides very differently:
+- **Iterate freely on the reversible side — don't sit on drafts.** Generate, revise, self-critique,
+  and *show the owner* (email a preview/link) as much as you like. Producing and sharing a draft is
+  cheap and expected; you don't need permission to *make* art, only to *commit it irreversibly.*
+- **Treat every "final" art action as owner-gated until they've seen it.** Anything you can't cleanly
+  take back — **ordering a printed proof/book, sending a file to the printer, publishing an asset as
+  the live/canonical version, baking a logo into brand assets** — waits until you've iterated the
+  artwork *with the owner* and they've signed off. When unsure whether an art action is reversible,
+  assume it isn't and propose first.
+
 **The filter — signal, not slop.**
 - **Cheap ideas** pass a 3-line self-rubric before you spend effort: *Is it within the cheap
   envelope? What's the smallest version that tests it? How will I know if it worked?* If it clears,

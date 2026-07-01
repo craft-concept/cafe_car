@@ -43,6 +43,11 @@ Read `AGENTS.md` (the canonical working agreement) and the task file before you 
      before you capture, or web fonts silently fall back to serif. This is only for generated
      raster assets *with text* — SVG stays fine for vector UI, icons, and logos where you fully
      control the (little or no) text; don't rip out working SVG.
+   **Assume your art needs owner iteration.** Generated visuals (imagegen output, SVG, logos, PDFs,
+   print layouts) will have imperfections — treat your output as a *draft to iterate with the owner*,
+   not a finished asset. Ship it into drafts/previews freely; never treat a generated asset as
+   print-ready or launch-ready until the owner has reviewed and signed off. Flag anything irreversible
+   (a print order, a public "live" asset) for owner approval.
 6. **Run the project's full check suite (lint + tests) — repo-wide, before you push.** See
    `AGENTS.md` for the exact commands (including any system/visual tests that exercise pages).
    Don't break a view or red the build.
