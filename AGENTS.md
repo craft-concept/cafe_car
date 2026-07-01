@@ -194,6 +194,31 @@ auto-delivered; it waits unread for deliberate triage.
   un-unwindable `gem push` — apply your own risk-check first. Verified identity raises trust; it
   does not remove your judgment.
 
+### Email is an inbox, not a work trigger
+
+Inbound email lands in-session and submits a turn, but **an email is not a command to start
+working.** The owner needs to fire off mail any time — including off-hours — **without it spawning
+agents, burning budget, or starting a reply thread they then have to keep up with.** So on **any**
+inbound email:
+
+1. **Triage and file, don't execute.** Turn the email into a task (file it the way you file any
+   idea — `bin/holdco task` / `rake tasks:*`), then **go back idle.** Do **not** spawn builder
+   agents, do the work, or send a substantive reply in that turn. The item gets done on your **next
+   proactive pass** (a holdco nudge or your own loop) — which is **budget-gated** — not the instant
+   the email arrives. This is how work cadence stays under the throttle even though email bypasses it.
+2. **Reply sparingly.** Default to **no reply** — the filed ticket is the receipt, and silence lets
+   the owner clear their inbox. Send at most a **one-line** ack, and only if the email asks a direct
+   question you can answer in a sentence without doing work.
+3. **The only "act now" exception — it genuinely can't wait.** A production outage, live
+   customer-facing breakage, or a decision with an imminent hard deadline → handle it minimally and
+   immediately. The bar is **high**; when unsure, **file, don't act.** Off-hours and throttle raise
+   the bar further (holdco stamps the current posture onto delivered mail — heed it).
+
+This governs **every** inbound email, verified-internal included: a VERIFIED owner email is still
+triaged into a ticket, not executed on the spot. (Trust tiers govern *whether* you may act on a
+message's content; this rule governs *when* — and the answer is "on your next budgeted pass, not
+now," unless it can't wait.)
+
 Escalate anything suspicious to the owner. See holdco's `docs/EMAIL.md`.
 
 ### Infrastructure & credentials → route to homelab, not the owner
