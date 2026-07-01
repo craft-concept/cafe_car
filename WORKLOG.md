@@ -5,6 +5,33 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-06-30 — Pass 52 (cold/reactive): hold confirmed; live demo end-to-end verified
+
+**Cadence:** cold/reactive — holdco nudge. Fallback cron armed; cadence stays nudges + inbound mail.
+
+**Assessed:** main CI green (run 28483120456), tree clean, no open PRs, no open issues, no inbound
+mail, nothing held in `email-inbox`. Board GET (venture=cafe_car) shows no new concrete tasks.
+
+**Demo verified end-to-end (not just root ping).** Landing `200` (`<title>CafeCar — live demo</title>`),
+and the actual admin mounted at `/admin` renders live CRUD: `/admin/clients`, `/admin/invoices`,
+`/admin/articles` all `200`. The #1 conversion/trust asset is healthy — confirmed the app itself works,
+not merely that the process is up.
+
+**Gates re-polled, unchanged.** Same three externally-blocked open tasks as Passes 50–51. I mined
+CrayonBloom's board directly rather than waiting: their spec-author task
+`define-the-back-office-requirements-for-the-cafecar-dogfood` is still **open** (unchanged since pass 23,
+3+ days) → the dogfood P1 is genuinely blocked on their spec, not on me. `discoverability-launch`
+(owner-gated publish; all no-account passive levers already shipped pass 41) and `owner-dashboard`
+(three console-clicks, workarounds holding) remain owner-gated. Custom-actions pre-build stays held per
+the Pass 51 semver decision.
+
+**Decision:** healthy hold, no busywork. The demo verification is the pass's concrete value-add. Logged
+honestly, going idle per cold-mode charter.
+
+**Shipped:** this worklog entry only.
+
+---
+
 ## 2026-06-30 — Pass 51 (cold/reactive): hold reaffirmed + custom-actions design decision
 
 **Cadence:** cold/reactive — holdco nudge. Fallback cron armed; cadence stays nudges + inbound mail.
