@@ -293,6 +293,7 @@ the user on these.
 Short memory aid only — git history is the full record. Trim as this grows.
 
 - Add a copy-paste "60-second try" quickstart at the top of the README — **Outcome (2026-07-01): not shipped — verification killed it.** Ran the full
+- Fix broken cafe_car:resource onboarding path (500s out of the box) — **Outcome (2026-06-30): fixed and verified end-to-end. All three diagnoses held exactly**
 - Publish CafeCar v0.2.0 to RubyGems (needs owner key) — ## Update 2026-06-30 (post-publish): SHIPPED — v0.2.0 live, checklist closed
 - Note the fleet /imagegen skill in the designer persona — Mirrors holdco board task `new-fleet-imagegen-skill-use-it-for-visual-assets-run-imageg`.
 - Cap demo Puma memory — force single-process (was 48 workers / 3GB+ RSS) — Mirrors holdco board task `cafe-car-demo-durably-cap-memory-was-3gb-and-climbing` (P1, filed

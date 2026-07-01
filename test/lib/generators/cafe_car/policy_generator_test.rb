@@ -31,4 +31,16 @@ class CafeCar::PolicyGeneratorTest < Rails::Generators::TestCase
       assert_match(/\[:name, :email\]/, policy)
     end
   end
+
+  test "introspects permitted attributes from the model when none are passed" do
+    # No explicit fields → the generator must introspect the existing model's
+    # editable columns via ModelInfo (the path cafe_car:resource relies on).
+    run_generator [ "client", "--force" ]
+
+    assert_file "app/policies/client_policy.rb" do |policy|
+      assert_match(/class ClientPolicy < ApplicationPolicy/, policy)
+      assert_match(/:name/, policy)
+      refute_match(/create_model_first/, policy)
+    end
+  end
 end

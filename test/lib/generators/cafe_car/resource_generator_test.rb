@@ -50,6 +50,15 @@ class CafeCar::ResourceGeneratorTest < Rails::Generators::TestCase
     assert_equal "admin/invoice", args.first
   end
 
+  test "forwards the field names (not raw field:type args) to the policy" do
+    run_generator [ "admin/invoices", "amount:integer", "memo:string" ]
+
+    _name, args = call_for("cafe_car:policy")
+    assert_includes args, "amount"
+    assert_includes args, "memo"
+    refute_includes args, "amount:integer"
+  end
+
   test "drives all three sub-generators" do
     run_generator [ "admin/invoices" ]
 
@@ -81,7 +90,14 @@ class CafeCar::ResourceGeneratorInlineTest < Rails::Generators::TestCase
     run_generator [ "admin/widgets", "size:integer" ]
 
     assert_file "app/controllers/admin/widgets_controller.rb"
-    assert_file "app/policies/admin/widget_policy.rb"
+
+    # The policy renders real permitted attributes from the forwarded fields
+    # even though the Widget model isn't a loaded constant mid-run — proving the
+    # resource path no longer falls back to the broken introspection/placeholder.
+    assert_file "app/policies/admin/widget_policy.rb" do |policy|
+      assert_match(/\[:size\]/, policy)
+      refute_match(/create_model_first/, policy)
+    end
 
     # The controller's route landed in the destination's routes file...
     assert_file "config/routes.rb" do |routes|

@@ -10,6 +10,25 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ## [Unreleased]
 
+### Fixed
+
+- The advertised primary onboarding flow (`rails g cafe_car:resource Product name:string
+  price:decimal`) no longer 500s out of the box in a fresh, CRUD-only app. Three bugs
+  compounded to break it:
+  - `current_user` (Pundit's default `pundit_user`, evaluated on every authorized
+    request) unconditionally built a `CafeCar::Session`, which requires the opt-in
+    `sessions` table and a `User` model. A host that never ran `cafe_car:sessions` got
+    a 500 on every action instead of degrading to 403 Forbidden. `current_session` now
+    consults the existing `sessions_available?` gate and returns `nil` when the
+    infrastructure is absent, so plain CRUD works with no login.
+  - `cafe_car:resource` dropped the field list when delegating to `cafe_car:policy`,
+    forcing the fragile model-introspection path. It now forwards the field names.
+  - `cafe_car:policy` called `CafeCar::ModelInfo.new(model_class)` positionally, but the
+    initializer requires the `model:` keyword — an `ArgumentError` whenever the model
+    resolved. It now passes the keyword, and the generated policy lists the forwarded
+    fields even when the model isn't a loaded constant mid-run (instead of writing a
+    `:create_model_first_to_generate_attributes` placeholder).
+
 ## [0.2.0] - 2026-06-30
 
 ### Removed

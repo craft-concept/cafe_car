@@ -27,4 +27,19 @@ class AuthorizationTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_not_equal new_session_path, response.location
   end
+
+  # A fresh CRUD-only host has no sessions table, so instantiating a session
+  # raises. current_user (Pundit's default pundit_user) is evaluated during
+  # authorization on every request; it must consult the sessions gate and
+  # return nil instead of 500ing. Here the request reaches the controller
+  # cleanly (the denial tests above cover the 403/redirect degradation shape).
+  test "current_user does not 500 when the sessions table is absent" do
+    CafeCar.stub :sessions_available?, false do
+      CafeCar::Session.stub :new, proc { raise ActiveRecord::StatementInvalid, "no such table: sessions" } do
+        get "/admin/clients"
+
+        assert_response :success
+      end
+    end
+  end
 end

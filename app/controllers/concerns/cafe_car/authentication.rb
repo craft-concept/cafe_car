@@ -23,10 +23,17 @@ module CafeCar
     end
 
     def current_user
-      current_session.user
+      current_session&.user
     end
 
+    # No session without the opt-in infrastructure. Pundit evaluates
+    # `current_user` (its default `pundit_user`) on every authorized request, so
+    # building a session here would 500 a CRUD-only host that never ran
+    # `cafe_car:sessions`. Gate on `sessions_available?` so it degrades to a nil
+    # user (→ 403) instead.
     def current_session
+      return unless sessions_available?
+
       CafeCar[:Current].session ||= find_session_by_cookie || build_session
     end
 
