@@ -33,6 +33,33 @@ an application-wide or model-specific basis.
 
 **Perfect for**: Admin panels, internal tools, and rapid prototyping.
 
+## Table of Contents
+
+- [How CafeCar compares](#how-cafecar-compares)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Core Components](#core-components)
+  - [Controllers](#controllers)
+  - [Policies](#policies)
+  - [Presenters](#presenters)
+  - [UI Components](#ui-components)
+  - [Forms](#forms)
+  - [Filtering & Sorting](#filtering--sorting)
+- [Advanced Usage](#advanced-usage)
+- [Sessions & Authentication](#sessions--authentication)
+- [Generators](#generators)
+  - [Resource Generator](#resource-generator)
+  - [Controller Generator](#controller-generator)
+  - [Policy Generator](#policy-generator)
+  - [Notes Generator](#notes-generator)
+  - [Sessions Generator](#sessions-generator)
+- [Configuration](#configuration)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## How CafeCar compares
 
 CafeCar is convention-first. Rather than a separate admin app with its own DSL,
