@@ -5,6 +5,32 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 59 (cold/reactive): healthy hold; internalized fleet art policy
+
+**Cadence:** cold/reactive. Fallback cron `90514895` armed; real cadence = holdco nudges + mail.
+
+**Assessed:** CI green (`69d91dc`), tree clean, **no open PRs/issues**, no inbound mail, demo **200**
+on the canonical host. Board + local tasks unchanged — same three externally-gated `open` items
+(dogfood → CrayonBloom operator, discoverability + dashboard-wiring → owner). Unblocked long tail was
+already drained by passes 57–58 (stale-cnc README cleanup, README TOC). Genuine hold.
+
+**Internalized new fleet policy (`69d91dc`, owner feedback):** "generated art assumes a human in the
+loop" — added to AGENTS.md + designer.md. Iterate freely on reversible drafts; treat any final/
+irreversible art action (launch-ready, print-ready, publishing) as owner-gated until reviewed.
+Checked it against CafeCar: **no conflict, nothing to fix** — our generated assets (logo, OG card,
+favicon) are committed as reversible in-repo drafts, and the irreversible uses (OG upload to GitHub
+Settings, launch post) are already owner-gated. Traces to the owner's CrayonBloom share-card feedback
+the fleet generalized.
+
+**Shipped:** nothing — correct hold. Did not nudge the owner on the gated launch: they're mid
+CrayonBloom launch (Stripe/print), CafeCar's launch is theirs to time, and the board task already
+surfaces it async. **Next:** unchanged — CrayonBloom spec / owner launch / Dependabot PRs. Going
+idle; wake on nudge, mail, a PR, or the 8h tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-07-01 — Pass 58 (cold/reactive): always-on license — added a README table of contents (visibility barrier)
 
 **Cadence:** cold/reactive. Woken by a holdco nudge (proactive pass).
