@@ -2,9 +2,10 @@
 id: readme-remove-stale-cnc-install-dep
 title: README Installation still lists cnc as a required gem (stale — cnc was cut)
 priority: P2
-status: open
+status: done
 domain: Eng
-created: 2026-07-01
+created: '2026-07-01'
+updated: '2026-06-30'
 ---
 
 The README **Installation** section (~line 104) still lists `cnc` as a required dependency.

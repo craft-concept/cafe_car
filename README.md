@@ -101,7 +101,7 @@ $ rails generate cafe_car:install
 
 This will:
 
-- Add required gems (cnc, bcrypt, paper_trail, factory_bot_rails, faker, rouge)
+- Add required gems (bcrypt, paper_trail, factory_bot_rails, faker, rouge)
   plus development tools (hotwire-livereload, better_errors, binding_of_caller,
   chrome_devtools_rails, i18n-debug)
 - Mount the CafeCar engine at `/` under the `:admin` namespace
