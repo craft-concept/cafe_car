@@ -28,9 +28,17 @@ Work through these steps in order, then stop:
    complex as a task (`rake tasks:new[...]`).
 4. **Persona hygiene** — read your operator persona; FLAG bloat/contradictions/dead rules in the
    journal (don't edit the persona).
-5. **Dream journal** — write `docs/dreams/YYYY-MM-DD.md`: short bullets of what was
-   archived/merged/shortened, lessons mined, tool errors found + classification, persona flags.
-6. **Commit** — stage the journal + any files you fixed, `git commit -m "dream: YYYY-MM-DD —
-   <one-liner>"`. Don't push.
+5. **Divergent leg (the FINAL act, on warm context)** — with steps 1–4 still in working memory,
+   imagine *"what should this business try next?"* across **product / growth / cost / adjacency /
+   moat**. Route each idea by the AGGRESSIVE envelope (`AGENTS.md` → "Ideation"): **cheap** →
+   append a `proposed` row to `IDEAS.md` (operator runs it next pass); **consequential** → file a
+   💡 proposal (POST `kind=proposal` to the holdco-tasks board, as `/propose`) + an `IDEAS.md` row.
+   You only record/propose — never execute. Skip anything already in `IDEAS.md` (killed rows stay
+   listed so you don't re-propose them).
+6. **Dream journal** — write `docs/dreams/YYYY-MM-DD.md`: short bullets of what was
+   archived/merged/shortened, lessons mined, tool errors found + classification, persona flags, and
+   ideas imagined + routing.
+7. **Commit** — stage the journal, `IDEAS.md` (if you appended), + any files you fixed, `git commit
+   -m "dream: YYYY-MM-DD — <one-liner>"`. Don't push.
 
 Touch `docs/dreams/.last` when done.

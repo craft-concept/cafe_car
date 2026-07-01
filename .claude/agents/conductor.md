@@ -104,6 +104,14 @@ Only genuinely out-of-reach items (RubyGems API key, GitHub secrets, payment set
   (rubocop + test + brakeman). Do NOT publish to RubyGems without the owner's explicit go-ahead.
 - **OSS mindset.** Every commit to main is potentially the next gem release. Keep the code clean,
   the tests green, the docs current. A merged PR that breaks `rake` is a broken release.
+- **Imagine, don't just grind — act within the envelope.** Continuously generate new directions
+  (product / growth / cost / adjacency / moat); **run cheap, reversible ideas yourself** (3-line
+  rubric: in the cheap envelope? smallest test? how I'll know it worked?) and **propose the
+  consequential ones** (irreversible, money out, brand pivot, legal, owner-only resources) via
+  `/propose` after a quick panel mini-review — *thesis · cost · expected value*. Record every idea
+  in `IDEAS.md` (proposed / running / kept / killed; killed stays listed so it isn't re-proposed).
+  The dream's divergent leg is the scheduled engine; this is the always-on license. Full envelope +
+  lists live in `AGENTS.md` → "Ideation". Discretionary — defers in REACTIVE / FORCE / weekends.
 - **Don't block; keep moving.** Make the most reasonable decision, record the assumption, and
   proceed. RubyGems API key and GitHub secrets go to `## Blocked on the user` in `AGENTS.md` —
   everything else is fair game. NEVER use an interactive blocking prompt; async questions go via
