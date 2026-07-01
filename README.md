@@ -4,6 +4,8 @@
   CafeCar
 </h1>
 
+<p><em>🚋 Recline in the cafe car while your Rails views build themselves.</em></p>
+
 [![CI](https://img.shields.io/github/actions/workflow/status/craft-concept/cafe_car/ci.yml?branch=main&label=CI)](https://github.com/craft-concept/cafe_car/actions/workflows/ci.yml)
 [![Gem Version](https://img.shields.io/gem/v/cafe_car)](https://rubygems.org/gems/cafe_car)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
@@ -25,13 +27,45 @@
   <a href="https://cafe-car-demo-production.up.railway.app">Try the live demo →</a></em>
 </p>
 
-CafeCar is a Rails engine that extends the MVC "view" layer to provide automatic
-CRUD UI generation with sensible defaults. Its philosophy is rooted in the idea
-that Rails should render _something_ that represents the CRUD operations of your
-models by default. These defaults can then be expanded or overridden on either
-an application-wide or model-specific basis.
+Your model already knows its columns, types, and associations — a full
+description of a resource. Rails still makes you hand-write a controller, seven
+actions, and a folder of view templates before any of it renders in a browser.
+CafeCar closes that gap: a Rails engine that renders index, show, new, and edit
+straight from the model — with Pundit authorization, filtering, and Hotwire —
+from one line of controller code. Every default is a starting point: override
+any view, presenter, or policy with ordinary Rails when the default is wrong.
 
-**Perfect for**: Admin panels, internal tools, and rapid prototyping.
+**Perfect for**: Rails developers who need a working admin this week — not a
+second framework to learn and configure.
+
+## Try it in 60 seconds
+
+```bash
+# 1. Install the gem and run the installer
+bundle add cafe_car
+bin/rails generate cafe_car:install
+```
+
+```ruby
+# 2. Point a controller at a model (add `resources :products` to your routes)
+class ProductsController < ApplicationController
+  cafe_car
+end
+```
+
+```ruby
+# 3. Say who can do what — and which fields are editable
+class ProductPolicy < ApplicationPolicy
+  def index?  = user.present?
+  def update? = user.admin?
+
+  def permitted_attributes = %i[name price description]
+end
+```
+
+Visit `/products`: index, show, new, and edit, all generated from the model.
+When a default is wrong, override that one piece — see
+[Getting Started](#getting-started).
 
 ## Table of Contents
 
@@ -826,6 +860,8 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for
 development setup, how to run the tests (`bundle exec rake`), and PR expectations.
 By participating you agree to the [Code of Conduct](CODE_OF_CONDUCT.md). To report a
 security issue, see [SECURITY.md](SECURITY.md).
+
+If CafeCar saved you an afternoon, a star helps other Rails developers find it.
 
 ## License
 
