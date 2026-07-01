@@ -5,6 +5,34 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 61 (cold/reactive): shipped holdco durable-state backport
+
+**Cadence:** cold/reactive. Fallback cron armed.
+
+**Assessed:** CI green, tree clean, no PRs/issues, demo **200**. A new **P1 board task** had landed
+(`cafe-car-backport-durable-state-fixes-holdco-2d92c67`) — a fleet backport from holdco of the
+durable-state fixes root-caused from the PrintBound "operator can't see an email it already handled"
+incident. Picked it as the highest-leverage unblocked item.
+
+**Shipped (`db1b9c2`):** Part 1 — added the **"Reconstitute before you answer"** reflex to
+`.claude/agents/conductor.md` (full) and `AGENTS.md` (tight): *"not in my context" ≠ "doesn't exist"* —
+look it up in inbox `--all` / git log / task board / WORKLOG before claiming you can't see something.
+`rake` green (rubocop+test+brakeman, 0 warnings). Board task closed with comment id 8, marked done.
+
+**Decision — Part 2 (sync repo `bin/operator-loop`) is a deliberate no-op for CafeCar:** holdco
+launches every venture via its **own** canonical `~/code/holdco/bin/operator-loop` (holdco.rb:855),
+already at 2d92c67 with the lineage-follow fix. CafeCar has never had a repo `bin/operator-loop` and
+nothing references one — a copy would be a dead duplicate. Fix already in effect for me. Recorded on
+the board comment so holdco sees the reasoning.
+
+**Triaged:** inbox clean (no unread). Open items unchanged: CrayonBloom spec (their spec-author task
+still open), owner launch/discoverability (blocked on user). **Next:** unchanged. Going idle; wake on
+nudge, mail, a PR, or the 8h tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-07-01 — Pass 60 (cold/reactive): healthy hold; triaged cross-venture owner mail
 
 **Cadence:** cold/reactive. Fallback cron `90514895` armed.
