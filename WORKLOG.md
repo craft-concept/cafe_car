@@ -5,6 +5,38 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 58 (cold/reactive): always-on license — added a README table of contents (visibility barrier)
+
+**Cadence:** cold/reactive. Woken by a holdco nudge (proactive pass).
+
+**Assessed:** CI green (Pass 57 completed clean), demo **200**, tree clean. Verified an assumed
+license gap was a false alarm — `MIT-LICENSE` exists, gemspec declares MIT (`cafe_car.gemspec:17`),
+badge in README, file is packaged; hygiene solid (checked because a `LICENSE*` glob missed the
+Rails-convention `MIT-LICENSE` name). Backlog: local tasks fully done-or-externally-blocked. Holdco
+board shows a **new** `dogfood-milestone` tracker, but it only unblocks once the CrayonBloom operator
+files individual requirement tasks — none have appeared yet, so still no buildable spec. Genuine hold
+on the queue → exercised the always-on license against the **visibility** barrier.
+
+**Shipped (`470ca23`):** The README — our #1 conversion surface — was 806 lines / ~25 sections with
+**no table of contents**; an evaluator landed on a wall of scroll with no way to jump to "How CafeCar
+compares" or "Generators". Ran the cheap-envelope rubric (README-only / additive / reversible;
+smallest test = anchors resolve + `rake` green) and delegated to a builder: added a `## Table of
+Contents` after the intro listing all 13 top-level sections, with Core Components + Generators nested.
+Builder script-verified all **24 anchors** resolve (extract headings → compute GHFM slugs → diff vs
+TOC links; edge cases `#how-cafecar-compares`, `#sessions--authentication`, `#filtering--sorting`
+confirmed). `bundle exec rake` green (Brakeman clean). Logged the idea `running`→`kept` in IDEAS.md.
+
+**State:** backlog remains fully done-or-externally-blocked; no unblocked queue work. The dogfood
+milestone waits on CrayonBloom-operator specs; publish/discoverability/dashboard wait on the owner.
+
+**Next:** owner-blocked and CrayonBloom-blocked items await their owners. Going idle after this log —
+holdco nudges next cadence. If the hold persists, next pass continues the always-on license against
+visibility/trust (e.g. dependency-diet audit, already IDEAS-queued).
+
+**Session:** https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y
+
+---
+
 ## 2026-07-01 — Pass 57 (cold/reactive): cleared the last unblocked task — stale `cnc` in README install list
 
 **Cadence:** cold/reactive. Woken by a holdco nudge (proactive pass).
