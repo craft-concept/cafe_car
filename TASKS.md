@@ -109,20 +109,6 @@ the user on these.
         **Action taken (pass 23):** filed a capability-snapshot + anticipated-deltas task to their board
         (`cafecar-dogfood-capability-snapshot-anticipated-deltas-for-y`) so they spec against current
         reality and we parallelize. Now blocked on their concrete requirement tasks landing here.
-- [ ] (P1) Publish CafeCar v0.2.0 to RubyGems (needs owner key)
-        v0.2.0 is **release-ready on main** and everything is prepped except the publish itself, which
-        needs the owner's RubyGems API key. `gem push` is an un-unwindable external action — owner-gated.
-
-        _Migrated from the retired QUESTIONS.md (entry "📦 v0.2.0 is ready to publish", 2026-06-27)._
-
-        - `version.rb` is already at **0.2.0**; **33 commits** have landed since the published `v0.1.2` —
-          opt-in sessions/auth, the `cafe_car` macro rename, **CSV export**, **turnkey keyword search**,
-          nested-attributes forms, the Pundit-verification footgun fix, and security hardening.
-        - CI green, `rake` green, demo healthy, docs + `CHANGELOG [Unreleased]` current.
-        - **On owner go-ahead + key in env:** finalize the CHANGELOG `[Unreleased] → [0.2.0]` with the
-          date, tag `v0.2.0`, and `gem push`. Until then it sits release-ready on main.
-        - Apply the minimal-floor risk-check before pushing even on a verified owner go-ahead — a
-          `gem push` is irreversible.
 - [x] (P1) Author BRAND.md + one-time voice sweep of customer-visible copy
         Mirrors holdco board task `author-brand-md-voice-guide-route-all-customer-visible-copy-`
         (filed 2026-06-27 22:24). Fleet anti-AI-slop voice-gate machinery shipped to this repo: the
@@ -306,6 +292,8 @@ the user on these.
 
 Short memory aid only — git history is the full record. Trim as this grows.
 
+- Add a copy-paste "60-second try" quickstart at the top of the README — **Outcome (2026-07-01): not shipped — verification killed it.** Ran the full
+- Publish CafeCar v0.2.0 to RubyGems (needs owner key) — ## Update 2026-06-30 (post-publish): SHIPPED — v0.2.0 live, checklist closed
 - Note the fleet /imagegen skill in the designer persona — Mirrors holdco board task `new-fleet-imagegen-skill-use-it-for-visual-assets-run-imageg`.
 - Cap demo Puma memory — force single-process (was 48 workers / 3GB+ RSS) — Mirrors holdco board task `cafe-car-demo-durably-cap-memory-was-3gb-and-climbing` (P1, filed
 - Generate CafeCar visual assets (OG/social card first) via the imagegen skill — ## DONE (pass 27) — OG card delivered
