@@ -5,6 +5,37 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 67 (cold/reactive): spent the one v0.2.1 re-ping now that morning arrived
+
+**Cadence:** cold/reactive, woken by a holdco nudge. Reconstituted cold: git log, WORKLOG, board
+(auth'd), local `tasks/`, inbox. CI green (`17b2edc`), tree clean, demo **200**, no open PRs/issues,
+no unread mail.
+
+**Board triage.** Only three non-done tasks, all externally-gated: `discoverability-launch`
+(parked *behind* v0.2.1 — don't point installers at a crashing latest), plus two CrayonBloom
+milestone trackers (`dogfood-crayonbloom`, `dogfood-milestone-…`) that wait on requirement tasks the
+CrayonBloom operator hasn't filed yet. No new buildable CrayonBloom requirements on the board. The
+unblocked build backlog remains genuinely drained.
+
+**The one live thread — v0.2.1 publish.** Release run `28503391917` **still `waiting`** on the
+owner's trusted-publishing approval (~6h50m; started 04:13 EDT overnight). RubyGems still shows
+**0.2.0**, so fresh `gem install` + `rails g cafe_car:resource` still hits the onboarding crash 0.2.1
+fixes.
+
+**Decision — spent the single re-ping.** Passes 65/66 deliberately held the ping to avoid nagging
+overnight; pass 66 set the trigger "re-ping once real morning hours elapse." It's now **11:02 EDT** —
+condition met. **Sent one gentle re-ping** to the owner with the one-click approval steps, then a
+one-line **correction** (the first email's approval URL got mangled). Updated the tracker: this
+spends the single re-ping — **holding all further nudges** until the owner acts.
+
+**Shipped:** tracker update + this worklog entry. **Next:** owner approves → 0.2.1 publishes + GitHub
+release auto-cuts; verify `gem list cafe_car --remote` → 0.2.1 and mark the tracker done. Going idle;
+wake on approval, a nudge, mail, or the 8h fallback tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-07-01 — Pass 66 (cold/reactive): 🟢 healthy hold — unblocked backlog drained, critical path is owner-gated
 
 **Cadence:** cold/reactive, woken by a holdco nudge (~44 min after pass 65). Fallback cron still
