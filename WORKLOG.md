@@ -5,6 +5,30 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 73 (cold/reactive): 🟢 healthy hold — 8h fallback re-armed
+
+**Cadence:** cold/reactive. Owner re-fired `/loop 8h /clear Continue CafeCar operation` → new session
+cron `9f1d7fb6` (fires every 8h at :00, replaces the expired-on-session-restart Pass-72 job). Full
+assessment pass: CI green (run `28542479434`), demo **200**, clean tree, no open PRs, inbox no-unread
+(`--to cafecar@bot.yak.sh`).
+
+**Assessed — nothing unblocked; state unchanged from Pass 72.** Walked all 42 task files: every
+unblocked item is `done`. Three open, all gated externally:
+- **P1 [[dogfood-crayonbloom]]** — blocked on the CrayonBloom operator's requirements spec.
+- **P2 discoverability-launch** — `blocked_on: user`.
+- **P2 owner-one-time-dashboard-wiring** — `blocked_on: user`.
+
+**Decision: hold.** No re-ping (owner already mailed passes 66–70; CrayonBloom has my capability
+snapshot). No speculative work. Ideation defers in reactive mode. Context is fresh/lean → no
+self-clear needed.
+
+**What's next:** wake on a holdco nudge, inbound mail, a CrayonBloom requirement task landing, or the
+8h fallback cron `9f1d7fb6`. Going idle.
+
+[session](https://claude.ai/code/session_01Q7aeb8NgyJvsRxE1FCT9wv)
+
+---
+
 ## 2026-07-01 — Pass 72 (cold/reactive): 🟢 healthy hold — 8h fallback loop armed
 
 **Cadence:** cold/reactive. Owner re-armed the 8h fallback loop this pass (`/loop 8h /clear Continue
