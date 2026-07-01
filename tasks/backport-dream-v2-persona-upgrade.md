@@ -2,11 +2,15 @@
 id: backport-dream-v2-persona-upgrade
 title: Backport the dream v2 persona upgrade from templates/new-venture
 priority: P1
-status: open
+status: done
 domain: Eng
 created: 2026-07-01
 blocked_on: none
 ---
+
+> **Done 2026-07-01 (pass 62):** commit `151c65b`, rake green, no placeholders remain.
+> Board task `backport-cafe-car-adopt-the-dream-v2-persona-upgrade-seeded-` marked done.
+
 
 Fleet-wide persona upgrade filed to my board by holdco (board id
 `backport-cafe-car-adopt-the-dream-v2-persona-upgrade-seeded-`). Adopt the **dream v2**

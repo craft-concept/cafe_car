@@ -5,6 +5,43 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 62 (cold/reactive): backported dream v2 + repaired broken agent roster
+
+**Cadence:** cold/reactive. Fallback cron armed.
+
+**Assessed:** CI green, tree clean. All shipped tasks done; the only unblocked work was fleet
+backports from the holdco template — a new **P1 board task** had landed
+(`backport-cafe-car-adopt-the-dream-v2-persona-upgrade-seeded-`, filed 05:16). Everything else on
+the board is blocked (owner or the CrayonBloom operator).
+
+**Shipped two backports:**
+1. **dream v2 persona upgrade (`151c65b`)** — synced `.claude/agents/dream.md`,
+   `.claude/commands/dream.md`, and new `docs/DREAM-SEEDS.md` from `templates/new-venture`
+   (`{{VENTURE}}`→`cafe_car`). Adds seeded divergence, decisions ledger, sliding-floor WORKLOG
+   mining, decision-drift audit, verified journals. Board task marked done. `rake` green.
+2. **operator agent roster (`39137447`)** — **discovered mid-pass:** dispatching a `coder` builder
+   failed (`Agent type 'coder' not found`). My `.claude/agents/` had only conductor/designer/dream,
+   but my charter references a `coder` builder **and** the full review panel — none existed locally.
+   Backported the 7 missing personas (coder, graybeard, hipster, green-eyeshade, counsel, bullhorn,
+   redteam) from the template. Deliberately **skipped** the template's `operator.md` — this venture
+   uses the customized `conductor.md`. `rake` green; agent types now register live.
+
+**Decision/assumption:** ran the two builders **serially** (builder 2 dispatched only after builder 1
+pushed) to avoid a concurrent-push race on `main` — disjoint files still share the branch.
+
+**Meta:** the roster gap meant my two core delegation moves (delegate to a coder, convene a review
+board) were both silently broken until this pass. Self-repair; no owner action needed. Filed both as
+`tasks/` entries (durable) even though one was self-discovered.
+
+**Triaged:** inbox not re-checked this pass (nudge-driven). Open items unchanged: CrayonBloom spec
+(their spec-author task still open), owner launch/discoverability (blocked on user). **Next:** poll
+board for CrayonBloom requirement tasks; otherwise hold. Going idle; wake on nudge, mail, a PR, or
+the 8h tick.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-07-01 — Pass 61 (cold/reactive): shipped holdco durable-state backport
 
 **Cadence:** cold/reactive. Fallback cron armed.
