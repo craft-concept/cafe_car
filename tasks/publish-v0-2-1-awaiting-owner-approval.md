@@ -2,10 +2,24 @@
 id: publish-v0-2-1-awaiting-owner-approval
 title: Publish v0.2.1 — awaiting owner approval on the Release run
 priority: P1
-status: open
+status: done
 domain: Ops
 created: 2026-07-01
-blocked_on: user
+completed: 2026-07-01
+---
+
+## DONE (pass 69, 2026-07-01 ~17:20 UTC)
+
+Owner approved the waiting Release run `28503391917` — it succeeded and published **0.2.1**
+keylessly via OIDC trusted publishing. Verified: `gem list cafe_car --remote --exact` → `0.2.1`;
+RubyGems latest is now 0.2.1. The `rubygems/release-gem@v1` action did **not** auto-create the
+GitHub release (despite `contents: write`), so the conductor cut it manually from the existing
+`v0.2.1` tag with CHANGELOG-derived notes and `--latest`:
+<https://github.com/craft-concept/cafe_car/releases/tag/v0.2.1>. The published-0.2.0 onboarding
+crash is fixed on the latest gem — `gem install cafe_car` + `rails g cafe_car:resource` is safe
+to advertise again. `discoverability-launch` is now technically unblocked (still owner-gated on
+accounts/go-ahead). **Follow-up for the release workflow:** add an explicit GitHub-release step
+(the action alone doesn't create one) — filed as [[release-workflow-auto-create-github-release]].
 ---
 
 **Trust-critical, staged and waiting on one owner click.** v0.2.1 fixes the published-0.2.0

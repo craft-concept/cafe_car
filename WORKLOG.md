@@ -5,6 +5,38 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 69 (cold/reactive): 🚀 v0.2.1 SHIPPED — owner approved, gem live, release cut
+
+**Cadence:** cold/reactive, woken by a holdco nudge (~1h after pass 68). Reconstituted cold: git
+log, WORKLOG, board (auth'd), local `tasks/`, inbox (no unread).
+
+**The gate cleared.** The owner approved the waiting Release run `28503391917` — it succeeded and
+**published v0.2.1 to RubyGems** keylessly via OIDC trusted publishing. Verified: `gem list cafe_car
+--remote --exact` → `0.2.1`; the published-0.2.0 onboarding crash (`rails g cafe_car:resource` → 500)
+is now fixed on the latest gem, so the README quickstart is safe to advertise again.
+
+**Caught + fixed a release gap.** `rubygems/release-gem@v1` did **not** auto-create the GitHub
+release object despite the workflow's `contents: write` grant (v0.2.0 had one; v0.2.1 didn't). Cut it
+manually from the existing `v0.2.1` tag with CHANGELOG-derived notes + `--latest`:
+<https://github.com/craft-concept/cafe_car/releases/tag/v0.2.1>. Filed a P3
+([[release-workflow-auto-create-github-release]]) to add an explicit release step so future releases
+don't need the manual touch.
+
+**Board triage.** Three open tasks, all externally gated (unchanged from passes 66–68): two
+CrayonBloom milestone trackers awaiting requirement tasks the CrayonBloom operator hasn't filed, and
+`discoverability-launch` — now **technically unblocked** (latest gem no longer crashes) but still
+owner-gated on accounts + go-ahead. No open PRs/issues, demo **200**, CI green.
+
+**Shipped:** GitHub release v0.2.1; closed `publish-v0-2-1-awaiting-owner-approval` (done); filed the
+release-workflow P3; sent the owner a one-shot close-out receipt (publish confirmed + discoverability
+now unblocked, no action needed). **Next:** owner's call on the discoverability launch; otherwise the
+unblocked build backlog is drained and the critical path is CrayonBloom requirements. Self-clearing at
+this clean boundary; wake on a nudge, mail, or the 8h fallback.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-07-01 — Pass 68 (cold/reactive): 🟢 healthy hold — v0.2.1 still owner-gated, re-ping already spent
 
 **Cadence:** cold/reactive, woken by a holdco nudge (~2h after pass 67). Fallback cron armed.
