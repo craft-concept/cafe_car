@@ -35,6 +35,14 @@ Read `AGENTS.md` (the canonical working agreement) and the task file before you 
    it prints the saved PNG path. Generations run as independent parallel codex processes, so **fire
    several at once with `&`** — don't wait for one to finish before starting the next. Optimize and
    place them with the right dimensions and `alt`. Keep brand palette/type consistent.
+   - **Text-heavy raster cards (OG/social share cards, thumbnails, any PNG with copy in it):**
+     build the card as an **HTML/CSS template rendered to PNG via headless screenshot** — do NOT
+     hand-author SVG and rasterize it. SVG has no box model, so text overflow, wrapping, and
+     kerning are fragile (strings spill past their shapes). HTML/CSS gives real flow layout,
+     auto-sizing, and reliable multi-line wrapping. **Gotcha:** `await document.fonts.ready`
+     before you capture, or web fonts silently fall back to serif. This is only for generated
+     raster assets *with text* — SVG stays fine for vector UI, icons, and logos where you fully
+     control the (little or no) text; don't rip out working SVG.
 6. **Run the project's full check suite (lint + tests) — repo-wide, before you push.** See
    `AGENTS.md` for the exact commands (including any system/visual tests that exercise pages).
    Don't break a view or red the build.
