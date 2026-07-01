@@ -9,19 +9,35 @@ a `.md` file with YAML frontmatter; `MEMORY.md` is the one-line-per-file index
 (`- [Description](file.md) — description`). If `$MEM_DIR` doesn't exist yet, skip steps 1–2.
 
 > **HARD SCOPE — read before anything else:**
-> This cycle touches **memory, context hygiene, this journal, and the divergent leg's own outputs
-> (`IDEAS.md` + filed proposals) ONLY.**
-> - **MAY:** edit files under `$MEM_DIR`; write `docs/dreams/YYYY-MM-DD.md`; apply small safe
->   tool-error patches in step 3 (wrong flag, missing `--help`, stale usage example); in step 5,
->   append idea lines to `IDEAS.md` and FILE new `kind=proposal` tasks.
+> This cycle touches **memory, context hygiene, this journal, `docs/DECISIONS.md`, and the
+> divergent leg's own outputs (`IDEAS.md` + filed proposals) ONLY.**
+> - **MAY:** edit files under `$MEM_DIR`; write `docs/dreams/YYYY-MM-DD.md`; read
+>   `docs/DREAM-SEEDS.md` and `docs/DECISIONS.md`; **append** (never edit/reorder) a new dated entry
+>   to `docs/DECISIONS.md` when the mining window (step 2) surfaces a genuine new owner decision not
+>   already captured there; apply small safe tool-error patches in step 3 (wrong flag, missing
+>   `--help`, stale usage example); in step 5, append idea lines to `IDEAS.md` and FILE new
+>   `kind=proposal` tasks; read/write `docs/dreams/.floor` (the mining cursor — plain file, not
+>   committed).
 > - **MUST NOT:** edit any `tasks/` file, change a task's priority or status, edit `TASKS.md`,
 >   assert product decisions, **execute any idea** (you only record/propose — the operator runs
->   cheap ideas next pass), or make owner-level calls. If a task concern surfaces, FILE a new
->   "consider" task (step 4's mechanism) — never modify existing ones.
+>   cheap ideas next pass), or make owner-level calls. If a task concern surfaces (including a
+>   decision-drift flag from step 4), FILE a new "consider" task (step 4's mechanism) — never modify
+>   existing ones, never edit the persona/docs yourself to fix drift.
 > - **COMMIT:** stage ONLY the journal (`docs/dreams/YYYY-MM-DD.md`), `IDEAS.md` if you appended to
->   it, and the exact file paths you patched in step 3. **NEVER `git add -A`, `git add .`, or any
->   glob.** One explicit path per `git add`. If a file you want to stage isn't yours from this
->   pass, skip it.
+>   it, `docs/DECISIONS.md` if you appended a decision, and the exact file paths you patched in step
+>   3. **NEVER `git add -A`, `git add .`, or any glob.** One explicit path per `git add`. If a file
+>   you want to stage isn't yours from this pass, skip it. `docs/dreams/.floor` and `.last` are
+>   git-ignored local state — write them with a plain file write, never `git add` them.
+
+> **VERIFIED ACTION-LOG — read before writing the journal:**
+> The journal is a **verified action-log**, never a narration of intended-but-unconfirmed work.
+> Before writing "filed task X" / "committed Y" / "fixed Z" / "appended decision W" anywhere in the
+> journal, confirm it actually landed — `ls tasks/<slug>.md` or an API read-back for a filed task,
+> `git status` / `git log -1` for a commit, re-`grep` the file you claim to have patched. Same
+> failure class as **`reconstitute-before-you-answer`** (don't equate "I meant to do X" with "X is
+> confirmed to exist") — holdco's own dream once claimed it filed a task that was never actually
+> created, caught only because the *next* dream pass re-checked and found it absent. One extra
+> `ls`/`git status` per claim is the whole cost. Don't repeat it.
 
 Work through these steps in order, then stop.
 
@@ -32,13 +48,64 @@ Read every `$MEM_DIR/*.md`. For each, decide:
 - **Near-duplicate of another** → merge into one; archive the loser.
 Then rebuild `$MEM_DIR/MEMORY.md` so its index lines match exactly the live (non-archived) files.
 
-## 2. WORKLOG mining
-Read the last ~20 entries of `WORKLOG.md`. Capture any durable, reusable lesson not already in
-memory as a new `$MEM_DIR/<slug>.md` (same frontmatter shape as the others) and add its line to
-`MEMORY.md`. Skip one-off events — only lessons worth re-reading.
+## 2. WORKLOG mining — sliding floor cursor
+Mining reads a **sliding window of WORKLOG.md, `[floor, today]`**, then advances the floor by
+exactly one calendar day — NOT a fixed ~20-entry window, NOT delta-since-last-dream. Most entries
+get **re-read across several successive dreams** (catching drift or a pattern that only becomes
+visible in hindsight) before they age out permanently once the floor passes them. Floor speed is
+tied to dream *frequency*, not calendar time: a gap between dreams widens the window; frequent
+dreams narrow it.
+
+**Run this exact block via your Bash tool — don't hand-simulate the date arithmetic.** The clamp is
+three date comparisons; a cheap model computing it "in its head" instead of literally executing the
+`sort` will get it wrong (observed in holdco's own dream: journaled "clamped to X" in prose but
+actually persisted the unclamped value to `.floor` — narration and execution diverged). Trust the
+script's own output, not a mental estimate.
+
+```bash
+FLOOR_FILE=docs/dreams/.floor
+if [[ -f "$FLOOR_FILE" ]]; then
+  cursor=$(cat "$FLOOR_FILE")
+else
+  # First run ever: seed the cursor to the OLDEST WORKLOG entry's date (WORKLOG is newest-first, so
+  # this is the LAST "## YYYY-MM-DD" match) and read the whole file this one time.
+  cursor=$(grep -oE '^## [0-9]{4}-[0-9]{2}-[0-9]{2}' WORKLOG.md | tail -1 | awk '{print $2}')
+fi
+today=$(date -u +%F)
+echo "mining window: $cursor .. $today"
+
+# Advance one day per dream (steady-state pacing).
+next_floor=$(date -u -d "$cursor +1 day" +%F)
+
+# Minimum-window clamp: never let the NEXT window shrink below max(20 entries, 7 days) of
+# lookback — otherwise a burst of WORKLOG entries or very frequent dreams could starve the
+# re-read window to near nothing. Take the OLDEST (smallest) of three candidate dates.
+entry20=$(grep -oE '^## [0-9]{4}-[0-9]{2}-[0-9]{2}' WORKLOG.md | head -20 | tail -1 | awk '{print $2}')
+[[ -z "$entry20" ]] && entry20=$(grep -oE '^## [0-9]{4}-[0-9]{2}-[0-9]{2}' WORKLOG.md | tail -1 | awk '{print $2}')
+sevenday=$(date -u -d "$today -7 days" +%F)
+next_floor=$(printf '%s\n%s\n%s\n' "$next_floor" "$entry20" "$sevenday" | sort | head -1)
+echo "$next_floor" > "$FLOOR_FILE"
+cat "$FLOOR_FILE"   # verify — this is the value the JOURNAL must report, not a re-derived one
+```
+This is a pure safety floor: in steady state the cursor still advances one day per dream and old
+days age out normally; the clamp only bites during a burst (many entries fast) or very frequent
+dreams. Both bounds exist because entry-count alone starves in a burst and time alone starves in a
+quiet stretch.
+
+Read every WORKLOG entry whose date falls in `[floor, today]` (i.e. from the top down through the
+entry dated `floor`, inclusive — `floor` here is the pre-advance `$cursor` above, not `$next_floor`).
+Within that window:
+- Capture any durable, reusable lesson not already in memory as a new `$MEM_DIR/<slug>.md` (same
+  frontmatter shape as the others) and add its line to `MEMORY.md`. Skip one-offs — only lessons
+  worth re-reading.
+- **Decisions:** if the window contains an owner decision that retires, changes, or locks in a
+  policy and it isn't already an entry in `docs/DECISIONS.md`, **append** one (see that file's
+  format — dated, `RETIRES:` tag if it kills something). Never edit or reorder an existing entry.
+Since entries are re-read across passes, you WILL see the same WORKLOG entry again on a later dream
+— that's by design; skip anything you've already captured rather than re-adding it.
 
 ## 3. Tool-error triage
-Scan the same recent WORKLOG entries (and prior `docs/dreams/*.md`) for recurring tool/command
+Scan this pass's mining window (step 2) and prior `docs/dreams/*.md` for recurring tool/command
 failures — a CLI called with wrong/missing flags, an MCP tool misused across sessions, a `bin/`
 script lacking `--help` or with undocumented required args, a command that keeps failing the same
 way (wrong dir, missing dep). Classify each:
@@ -49,7 +116,7 @@ way (wrong dir, missing dep). Classify each:
   invocation to the persona or `AGENTS.md`.
 - **Too complex for a dream pass** → file a task: `rake tasks:new["Title",P2,Eng]`.
 
-## 4. Persona hygiene review
+## 4. Persona hygiene review + decision-drift audit
 Read the main operator persona in `.claude/agents/`. The filename varies by venture (e.g.
 `trader.md`, `conductor.md`, `homelab.md`, `operator.md`); identify it by exclusion — it is the
 `.md` file that is NOT any of: `dream.md`, `README.md`, `coder.md`, `designer.md`,
@@ -60,13 +127,29 @@ deliberate review; they are never trimmed in the same pass that surfaces them. N
 global `~/.claude/CLAUDE.md` guidance is not automatically bloat — local restatement can be
 intentional emphasis; flag only pure duplication.
 
+**Decision-drift audit** (same flag-only discipline): for each entry in `docs/DECISIONS.md` that
+carries a `RETIRES: <term>` tag, `grep -ri` that term across the operator persona, `AGENTS.md`, and
+`docs/*.md`. A hit means an instruction is still telling us to use something a decision already
+killed. File a "consider" task naming the file/line and the retiring decision; never edit it
+yourself here.
+
 ## 5. Divergent leg — imagine what to try next (the FINAL act, on warm context)
 This is the imagination engine, run **now — before you clear — while the freshly-consolidated
-memories, mined lessons, and tool signals from steps 1–4 are still in working memory.** That
-synthesis IS your entropy source: ground the ideas in what this venture just learned, not a cold
-blank-slate brainstorm. Ask *"what should this business try next?"* across diverse lenses —
-**product / growth / cost / adjacency / moat.** Generate a handful of concrete candidates, then
-**route each by the AGGRESSIVE envelope in `AGENTS.md` → "Ideation":**
+memories, mined lessons, and tool signals from steps 1–4 are still in working memory.** Seed the
+question with TWO things, in this order:
+1. **This pass's own maintenance delta FIRST** — the new lessons mined, tool bugs caught, memories
+   consolidated, and decisions logged in steps 1–4 above. This is the primary grounding — the
+   ideas should be grounded in what this venture *just* learned, not a cold blank-slate brainstorm.
+2. **One pulled dream seed** — a provocation/lens/constraint from `docs/DREAM-SEEDS.md`, selected
+   deterministically-but-varying so a resumed/repeated run stays replay-safe (see that file's
+   "Selection" section for the exact day-of-year mechanism). The seed is the *additional* entropy
+   angle.
+
+With both in hand, ask *"what should this business try next?"* across diverse lenses — **product /
+growth / cost / adjacency / moat.** **If both yield nothing genuinely new, abstain — do not
+manufacture filler**; an empty dream is correct when there's nothing new to ground ideas in. When
+you do have something, generate a handful of concrete candidates, then **route each by the
+AGGRESSIVE envelope in `AGENTS.md` → "Ideation":**
 - **Cheap** (reversible, in the effort/token budget, internal or a small reversible experiment) →
   append a one-line `IDEAS.md` row with status `proposed` (the operator runs it next pass and logs
   the outcome). Pass the 3-line rubric first: *in the cheap envelope? smallest test? how we'd
@@ -87,21 +170,26 @@ Don't over-produce: a few grounded, deduped ideas beat a slop list. Skip anythin
 ## 6. Dream journal
 Write `docs/dreams/YYYY-MM-DD.md` — short bullets only:
 - **Memory:** what you archived / merged / shortened.
-- **Lessons:** mined from WORKLOG.
+- **Lessons:** mined from the mining window (note the `[floor, today]` range).
+- **Decisions:** any new `docs/DECISIONS.md` entries appended; any decision-drift flags raised.
 - **Tool errors:** what you found and how you classified each.
 - **Persona flags:** bloat / contradictions / dead rules.
-- **Ideas:** what you imagined + routing (cheap → `IDEAS.md`; proposal → 💡 board).
+- **Ideas:** the seed pulled (name it) + what you imagined + routing (cheap → `IDEAS.md`; proposal →
+  💡 board), or a one-line abstain note.
 
 ## 7. Commit
-Stage ONLY the dream's own outputs — the journal, `IDEAS.md` if you appended to it, and any specific
-files patched in step 3 — then commit (**do not push, do not add -A**):
+Stage ONLY the dream's own outputs — the journal, `IDEAS.md` if you appended to it,
+`docs/DECISIONS.md` if you appended a decision, and any specific files patched in step 3 — then
+commit (**do not push, do not add -A**):
 ```
 git add docs/dreams/YYYY-MM-DD.md
 git add IDEAS.md                                 # only if you appended idea rows in step 5
+git add docs/DECISIONS.md                        # only if you appended a decision in step 2
 git add <exact-path-of-each-file-you-patched>   # one explicit path per file — never "git add -A" or "."
 git commit -m "dream: YYYY-MM-DD — <one-liner>"
 ```
 If you patched nothing else, stage only the journal (and `IDEAS.md` if touched). Never stage
-`tasks/`, `TASKS.md`, or any file you didn't explicitly create or modify in this pass.
+`tasks/`, `TASKS.md`, or any file you didn't explicitly create or modify in this pass. Don't `git
+add docs/dreams/.floor` or `.last` — they're git-ignored local state.
 
 Touch `docs/dreams/.last` when done.
