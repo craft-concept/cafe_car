@@ -2,7 +2,7 @@
 id: release-workflow-auto-create-github-release
 title: Release workflow — auto-create the GitHub release (action alone doesn't)
 priority: P3
-status: open
+status: done
 domain: Ops
 created: 2026-07-01
 ---
@@ -31,3 +31,16 @@ Add an explicit GitHub-release step to `release.yml` after the publish step. Opt
 
 Low priority — manual `gh release create` is a working fallback, and releases are infrequent. But
 it's cheap hygiene that removes a manual, forgettable step from every future release.
+
+## Resolution (2026-07-01)
+
+Confirmed `rubygems/release-gem@v1` has no GitHub-release input (only `token`, `await-release`,
+`setup-trusted-publisher`, `working-directory`), so a dedicated step was needed. Added a
+"Create or update the GitHub release" step to `release.yml` after the publish step, using the
+runner's preinstalled `gh` CLI (no new third-party action to pin). It `awk`-extracts the pushed
+tag's `## [x.y.z]` section from `CHANGELOG.md` for the notes (empty section falls back to a
+CHANGELOG pointer), and is idempotent: `gh release edit --latest` on an existing release,
+`gh release create --latest --verify-tag` otherwise — so re-runs and the manual fallback don't
+fail the job. Verified: awk extraction against the current CHANGELOG, YAML well-formed, full
+`bundle exec rake` green. Residual: only a live tag push (next release) exercises the step
+end to end on the runner.

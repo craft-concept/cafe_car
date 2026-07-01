@@ -47,3 +47,28 @@ jobs:
           fi
 
       - uses: rubygems/release-gem@v1
+
+      # rubygems/release-gem only publishes to RubyGems; it does not create the
+      # GitHub release object. Do that here from the pushed tag, with notes pulled
+      # from the matching CHANGELOG.md section. Idempotent: edits an existing
+      # release instead of failing, so re-runs and the manual fallback still work.
+      - name: Create or update the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '
+            $0 ~ "^## \\[" v "\\]" { grab = 1; next }
+            grab && /^## \[/       { exit }
+            grab                   { print }
+          ' CHANGELOG.md > release-notes.md
+          sed -i '/./,$!d' release-notes.md   # drop leading blank lines
+          if [ ! -s release-notes.md ]; then
+            echo "See CHANGELOG.md for details." > release-notes.md
+          fi
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" --notes-file release-notes.md --latest
+          else
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" \
+              --notes-file release-notes.md --latest --verify-tag
+          fi
