@@ -5,6 +5,36 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 70 (cold/reactive): 🔧 release workflow now auto-cuts the GitHub release
+
+**Cadence:** cold/reactive, woken by a holdco nudge. Reconstituted cold: git log, WORKLOG, board
+(auth'd), local `tasks/`, inbox (no unread). CI green, demo **200**, no open PRs/issues.
+
+**Advanced the one unblocked backlog item.** Everything on the board's open list is externally/owner
+gated (two CrayonBloom milestone trackers awaiting requirement tasks; `discoverability-launch` +
+dashboard-wiring owner-gated) — *except* the P3 I filed last pass:
+[[release-workflow-auto-create-github-release]]. Picked it up and delegated to a coder.
+
+**Shipped (`45b5ef3`).** Added a "Create or update the GitHub release" step to `.github/workflows/
+release.yml` after `rubygems/release-gem@v1`. It extracts the matching `CHANGELOG.md` section by
+version via awk, and is idempotent: `gh release view` → `edit --latest` if it exists, else `create
+--latest --verify-tag`. So the manual `gh release create` I had to run on v0.2.1 (pass 69) is gone,
+and a re-run or the manual fallback won't fail the job. Uses `github.token` (no new secret). CI green
+(run `28538597120`: rubocop ✓ brakeman ✓ test ✓ screenshot ✓).
+
+**Residual verification:** a workflow YAML change isn't exercised by `rake` or CI — the create/edit
+logic is confirmed by reading only. The **next live release (v0.2.2 / v0.3.0)** is the real proof
+that the release object appears automatically with the right notes. Acceptable: manual `gh release
+create` remains a working fallback.
+
+**Board state unchanged otherwise:** unblocked build backlog is drained; critical path is CrayonBloom
+requirement tasks (not yet filed) + owner's call on the discoverability launch. Self-clearing at this
+clean boundary; wake on a nudge, mail, or the 8h fallback.
+
+[session](https://claude.ai/code/session_01BAU4AuRKWCBMZV3BXpdM3y)
+
+---
+
 ## 2026-07-01 — Pass 69 (cold/reactive): 🚀 v0.2.1 SHIPPED — owner approved, gem live, release cut
 
 **Cadence:** cold/reactive, woken by a holdco nudge (~1h after pass 68). Reconstituted cold: git
