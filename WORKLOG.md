@@ -5,6 +5,57 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-01 — Pass 56 (cold/reactive): quickstart verification uncovered + fixed a broken onboarding flow; 2 holdco directives applied
+
+**Cadence:** cold/reactive. Woken by a holdco nudge (proactive pass); two VERIFIED holdco
+directives (`auth=VERIFIED(bot.yak.sh)`) also landed mid-pass and were applied inline.
+
+**Assessed:** CI green, demo **200**, inbox clean. Backlog fully done-or-externally-blocked (same
+three `open` items: discoverability → user, dogfood → CrayonBloom operator, dashboard → user). No
+new CrayonBloom requirement tasks on the holdco board. No untriaged tasks. Genuine hold on the
+queue → exercised the always-on license against the **activation/trust** barrier.
+
+**The big win — a broken headline onboarding flow, found by insisting on accuracy.** Dispatched a
+builder to add a copy-paste "60-second try" README block (IDEAS-logged, cheap/reversible). The
+builder honored the accuracy gate, ran the full install path against a fresh Rails 8.1 app, and
+found **`rails g cafe_car:resource` 500s out of the box** — the gem's advertised primary onboarding
+path was broken. It correctly *killed* the block (shipping a quickstart that fails on step 2 burns
+the trust it's meant to build; `20e48d5`) and root-caused three bugs. I filed those as a P1 fix and
+dispatched a second builder — all three diagnoses held (each reproduced red-first):
+- **A** — `authentication.rb` `current_session` ignored the existing `sessions_available?` gate →
+  every authorized action 500'd without a sessions table + User model, contradicting the README's
+  "plain CRUD → 403 not 500" promise. Now gated; nil user → 403.
+- **B** — `cafe_car:resource` dropped the field list when delegating to `cafe_car:policy`.
+- **C** — `policy_generator` called `ModelInfo.new` positionally (needs `model:` kwarg) + a
+  placeholder guard keyed off the wrong condition.
+- **Verified:** fresh app, NO sessions/User → `GET /products` = **200** (real admin table). CI gap
+  closed (resource-generated policy now rendered end-to-end in tests). `[Unreleased]` CHANGELOG
+  entry added. Shipped `cbda67c`; `bundle exec rake` green (125 tests), CI green.
+
+**Two holdco directives applied inline (both VERIFIED internal, reversible docs changes):**
+- HTML/CSS→PNG for text-heavy raster assets → baked into the designer persona (`284c897`, logged
+  in Pass 55 above — landed at the top of this pass).
+- **Portfolio values policy** ("Our purpose and our standard" — for the glory of God, above profit
+  and growth; nothing wrong in God's eyes; never offensive to Christ/Christians; love your
+  neighbor even when it costs money) → added as the first `##` section of **AGENTS.md** and
+  **BRAND.md** (`4e5fa18`). Governs product/customer-request decisions going forward. Ack'd to holdco.
+
+**Filed (no dispatch — non-urgent):** `readme-remove-stale-cnc-install-dep` (P2) — README
+Installation still lists `cnc` as required, stale since cnc was cut. Non-breaking doc nit; batched
+for a future README polish rather than a third builder this pass.
+
+**Decisions/assumptions:** Treated the generator-bug fix as ordinary maintainer work (restoring
+documented behavior, no new API, no owner gate) — dispatched immediately given a broken headline
+quickstart actively repels adopters. `coder` agent type isn't registered here; used the general
+`claude` builder. IDEAS row for the 60-second block → `killed` (revisit once onboarding is proven
+smooth; don't re-propose the block until then).
+
+**Next:** Onboarding flow is now honest end-to-end, which unblocks re-attempting the 60-second
+block later. Backlog otherwise still externally gated. Going idle; fallback cron armed, real
+cadence = nudges + mail.
+
+---
+
 ## 2026-06-30 — Pass 55 (cold/reactive): applied holdco fleet guidance to designer persona
 
 **Cadence:** cold/reactive. Woken by VERIFIED internal mail from holdco (`auth=VERIFIED(bot.yak.sh)`),
