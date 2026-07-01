@@ -10,6 +10,8 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-07-01
+
 ### Fixed
 
 - The advertised primary onboarding flow (`rails g cafe_car:resource Product name:string
@@ -170,7 +172,8 @@ defaults for admin panels, internal tools, and rapid prototyping.
 
 - Adopted the `responders` gem for response handling.
 
-[Unreleased]: https://github.com/craft-concept/cafe_car/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/craft-concept/cafe_car/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/craft-concept/cafe_car/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/craft-concept/cafe_car/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/craft-concept/cafe_car/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/craft-concept/cafe_car/releases/tag/v0.1.1
