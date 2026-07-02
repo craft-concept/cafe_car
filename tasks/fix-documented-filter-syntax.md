@@ -2,9 +2,10 @@
 id: fix-documented-filter-syntax
 title: Documented advanced-filter syntax (price.min=10, .gt, .lt) is a silent no-op
 priority: P1
-status: open
+status: done
 domain: Eng
-created: 2026-07-02
+created: '2026-07-02'
+updated: '2026-07-02'
 ---
 
 **Source:** completeness audit 2026-07-02 (graybeard), blocker #2. Filtering/search is headline

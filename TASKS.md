@@ -36,37 +36,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ---
 
-## 🟠 Engineering
-
-- [ ] (P1) Documented advanced-filter syntax (price.min=10, .gt, .lt) is a silent no-op
-        **Source:** completeness audit 2026-07-02 (graybeard), blocker #2. Filtering/search is headline
-        positioning — it's in the gemspec summary/description (the RubyGems.org listing), not just the README.
-
-        **Bug:** The README documents filter syntax like `price.min=10`, `price.gt=5`, `.eq`/`.lt`/`.max`.
-        None of it works — bare filter keys are silently dropped (unfiltered result set returned, no error).
-        A developer copy-pastes the documented example, gets a silent no-op, and concludes the gem is broken.
-
-        **Root cause:**
-        - `lib/cafe_car/param_parser.rb#params` splits each key on `.` — a bare key like `"price"` never
-          lands under the `""` wrapper key that `filtered` reads; only a literal leading-dot key (`.price`)
-          does (`".price".split(".") => ["", "price"]`).
-        - `lib/cafe_car/controller/filtering.rb#filtered` only reads `parsed_params[""]`.
-        - `lib/cafe_car/query_builder.rb#param!` recognizes comparison operators only as a literal
-          `<`/`<=`/`>`/`>=` character suffix on the key, NOT as the documented `.min`/`.max`/`.gt`/`.lt`/`.eq`
-          words. No code path anywhere handles the word-form operators.
-        - The gem's own `test/controllers/keyword_search_test.rb:32` uses the undocumented `.name` dot-prefix
-          syntax — the team's tests never validate the documented syntax because it doesn't work.
-
-        **Fix:** Pick ONE canonical syntax and make code + docs + tests agree. Recommend fixing the parser to
-        accept bare dot-less keys with word-form operators (`price.min`, `price.gt`) — that's what the README
-        already promises and what any user types first — then remove or clearly gate the undocumented
-        dot-prefix form.
-
-        **Acceptance:**
-        - Tests exercise range + comparison filters using the **documented** syntax (none exist today).
-        - README filter examples verified to actually work end-to-end.
-        - `bundle exec rake` green. `CHANGELOG.md` `[Unreleased]` entry.
-
 ## 🧭 Product
 
 - [ ] (P2) Major feature gaps vs. peer admin gems (post-audit tracking)
@@ -538,6 +507,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - cafe_car:resource generates an unsavable policy for belongs_to/:references fields — **Source:** completeness audit 2026-07-02 (graybeard), blocker #4. Confirmed by running the
 - Nested has_many forms silently fail to save (flagship feature broken) — **Source:** completeness audit 2026-07-02 (graybeard), blocker #1. Empirically reproduced
 - N+1 queries on every index that shows an association (no eager loading anywhere) — **Source:** completeness audit 2026-07-02 (graybeard), blocker #3. Empirically measured: 5 rows w/
+- Documented advanced-filter syntax (price.min=10, .gt, .lt) is a silent no-op — **Source:** completeness audit 2026-07-02 (graybeard), blocker #2. Filtering/search is headline
 - Release workflow — auto-create the GitHub release (action alone doesn't) — **Recurring manual step to eliminate.** On the v0.2.1 release (pass 69), `rubygems/release-gem@v1`
 - README Installation still lists cnc as a required gem (stale — cnc was cut) — The README **Installation** section (~line 104) still lists `cnc` as a required dependency.
 - Add a copy-paste "60-second try" quickstart at the top of the README — **Outcome (2026-07-01): not shipped — verification killed it.** Ran the full
