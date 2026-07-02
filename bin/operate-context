@@ -1,0 +1,197 @@
+#!/usr/bin/env bash
+#
+# operate-context — single-session /clear cost verdict (KEEP/CLEAR).
+#
+# Answers the single-session question an operator asks at the end of a pass — is
+# my CURRENT context window worth resetting yet? The sibling of operate-tokens:
+# where that prints the FLEET's cap/pacing view, this scores just this session.
+#
+# It reuses the SAME machinery operate-tokens' session table is built on: the
+# per-turn transcript-usage parse and the cache-price multipliers claude-status
+# writes into the usage cache (input 1x, cache-read 0.1x, cache-write 1.25x).
+# Rather than read the (basename-keyed, prunable) cache it reads the session's
+# own transcript JSONL directly — so it can also see the session's FIRST send,
+# which the cache doesn't keep and which we need to size a fresh (reset) context.
+#
+# WHAT IT COMPUTES (all from the transcript for THIS cwd):
+#   * context length   — tokens fed to the model on the last turn (in+read+write)
+#   * cached %         — cache_read / total on that turn (the warm-hit ratio)
+#   * cache reset      — countdown until the ~5-min prompt-cache TTL expires
+#   * cost of current  — the NEXT send given current warmth: cached portion at
+#                        the cache-read price, uncached at input price; if the
+#                        cache has EXPIRED, the whole context at the cold
+#                        (cache-write) price.
+#   * cost of reset    — what the first send after /clear costs: the session's
+#                        fresh-context size (its own first send ≈ system prompt +
+#                        CLAUDE.md + memory + tools) × input price × the 1.25x
+#                        cache-write premium. Falls back to ~25k when unknown.
+#
+# THE VERDICT (owner rule): suggest a reset (CLEAR) when
+#     cost_of_reset  <  1.5 × cost_of_current_context
+# A reset is worth paying up to 1.5× ONE send, because the current context's
+# cost recurs on EVERY future turn while the reset pays once and then stays lean.
+# In practice: a WARM context almost always KEEPs (0.1× reads are cheap); the
+# CLEAR verdict lands once the cache EXPIRES on a big context — exactly the
+# "clear when big AND stale" doctrine in docs/COST.md. (The 1.5× ratio and the
+# projects dir / fresh-context fallback are operate.json-overridable — context.*.)
+#
+# USAGE:
+#   operate context                    verdict for THIS repo's session ($PWD)
+#   operate context --dir <path>       verdict for another repo's session (testing)
+#   operate context --session <id>     verdict for a specific transcript id (testing)
+#
+# Output: a human-readable block, then a final parseable line whose first field
+# is the verdict, e.g.
+#   KEEP  ctx=128k cached=96% warm=4m cost=$0.09 reset=$0.53
+#   CLEAR ctx=128k cached=0%  warm=expired cost=$0.80 reset=$0.53
+#
+# Deps: bash + jq. OPERATE_CONTEXT_NOW / CLAUDE_PROJECTS_DIR are test seams.
+
+set -uo pipefail
+export LC_ALL=C
+
+JQ="$(command -v jq 2>/dev/null || true)"
+CONFIG="${OPERATE_CONFIG:-$(cd "$(dirname "$0")/.." 2>/dev/null && pwd)/operate.json}"
+cfg() { [ -n "$JQ" ] && [ -f "$CONFIG" ] && "$JQ" -r ".$1 // empty" "$CONFIG" 2>/dev/null || true; }
+untilde() { case "$1" in "~/"*) printf '%s' "$HOME/${1#\~/}" ;; *) printf '%s' "$1" ;; esac; }
+
+PROJECTS_DIR="${CLAUDE_PROJECTS_DIR:-}"
+[ -n "$PROJECTS_DIR" ] || PROJECTS_DIR="$(untilde "$(cfg context.projects_dir)")"
+[ -n "$PROJECTS_DIR" ] || PROJECTS_DIR="$HOME/.claude/projects"
+CACHE_TTL=300         # prompt-cache warm window (sliding 5-min TTL) — matches claude-status
+RESET_FALLBACK="$(cfg context.reset_fallback_tokens)"; [ -n "$RESET_FALLBACK" ] || RESET_FALLBACK=25000
+RATIO="$(cfg context.reset_ratio)"; [ -n "$RATIO" ] || RATIO=1.5
+now="${OPERATE_CONTEXT_NOW:-$(date +%s)}"
+
+# The operator's cwd IS its repo root — resolve the session straight from $PWD
+# (no caller-cwd forwarding hack; this tool lives in the repo it reports on).
+dir="$PWD"
+session=""
+while [ $# -gt 0 ]; do
+	case "$1" in
+	--dir) shift; dir="${1:-}" ;;
+	--session) shift; session="${1:-}" ;;
+	-h | --help) awk 'NR==1{next} /^#/{sub(/^# ?/,"");print;next}{exit}' "$0"; exit 0 ;;
+	*) echo "operate-context: unknown arg '$1'" >&2; exit 2 ;;
+	esac
+	shift
+done
+
+[ -n "$JQ" ] || { echo "operate-context: jq required" >&2; echo "UNKNOWN"; exit 0; }
+
+# ---- resolve THIS session's transcript --------------------------------------
+# Transcripts live at ~/.claude/projects/<munged-cwd>/<session>.jsonl, where the
+# cwd is munged by replacing every non-alphanumeric char with '-'. For a cwd we
+# take the most-recently-modified transcript in that dir (the live session).
+transcript=""
+if [ -n "$session" ]; then
+	for f in "$PROJECTS_DIR"/*/"$session".jsonl; do [ -f "$f" ] && { transcript="$f"; break; }; done
+else
+	munged="$(printf '%s' "$dir" | sed 's/[^a-zA-Z0-9]/-/g')"
+	tdir="$PROJECTS_DIR/$munged"
+	[ -d "$tdir" ] && transcript="$(ls -t "$tdir"/*.jsonl 2>/dev/null | head -1)"
+fi
+
+if [ -z "$transcript" ] || [ ! -f "$transcript" ]; then
+	echo "operate-context: no transcript for ${session:-$dir} (looked under $PROJECTS_DIR)" >&2
+	echo "UNKNOWN"
+	exit 0
+fi
+
+# ---- parse the transcript ---------------------------------------------------
+# Every assistant turn's .message.usage carries input / cache_read /
+# cache_creation token counts; their sum is the tokens actually fed to the model.
+# FIRST such turn ≈ the fresh context (a /clear would rebuild it). LAST such turn
+# = the live context size + its warm-cache ratio + when it happened.
+usage_jq='select(.type=="assistant" and (.isSidechain|not) and (.message.usage!=null))
+	| .timestamp as $ts | (.message.model // "") as $m | .message.usage
+	| ((.input_tokens // 0) + (.cache_read_input_tokens // 0) + (.cache_creation_input_tokens // 0)) as $tot
+	| select($tot > 0)
+	| "\($tot) \(.cache_read_input_tokens // 0) \($m) \($ts // "")"'
+
+first_line="$("$JQ" -rc "$usage_jq" "$transcript" 2>/dev/null | head -1)"
+last_line="$(tail -n 400 "$transcript" 2>/dev/null | tac | "$JQ" -rc "$usage_jq" 2>/dev/null | head -1)"
+
+# Reset-context size = the session's own first send, else the fallback default.
+read -r first_total _ _ _ <<<"${first_line:-}"
+[[ "${first_total:-}" =~ ^[0-9]+$ ]] || first_total="$RESET_FALLBACK"
+
+# Input $/token by model family (public API rates; a subscription-plan ESTIMATE,
+# not a bill — matches claude-status). Opus-tier (opus / fable) and unknown fall
+# to the 5x rate. read = 0.1x, write = 1.25x are applied in the cost math below.
+model=""; [ -n "${last_line:-}" ] && read -r _ _ model _ <<<"$last_line"
+[ -n "$model" ] || { [ -n "${first_line:-}" ] && read -r _ _ model _ <<<"$first_line"; }
+price="0.000005"
+case "$(printf '%s' "$model" | tr '[:upper:]' '[:lower:]')" in
+*sonnet*) price="0.000003" ;;
+*haiku*)  price="0.000001" ;;
+esac
+
+# Reset cost: a fresh /clear writes the whole fresh context to cache (1.25x).
+reset_cost="$(awk -v s="$first_total" -v p="$price" 'BEGIN { printf "%.4f", s * 1.25 * p }')"
+reset_disp="$(awk -v c="$reset_cost" 'BEGIN { printf "%.2f", c }')"
+fmt_k() { awk -v n="$1" 'BEGIN { printf (n >= 1000) ? "%dk" : "%d", (n >= 1000) ? (n + 500) / 1000 : n }'; }
+human_until() { awk -v s="$1" 'BEGIN { if (s < 0) s = 0; if (s >= 3600) printf "%dh", s/3600; else printf "%dm", int((s+59)/60) }'; }
+
+bold=""; dim=""; rst=""; grn=""; ylw=""
+if [ -t 1 ]; then bold=$'\e[1m'; dim=$'\e[2m'; rst=$'\e[0m'; grn=$'\e[32m'; ylw=$'\e[33m'; fi
+
+# ---- no completed turn yet → a fresh session; nothing to clear ---------------
+if [ -z "${last_line:-}" ]; then
+	echo "${bold}operate context${rst}  ${dim}$dir${rst}"
+	echo "  ${dim}no completed turn yet — fresh session, nothing to shed${rst}"
+	echo "  cost after reset  \$$reset_disp   ${dim}(fresh-context estimate: $(fmt_k "$first_total") tok)${rst}"
+	echo
+	printf 'KEEP ctx=0 cached=— warm=fresh cost=$0.00 reset=$%s\n' "$reset_disp"
+	exit 0
+fi
+
+read -r ctx cache_read _ ts_iso <<<"$last_line"
+cache_pct="$(awk -v r="$cache_read" -v t="$ctx" 'BEGIN { printf "%.0f", (t > 0) ? r * 100 / t : 0 }')"
+
+# Warmth from the last turn's timestamp vs the sliding 5-min TTL.
+last_ts=""; [ -n "${ts_iso:-}" ] && last_ts="$(date -d "$ts_iso" +%s 2>/dev/null || true)"
+if [[ "$last_ts" =~ ^[0-9]+$ ]]; then idle=$((now - last_ts)); else idle=$((CACHE_TTL + 1)); fi
+((idle < 0)) && idle=0
+
+# Current-context next-send cost + reset verdict, in one awk pass so the float
+# math stays in one place. Emits: <cost> <warm|expired> <warm_left_secs> <verdict>.
+read -r cur_cost warm_state warm_left verdict <<<"$(awk \
+	-v ctx="$ctx" -v cp="$cache_pct" -v p="$price" -v idle="$idle" -v ttl="$CACHE_TTL" -v rst="$reset_cost" -v ratio="$RATIO" '
+	BEGIN {
+		cachef = cp / 100
+		if (idle < ttl) {                              # warm: cheap 0.1x reads
+			state = "warm"; left = ttl - idle
+			cur = ctx * (cachef * 0.1 + (1 - cachef) * 1.0) * p
+		} else {                                       # expired: cold re-write
+			state = "expired"; left = 0
+			cur = ctx * 1.25 * p
+		}
+		# Owner rule: reset when it costs < ratio× one current send.
+		verdict = (rst < ratio * cur) ? "CLEAR" : "KEEP"
+		printf "%.4f %s %d %s", cur, state, left, verdict
+	}')"
+
+cur_disp="$(awk -v c="$cur_cost" 'BEGIN { printf "%.2f", c }')"
+thresh_disp="$(awk -v c="$cur_cost" -v ratio="$RATIO" 'BEGIN { printf "%.2f", ratio * c }')"
+if [ "$warm_state" = "warm" ]; then warm_disp="$(human_until "$warm_left")"; else warm_disp="expired"; fi
+vcolor="$grn"; [ "$verdict" = "CLEAR" ] && vcolor="$ylw"
+cmp="≥"; [ "$verdict" = "CLEAR" ] && cmp="<"
+if [ "$warm_state" = "warm" ]; then
+	warm_note="${grn}warm${rst} — cache resets in $warm_disp"
+else
+	warm_note="${ylw}cache EXPIRED${rst} — full cold re-read next turn"
+fi
+
+# ---- human-readable block ---------------------------------------------------
+echo "${bold}operate context${rst}  ${dim}$dir${rst}"
+echo "  context length    $(fmt_k "$ctx") tokens"
+echo "  cached            ${cache_pct}%   ${warm_note}"
+echo "  cost this turn    \$${cur_disp}   ${dim}recurs every future turn (${warm_state} warmth)${rst}"
+echo "  cost after reset  \$${reset_disp}   ${dim}one-time, then lean (fresh $(fmt_k "$first_total") tok × 1.25 write)${rst}"
+echo "  verdict           ${vcolor}${verdict}${rst}   ${dim}reset \$${reset_disp} ${cmp} ${RATIO} × \$${cur_disp} = \$${thresh_disp}${rst}"
+echo
+
+# ---- final parseable line (first field = verdict) ---------------------------
+printf '%s ctx=%s cached=%s%% warm=%s cost=$%s reset=$%s\n' \
+	"$verdict" "$(fmt_k "$ctx")" "$cache_pct" "$warm_disp" "$cur_disp" "$reset_disp"

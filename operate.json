@@ -1,0 +1,24 @@
+{
+  "venture": "cafe_car",
+  "tokens": {
+    "usage_dir": "~/.cache/claude-usage",
+    "registry_file": "~/code/holdco/ventures/cafe_car.md",
+    "tz": "America/Detroit",
+    "day_budget_pct": 15,
+    "night_budget_pct": 1,
+    "green_sleep_s": 900,
+    "busy_sleep_s": 3600,
+    "red_at_pct": 90
+  },
+  "context": {
+    "projects_dir": "~/.claude/projects",
+    "reset_ratio": 1.5,
+    "reset_fallback_tokens": 25000
+  },
+  "self_clear": {
+    "bloat_threshold_tokens": 160000
+  },
+  "sync": {
+    "source": "~/code/holdco/templates/new-venture/bin"
+  }
+}
