@@ -2,9 +2,10 @@
 id: fix-nested-hasmany-forms-not-saving
 title: Nested has_many forms silently fail to save (flagship feature broken)
 priority: P1
-status: open
+status: done
 domain: Eng
-created: 2026-07-02
+created: '2026-07-02'
+updated: '2026-07-02'
 ---
 
 **Source:** completeness audit 2026-07-02 (graybeard), blocker #1. Empirically reproduced

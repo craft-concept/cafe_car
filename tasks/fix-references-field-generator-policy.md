@@ -1,10 +1,12 @@
 ---
 id: fix-references-field-generator-policy
-title: cafe_car:resource generates an unsavable policy for belongs_to/:references fields
+title: cafe_car:resource generates an unsavable policy for belongs_to/:references
+  fields
 priority: P1
-status: open
+status: done
 domain: Eng
-created: 2026-07-02
+created: '2026-07-02'
+updated: '2026-07-02'
 ---
 
 **Source:** completeness audit 2026-07-02 (graybeard), blocker #4. Confirmed by running the

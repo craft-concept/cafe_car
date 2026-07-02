@@ -92,65 +92,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - `bundle exec rake` green. `CHANGELOG.md` `[Unreleased]` entry.
 
         Related scale footgun: [[major-feature-gaps-post-audit]] #5 (unbounded association `<select>`).
-- [ ] (P1) Nested has_many forms silently fail to save (flagship feature broken)
-        **Source:** completeness audit 2026-07-02 (graybeard), blocker #1. Empirically reproduced
-        against the dummy app — not a code-reading guess.
-
-        **Bug:** Submitting a form with nested `accepts_nested_attributes_for` records (e.g. Invoice +
-        `line_items`) does NOT persist the nested records. No error, no crash — HTTP 200, data silently
-        dropped. Silent data loss is worse than a 500: discovered in production, not dev.
-
-        **Root cause:** `test/dummy/app/policies/invoice_policy.rb:10-11` permits `line_items:`, but Rails'
-        `fields_for` always names the param `line_items_attributes`. Strong-params `#permit` matches keys
-        exactly → the nested payload never matches → `assign_attributes` (`lib/cafe_car/controller.rb:~146`)
-        strips it. Compounding: `line_item_policy.rb`'s `permitted_attributes` omits `:id` and `:_destroy`,
-        so `allow_destroy: true` (declared on `Invoice`) can't update/delete existing rows either — only
-        create phantom rows that also don't save.
-
-        **Fix:** Make the generated/permitted policy layer match what Rails' form helpers actually send —
-        `*_attributes` suffix for nested associations, and include `:id` + `:_destroy` when the parent
-        declares `allow_destroy`. Fix both the dummy policies AND the **policy generator template** so newly
-        generated policies don't reproduce this. Consider generating nested-attribute permits automatically
-        when the model has `accepts_nested_attributes_for`.
-
-        **Acceptance:**
-        - A POST/PATCH round-trip test that submits a nested `has_many` form and asserts the child records
-          exist afterward (create), update an existing child, and destroy one via `_destroy`. This is the
-          test that should have existed — the current `test/controllers/nested_fields_test.rb` only asserts
-          GET-rendered markup.
-        - `bundle exec rake` green. Released-gem behavior fix → `CHANGELOG.md` `[Unreleased]` entry.
-
-        Shares a root cause with [[fix-references-field-generator-policy]] (generated permit layer not
-        matching Rails runtime param names) — do them together.
-- [ ] (P1) cafe_car:resource generates an unsavable policy for belongs_to/:references fields
-        **Source:** completeness audit 2026-07-02 (graybeard), blocker #4. Confirmed by running the
-        generator end-to-end and reading the emitted file.
-
-        **Bug:** `rails g cafe_car:resource Order invoice:references price:decimal` produces a policy with
-        `permitted_attributes: [:invoice, :price]` — but the column/strong-param Rails needs is
-        `:invoice_id`. The association silently can't be saved. `:references`/`belongs_to` is the single
-        most common real-world field type, and this hits adopters immediately after the v0.2.1 onboarding-500
-        fix — back-to-back onboarding failures read very differently than one clean fix.
-
-        **Root cause:** `lib/generators/cafe_car/resource/resource_generator.rb:28`
-        `field_names = attributes.map { _1.to_s.split(":").first }` strips the type and forwards bare
-        `"invoice"`. `lib/generators/cafe_car/policy/policy_generator.rb:50` + template render it verbatim.
-        The codebase already knows the right pattern — `lib/generators/cafe_car/notes/notes_generator.rb`
-        correctly hardcodes `notable_id notable_type` — so this is an oversight, not a design choice.
-
-        **Fix:** Translate `:references`/`belongs_to` field names to their `_id` form before forwarding to
-        `cafe_car:policy` (mirror the pattern already correct in `notes_generator.rb`). Handle polymorphic
-        `:references{polymorphic}` (`_id` + `_type`) too.
-
-        **Acceptance:**
-        - `resource_generator_test.rb` / `policy_generator_test.rb` exercise a `:references` field (only
-          scalar types are tested today) and assert the emitted policy permits `:invoice_id`.
-        - Ideally an integration guard: generate a resource with a belongs_to, submit its real form, assert
-          the association persists.
-        - `bundle exec rake` green. `CHANGELOG.md` `[Unreleased]` entry.
-
-        Shares a root cause with [[fix-nested-hasmany-forms-not-saving]] — do them together with one
-        integration-level "generate → submit every field type → assert persistence" guard.
 
 ## 🧭 Product
 
@@ -620,6 +561,8 @@ the user on these.
 
 Short memory aid only — git history is the full record. Trim as this grows.
 
+- cafe_car:resource generates an unsavable policy for belongs_to/:references fields — **Source:** completeness audit 2026-07-02 (graybeard), blocker #4. Confirmed by running the
+- Nested has_many forms silently fail to save (flagship feature broken) — **Source:** completeness audit 2026-07-02 (graybeard), blocker #1. Empirically reproduced
 - Release workflow — auto-create the GitHub release (action alone doesn't) — **Recurring manual step to eliminate.** On the v0.2.1 release (pass 69), `rubygems/release-gem@v1`
 - README Installation still lists cnc as a required gem (stale — cnc was cut) — The README **Installation** section (~line 104) still lists `cnc` as a required dependency.
 - Add a copy-paste "60-second try" quickstart at the top of the README — **Outcome (2026-07-01): not shipped — verification killed it.** Ran the full
