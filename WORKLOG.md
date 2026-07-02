@@ -5,6 +5,35 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-02 — Pass 81 (GREEN): standing effect-level harness — and it caught a new bug immediately
+
+**Trigger:** `/loop 8h` re-fire. Signal GREEN (`left=13`). CI green.
+
+**Shipped (delegated to one `coder`, the audit's #1 META-finding):**
+- **`fd2002a`** — `test/controllers/field_type_round_trip_test.rb`: one standing harness that runs
+  **12 field types** (string, text, integer, decimal, date, datetime, belongs_to/`:references`,
+  has_many nested `_attributes`, has_one_attached, has_many_attached, rich_text, password) through
+  the REAL `admin/<plural>#update` path and, after **reload**, asserts each value/association
+  actually persisted — EFFECT, not markup. Plus an N+1 guard (index query count must not scale with
+  row count). DRY: a `round_trip(type, &block)` macro on a shared `submit()` spine — adding a type is
+  one block. Fixes the bug *class* that let 4 advertised features ship broken this session.
+- Test-only change; suite green (158 runs, 0 failures; Brakeman 0). Pushed; CI green.
+
+**It earned its keep on landing — NEW P1 bug surfaced (filed, not buried):**
+- **Booleans advertised but crash the render layer** →
+  `boolean-fields-advertised-but-crash-the-render-layer-500-on-` (P1). README:488 advertises
+  booleans; `FieldInfo#input` has no `:boolean` branch, so any new/edit form with a boolean field
+  hits the `else raise "Missing input type… :boolean"` — a 500 (render crash, not silent no-op;
+  persistence would work). Never caught because the dummy app has **zero boolean columns** — booleans
+  were wholly unexercised. Coder proved it via a reverted spike, correctly did NOT fix it inside the
+  harness task, and left boolean out so the suite stays green until fixed. Fix is small (`when
+  :boolean then :check_box` + partial + a dummy boolean column + re-include the harness case).
+
+**What's next:** fix the boolean P1 (small, hot — dispatching next). Then #7 bulk actions (biggest
+remaining major), theming/positioning minors. Dogfood build stays spec-blocked on CrayonBloom.
+
+---
+
 ## 2026-07-02 — Pass 80 (GREEN): capped unbounded association `<select>` (3rd cap, same pattern)
 
 **Trigger:** in-session "Continue CafeCar operation." Signal GREEN (`left=14`). CI green.
