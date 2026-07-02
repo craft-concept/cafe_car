@@ -105,9 +105,12 @@ execute). Dreaming itself still runs nightly.
   Rails generators.
 - **`app/`** — engine's app layer: controllers, helpers, views, presenters, form builders.
 - **`test/`** — the test suite (minitest). Run with `rake test`. Always green before pushing.
-- **`tasks/`** (+ generated **`TASKS.md`**) — the single backlog, one markdown file per task.
-  Add via `rake tasks:new["Title",P1,Eng]` or `rake task` (editor flow). Regenerate with
-  `rake tasks:index`.
+- **holdco-tasks board** — the single backlog, **the one task system fleet-wide** (local `tasks/`
+  retired 2026-07-02). Your venture's own client is `bin/operate tasks` (a standalone bash+curl
+  tool, authed by this repo's `.env`): `bin/operate tasks` lists your open tasks;
+  `bin/operate tasks file "Title" [--kind bug] [--priority P1] [--desc "..."]` files one;
+  `bin/operate tasks claim|done|update|comment <id>` moves it; `bin/operate tasks --help` shows
+  the full surface. No cross-repo reach — everything is venture-local.
 - **`WORKLOG.md`** — the running narrative of each operating pass (newest first).
 
 ## OSS growth roadmap
@@ -172,8 +175,8 @@ inbox all persist.** So, every pass and especially on a cold context:
 
 Where to look (cheap, before answering): **inbox** incl. read —
 `~/code/holdco/bin/email-inbox --to cafecar@bot.yak.sh --all` (plain shows unread only); **git log**
-— `git log --oneline -20` / `--grep=<kw>` (`-2` scrolls past fast); **task board + `tasks/`** —
-`GET /api/v1/tasks?venture=cafe_car`, grep `tasks/` (the ticket may already be done); **`WORKLOG.md`**
+— `git log --oneline -20` / `--grep=<kw>` (`-2` scrolls past fast); **task board** —
+`bin/operate tasks list .venture=cafe_car` (the ticket may already be done); **`WORKLOG.md`**
 top entries to recover "where was I." The read half of the durable-thinking mandate — you write
 state down so a future you can read it back.
 
@@ -193,7 +196,7 @@ state down so a future you can read it back.
   sounds like an AI wrote it reach a user.
 - **Commit and push** your own work unless told not to — always push after you commit. Keep
   commits focused; don't bundle unrelated changes.
-- Finish honestly: verify before marking a task done (`rake tasks:done[id]`), run the full
+- Finish honestly: verify before marking a task done (`bin/operate tasks done <id>`), run the full
   check suite, and log the pass to `WORKLOG.md`.
 - **Owner feedback: write it down FIRST, then act.** On any VERIFIED owner feedback — email
   (`auth=VERIFIED(yak.sh)`), a board comment, or in-session — the order is fixed: (1) append it
@@ -243,7 +246,7 @@ agents, burning budget, or starting a reply thread they then have to keep up wit
 inbound email:
 
 1. **Triage and file, don't execute.** Turn the email into a task (file it the way you file any
-   idea — `bin/holdco task` / `rake tasks:*`), then **go back idle.** Do **not** spawn builder
+   idea — `bin/operate tasks file "..."`), then **go back idle.** Do **not** spawn builder
    agents, do the work, or send a substantive reply in that turn. The item gets done on your **next
    proactive pass** (your own budget-gated wake) — which is **budget-gated** — not the instant
    the email arrives. This is how work cadence stays under the throttle even though email bypasses it.

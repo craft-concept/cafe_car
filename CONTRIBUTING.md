@@ -59,14 +59,11 @@ analysis). All three must be green. "Green on my files" is not the same as a gre
 
 ## The backlog
 
-CafeCar uses a one-file-per-task backlog under `tasks/`, with a generated index in
-`TASKS.md`. Each task is a markdown file with YAML frontmatter (id, title, priority,
-status, domain). `TASKS.md` is generated — don't hand-edit it; edit a file under
-`tasks/` instead. See `AGENTS.md` and `TASKS.md` for the conventions and the
-`rake tasks:*` helpers.
+CafeCar's backlog lives on the holdco-tasks board (the one task system fleet-wide).
+The operator files, lists, and closes tasks with `bin/operate tasks` (`bin/operate tasks
+--help` shows the full surface). See `AGENTS.md` for the conventions.
 
-If you're picking up work, find an open task in `TASKS.md` or open an issue to
-discuss new work first.
+If you're picking up work, open an issue to discuss new work first.
 
 ## Pull requests
 

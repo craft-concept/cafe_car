@@ -36,7 +36,7 @@ Work through these steps in order, then stop:
 3. **Tool-error triage** — scan the mining window (and prior `docs/dreams/*.md`) for recurring
    tool/command failures. Fix small safe ones directly (e.g. add a missing `--help`, like
    `bin/email` once lacked), document usage errors in the persona/`AGENTS.md`, file anything
-   complex as a task (`rake tasks:new[...]`).
+   complex as a task (`bin/operate tasks file "..."`).
 4. **Persona hygiene + decision-drift audit** — read your operator persona; FLAG
    bloat/contradictions/dead rules in the journal (don't edit the persona). For each `RETIRES:` tag
    in `docs/DECISIONS.md`, grep the persona/docs for that term — a hit is stale drift; file a

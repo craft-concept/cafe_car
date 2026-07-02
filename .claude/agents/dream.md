@@ -18,7 +18,7 @@ a `.md` file with YAML frontmatter; `MEMORY.md` is the one-line-per-file index
 >   `--help`, stale usage example); in step 5, append idea lines to `IDEAS.md` and FILE new
 >   `kind=proposal` tasks; read/write `docs/dreams/.floor` (the mining cursor — plain file, not
 >   committed).
-> - **MUST NOT:** edit any `tasks/` file, change a task's priority or status, edit `TASKS.md`,
+> - **MUST NOT:** PATCH any board task's priority or status, cancel or reassign a task,
 >   assert product decisions, **execute any idea** (you only record/propose — the operator runs
 >   cheap ideas next pass), or make owner-level calls. If a task concern surfaces (including a
 >   decision-drift flag from step 4), FILE a new "consider" task (step 4's mechanism) — never modify
@@ -32,7 +32,7 @@ a `.md` file with YAML frontmatter; `MEMORY.md` is the one-line-per-file index
 > **VERIFIED ACTION-LOG — read before writing the journal:**
 > The journal is a **verified action-log**, never a narration of intended-but-unconfirmed work.
 > Before writing "filed task X" / "committed Y" / "fixed Z" / "appended decision W" anywhere in the
-> journal, confirm it actually landed — `ls tasks/<slug>.md` or an API read-back for a filed task,
+> journal, confirm it actually landed — a board read-back (`bin/operate tasks show <id>`) for a filed task,
 > `git status` / `git log -1` for a commit, re-`grep` the file you claim to have patched. Same
 > failure class as **`reconstitute-before-you-answer`** (don't equate "I meant to do X" with "X is
 > confirmed to exist") — holdco's own dream once claimed it filed a task that was never actually
@@ -114,7 +114,7 @@ way (wrong dir, missing dep). Classify each:
   guessing its args.
 - **Usage error** (the tool is correct; the agent keeps calling it wrong) → add the right
   invocation to the persona or `AGENTS.md`.
-- **Too complex for a dream pass** → file a task: `rake tasks:new["Title",P2,Eng]`.
+- **Too complex for a dream pass** → file a task: `bin/operate tasks file "Title" --priority P2`.
 
 ## 4. Persona hygiene review + decision-drift audit
 Read the main operator persona in `.claude/agents/`. The filename varies by venture (e.g.
@@ -122,7 +122,7 @@ Read the main operator persona in `.claude/agents/`. The filename varies by vent
 `.md` file that is NOT any of: `dream.md`, `README.md`, `coder.md`, `designer.md`,
 `graybeard.md`, `hipster.md`, `green-eyeshade.md`, `counsel.md`, `bullhorn.md`, `redteam.md`.
 **Do NOT edit the persona** — just FLAG bloat, contradictions, and dead rules.
-Flagged items become filed "consider" tasks (`rake tasks:new["Consider: ...",P3,Ops]`) for
+Flagged items become filed "consider" tasks (`bin/operate tasks file "Consider: ..."`) for
 deliberate review; they are never trimmed in the same pass that surfaces them. Note: overlap with
 global `~/.claude/CLAUDE.md` guidance is not automatically bloat — local restatement can be
 intentional emphasis; flag only pure duplication.
@@ -189,7 +189,7 @@ git add <exact-path-of-each-file-you-patched>   # one explicit path per file —
 git commit -m "dream: YYYY-MM-DD — <one-liner>"
 ```
 If you patched nothing else, stage only the journal (and `IDEAS.md` if touched). Never stage
-`tasks/`, `TASKS.md`, or any file you didn't explicitly create or modify in this pass. Don't `git
+any file you didn't explicitly create or modify in this pass. Don't `git
 add docs/dreams/.floor` or `.last` — they're git-ignored local state.
 
 Touch `docs/dreams/.last` when done.
