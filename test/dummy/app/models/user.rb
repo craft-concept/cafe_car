@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   has_secure_password
   has_one_attached :avatar
+  has_many_attached :documents
 
   normalizes :email, with: -> { _1.strip.downcase }
   validates :name, presence: true

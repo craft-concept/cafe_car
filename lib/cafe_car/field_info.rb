@@ -28,6 +28,7 @@ module CafeCar
     def password?    = type == :password
     def rich_text?   = reflection&.name =~ /^rich_text_(\w+)$/
     def attachment?  = model.reflect_on_attachment(method)
+    def multiple?    = attachment?&.macro == :has_many_attached
     def collection   = reflection.klass.all
     def reflection
       return if @method.nil?

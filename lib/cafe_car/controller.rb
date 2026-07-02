@@ -153,6 +153,28 @@ module CafeCar
       object.assign_attributes(permitted_attributes(object))
     end
 
+    # Pundit permits attachment names as scalars, but a `has_many_attached`
+    # field posts an array of uploads that a scalar permit silently drops — so
+    # only one file (or none) would persist. Expand those keys to `{ name => [] }`
+    # so every uploaded file survives strong-params.
+    def permitted_attributes(record, action = action_name)
+      policy = policy(record)
+      method = "permitted_attributes_for_#{action}"
+      method = "permitted_attributes" unless policy.respond_to?(method)
+      multi  = multiple_attachments(record)
+      keys   = policy.public_send(method).map { |k| multi.include?(k) ? { k => [] } : k }
+      pundit_params_for(record).permit(*keys)
+    end
+
+    # Names of the record's `has_many_attached` attachments — the fields whose
+    # form submits an array of files.
+    def multiple_attachments(record)
+      klass = record.is_a?(Class) ? record : record.class
+      klass.try(:reflect_on_all_attachments)
+           &.select { _1.macro == :has_many_attached }
+           &.map    { _1.name.to_sym } || []
+    end
+
     def scope   = model.all.then { policy_scope _1 }
                            .then { sorted _1 }
                            .then { filtered _1 }
@@ -161,7 +183,10 @@ module CafeCar
 
     # Preload the associations an index will render so a multi-row table costs a
     # bounded number of queries instead of one-per-row-per-association (N+1).
-    def eager_loaded(scope) = scope.includes(*eager_loaded_associations)
+    # With nothing to preload, `.includes` would raise on empty args — skip it.
+    def eager_loaded(scope)
+      eager_loaded_associations.then { _1.any? ? scope.includes(*_1) : scope }
+    end
 
     # The displayed belongs_to / has_many associations, each nested with the
     # attachment its preview renders (so the association's own avatar isn't a

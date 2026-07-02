@@ -52,6 +52,7 @@ module CafeCar
 
       options[:placeholder]  = info.placeholder  unless options.key?(:placeholder)
       options[:autocomplete] = info.autocomplete unless options.key?(:autocomplete)
+      options[:multiple]     = true if as == :file_field && info.multiple? && !options.key?(:multiple)
 
       public_send(as, method, *args, **options)
     end
