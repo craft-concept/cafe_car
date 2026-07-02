@@ -1,0 +1,249 @@
+#!/usr/bin/env bash
+#
+# operate-tasks — file/list/update tasks on the holdco-tasks board (the one system).
+#
+# The single client for the holdco-tasks D1 Worker, fleet-wide. Local git tasks/
+# are retired; every operator files, lists, and closes tasks here. Standalone
+# bash+curl+jq — no holdco repo on the box; config comes from this venture's own
+# operate.json + .env (already provisioned in every repo).
+#
+#   operate tasks                       list MY open/wip/blocked tasks, priority order
+#   operate tasks list [.filters…]      raw dot-filter passthrough (no venture scope)
+#   operate tasks file "Title" [--desc "…"] [--priority P0|P1|P2]
+#                                       [--kind task|idea|bug|feedback|proposal|research|note]
+#                                       [--assign jeff] [--venture <id>]   → POST, prints the id
+#   operate tasks show <id>             task + comment thread + timeline
+#   operate tasks claim <id>            status → wip
+#   operate tasks done   <id> [--reason "…"]     status → done
+#   operate tasks cancel <id> [--reason "…"]     status → cancelled (deliberately abandoned)
+#   operate tasks update <id> field=value… [--reason "…"]
+#                                       generic PATCH — triage IS update (priority=P1 domain=Eng),
+#                                       reassignment IS update (assignee=jeff --reason "need keys")
+#   operate tasks comment <id> "text"   post a comment (authored as this venture)
+#
+# A `--reason` is the commit-message "why": stored on the timeline and — when a
+# field changed — dual-written as a thread comment, which bin/holdco deliver relays
+# to the affected operator. Reassignment to `jeff` is how a task reaches the owner
+# (blocked-on-user is retired: his queue is just `.assignee=jeff`).
+#
+# Config (all venture-local): venture id from operate.json `venture` (fallback
+# TASKS_VENTURE_ID in .env); URL from TASKS_WORKER_URL (default workers.dev);
+# token from TASKS_AGENT_TOKEN in .env — a missing token is a loud error.
+#
+# Failure mode: fail loudly, no offline queue. curl --retry 2 rides transient
+# blips; a hard failure prints the server error verbatim (the dot-filter 400s
+# teach the syntax) plus "note it in WORKLOG and retry next pass", exit non-zero.
+#
+# Deps: bash, curl, jq.
+
+set -uo pipefail
+export LC_ALL=C
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO="$(cd "$DIR/.." && pwd)"
+JQ="$(command -v jq 2>/dev/null || true)"
+CONFIG="${OPERATE_CONFIG:-$REPO/operate.json}"
+cfg() { [ -n "$JQ" ] && [ -f "$CONFIG" ] && "$JQ" -r ".$1 // empty" "$CONFIG" 2>/dev/null || true; }
+
+die() { echo "operate tasks: $*" >&2; exit 1; }
+[ -n "$JQ" ] || die "jq not found — install it (this tool builds/reads JSON with jq)."
+
+# ---- config: read the venture's .env + operate.json --------------------------
+# The .env triple (TASKS_WORKER_URL / TASKS_AGENT_TOKEN / TASKS_VENTURE_ID) already
+# exists in every repo. Env already set wins (test seam); else read the file.
+ENV_FILE="${OPERATE_ENV_FILE:-$REPO/.env}"
+envval() { # <KEY> — value from the environment, else from .env (unquoted)
+	local k="$1" v="${!1:-}"
+	if [ -n "$v" ]; then printf '%s' "$v"; return; fi
+	[ -f "$ENV_FILE" ] || return 0
+	sed -n "s/^${k}=//p" "$ENV_FILE" 2>/dev/null | head -n1 | sed 's/^"\(.*\)"$/\1/'
+}
+
+URL="$(envval TASKS_WORKER_URL)"; [ -n "$URL" ] || URL="https://holdco-tasks.yaks.workers.dev"
+URL="${URL%/}"
+TOKEN="$(envval TASKS_AGENT_TOKEN)"
+VENTURE="$(cfg venture)"; [ -n "$VENTURE" ] || VENTURE="$(envval TASKS_VENTURE_ID)"
+
+need_auth() {
+	[ -n "$TOKEN" ] || die "no TASKS_AGENT_TOKEN in $ENV_FILE — the board requires auth."
+	[ -n "$VENTURE" ] || die "no venture id (operate.json 'venture' or TASKS_VENTURE_ID in $ENV_FILE)."
+}
+
+# ---- http core --------------------------------------------------------------
+# All args are extra curl args; the last must be the URL. Prints the response
+# body on success; on transport failure or HTTP >=400 prints the server error
+# verbatim + doctrine and exits non-zero (no retry-queue — see header).
+req() {
+	local out code rc
+	out="$(mktemp)"
+	code="$(curl -sS --retry 2 --retry-connrefused \
+		-o "$out" -w '%{http_code}' \
+		-H "Authorization: Bearer $TOKEN" \
+		-H "Content-Type: application/json" \
+		-H "Accept: application/json" \
+		"$@" 2>/dev/null)"
+	rc=$?
+	if [ "$rc" -ne 0 ]; then
+		rm -f "$out"
+		die "board unreachable (curl exit $rc) — note the item in WORKLOG and retry next pass."
+	fi
+	if [ "$code" -ge 400 ] 2>/dev/null; then
+		echo "operate tasks: board rejected the request (HTTP $code):" >&2
+		"$JQ" -r '.error // .detail // .' "$out" >&2 2>/dev/null || cat "$out" >&2
+		rm -f "$out"
+		die "fix the above and retry, or note it in WORKLOG."
+	fi
+	cat "$out"; rm -f "$out"
+}
+
+# Build a JSON object from key value pairs; pairs with an empty value are omitted.
+# Everything is string-typed — the Worker's columns are all TEXT.
+json_obj() {
+	local jqargs=() filter='{}' k v i=0
+	while [ $# -gt 0 ]; do
+		k="$1"; v="${2:-}"; shift 2 || shift $#
+		[ -n "$v" ] || continue
+		jqargs+=(--arg "k$i" "$k" --arg "v$i" "$v")
+		filter="$filter + {(\$k$i): \$v$i}"
+		i=$((i + 1))
+	done
+	"$JQ" -n "${jqargs[@]}" "$filter"
+}
+
+# ---- rendering --------------------------------------------------------------
+list_fmt='.[] | "  \(.priority // "P2")  \(.title)\(if .domain then "  [\(.domain)]" else "" end)  \(.status)  \((.assignee // "") | if . == "" then "" else "→\(.) " end)\(.venture_title // .venture_id // "—")  \(.id)"'
+
+render_list() {
+	local json="$1"
+	if [ "$(printf '%s' "$json" | "$JQ" -r 'length')" = 0 ]; then
+		echo "  no tasks."; return
+	fi
+	printf '%s' "$json" | "$JQ" -r "$list_fmt"
+}
+
+# ---- commands ---------------------------------------------------------------
+
+cmd_list() { # [.filters…]  (RAW passthrough — no venture scope injected)
+	need_auth
+	local dataurl=() f
+	for f in "$@"; do dataurl+=(--data-urlencode "$f"); done
+	render_list "$(req -G "${dataurl[@]}" "$URL/api/v1/tasks")"
+}
+
+cmd_default() { # bare `operate tasks` — MY open/wip/blocked, priority order
+	need_auth
+	render_list "$(req -G \
+		--data-urlencode ".venture=$VENTURE" \
+		--data-urlencode ".status=open,wip,blocked" \
+		"$URL/api/v1/tasks")"
+}
+
+cmd_file() {
+	need_auth
+	local title="" desc="" priority="" kind="" assign="" venture="$VENTURE"
+	while [ $# -gt 0 ]; do
+		case "$1" in
+		--desc) desc="${2:-}"; shift 2 ;;
+		--priority) priority="${2:-}"; shift 2 ;;
+		--kind) kind="${2:-}"; shift 2 ;;
+		--assign) assign="${2:-}"; shift 2 ;;
+		--venture) venture="${2:-}"; shift 2 ;;
+		-*) die "file: unknown flag '$1'" ;;
+		*) [ -z "$title" ] && title="$1" || die "file: unexpected arg '$1' (quote the title)"; shift ;;
+		esac
+	done
+	[ -n "$title" ] || die "file: a title is required — operate tasks file \"Title\" [--desc …]"
+	local body id
+	body="$(json_obj title "$title" venture_id "$venture" actor "$VENTURE" \
+		description "$desc" priority "$priority" kind "$kind" assignee "$assign")"
+	id="$(req -X POST --data-raw "$body" "$URL/api/v1/tasks" | "$JQ" -r '.id')"
+	echo "  created $id"
+}
+
+cmd_show() {
+	need_auth
+	local id="${1:-}"; [ -n "$id" ] || die "show: need a task id"
+	local eid; eid="$("$JQ" -rn --arg s "$id" '$s|@uri')"
+	local task; task="$(req "$URL/api/v1/tasks/$eid")"
+	printf '%s' "$task" | "$JQ" -r '
+		"  \(.id)   \(.priority // "P2") · \(.status) · \(.kind // "task")\(if .assignee then " · →\(.assignee)" else "" end)\(if .domain then " · [\(.domain)]" else "" end)",
+		"  \(.title)",
+		(if .venture_id then "  venture: \(.venture_title // .venture_id)" else empty end),
+		(if (.description // "") != "" then "\n\(.description)" else empty end)'
+	local comments; comments="$(req "$URL/api/v1/tasks/$eid/comments")"
+	if [ "$(printf '%s' "$comments" | "$JQ" -r 'length')" != 0 ]; then
+		echo; echo "  -- thread --"
+		printf '%s' "$comments" | "$JQ" -r '.[] | "  \(.created_at[0:10]) · \(.author): \(.body)"'
+	fi
+	local events; events="$(req "$URL/api/v1/tasks/$eid/events")"
+	if [ "$(printf '%s' "$events" | "$JQ" -r 'length')" != 0 ]; then
+		echo; echo "  -- history --"
+		printf '%s' "$events" | "$JQ" -r '.[] |
+			"  \(.created_at[0:10]) · \(.actor) · " +
+			(if .field == "created" then "created" else "\(.field): \(.old // "∅") → \(.new // "∅")" end) +
+			(if .reason then " — \(.reason)" else "" end)'
+	fi
+}
+
+# PATCH a task's status (claim/done/cancel) with an optional --reason.
+patch_status() { # <verb> <new-status> <id> [--reason "…"]
+	need_auth
+	local verb="$1" status="$2"; shift 2
+	local id="${1:-}"; [ -n "$id" ] || die "$verb: need a task id"; shift || true
+	local reason=""
+	while [ $# -gt 0 ]; do
+		case "$1" in --reason) reason="${2:-}"; shift 2 ;; *) die "$verb: unexpected arg '$1'" ;; esac
+	done
+	local eid; eid="$("$JQ" -rn --arg s "$id" '$s|@uri')"
+	local body; body="$(json_obj status "$status" actor "$VENTURE" reason "$reason")"
+	req -X PATCH --data-raw "$body" "$URL/api/v1/tasks/$eid" \
+		| "$JQ" -r '"  ✓ \(.id) → \(.status)"'
+}
+
+cmd_update() { # <id> field=value… [--reason "…"]
+	need_auth
+	local id="${1:-}"; [ -n "$id" ] || die "update: need a task id"; shift
+	local reason="" pairs=() a k v
+	while [ $# -gt 0 ]; do
+		a="$1"; shift
+		case "$a" in
+		--reason) reason="${1:-}"; shift || true ;;
+		*=*) k="${a%%=*}"; v="${a#*=}"; pairs+=("$k" "$v") ;;
+		*) die "update: expected field=value (or --reason), got '$a'" ;;
+		esac
+	done
+	[ "${#pairs[@]}" -gt 0 ] || die "update: need at least one field=value (e.g. priority=P1)"
+	local eid; eid="$("$JQ" -rn --arg s "$id" '$s|@uri')"
+	local body; body="$(json_obj "${pairs[@]}" actor "$VENTURE" reason "$reason")"
+	req -X PATCH --data-raw "$body" "$URL/api/v1/tasks/$eid" \
+		| "$JQ" -r '"  ✓ \(.id) updated"'
+}
+
+cmd_comment() {
+	need_auth
+	local id="${1:-}"; [ -n "$id" ] || die "comment: need a task id"
+	local text="${2:-}"; [ -n "$text" ] || die "comment: need text — operate tasks comment <id> \"…\""
+	local eid; eid="$("$JQ" -rn --arg s "$id" '$s|@uri')"
+	local body; body="$(json_obj author "$VENTURE" body "$text")"
+	req -X POST --data-raw "$body" "$URL/api/v1/tasks/$eid/comments" >/dev/null
+	echo "  commented on $id"
+}
+
+help() { awk 'NR<=2{next} /^#/{sub(/^# ?/,"");print;next}{exit}' "$0"; }
+
+# ---- dispatch ---------------------------------------------------------------
+[ $# -gt 0 ] || { cmd_default; exit 0; }
+sub="$1"
+case "$sub" in
+-h | --help | help) help ;;
+list) shift; cmd_list "$@" ;;
+file) shift; cmd_file "$@" ;;
+show) shift; cmd_show "$@" ;;
+claim) shift; patch_status claim wip "$@" ;;
+done) shift; patch_status done done "$@" ;;
+cancel) shift; patch_status cancel cancelled "$@" ;;
+update) shift; cmd_update "$@" ;;
+comment) shift; cmd_comment "$@" ;;
+.* | *=*) cmd_list "$@" ;; # implicit list from a filter/control-param first arg
+*) die "unknown subcommand '$sub' — run 'operate tasks --help'" ;;
+esac
