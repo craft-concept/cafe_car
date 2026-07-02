@@ -36,6 +36,165 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
 
 ---
 
+## 🟠 Engineering
+
+- [ ] (P1) Documented advanced-filter syntax (price.min=10, .gt, .lt) is a silent no-op
+        **Source:** completeness audit 2026-07-02 (graybeard), blocker #2. Filtering/search is headline
+        positioning — it's in the gemspec summary/description (the RubyGems.org listing), not just the README.
+
+        **Bug:** The README documents filter syntax like `price.min=10`, `price.gt=5`, `.eq`/`.lt`/`.max`.
+        None of it works — bare filter keys are silently dropped (unfiltered result set returned, no error).
+        A developer copy-pastes the documented example, gets a silent no-op, and concludes the gem is broken.
+
+        **Root cause:**
+        - `lib/cafe_car/param_parser.rb#params` splits each key on `.` — a bare key like `"price"` never
+          lands under the `""` wrapper key that `filtered` reads; only a literal leading-dot key (`.price`)
+          does (`".price".split(".") => ["", "price"]`).
+        - `lib/cafe_car/controller/filtering.rb#filtered` only reads `parsed_params[""]`.
+        - `lib/cafe_car/query_builder.rb#param!` recognizes comparison operators only as a literal
+          `<`/`<=`/`>`/`>=` character suffix on the key, NOT as the documented `.min`/`.max`/`.gt`/`.lt`/`.eq`
+          words. No code path anywhere handles the word-form operators.
+        - The gem's own `test/controllers/keyword_search_test.rb:32` uses the undocumented `.name` dot-prefix
+          syntax — the team's tests never validate the documented syntax because it doesn't work.
+
+        **Fix:** Pick ONE canonical syntax and make code + docs + tests agree. Recommend fixing the parser to
+        accept bare dot-less keys with word-form operators (`price.min`, `price.gt`) — that's what the README
+        already promises and what any user types first — then remove or clearly gate the undocumented
+        dot-prefix form.
+
+        **Acceptance:**
+        - Tests exercise range + comparison filters using the **documented** syntax (none exist today).
+        - README filter examples verified to actually work end-to-end.
+        - `bundle exec rake` green. `CHANGELOG.md` `[Unreleased]` entry.
+- [ ] (P1) N+1 queries on every index that shows an association (no eager loading anywhere)
+        **Source:** completeness audit 2026-07-02 (graybeard), blocker #3. Empirically measured: 5 rows w/
+        distinct associations = 17 queries, 15 rows = 37 queries — clean `7 + 2N` fit. Works fine in a 5-row
+        demo (how a prospect first tries it), degrades linearly on every real table.
+
+        **Bug:** Any index rendering a `belongs_to`/`has_many` column (the default —
+        `displayable_attributes` auto-includes associations) issues one query per row per association. No
+        `.includes`/`.preload` anywhere.
+
+        **Root cause:** `lib/cafe_car/controller.rb#scope` pipeline is
+        `model.all.then { policy_scope }.then { sorted }.then { filtered }.then { paginated }` — no eager
+        loading. `app/presenters/cafe_car/presenter.rb#show` calls `object.try(method)` directly per row.
+        Secondary: `lib/cafe_car/table/row_builder.rb#to_html` opens a `turbo_stream_from(@object)`
+        subscription per row.
+
+        **Fix:** Add `.includes` to the scope pipeline based on the association set in
+        `policy.displayable_attributes`. Watch polymorphic associations (can't be naively `.includes`d).
+
+        **Acceptance:**
+        - A **query-count regression test** — the repo has NONE today, so even a correct fix has nothing
+          stopping it from silently regressing. ⚠️ Trap for the implementer: FactoryBot `.sample`-based
+          association helpers + AR's per-request query cache make a *broken* fix look correct (flat query
+          count) unless the test forces DISTINCT associations per row. The audit hit this — control for it.
+        - `bundle exec rake` green. `CHANGELOG.md` `[Unreleased]` entry.
+
+        Related scale footgun: [[major-feature-gaps-post-audit]] #5 (unbounded association `<select>`).
+- [ ] (P1) Nested has_many forms silently fail to save (flagship feature broken)
+        **Source:** completeness audit 2026-07-02 (graybeard), blocker #1. Empirically reproduced
+        against the dummy app — not a code-reading guess.
+
+        **Bug:** Submitting a form with nested `accepts_nested_attributes_for` records (e.g. Invoice +
+        `line_items`) does NOT persist the nested records. No error, no crash — HTTP 200, data silently
+        dropped. Silent data loss is worse than a 500: discovered in production, not dev.
+
+        **Root cause:** `test/dummy/app/policies/invoice_policy.rb:10-11` permits `line_items:`, but Rails'
+        `fields_for` always names the param `line_items_attributes`. Strong-params `#permit` matches keys
+        exactly → the nested payload never matches → `assign_attributes` (`lib/cafe_car/controller.rb:~146`)
+        strips it. Compounding: `line_item_policy.rb`'s `permitted_attributes` omits `:id` and `:_destroy`,
+        so `allow_destroy: true` (declared on `Invoice`) can't update/delete existing rows either — only
+        create phantom rows that also don't save.
+
+        **Fix:** Make the generated/permitted policy layer match what Rails' form helpers actually send —
+        `*_attributes` suffix for nested associations, and include `:id` + `:_destroy` when the parent
+        declares `allow_destroy`. Fix both the dummy policies AND the **policy generator template** so newly
+        generated policies don't reproduce this. Consider generating nested-attribute permits automatically
+        when the model has `accepts_nested_attributes_for`.
+
+        **Acceptance:**
+        - A POST/PATCH round-trip test that submits a nested `has_many` form and asserts the child records
+          exist afterward (create), update an existing child, and destroy one via `_destroy`. This is the
+          test that should have existed — the current `test/controllers/nested_fields_test.rb` only asserts
+          GET-rendered markup.
+        - `bundle exec rake` green. Released-gem behavior fix → `CHANGELOG.md` `[Unreleased]` entry.
+
+        Shares a root cause with [[fix-references-field-generator-policy]] (generated permit layer not
+        matching Rails runtime param names) — do them together.
+- [ ] (P1) cafe_car:resource generates an unsavable policy for belongs_to/:references fields
+        **Source:** completeness audit 2026-07-02 (graybeard), blocker #4. Confirmed by running the
+        generator end-to-end and reading the emitted file.
+
+        **Bug:** `rails g cafe_car:resource Order invoice:references price:decimal` produces a policy with
+        `permitted_attributes: [:invoice, :price]` — but the column/strong-param Rails needs is
+        `:invoice_id`. The association silently can't be saved. `:references`/`belongs_to` is the single
+        most common real-world field type, and this hits adopters immediately after the v0.2.1 onboarding-500
+        fix — back-to-back onboarding failures read very differently than one clean fix.
+
+        **Root cause:** `lib/generators/cafe_car/resource/resource_generator.rb:28`
+        `field_names = attributes.map { _1.to_s.split(":").first }` strips the type and forwards bare
+        `"invoice"`. `lib/generators/cafe_car/policy/policy_generator.rb:50` + template render it verbatim.
+        The codebase already knows the right pattern — `lib/generators/cafe_car/notes/notes_generator.rb`
+        correctly hardcodes `notable_id notable_type` — so this is an oversight, not a design choice.
+
+        **Fix:** Translate `:references`/`belongs_to` field names to their `_id` form before forwarding to
+        `cafe_car:policy` (mirror the pattern already correct in `notes_generator.rb`). Handle polymorphic
+        `:references{polymorphic}` (`_id` + `_type`) too.
+
+        **Acceptance:**
+        - `resource_generator_test.rb` / `policy_generator_test.rb` exercise a `:references` field (only
+          scalar types are tested today) and assert the emitted policy permits `:invoice_id`.
+        - Ideally an integration guard: generate a resource with a belongs_to, submit its real form, assert
+          the association persists.
+        - `bundle exec rake` green. `CHANGELOG.md` `[Unreleased]` entry.
+
+        Shares a root cause with [[fix-nested-hasmany-forms-not-saving]] — do them together with one
+        integration-level "generate → submit every field type → assert persistence" guard.
+
+## 🧭 Product
+
+- [ ] (P2) Major feature gaps vs. peer admin gems (post-audit tracking)
+        **Source:** completeness audit 2026-07-02 (graybeard). The four P1 blockers are filed separately
+        (nested forms, references generator, filter syntax, N+1). This tracks the majors/minors — split each
+        into its own task when picked up. Sequence AFTER the blockers (fix what's advertised-but-broken
+        before adding advertised-but-missing surface).
+
+        **Majors:**
+        - **#5 Unbounded association `<select>`** — `lib/cafe_car/field_info.rb#collection` is
+          `reflection.klass.all`, no cap/search/pagination. Backs both edit-form `collection_select` AND the
+          filter sidebar. A `belongs_to :client` with 10k rows renders a 10k-`<option>` select on every form
+          and index load. Fix: configurable cap + warning, ideally a searchable/remote select (Tom Select).
+        - **#6 `has_many_attached` advertised but unimplemented** — README:484 claims it; only
+          `has_one_attached` works. `lib/cafe_car/filter/form_builder.rb:16-17` has a literal
+          `# TODO: handle multiple/index`. Fix: wire `multiple:` to a real `<input multiple>` + array params,
+          OR drop the claim from the README until built.
+        - **#7 No bulk actions** — table-stakes in ActiveAdmin/Avo/Administrate (bulk delete, status change,
+          export-selected). Needs multi-row selection UI + per-row batch authorization + action registration.
+
+        **Minors / positioning:**
+        - **#8 No dashboard/homepage capability** — positioning decision (stay a CRUD generator vs. full
+          admin framework). Defer/decide.
+        - **#9 Theming hooks absent** — `cool.css`/`cool2.css` exist under
+          `app/assets/stylesheets/cafe_car/themes/` but are never imported; no config API to select a theme.
+        - **#11 Pagination `per` has no cap** — `?per=1000000` → HTTP 200, loads whole table. The CSV path
+          is correctly capped (`CafeCar.csv_export_row_limit`); mirror it. Perf/DoS footgun. (S — do soon.)
+        - **#10 Undocumented unauthenticated `/components` route** — `examples_controller.rb` skips
+          policy/authorization on `:index`, mounted into the host admin namespace, not in the README.
+          Dev-gate it, make it opt-in, or document it.
+
+        **Nits (fix while touching the file):**
+        - **#12** `lib/cafe_car/attributes.rb#editable` — `@permitted.map()` (no block) returns an Enumerator,
+          not an Array. Dead code today; landmine when wired up.
+        - **#13** `lib/cafe_car/auto_resolver.rb` — dead `const_missing` auto-generation; its auto-policy
+          `admin?` is `Rails.env.development?`. Delete or document before someone activates it.
+
+        **Meta-finding (the most important one — own task-worthy):** the green suite gives false confidence
+        because tests assert *request shape* (page renders, markup present) not *effect* (data changed, query
+        count bounded). Every blocker fix must land with an EFFECT-level test. A single integration guard —
+        generate a resource, submit every field type through its real form, assert persistence + bounded
+        queries — would catch this whole bug class before it ships. Consider adding it as a standing harness.
+
 ---
 
 ## 🚧 Blocked on the user
@@ -109,6 +268,81 @@ the user on these.
         **Action taken (pass 23):** filed a capability-snapshot + anticipated-deltas task to their board
         (`cafecar-dogfood-capability-snapshot-anticipated-deltas-for-y`) so they spec against current
         reality and we parallelize. Now blocked on their concrete requirement tasks landing here.
+- [x] (P1) Persona update: write owner feedback to git BEFORE acting
+        # Persona update: write owner feedback to git BEFORE acting
+
+        Fleet-wide persona update from holdco (verified internal). Apply to **this repo** —
+        `AGENTS.md`, and the `conductor` persona file if it covers decisions — then commit and
+        **reply "done"** to holdco (`holdco@bot.yak.sh`). Non-urgent: fold into the next normal-gear pass.
+
+        **Why:** the owner's top complaint — operators forget his feedback after a context clear, so he
+        has to repeat himself.
+
+        ## Block to add (adapt to the file's style)
+
+        - **Owner feedback: write it down FIRST, then act.** On any VERIFIED owner feedback — email
+          (`auth=VERIFIED(yak.sh)`), a board comment, or in-session — the order is fixed: (1) append it
+          verbatim with today's date to a git-tracked file in the repo (the task file it resolves, or
+          `DECISIONS.md`, newest first); (2) commit that write; (3) only then act on it. A decision living
+          only in context is lost on the next `/clear`.
+
+        - **At the start of every pass, re-read recent owner decisions** (`DECISIONS.md` + the task files
+          you're about to work) BEFORE choosing work, so a cleared context never steers against something
+          the owner already decided.
+
+        Reference: new-venture template already ships this (holdco `8051e1a`); we apply the same to the
+        live repo.
+
+        ## Done when
+        - `AGENTS.md` carries the "owner feedback → git first" rule + the start-of-pass re-read rule.
+        - Conductor persona file updated if it covers decision-handling.
+        - Committed + pushed; CI green.
+        - Replied "done" to holdco.
+- [x] (P1) Backport the dream v2 persona upgrade from templates/new-venture
+        > **Done 2026-07-01 (pass 62):** commit `151c65b`, rake green, no placeholders remain.
+        > Board task `backport-cafe-car-adopt-the-dream-v2-persona-upgrade-seeded-` marked done.
+
+
+        Fleet-wide persona upgrade filed to my board by holdco (board id
+        `backport-cafe-car-adopt-the-dream-v2-persona-upgrade-seeded-`). Adopt the **dream v2**
+        mechanisms — seeded divergence, decisions ledger, sliding-floor mining, verified journals —
+        by syncing my dream skill files from `~/code/holdco/templates/new-venture`. **My own files only.**
+
+        Source → dest:
+        - `templates/new-venture/.claude/agents/dream.md` → `.claude/agents/dream.md` (142-line rewrite)
+        - `templates/new-venture/.claude/commands/dream.md` → `.claude/commands/dream.md` (57-line rewrite)
+        - `templates/new-venture/docs/DREAM-SEEDS.md` → `docs/DREAM-SEEDS.md` (new file)
+
+        Substitutions / preservation:
+        - Replace `{{VENTURE}}` → `cafe_car` everywhere.
+        - Preserve the cafe_car-specific board-task curl payload already in my `agents/dream.md`
+          (`venture_id":"cafe_car"`) — don't let the generic template clobber it.
+        - After sync, verify **no `{{...}}` placeholders remain** in any of the three files.
+
+        `bin/dream` already matches the template (no change). Run `bundle exec rake`, commit, push.
+- [x] (P1) Backport missing operator agent roster (coder + review panel) from template
+        > **Done 2026-07-01 (pass 62):** commit `39137447`, rake green. Added coder + review panel
+        > (graybeard, hipster, green-eyeshade, counsel, bullhorn, redteam) to `.claude/agents/`.
+        > Template files had no `{{VENTURE}}` placeholders (verbatim copies). Agent types now
+        > register live — the conductor can delegate to `coder` and convene a review board again.
+
+
+        **Discovered pass 62:** dispatching a `coder` builder failed — `Agent type 'coder' not found`.
+        My repo's `.claude/agents/` has only `conductor.md`, `designer.md`, `dream.md`, but my conductor
+        charter repeatedly references agents that don't exist locally:
+        - **`coder`** — my primary engineering/docs/config builder ("delegate the build to a coder").
+        - **the review panel** — `graybeard`, `hipster`, `green-eyeshade`, `counsel`, `bullhorn`,
+          `redteam` ("Use the review panel for audits — run a board").
+
+        All seven exist in `~/code/holdco/templates/new-venture/.claude/agents/`. Backport them into
+        `.claude/agents/`, substituting `{{VENTURE}}` → `cafe_car`.
+
+        Do **NOT** copy the template's `operator.md` — this venture already customized that persona to
+        `conductor.md`. Only add the 7 missing builder/reviewer personas. Verify no `{{...}}` placeholders
+        remain. Run `bundle exec rake`, commit, push.
+
+        Rationale: without these, the conductor can't delegate to a coder or convene a review board — the
+        operating loop's two core delegation moves both fail. High-leverage self-repair.
 - [x] (P1) Author BRAND.md + one-time voice sweep of customer-visible copy
         Mirrors holdco board task `author-brand-md-voice-guide-route-all-customer-visible-copy-`
         (filed 2026-06-27 22:24). Fleet anti-AI-slop voice-gate machinery shipped to this repo: the
@@ -274,6 +508,100 @@ the user on these.
            Social preview on `craft-concept/cafe_car`. (Launch-post `og:image` can reference the raw URL:
            `https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/og-card.png`.)
            Tracked as the wiring step of `visual-assets-og-card`.
+- [x] (P2) Pacing vocab rename: NORMAL/REACTIVE/FORCE → GREEN/YELLOW/RED
+        # Pacing vocab rename: NORMAL/REACTIVE/FORCE → GREEN/YELLOW/RED
+
+        > **Superseded 2026-07-02 (operate-toolbelt migration):** the pace line is now the venture-local
+        > `bin/operate tokens --pace` — the cross-repo `~/code/holdco/bin/holdco-tokens --pace` path below
+        > is retired. Line numbers cited in this ticket are from that era. Historical record; kept verbatim.
+
+        The fleet pace line (`~/code/holdco/bin/holdco-tokens --pace`) now prints traffic-light signals
+        (GREEN/YELLOW/RED) instead of gears (NORMAL/REACTIVE/FORCE). Same behavior, same line — just the
+        vocabulary changed. Self-apply the vocabulary in our docs so guidance matches the tool output.
+
+        ## Scope (pace-signal references ONLY)
+        - `AGENTS.md:88-89` — "run in **NORMAL** and auto-defer in **REACTIVE / FORCE**" → GREEN / YELLOW / RED.
+        - `.claude/agents/conductor.md:147` — "defers in REACTIVE / FORCE / weekends" → YELLOW / RED / weekends.
+
+        ## Do NOT touch
+        The **cadence-mode** term "cold / reactive" (`AGENTS.md:134`, `conductor.md:50`) is a different
+        concept (long-loop vs cold) — leave it as-is.
+
+        ## Done when
+        - Pace-signal vocab reads GREEN/YELLOW/RED in AGENTS.md + conductor.md; cadence-mode "reactive" untouched.
+        - Committed + pushed; CI green.
+- [x] (P2) Unblocked adoption/conversion polish (from pass-63 bullhorn GTM audit)
+        **DONE (Pass 64).** All operator-shippable findings landed on `main`, CI green:
+        - Copy (`1a34afa`, designer/voice-gated): benefit-led README hero, tagline subtitle,
+          sharpened "Perfect for" audience line, star CTA, "try it in 60s" macro-path quickstart
+          above the fold, and refreshed gemspec summary/description (keyword search, filtering,
+          CSV export, Pundit, Hotwire — ships to RubyGems next release).
+        - Docs-site SEO (`28f439b`, coder): wired OG/Twitter meta + `og:image` (og-card.png) +
+          sitemap via the theme's built-in `{% seo %}` (jekyll-seo-tag) rather than a hand-rolled
+          `head-custom.html` — avoids duplicate/conflicting tags; verified by a scratch Jekyll build.
+        - Skipped by design: docs analytics counter (optional, owner may prefer none).
+
+        **Residual — owner-gated only:** GitHub *repo* social-preview upload lives in
+        `owner-one-time-dashboard-wiring-railway-config-as-code-githu`. Nothing else outstanding here.
+
+        Pass 63 ran a `bullhorn` GTM audit for **unblocked** adoption levers (things shippable without the
+        owner's launch accounts). The P0 finding — the published-gem onboarding crash — is being fixed by
+        the **v0.2.1 release** (separate). This task holds the remaining operator-shippable findings, ranked
+        by leverage÷effort. Customer-visible copy items must pass the voice gate (`/copy` / `designer` per
+        `AGENTS.md`); technical items go to `coder`. Work these down over subsequent passes — they're the
+        unblocked adoption backlog.
+
+        ## Copy (route through the voice gate / `designer`)
+
+        - **[High/S] README hero paragraph is mechanism-first, undersells.** README.md ~L28–32 leads with
+          "extends the MVC view layer to provide automatic CRUD UI generation…". Rewrite benefit-led,
+          reusing the sharper framing already proven in `marketing/launch-post.md` (the "Rails should render
+          something by default / the view layer sits there with its hands in its pockets" gap). Suggested
+          direction: model already knows its columns → Rails still makes you hand-write a controller + 7
+          actions + views → `cafe_car` closes that gap (index/show/new/edit from the model, with Pundit +
+          filtering + Hotwire) → every default is a starting point, not a cage.
+        - **[Med/S] Gemspec summary/description stale + missing search real estate.** `cafe_car.gemspec`
+          L9–16 omits **keyword search** and **CSV export** (shipped in 0.2.0) and "Pundit"/"Hotwire" —
+          terms devs search on RubyGems/Google. (No dedicated `keywords` field exists; summary+description
+          IS the entire SEO lever.) Refresh to name CRUD, keyword search, filtering, CSV export, Pundit
+          auth, "no DSL", "every default overridable". Ships to RubyGems on the next release.
+        - **[Low-Med/S] Brand tagline absent from README.** The repo description
+          ("🚋 Recline in the cafe car while your Rails views build themselves.") is memorable but isn't in
+          README.md — add as an italic subtitle under the H1.
+        - **[Low/S] "Perfect for" line generic.** README.md ~L34 "Admin panels, internal tools, and rapid
+          prototyping" → sharpen to name the audience (Rails devs who need a working admin this week, not a
+          second framework to configure).
+        - **[Low/S] No star CTA.** Add one line near Contributing ("If CafeCar saves you an afternoon, a
+          star helps other Rails devs find it.").
+
+        ## Structure (mostly `coder`; the quickstart block wording is copy)
+
+        - **[High/S-M] Quickstart CTA buried below the fold.** README pushes Installation to ~L109 (past a
+          26-line TOC + comparison table + features). Add a tight 3-block "try it in 60s" fenced snippet
+          right after the hero caption. **Use the macro/manual path** (`cafe_car` on a controller) — do NOT
+          reintroduce the resource-generator one-liner as the hero snippet (it was the 0.2.0 crash; safe
+          again on 0.2.1, but the macro path is the cleanest first touch). Verify against the shipped gem.
+
+        ## Docs-site SEO (`coder` — technical, fully unblocked)
+
+        - **[Med-High/S] docs/ ships zero SEO/social metadata; the OG asset is wired to nothing.**
+          `docs/_config.yml` has no plugins; `docs/images/og-card.png` (committed) is referenced only by a
+          raw URL in the launch post. The cayman theme supports a `_includes/head-custom.html` hook. Add
+          `docs/_includes/head-custom.html` with `og:title`/`og:description`/`og:image` (raw og-card.png
+          URL), `twitter:card=summary_large_image`, and a canonical link; add `plugins: [jekyll-sitemap]`
+          to `docs/_config.yml` (GitHub-Pages-supported, no Gemfile change) for `sitemap.xml`.
+          NOTE: the *GitHub repo* social-preview upload is separately owner-gated (see
+          `owner-one-time-dashboard-wiring-railway-config-as-code-githu`) — only the docs-site meta is in
+          scope here.
+        - **[Low-Med/S] No docs analytics.** Optionally add a privacy-friendly counter (Plausible/GoatCounter)
+          script to the same `head-custom.html`. Meanwhile GitHub repo Insights → Traffic is free and should
+          be checked periodically. (Owner may prefer no third-party analytics — light-touch / optional.)
+
+        ## Explicitly out of scope / already handled
+        - The launch publish (marketing/ kit) — owner-gated, tracked in `discoverability-launch`.
+        - The comparison table (README L63–83) — audit flagged it as a genuine strength; **leave as-is**,
+          don't "improve" it into marketing fluff.
+        - GitHub repo social-preview upload — owner-gated (`owner-one-time-dashboard-wiring-…`).
 - [x] (P2) Note the fleet /imagegen skill in the designer persona
         Mirrors holdco board task `new-fleet-imagegen-skill-use-it-for-visual-assets-run-imageg`.
 
@@ -292,9 +620,14 @@ the user on these.
 
 Short memory aid only — git history is the full record. Trim as this grows.
 
+- Release workflow — auto-create the GitHub release (action alone doesn't) — **Recurring manual step to eliminate.** On the v0.2.1 release (pass 69), `rubygems/release-gem@v1`
 - README Installation still lists cnc as a required gem (stale — cnc was cut) — The README **Installation** section (~line 104) still lists `cnc` as a required dependency.
 - Add a copy-paste "60-second try" quickstart at the top of the README — **Outcome (2026-07-01): not shipped — verification killed it.** Ran the full
+- Publish v0.2.1 — awaiting owner approval on the Release run — ## DONE (pass 69, 2026-07-01 ~17:20 UTC)
 - Fix broken cafe_car:resource onboarding path (500s out of the box) — **Outcome (2026-06-30): fixed and verified end-to-end. All three diagnoses held exactly**
+- Backport missing operator agent roster (coder + review panel) from template — > **Done 2026-07-01 (pass 62):** commit `39137447`, rake green. Added coder + review panel
+- Backport the dream v2 persona upgrade from templates/new-venture — > **Done 2026-07-01 (pass 62):** commit `151c65b`, rake green, no placeholders remain.
+- Unblocked adoption/conversion polish (from pass-63 bullhorn GTM audit) — **DONE (Pass 64).** All operator-shippable findings landed on `main`, CI green:
 - Publish CafeCar v0.2.0 to RubyGems (needs owner key) — ## Update 2026-06-30 (post-publish): SHIPPED — v0.2.0 live, checklist closed
 - Note the fleet /imagegen skill in the designer persona — Mirrors holdco board task `new-fleet-imagegen-skill-use-it-for-visual-assets-run-imageg`.
 - Cap demo Puma memory — force single-process (was 48 workers / 3GB+ RSS) — Mirrors holdco board task `cafe-car-demo-durably-cap-memory-was-3gb-and-climbing` (P1, filed
@@ -327,4 +660,6 @@ Short memory aid only — git history is the full record. Trim as this grows.
 - Make CI rubocop a check-only gate, stop auto-PR noise — The CI `rubocop` job runs `bin/rubocop -Af github` then opens a "Rubocop Autocorrections
 - Write CHANGELOG.md — Roadmap item #1. A changelog is a baseline trust signal and a release prerequisite.
 - Bump CI actions/checkout to v5 (Node 20 deprecation) — CI logs a deprecation warning: `actions/checkout@v4` targets Node.js 20, which GitHub
+- Persona update: write owner feedback to git BEFORE acting — # Persona update: write owner feedback to git BEFORE acting
+- Pacing vocab rename: NORMAL/REACTIVE/FORCE → GREEN/YELLOW/RED — # Pacing vocab rename: NORMAL/REACTIVE/FORCE → GREEN/YELLOW/RED
 
