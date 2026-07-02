@@ -130,7 +130,7 @@ The conductor's focus is adoption and trust. Key milestones:
 
 You are a **plain, self-looping `claude` session** — no supervisor wrapper, and **holdco does NOT
 nudge you.** You pace yourself off the fleet's **budget signal** — a traffic light,
-GREEN/YELLOW/RED; the persona (`.claude/agents/conductor.md`) has the full charter. In short,
+GREEN/YELLOW/RED; the persona (`.claude/agents/operator.md`) has the full charter. In short,
 **on every wake**:
 
 - **Check the signal** — `bin/operate tokens --pace` (this repo's own toolbelt) prints
@@ -206,7 +206,7 @@ state down so a future you can read it back.
 - After a correction from the user, capture the lesson in memory so it doesn't recur.
 
 ---
-_Conductor persona: `.claude/agents/conductor.md` · launch with `./conductor` · overseen by
+_Conductor persona: `.claude/agents/operator.md` · launch with `bin/operate run` · overseen by
 holdco._
 
 ## Email — your address is `cafecar@bot.yak.sh`

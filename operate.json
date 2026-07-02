@@ -1,5 +1,12 @@
 {
   "venture": "cafe_car",
+  "run": {
+    "title": "CafeCar",
+    "model": "opus",
+    "effort": "high",
+    "mode": "cold",
+    "channels": "plugin:email@holdco-fleet"
+  },
   "tokens": {
     "usage_dir": "~/.cache/claude-usage",
     "registry_file": "~/code/holdco/ventures/cafe_car.md",
