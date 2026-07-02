@@ -21,6 +21,11 @@
 # context` and clears ONLY when its verdict is CLEAR (the cost-based "reset is
 # cheaper than carrying this context" rule). KEEP / UNKNOWN (no transcript, no jq)
 # → SILENT no-op, exit 0. This replaces the blunt fixed-size gate with the cost verdict.
+# ABSOLUTE CEILING: the cost verdict KEEPs a continuously-WARM context at ANY size
+# (0.1x cache reads stay cheap), so a warm operator can ride to auto-compact. To
+# stop that, --if-optimal ALSO forces CLEAR when this session's own CTX_TOKENS is
+# at/over SELF_CLEAR_CEILING_TOKENS (default 175000; override via env or operate.json
+# self_clear.ceiling_tokens) — regardless of warmth. The decision line names WHY.
 #
 # --if-bloated [THRESHOLD] — SIZE-GATED fallback for when the transcript can't be
 # read. Reads THIS session's own context size (CTX_TOKENS) from its usage cache and
@@ -47,6 +52,37 @@ CACHE_DIR="${CACHE_DIR:-}"
 [ -n "$CACHE_DIR" ] || CACHE_DIR="$(untilde "$(cfg tokens.usage_dir)")"
 [ -n "$CACHE_DIR" ] || CACHE_DIR="$HOME/.cache/claude-usage"
 
+# Absolute-size ceiling for --if-optimal: force a clear at/above this many context
+# tokens even when the cache is warm (the cost verdict would otherwise KEEP forever).
+CEILING_TOKENS="${SELF_CLEAR_CEILING_TOKENS:-}"
+[ -n "$CEILING_TOKENS" ] || CEILING_TOKENS="$(cfg self_clear.ceiling_tokens)"
+[ -n "$CEILING_TOKENS" ] || CEILING_TOKENS=175000
+
+# Read THIS session's own context size (CTX_TOKENS) into $ctx from the usage cache:
+# one KEY=VALUE file per session (written by the statusline) whose CWD= equals this
+# repo root. Sets $ctx to the integer token count, or "" when unknown. Self-clear
+# lives in a venture repo, so it reads the cache directly (no shared lib).
+read_ctx_tokens() {
+	ctx=""
+	shopt -s nullglob
+	local f
+	for f in "$CACHE_DIR"/usage.*; do
+		[[ "$(sed -n 's/^CWD=//p' "$f" | head -1)" == "$PWD" ]] || continue
+		ctx="$(sed -n 's/^CTX_TOKENS=//p' "$f" | head -1)"
+		break
+	done
+}
+
+# Is the working tree dirty in a way that should BLOCK a clear? A dirty tree means
+# uncommitted operator work — but the email channel rewrites data/mail/*.jsonl (a
+# git-TRACKED file) continuously, which is not "work" and must never jam the gate.
+# `/clear` wipes only Claude context, never the working tree, so leaving volatile
+# mail uncommitted is safe. Exclude it with a native git pathspec (robust vs. line
+# parsing). Returns 0 (dirty) only when non-volatile changes remain.
+tree_dirty() {
+	[ -n "$(git status --porcelain -- . ':(exclude)data/mail' 2>/dev/null)" ]
+}
+
 force=0
 if_bloated=0
 if_optimal=0
@@ -62,23 +98,32 @@ for a in "$@"; do
 	esac
 done
 
-# --- VERDICT GATE (--if-optimal only): consult `operate context`'s KEEP/CLEAR
-# verdict for THIS session. Anything but CLEAR (KEEP, or UNKNOWN when the
+# --- VERDICT + CEILING GATE (--if-optimal only): clear when EITHER this session's
+# own size is at/over the absolute ceiling (warm or not) OR `operate context`'s
+# cost verdict is CLEAR. Anything else (KEEP below the ceiling, or UNKNOWN when the
 # transcript / jq is unavailable) is a silent no-op — safe to call every pass.
 if [[ "$if_optimal" == 1 ]]; then
-	ctx_bin="$SELF_DIR/operate-context"
-	verdict=""
-	[ -x "$ctx_bin" ] && verdict="$("$ctx_bin" 2>/dev/null | tail -n1 | awk '{print $1}')"
-	if [[ "$verdict" != "CLEAR" ]]; then
-		echo "self-clear: context verdict ${verdict:-UNKNOWN} — kept."
+	read_ctx_tokens
+	reason=""
+	if [[ "$ctx" =~ ^[0-9]+$ ]] && (( ctx >= CEILING_TOKENS )); then
+		reason="ceiling ($((ctx / 1000))k >= $((CEILING_TOKENS / 1000))k)"
+	else
+		ctx_bin="$SELF_DIR/operate-context"
+		verdict=""
+		[ -x "$ctx_bin" ] && verdict="$("$ctx_bin" 2>/dev/null | tail -n1 | awk '{print $1}')"
+		if [[ "$verdict" != "CLEAR" ]]; then
+			echo "self-clear: context verdict ${verdict:-UNKNOWN} — kept."
+			exit 0
+		fi
+		reason="cost verdict CLEAR"
+	fi
+	# Clearing, but honor the clean-boundary doctrine: a dirty tree no-ops (volatile
+	# channel-rewritten mail is excluded from the dirtiness test — see tree_dirty).
+	if [[ "$force" != 1 ]] && tree_dirty; then
+		echo "self-clear: $reason but tree DIRTY — commit + log your pass first; kept."
 		exit 0
 	fi
-	# CLEAR verdict, but honor the clean-boundary doctrine: a dirty tree no-ops.
-	if [[ "$force" != 1 ]] && [[ -n "$(git status --porcelain 2>/dev/null)" ]]; then
-		echo "self-clear: CLEAR verdict but tree DIRTY — commit + log your pass first; kept."
-		exit 0
-	fi
-	echo "self-clear: context verdict CLEAR — clearing."
+	echo "self-clear: $reason — clearing."
 fi
 
 # --- SIZE GATE (--if-bloated only): decide from THIS session's own context size.
@@ -88,16 +133,8 @@ if [[ "$if_bloated" == 1 ]]; then
 	threshold="${threshold_arg:-${SELF_CLEAR_BLOAT_TOKENS:-}}"
 	[ -n "$threshold" ] || threshold="$(cfg self_clear.bloat_threshold_tokens)"
 	[ -n "$threshold" ] || threshold=160000
-	# Read our own CTX_TOKENS: the usage cache (one KEY=VALUE file per session,
-	# written by the statusline) whose CWD= equals this repo root. Tiny inline reader —
-	# self-clear lives in a venture repo, so it reads the cache directly (no shared lib).
-	ctx=""
-	shopt -s nullglob
-	for f in "$CACHE_DIR"/usage.*; do
-		[[ "$(sed -n 's/^CWD=//p' "$f" | head -1)" == "$PWD" ]] || continue
-		ctx="$(sed -n 's/^CTX_TOKENS=//p' "$f" | head -1)"
-		break
-	done
+	# Read our own CTX_TOKENS from the usage cache (see read_ctx_tokens).
+	read_ctx_tokens
 	if ! [[ "$ctx" =~ ^[0-9]+$ ]]; then
 		echo "self-clear: unknown ctx (no usage cache for $PWD) — kept."
 		exit 0
@@ -106,7 +143,7 @@ if [[ "$if_bloated" == 1 ]]; then
 		printf 'self-clear: lean (%dk < %dk threshold), kept.\n' "$((ctx / 1000))" "$((threshold / 1000))"
 		exit 0
 	fi
-	if [[ "$force" != 1 ]] && [[ -n "$(git status --porcelain 2>/dev/null)" ]]; then
+	if [[ "$force" != 1 ]] && tree_dirty; then
 		echo "self-clear: bloated ($ctx ctx) but tree DIRTY — commit + log your pass first; kept."
 		exit 0
 	fi
@@ -122,7 +159,7 @@ fi
 # gated modes this was already soft-checked above (a dirty tree no-ops there);
 # here it's the hard-error guard for the plain invocation. --force overrides both.
 if [[ "$if_bloated" != 1 && "$if_optimal" != 1 && "$force" != 1 ]] && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-	if [[ -n "$(git status --porcelain 2>/dev/null)" ]]; then
+	if tree_dirty; then
 		echo "self-clear: working tree is DIRTY — commit + log your pass first (or --force)." >&2
 		echo "self-clear: /clear wipes working state; refusing to clear mid-work." >&2
 		exit 1
