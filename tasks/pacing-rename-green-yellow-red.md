@@ -9,6 +9,10 @@ source: holdco email (relayed via bounces@cf-bounce.bot.yak.sh), 2026-07-01, "ca
 
 # Pacing vocab rename: NORMAL/REACTIVE/FORCE → GREEN/YELLOW/RED
 
+> **Superseded 2026-07-02 (operate-toolbelt migration):** the pace line is now the venture-local
+> `bin/operate tokens --pace` — the cross-repo `~/code/holdco/bin/holdco-tokens --pace` path below
+> is retired. Line numbers cited in this ticket are from that era. Historical record; kept verbatim.
+
 The fleet pace line (`~/code/holdco/bin/holdco-tokens --pace`) now prints traffic-light signals
 (GREEN/YELLOW/RED) instead of gears (NORMAL/REACTIVE/FORCE). Same behavior, same line — just the
 vocabulary changed. Self-apply the vocabulary in our docs so guidance matches the tool output.

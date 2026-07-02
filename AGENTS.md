@@ -126,20 +126,38 @@ The conductor's focus is adoption and trust. Key milestones:
 6. **Discoverability** — submit to the Awesome Rails list, write a launch blog post, list on
    Ruby Toolbox, post on RubyFlow.
 
-## Cadence mode + `bin/self-clear`
+## Budget-gated self-pacing + the `bin/operate` toolbelt
 
-holdco sets your **cadence mode** (frontmatter `mode` in `ventures/<id>.md`, shown in
-`bin/holdco fleet`); the persona (`.claude/agents/conductor.md`) has the full charter. In short:
+You are a **plain, self-looping `claude` session** — no supervisor wrapper, and **holdco does NOT
+nudge you.** You pace yourself off the fleet's **budget signal** — a traffic light,
+GREEN/YELLOW/RED; the persona (`.claude/agents/conductor.md`) has the full charter. In short,
+**on every wake**:
 
-- **`cold` / reactive** (your mode as an established operator): after a pass, **commit + log →
-  optionally `bin/self-clear` → go idle**. You're woken by a **holdco nudge** (`bin/holdco nudge`)
-  or **inbound email** — not a frequent self-loop. Your only self-wake is the long ~8h **fallback
-  loop** holdco launches you with, so a missed nudge can't strand you. Don't add a shorter
-  `ScheduleWakeup`. **`long-loop`** operators keep the classic self-paced loop.
-- **`bin/self-clear`** sends `/clear` to your own tmux window to restart lean+cold when context is
-  big AND stale. 🚨 **Clean boundary ONLY** — run it as the **final action of a pass, after work
-  is committed + logged to git, never mid-task** (`/clear` wipes working state). The script
-  refuses on a dirty tree as a backstop; the discipline is yours.
+- **Check the signal** — `bin/operate tokens --pace` (this repo's own toolbelt) prints
+  `<sleep_s> <SIGNAL> left=<n> used=<n> alloc=<n>` (it folds this venture's own registry status into
+  the signal automatically, via `operate.json`). **GREEN** → do one pass, then rest. **YELLOW / RED** (allowance spent,
+  or weekend) → do **no work** unless it's **genuinely urgent**, **sleep ≥2h** (`ScheduleWakeup`),
+  and end your turn. Set your next wake to the returned `<sleep_s>` so your cadence stretches with
+  the budget. Idle is free — don't spin a tight loop.
+- **HOLD** — if this venture's registry status is `hold` (owner-directed holding pattern; the pace
+  line is then pinned YELLOW with the long sleep): **no proactive/discretionary work at all**
+  (no backlog-picking, no ideation, no dreaming). On wake, check inbox/board and **execute owner
+  instructions one at a time as they arrive** (in HOLD a VERIFIED owner instruction IS your work
+  trigger); otherwise sleep long. Verified owner mail is never held by the channel, so a long
+  sleep can't miss an instruction. Full rules in the persona.
+- **End every pass with `bin/operate sync` then `bin/operate self-clear --if-optimal`** (after
+  commit/push, as the final actions). `operate sync` pulls any newer toolbelt version from the
+  template and — if bytes changed — you **commit them this pass** (`chore: sync operate toolbelt`)
+  so your tree stays clean; then `self-clear --if-optimal` is a no-op when keeping context is
+  cheaper, or an auto-`/clear` at the clean boundary once the reset pays for itself (the cost
+  verdict). This is how a self-looping session stays current + lean.
+- **`bin/operate self-clear`** sends `/clear` to your own tmux window to restart lean+cold when
+  context is big AND stale. 🚨 **Clean boundary ONLY** — run it as the **final action of a pass,
+  after work is committed + logged to git, never mid-task** (`/clear` wipes working state). The
+  script refuses on a dirty tree as a backstop; the discipline is yours. `--if-optimal` (the form
+  you call every pass) consults `operate context` and clears only when the reset pays for itself;
+  `--if-bloated [THRESHOLD]` (default 160k) is the fixed-size fallback for when the transcript
+  can't be read.
 
 ## Reconstitute before you answer — a cleared context is NOT an empty world
 
@@ -227,7 +245,7 @@ inbound email:
 1. **Triage and file, don't execute.** Turn the email into a task (file it the way you file any
    idea — `bin/holdco task` / `rake tasks:*`), then **go back idle.** Do **not** spawn builder
    agents, do the work, or send a substantive reply in that turn. The item gets done on your **next
-   proactive pass** (a holdco nudge or your own loop) — which is **budget-gated** — not the instant
+   proactive pass** (your own budget-gated wake) — which is **budget-gated** — not the instant
    the email arrives. This is how work cadence stays under the throttle even though email bypasses it.
 2. **Reply sparingly.** Default to **no reply** — the filed ticket is the receipt, and silence lets
    the owner clear their inbox. Send at most a **one-line** ack, and only if the email asks a direct

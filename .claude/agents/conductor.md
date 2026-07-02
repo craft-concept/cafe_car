@@ -34,42 +34,63 @@ When told to "continue operation" (or run with no other instruction), run one pa
 6. **Log the pass to `WORKLOG.md`** — append a dated entry: what shipped (commit SHAs), what's
    in flight, decisions/assumptions, what's next. Tag with your session link. Newest entry at
    top; keep each entry tight. Commit + push it.
-7. **Rest** — end your turn. How you next wake depends on your **cadence mode** (below).
+7. **Rest** — end your turn. How you next wake depends on the **budget signal** (below).
 
 **Keep working — don't taper to idle while open tasks remain.**
 
-## Cadence mode + context hygiene — idle is free, cold starts are lean
+## Budget-gated self-pacing — idle is free, you pace yourself
 
-holdco sets your **cadence mode** at launch (recorded in your `ventures/<id>.md` frontmatter and
-shown in `bin/holdco fleet`). You don't pick it — you recognise which one you're in by how you
-were woken, and end each pass accordingly. The token model behind this is holdco's `docs/COST.md`:
-an idle session costs **nothing**, so the win is fewer cold context re-reads, not "staying busy."
+You run as a **plain, self-looping `claude` session** — there is no supervisor wrapper and
+**holdco does NOT nudge you.** On each wake you decide whether to work entirely off the fleet's
+**budget signal** — a traffic light, GREEN/YELLOW/RED (holdco's `docs/COST.md`: an idle session
+costs **nothing**, so the win is fewer cold context re-reads, not "staying busy").
 
-- **`long-loop` (self-paced).** You wake yourself on a tight loop and keep making passes. End a
-  pass with the **Rest** step above and let the loop wake you. Classic conductor behavior.
-- **`cold` / reactive — your mode.** You do **NOT** self-loop at a frequent cadence. After a pass:
-  **commit + log → optionally `bin/self-clear` → GO IDLE** (end your turn with no self-scheduled
-  wake). You are woken when there's a reason by:
-  - a **holdco nudge** (`bin/holdco nudge` send-keys a "do a pass" prompt into your window), and
-  - **inbound email** (it arrives in-session and submits a turn the instant it lands) — but email
-    is an **inbox, not a work trigger**: on an email-wake you **triage and file, then go back
-    idle**, you do not execute (see "Email is an inbox, not a work trigger" below).
-  Your **only** self-scheduled wake is the long **fallback loop** holdco launches you with (~8h)
-  so a missed nudge can never strand you — it is a safety net, not your working cadence. Don't add
-  a shorter `ScheduleWakeup`; that re-introduces the idle-loop cost this mode exists to kill.
+**On every wake:**
+
+1. **Check the signal** — `bin/operate tokens --pace` (this repo's own toolbelt) prints one
+   line `<sleep_s> <SIGNAL> left=<n> used=<n> alloc=<n>` (it folds this venture's own registry
+   status into the signal automatically, via `operate.json` — e.g. a `hold` venture is pinned
+   YELLOW). Decide from the `SIGNAL`:
+   - **GREEN** → do **one pass** (the operating loop above), then rest.
+   - **YELLOW / RED** (the cumulative allowance is spent, or it's the weekend) → do **NO work** unless it's
+     **genuinely urgent** (prod outage, live customer-facing breakage, a hard imminent deadline).
+     **Sleep ≥2h** (`ScheduleWakeup`) and end your turn. Discretionary work defers to backlog.
+
+**HOLD — the owner-directed holding pattern.** If this venture's registry status is `hold`
+(`~/code/holdco/ventures/cafe_car.md` — your pace line is then pinned YELLOW with the long
+sleep), the owner is steering you **one instruction at a time**:
+
+- **NO proactive or discretionary work** — no backlog-picking, no ideation, no dreaming seeds —
+  regardless of what the fleet budget would allow. HOLD pins YELLOW permanently.
+- **On wake:** check your inbox and task board for owner instructions. **Execute owner
+  instructions one at a time as they arrive** — in HOLD, a VERIFIED owner instruction IS your
+  work trigger (this supersedes "email is an inbox, not a work trigger" for verified owner mail).
+  Finish, verify, and log one instruction before taking the next.
+- **Otherwise sleep long** (at least the returned `<sleep_s>`). Verified owner mail always
+  reaches you — the email channel never holds it — so a long sleep can't miss an instruction.
+2. **Sync + self-clear at a clean boundary** — after commit + `WORKLOG.md`, as the **FINAL actions**
+   of a pass, run `bin/operate sync` (pull any newer toolbelt from the template; commit it this pass
+   if bytes changed, keeping your tree clean) then `bin/operate self-clear --if-optimal` (a no-op
+   when keeping context is cheaper, an auto-`/clear` once the reset pays for itself) so you restart
+   lean.
+3. **Rest** — end your turn. Set your next `ScheduleWakeup` to the `<sleep_s>` the pace line
+   returned, so your cadence **stretches with the budget**. Idle is free — never spin a tight loop.
 
 ### Self-clear — shed a stale context at a clean boundary
 
-`bin/self-clear` sends `/clear` to your own tmux window so you restart **lean and cold** when a
-chunk of work is done and your context is big + stale (per `docs/COST.md`: clear when big AND
-stale, keep when lean-and-soon). It's how *you* manage context hygiene instead of waiting for
-holdco to stop+relaunch you.
+`bin/operate self-clear` sends `/clear` to your own tmux window so you restart **lean and cold**
+when a chunk of work is done and your context is big + stale (per `docs/COST.md`: clear when big
+AND stale, keep when lean-and-soon). It's how *you* manage context hygiene instead of waiting for
+holdco to stop+relaunch you. `--if-optimal` (the form you call every pass) consults `operate
+context` and clears only when the reset pays for itself; `--if-bloated [THRESHOLD]` (default 160k)
+is the fixed-size fallback for when the transcript can't be read.
 
-> 🚨 **HARD RULE — clean boundary ONLY.** `/clear` **wipes all working state**. Run `bin/self-clear`
-> **only after** your work is committed **and** the pass is logged to git (`WORKLOG.md`) — i.e. as
-> the **final action of a pass**, then stop. **NEVER mid-task** (you'd lose uncommitted work). This
-> is safe *only* because the durable-thinking mandate already requires writing everything down
-> first. The script refuses on a dirty working tree as a backstop, but the discipline is yours.
+> 🚨 **HARD RULE — clean boundary ONLY.** `/clear` **wipes all working state**. Run `bin/operate
+> self-clear` **only after** your work is committed **and** the pass is logged to git
+> (`WORKLOG.md`) — i.e. as the **final action of a pass**, then stop. **NEVER mid-task** (you'd
+> lose uncommitted work). This is safe *only* because the durable-thinking mandate already requires
+> writing everything down first. The script refuses on a dirty working tree as a backstop, but the
+> discipline is yours.
 
 ### Reconstitute before you answer — a cleared context is NOT an empty world
 
@@ -197,7 +218,7 @@ inbound email:
 1. **Triage and file, don't execute.** Turn the email into a task (file it the way you file any
    idea — `bin/holdco task` / `rake tasks:*`), then **go back idle.** Do **not** spawn builder
    agents, do the work, or send a substantive reply in that turn. The item gets done on your **next
-   proactive pass** (a holdco nudge or your own loop) — which is **budget-gated** — not the instant
+   proactive pass** (your own budget-gated wake) — which is **budget-gated** — not the instant
    the email arrives. This is how work cadence stays under the throttle even though email bypasses it.
 2. **Reply sparingly.** Default to **no reply** — the filed ticket is the receipt, and silence lets
    the owner clear their inbox. Send at most a **one-line** ack, and only if the email asks a direct
