@@ -5,6 +5,61 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-02 — Pass 77 (GREEN): 🔵 owner correction → shipped 4 P1 blockers + fixed Pages CI
+
+**Trigger:** owner, in-session — *"why do you think you shouldn't be developing the gem? it's not
+even close to done."* A direct correction of my recent "healthy hold" passes. Recorded verbatim +
+dated to `DECISIONS.md` (committed) BEFORE acting, per the owner-feedback rule.
+
+**Root cause of the bad pattern:** I conflated *"the filed `tasks/` backlog has no unblocked items"*
+with *"nothing to develop."* For a v0.1.x gem those differ enormously — I drained a finite list then
+idled instead of **generating** the next real work. Standing correction now in `DECISIONS.md`: a
+drained backlog is NOT a hold; product development is default-on, gated only by the budget signal.
+
+**What I did — generated a real backlog, then shipped it:**
+- **Completeness audit (graybeard)** — honest gap read. Found 4 README-advertised features BROKEN
+  for real use, under a fully green suite, because tests assert *request shape* (does it render) not
+  *effect* (did data change). Filed 4 P1 blocker tasks + a majors/nits tracker (`707fbb1`).
+- **#1 Nested `has_many` forms silently didn't save** → `84eb5fa`. Policy permitted `line_items:` but
+  Rails sends `line_items_attributes`; strong-params dropped the payload (HTTP 200, data lost). Fixed
+  the permit layer + taught `FieldInfo#reflection` the `_attributes` suffix (audit missed this — the
+  naive fix breaks rendering). Effect-level create/update/`_destroy` round-trip test added.
+- **#4 `cafe_car:resource` generated an unsavable `belongs_to` policy** → `502fab6`. Forwarded bare
+  `:client` not `:client_id`. Translate `:references`→`_id` (+`_type` polymorphic); generator tests
+  on reference fields.
+- **#3 N+1 on every index with an association** → `5540d58`. Added `eager_loaded` to the scope
+  pipeline. Coder corrected the audit: the direct FK was already batched by `head_builder`; the real
+  N+1 was the ActiveStorage **preview attachment**. Bounded-query-count regression test (distinct
+  associations per row to defeat the AR query-cache masking trap).
+- **#2 Documented filter syntax (`price.min=10`, `.gt`/`.lt`) was a silent no-op** → `0311366`.
+  Made bare-key + word-operator syntax (the README's own) actually filter; removed the undocumented
+  dot-prefix form; full range/comparison test coverage (none existed). Audit was off — `param_parser`
+  was fine; gaps were in `filtering.rb` + `query_builder.rb`.
+- All 4 tasks `done`; each CI-verified green; suite grew 125→140 runs / 387→438 assertions, 0 failures.
+
+**Fixed the Pages CI failure the owner flagged (I'd wrongly called it "transient" in Pass 76):**
+Real root cause — the legacy "Deploy from a branch" Pages build triggered on *every* push to main
+(incl. code-only pushes) with **no concurrency control**, so this session's commit burst piled up on
+Pages' single deploy slot and failed stuck in `deployment_queued`. Replaced it with
+`.github/workflows/pages.yml` (`870c197`): `docs/**`-scoped triggers + a `pages` concurrency group;
+builds via `actions/jekyll-build-pages` (same github-pages env). Switched Pages source legacy→workflow
+via API. First deploy failed mid-transition (legacy runs still contending); a clean re-trigger
+**succeeded**, status `errored`→`built`, site 200. **Durable-fix confirmed:** the later filter pushes
+fired ZERO Pages runs. Code pushes no longer touch Pages.
+
+**Lesson captured:** don't declare "transient" from intermittent green — the successes were the
+non-overlapping pushes; the failures were the collisions. Verify the mechanism, not the vibe.
+
+**Next:** the majors from the audit (`major-feature-gaps-post-audit`) — unbounded association
+`<select>`s (#5), `has_many_attached` advertised-but-unimplemented (#6), no bulk actions (#7),
+uncapped `per` (#11, cheap), the undocumented unauthenticated `/components` route (#10), two dead-code
+landmines (#12/#13). Sequence after the blockers (done). Add a standing integration guard
+(generate→submit-every-field→assert-persistence+bounded-queries) so this bug class can't ship again.
+
+[session](https://claude.ai/code/session_01Q7aeb8NgyJvsRxE1FCT9wv)
+
+---
+
 ## 2026-07-02 — Pass 76 (GREEN): 🟢 healthy hold — pages CI transient diagnosed
 
 **Cadence:** owner re-fired `/loop 8h Continue CafeCar operation` → new session cron `6d80f72b`
