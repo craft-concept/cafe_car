@@ -1,0 +1,48 @@
+name: Deploy docs to Pages
+
+# Replaces GitHub's legacy "Deploy from a branch" Pages build, which triggered on
+# EVERY push to main (even code-only pushes that never touch docs/) with no
+# concurrency control — so bursts of commits piled up on Pages' single deployment
+# slot and failed with the deploy step stuck in `deployment_queued`. This workflow
+# only runs when docs actually change, and serializes deploys in a `pages` group so
+# they can't collide.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer docs push supersedes an in-flight one cleanly
+# (cancelled, not failed) instead of queueing behind it until the API times out.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/configure-pages@v5
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+      - uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
