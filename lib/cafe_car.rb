@@ -27,6 +27,11 @@ module CafeCar
   # of exporting a large table; truncated exports signal `X-CafeCar-Truncated`.
   mattr_accessor :csv_export_row_limit, default: 10_000
 
+  # Upper bound on an index page's `?per=`. Clamps oversized requests so a caller
+  # can't force the whole table into memory with `?per=1000000` (a DoS footgun);
+  # the effective per-page is silently capped, not rejected.
+  mattr_accessor :max_per_page, default: 200
+
   # The host's user model, resolved lazily so the constant need not exist at
   # boot. Used by CafeCar::Session for authentication.
   def self.user_class = user_class_name.to_s.constantize

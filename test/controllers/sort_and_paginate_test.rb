@@ -36,7 +36,28 @@ class SortAndPaginateTest < ActionDispatch::IntegrationTest
     assert_equal %w[C08], names, "the final page holds the remainder"
   end
 
+  test "an oversized `per` is silently clamped to CafeCar.max_per_page" do
+    owner = create(:user)
+    5.times { |i| create(:client, name: "C%02d" % i, owner:) }
+
+    with_max_per_page(3) do
+      get "/admin/clients", params: { sort: "name", per: 1_000_000 }, as: :json
+    end
+
+    assert_response :success
+    assert_equal 3, names.size, "returns exactly the cap, not the whole table"
+    assert_equal %w[C00 C01 C02], names
+  end
+
   private
 
   def names = response.parsed_body.map { _1["name"] }
+
+  def with_max_per_page(cap)
+    original = CafeCar.max_per_page
+    CafeCar.max_per_page = cap
+    yield
+  ensure
+    CafeCar.max_per_page = original
+  end
 end

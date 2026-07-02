@@ -123,7 +123,14 @@ module CafeCar
 
     def paginated(scope, page: params[:page], per: params[:per])
       return scope if request.format.csv? # CSV exports the full filtered+sorted set
-      scope.page(page).per(per)
+      scope.page(page).per(capped_per(per))
+    end
+
+    # Clamp `?per=` to `CafeCar.max_per_page` so an oversized request can't load an
+    # unbounded table into memory. A blank `per` falls through to Kaminari's default.
+    def capped_per(per)
+      return per if per.blank?
+      [ per.to_i, CafeCar.max_per_page ].min
     end
 
     def build_object
