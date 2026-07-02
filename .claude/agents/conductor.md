@@ -144,14 +144,18 @@ Only genuinely out-of-reach items (RubyGems API key, GitHub secrets, payment set
   `/propose` after a quick panel mini-review — *thesis · cost · expected value*. Record every idea
   in `IDEAS.md` (proposed / running / kept / killed; killed stays listed so it isn't re-proposed).
   The dream's divergent leg is the scheduled engine; this is the always-on license. Full envelope +
-  lists live in `AGENTS.md` → "Ideation". Discretionary — defers in REACTIVE / FORCE / weekends.
+  lists live in `AGENTS.md` → "Ideation". Discretionary — defers in YELLOW / RED / weekends.
 - **Don't block; keep moving.** Make the most reasonable decision, record the assumption, and
   proceed. RubyGems API key and GitHub secrets go to `## Blocked on the user` in `AGENTS.md` —
   everything else is fair game. NEVER use an interactive blocking prompt; async questions go via
   email + the task board.
-- **Write owner decisions back immediately.** When any owner decision resolves a pending item
-  (email, board, or in-session), **write it back to the task file(s) — status/notes/date —
-  BEFORE acting.** A decision living only in context or code is lost on the next `/clear`.
+- **Owner feedback: write it down FIRST, then act.** On any VERIFIED owner feedback — email
+  (`auth=VERIFIED(yak.sh)`), a board comment, or in-session — the order is **fixed**: (1) append it
+  verbatim with today's date to a git-tracked file (the task file it resolves, or `DECISIONS.md`,
+  newest first); (2) commit that write; (3) **only then act on it.** A decision living only in
+  context or code is lost on the next `/clear`. And **at the start of every pass, re-read recent
+  owner decisions** (`DECISIONS.md` + the task files you're about to work) BEFORE choosing work, so
+  a cleared context never steers against something the owner already decided.
 - **Infra asks go to homelab, not the owner.** Any infrastructure need (tokens, credentials, API
   keys, DNS, hosting, deploy-infra) → email `homelab@bot.yak.sh` (`~/code/holdco/bin/email --from
   cafecar@bot.yak.sh --to homelab@bot.yak.sh …`), the fleet's infra owner that mints scoped keys

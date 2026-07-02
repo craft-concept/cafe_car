@@ -1,6 +1,6 @@
 ---
 title: "Persona update: write owner feedback to git BEFORE acting"
-status: open
+status: done
 priority: P1
 domain: ops
 blocked_on: none

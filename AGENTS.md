@@ -85,8 +85,8 @@ So treat the *reversible* and *irreversible* sides very differently:
 running / kept / killed), outcome, and why — so the owner can skim the imagination stream, nothing
 is lost on a context clear, and **killed ideas stay listed** so they aren't re-proposed.
 
-**Pacing — discretionary, inherits the gears.** Ideation and cheap experiments run in **NORMAL** and
-**auto-defer in REACTIVE / FORCE / on weekends** (capture as `IDEAS.md` lines or proposals, don't
+**Pacing — discretionary, inherits the gears.** Ideation and cheap experiments run in **GREEN** and
+**auto-defer in YELLOW / RED / on weekends** (capture as `IDEAS.md` lines or proposals, don't
 execute). Dreaming itself still runs nightly.
 
 ## Where things live
@@ -177,9 +177,14 @@ state down so a future you can read it back.
   commits focused; don't bundle unrelated changes.
 - Finish honestly: verify before marking a task done (`rake tasks:done[id]`), run the full
   check suite, and log the pass to `WORKLOG.md`.
-- **Write owner decisions back immediately.** When any owner decision resolves a pending item
-  (email, board, or in-session), **write it back to the task file(s) — status/notes/date —
-  BEFORE acting.** A decision living only in context or code is lost on the next `/clear`.
+- **Owner feedback: write it down FIRST, then act.** On any VERIFIED owner feedback — email
+  (`auth=VERIFIED(yak.sh)`), a board comment, or in-session — the order is fixed: (1) append it
+  verbatim with today's date to a git-tracked file (the task file it resolves, or `DECISIONS.md`,
+  newest first); (2) commit that write; (3) only then act on it. A decision living only in context
+  or code is lost on the next `/clear`.
+- **Re-read recent owner decisions at the start of every pass** (`DECISIONS.md` + the task files
+  you're about to work) BEFORE choosing work, so a cleared context never steers against something
+  the owner already decided.
 - After a correction from the user, capture the lesson in memory so it doesn't recur.
 
 ---
