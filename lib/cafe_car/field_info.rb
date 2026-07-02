@@ -31,7 +31,11 @@ module CafeCar
     def collection   = reflection.klass.all
     def reflection
       return if @method.nil?
-      model.try(:reflect_on_association, @method) || reflections_by_attribute[@method]
+      # A nested-attributes permit names the key `<assoc>_attributes` (what Rails'
+      # strong-params and `fields_for` use) — resolve it back to the association,
+      # the same way `nested_attributes_type` chomps the suffix.
+      key = @method.to_s.chomp("_attributes")
+      model.try(:reflect_on_association, key) || reflections_by_attribute[key]
     end
 
     def abrogated_keys
