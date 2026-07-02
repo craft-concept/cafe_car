@@ -25,7 +25,18 @@ class CafeCar::ResourceGenerator < Rails::Generators::NamedBase
   # generator's `field:type:index` form. Forwarding them lets the policy list
   # real permitted attributes instead of falling back to model introspection,
   # which can't see a model that isn't a loaded constant yet mid-run.
-  def field_names = attributes.map { _1.to_s.split(":").first }
+  #
+  # A `:references`/`belongs_to` field must be permitted by its foreign key
+  # (`invoice_id`), not the bare association (`invoice`) — that's the column
+  # strong-params actually receives. Polymorphic refs need `_id` + `_type`
+  # (mirrors notes_generator's hardcoded `notable_id notable_type`).
+  def field_names
+    attributes.flat_map do |attr|
+      next attr.name unless attr.reference?
+
+      [ "#{attr.name}_id", ("#{attr.name}_type" if attr.polymorphic?) ].compact
+    end
+  end
 
   def assign_controller_names!(...)
     if options[:model_name].blank?

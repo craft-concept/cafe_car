@@ -10,6 +10,23 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ## [Unreleased]
 
+### Fixed
+
+- Nested `accepts_nested_attributes_for` forms now persist. The form-inference layer
+  resolved a nested-attributes permit only under the bare association name
+  (`line_items`), but Rails' `fields_for` and strong-params name the key
+  `line_items_attributes`. `CafeCar::FieldInfo#reflection` now resolves the
+  `<assoc>_attributes` key back to its association (mirroring `nested_attributes_type`),
+  so a policy that permits `line_items_attributes: [...]` both renders the repeatable
+  fields and saves the child records. Previously such a form returned HTTP 200 while
+  silently dropping every nested row; with `:id` + `:_destroy` permitted, existing
+  children now update and delete via `_destroy` too.
+- `cafe_car:resource` now permits a `:references`/`belongs_to` field by its foreign key.
+  `rails g cafe_car:resource Order client:references` generated a policy permitting the
+  bare `:client`, but the column strong-params receives is `:client_id`, so the
+  association silently could not be saved. References are translated to `<name>_id`
+  (and `<name>_type` for `references{polymorphic}`) before forwarding to `cafe_car:policy`.
+
 ## [0.2.1] - 2026-07-01
 
 ### Fixed

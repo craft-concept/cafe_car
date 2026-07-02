@@ -59,6 +59,24 @@ class CafeCar::ResourceGeneratorTest < Rails::Generators::TestCase
     refute_includes args, "amount:integer"
   end
 
+  test "forwards a :references field as its foreign key, not the bare association" do
+    run_generator [ "admin/invoices", "client:references", "amount:integer" ]
+
+    _name, args = call_for("cafe_car:policy")
+    # strong-params receives `client_id`, never bare `client`.
+    assert_includes args, "client_id"
+    refute_includes args, "client"
+  end
+
+  test "forwards a polymorphic :references field as both _id and _type" do
+    run_generator [ "admin/invoices", "owner:references{polymorphic}" ]
+
+    _name, args = call_for("cafe_car:policy")
+    assert_includes args, "owner_id"
+    assert_includes args, "owner_type"
+    refute_includes args, "owner"
+  end
+
   test "drives all three sub-generators" do
     run_generator [ "admin/invoices" ]
 
@@ -102,6 +120,18 @@ class CafeCar::ResourceGeneratorInlineTest < Rails::Generators::TestCase
     # The controller's route landed in the destination's routes file...
     assert_file "config/routes.rb" do |routes|
       assert_match(/resources :widgets/, routes)
+    end
+  end
+
+  # The whole point of blocker #4: a belongs_to must land in the emitted policy
+  # as its foreign key so the association is actually savable. Asserts the real
+  # generated file, not just the delegation.
+  test "emits a savable foreign-key permit for a belongs_to field" do
+    run_generator [ "admin/widgets", "client:references", "size:integer" ]
+
+    assert_file "app/policies/admin/widget_policy.rb" do |policy|
+      assert_match(/:client_id/, policy)
+      refute_match(/[^_]:client\b/, policy)
     end
   end
 
