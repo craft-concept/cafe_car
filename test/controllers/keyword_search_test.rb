@@ -25,16 +25,16 @@ class KeywordSearchTest < ActionDispatch::IntegrationTest
     assert_select "form.search input[name=q][value=zephyr]"
   end
 
-  test "search preserves dot-filters and sort" do
+  test "search preserves filters and sort" do
     owner = create(:user)
     create(:client, name: "Zephyr Corp", owner:)
 
-    get "/admin/clients", params: { q: "zephyr", sort: "name", ".name" => "Zephyr Corp" }
+    get "/admin/clients", params: { q: "zephyr", sort: "name", "name" => "Zephyr Corp" }
 
     assert_response :success
     assert_includes response.body, "Zephyr Corp"
     # the search form carries the active filter + sort so resubmitting keeps them
-    assert_select %(form.search input[type=hidden][name=".name"][value="Zephyr Corp"])
+    assert_select %(form.search input[type=hidden][name="name"][value="Zephyr Corp"])
     assert_select "form.search input[type=hidden][name=sort][value=name]"
   end
 

@@ -1,8 +1,18 @@
 module CafeCar::Controller::Filtering
   extend ActiveSupport::Concern
 
+  # URL params CafeCar consumes for control flow (sorting, pagination, view
+  # switching, keyword search) plus Rails' routing/form internals. Everything
+  # else on an index request is treated as a filter, so a bare `?price.min=10`
+  # or `?name=Widget` reaches the query DSL without a namespacing prefix.
+  CONTROL_PARAMS = %w[
+    controller action format id
+    sort page per view tab q
+    _method authenticity_token commit utf8 button _
+  ].freeze
+
   included do
-    helper_method :parsed_params, :dot_params, :filtered?, :search_term
+    helper_method :parsed_params, :filter_params, :filtered?, :search_term
   end
 
   private
@@ -22,14 +32,18 @@ module CafeCar::Controller::Filtering
   # (otherwise the non-String would reach the query DSL and raise a 500).
   def search_term = (params[:q] if params[:q].is_a?(String)).presence
 
-  def dot_params
-    request.params.slice(*request.params.keys.grep(/^\./))
+  # Raw (unparsed) filter params — every request param that isn't a control
+  # param — for round-tripping the active filter into hidden form fields so a
+  # search or sort resubmission keeps it.
+  def filter_params
+    request.params.except(*CONTROL_PARAMS)
   end
 
   def parsed_params
     @parsed_params ||=
       if request.get? || request.head?
-        CafeCar::ParamParser.new(request.params).parsed
+        parsed = CafeCar::ParamParser.new(request.params).parsed
+        parsed.merge("" => parsed.except("", *CONTROL_PARAMS))
       else
         request.params
       end

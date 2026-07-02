@@ -36,7 +36,7 @@ class CsvExportTest < ActionDispatch::IntegrationTest
     create(:client, name: "Alpha", owner:)
     create(:client, name: "Beta", owner:)
 
-    get "/admin/clients.csv", params: { ".name" => "Alpha" }
+    get "/admin/clients.csv", params: { "name" => "Alpha" }
 
     assert_equal %w[Alpha], names
   end

@@ -24,6 +24,14 @@ module CafeCar
       end
     end
 
+    # Word-form comparison operators for URL filters — `price.min=10` parses to
+    # `{ "price" => { "min" => "10" } }`, and each word maps to an Arel predicate.
+    # `min`/`max` read friendlier than `gte`/`lte` and are the documented spelling.
+    OPS = {
+      "eq"  => "==", "gt"  => ">",  "lt"  => "<",
+      "gte" => ">=", "lte" => "<=", "min" => ">=", "max" => "<="
+    }.freeze
+
     attr_reader :scope
 
     def initialize(scope)
@@ -126,9 +134,16 @@ module CafeCar
         @scope.where!(arel(key).matches_regexp(value.source, !value.casefold?))
       in _, Op
         @scope.where!(parse(key, value).arel(arel(key)))
+      in _, Hash if operators?(value)
+        value.each { |word, rhs| attribute!(key, Op.new(OPS[word.to_s], rhs)) }
       else @scope.where!(key => parse(key, value))
       end
     end
+
+    # A filter value like `{ "min" => 10, "max" => 50 }` — every key a known
+    # comparison operator — desugars to `>= 10 AND <= 50` rather than an
+    # equality against the literal hash.
+    def operators?(value) = value.any? && value.keys.all? { OPS.key?(_1.to_s) }
 
     def association!(name, value, ...)
       update! do

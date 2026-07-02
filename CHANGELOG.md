@@ -12,6 +12,17 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Fixed
 
+- The documented URL filter syntax now works. Filtering is a headline feature,
+  but bare filter keys were silently dropped: `?price.min=10` or `?name=Widget`
+  returned the full, unfiltered result set with no error, so a developer who
+  copy-pasted a README example saw nothing happen. Two gaps caused it — only
+  literal leading-dot keys (`.name`) reached the query DSL, and the `.min` /
+  `.max` / `.gt` / `.lt` / `.eq` word-form operators were never interpreted.
+  Now every non-control request param is treated as a filter (routed through
+  the query DSL), and the word-form operators map to their comparisons
+  (`min`/`max` alias `gte`/`lte`). Range (`created_at=2024-01-01..2024-12-31`)
+  and array/IN (`tags=a,b,c`) filters compose with them. The former
+  leading-dot form is removed in favor of the documented bare-key syntax.
 - Index pages now eager-load the associations they render, so a table is a
   bounded number of queries instead of one-per-row-per-association (N+1). The
   scope pipeline `includes` each displayed `belongs_to`/`has_many` column and

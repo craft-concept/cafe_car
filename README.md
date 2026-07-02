@@ -516,14 +516,16 @@ CafeCar provides advanced filtering with minimal configuration.
 /products?name=Widget&price.min=10&price.max=50&created_at=2024-01-01..2024-12-31
 ```
 
-**Filter operators:**
+**Filter operators** — a bare column key filters that column; a `.operator`
+suffix compares it:
 
-- **Range queries**: `created_at=2024..2025-01-01`
-- **Comparisons**: `price.min=10`, `price.max=50`
-- **Greater than**: `price.gt=10` or `price=>10`
-- **Less than**: `price.lt=50` or `price=<50`
-- **Equals**: `status=active` or `status.eq=active`
-- **Arrays**: `tags=red,blue,green`
+- **Equals**: `status=active` (or `status.eq=active`)
+- **Greater / less than**: `price.gt=10`, `price.lt=50`
+- **At least / at most**: `price.min=10`, `price.max=50` (aliases: `price.gte`, `price.lte`)
+- **Range**: `created_at=2024-01-01..2024-12-31` (`...` for an exclusive end)
+- **Arrays (IN)**: `tags=red,blue,green`
+
+Combine them freely — `?price.min=10&price.max=50` reads as `price BETWEEN 10 AND 50`.
 
 **Sorting:**
 

@@ -6,4 +6,4 @@
   = Button href: csv_url, tip: "Download CSV" do
     = icon(:download)
 
-= link(model.build).new(class: ui.Button(:primary).class_name, params: dot_params) { icon(:plus) + _1}
+= link(model.build).new(class: ui.Button(:primary).class_name, params: filter_params) { icon(:plus) + _1}
