@@ -29,7 +29,7 @@ module CafeCar
     def rich_text?   = reflection&.name =~ /^rich_text_(\w+)$/
     def attachment?  = model.reflect_on_attachment(method)
     def multiple?    = attachment?&.macro == :has_many_attached
-    def collection   = reflection.klass.all
+    def collection   = reflection.klass.limit(CafeCar.max_collection_options)
     def reflection
       return if @method.nil?
       # A nested-attributes permit names the key `<assoc>_attributes` (what Rails'

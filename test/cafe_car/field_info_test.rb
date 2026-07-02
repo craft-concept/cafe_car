@@ -37,5 +37,27 @@ module CafeCar
       assert_nil info(Client, :name).nested_attributes_type
       assert_equal :nested, info(Invoice, :line_items).nested_attributes_type
     end
+
+    # A `belongs_to` select must not load the whole target table — `collection`
+    # caps the rows at `CafeCar.max_collection_options` on the SQL relation, so a
+    # 10k-row association renders at most that many `<option>`s.
+    test "collection is capped at CafeCar.max_collection_options" do
+      owner = User.create!(name: "Owner", email: "owner@example.com", password: "secret123")
+      5.times { |i| Client.create!(name: "Client #{i}", owner:) }
+
+      with_max_collection_options(3) do
+        assert_equal 3, info(Invoice, :client).collection.to_a.size
+      end
+    end
+
+    private
+
+    def with_max_collection_options(cap)
+      original = CafeCar.max_collection_options
+      CafeCar.max_collection_options = cap
+      yield
+    ensure
+      CafeCar.max_collection_options = original
+    end
   end
 end

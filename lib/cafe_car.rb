@@ -32,6 +32,13 @@ module CafeCar
   # the effective per-page is silently capped, not rejected.
   mattr_accessor :max_per_page, default: 200
 
+  # Upper bound on the number of `<option>`s an association select loads. Bounds
+  # the memory/latency cost of rendering a `belongs_to`/`has_many` field on every
+  # form and filter sidebar; without it a 10k-row association loads the whole
+  # table into memory each request. (A searchable/remote select is the fix for
+  # associations larger than this — a separate follow-up.)
+  mattr_accessor :max_collection_options, default: 100
+
   # The host's user model, resolved lazily so the constant need not exist at
   # boot. Used by CafeCar::Session for authentication.
   def self.user_class = user_class_name.to_s.constantize
