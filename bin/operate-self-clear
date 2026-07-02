@@ -1,43 +1,36 @@
 #!/usr/bin/env bash
 #
-# operate-self-clear — /clear THIS session at a clean boundary (verdict/size-gated).
+# operate-self-clear — declare a clean-boundary READY-MARKER for the supervisor's
+# idle-clear checker. (Formerly it queued `/clear` straight to this pane.)
 #
-# Sends `/clear` to this operator's own tmux window so a cold-reactive session can
-# go lean+cold on its own instead of waiting for holdco to stop+relaunch it. See
-# docs/COST.md: clear when context is big AND stale.
+# WHY A MARKER, NOT A DIRECT /clear: clearing AT the boundary — while the prompt
+# cache is still warm — throws away a cache that a near-term follow-up (an owner
+# message, an email event, a task notification) could have ridden at 0.1×. The only
+# time a clear is free is AFTER the ~5-min cache TTL has expired, and this session
+# can't wait for that (it's about to stop). So we DECLARE readiness here and let
+# holdco's supervisor cron (`bin/holdco-idle-clear`) do the clear once we have
+# actually gone idle. See docs/designs/2026-07-02-consent-based-idle-clear.md.
 #
-# HOW: a process running inside a tmux pane inherits $TMUX_PANE (the pane id, e.g.
-# "%7"). We `tmux send-keys` `/clear` + Enter to that pane. The keystrokes buffer
-# at the pane's input and submit the instant this turn ends and the operator
-# returns to its prompt — so call self-clear as the FINAL action of a pass, then stop.
+# WHAT IT DOES: writes a marker file (SESSION, CWD, PANE, TS, CTX_TOKENS) into the
+# shared marker dir (default ~/.cache/operate-idle-clear, keyed by session id). The
+# supervisor reads it, and — only once this session is idle past the cache TTL, its
+# context is worth clearing (size gate), the pane is at rest, the tree is clean, and
+# no human is typing — sends the `/clear`. Deferring is always free.
 #
-# 🚨 HARD RULE — clean boundary ONLY. `/clear` WIPES all working state. Run this
-# ONLY after your work is committed AND the pass is logged to git (WORKLOG.md).
-# NEVER mid-task. As a safety net this script REFUSES on a dirty working tree
-# (uncommitted tracked/staged changes); pass --force to override for the rare case
-# of intentional untracked scratch you don't commit.
+# Declaring is UNCONDITIONAL at a clean boundary: judging whether the clear is
+# worthwhile (size) and safe (idle, pane at rest, human-in-the-pane) is the
+# supervisor's job now, not this session's. The one precondition enforced here is the
+# clean boundary itself — a dirty working tree (excluding volatile channel-rewritten
+# paths like data/mail) is NOT a boundary, so we decline (no marker) unless --force.
+# `/clear` never touches the working tree, so leaving volatile mail uncommitted is safe.
 #
-# --if-optimal — VERDICT-GATED self-clear (the every-pass default). Runs `operate
-# context` and clears ONLY when its verdict is CLEAR (the cost-based "reset is
-# cheaper than carrying this context" rule). KEEP / UNKNOWN (no transcript, no jq)
-# → SILENT no-op, exit 0. This replaces the blunt fixed-size gate with the cost verdict.
-# ABSOLUTE CEILING: the cost verdict KEEPs a continuously-WARM context at ANY size
-# (0.1x cache reads stay cheap), so a warm operator can ride to auto-compact. To
-# stop that, --if-optimal ALSO forces CLEAR when this session's own CTX_TOKENS is
-# at/over SELF_CLEAR_CEILING_TOKENS (default 175000; override via env or operate.json
-# self_clear.ceiling_tokens) — regardless of warmth. The decision line names WHY.
+# 🚨 Call this as the FINAL action of a pass, AFTER your work is committed and the
+# pass is logged to git (WORKLOG.md), then stop. Write your `.operate/wake-brief.md`
+# note-to-self first (a SessionStart hook re-injects it after the clear).
 #
-# --if-bloated [THRESHOLD] — SIZE-GATED fallback for when the transcript can't be
-# read. Reads THIS session's own context size (CTX_TOKENS) from its usage cache and
-# clears ONLY if it's at/over THRESHOLD (default 160000; override with the positional
-# arg, $SELF_CLEAR_BLOAT_TOKENS, or self_clear.bloat_threshold_tokens in operate.json).
-# When lean, unknown, or (without --force) dirty, it's a SILENT no-op that exits 0.
-#
-# Both gated modes no-op safely without $TMUX_PANE and on a dirty tree, so a
-# self-looping operator can call one unconditionally as the FINAL action of every
-# pass and only actually shed context when it's worth it.
-#
-# USAGE: operate self-clear [--if-optimal | --if-bloated [THRESHOLD]] [--force]
+# USAGE: operate self-clear [--force]
+#   (--if-optimal / --if-bloated [N] are accepted as deprecated no-op aliases so an
+#    un-migrated persona keeps declaring correctly after `operate sync` pulls this.)
 set -euo pipefail
 
 SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -52,121 +45,62 @@ CACHE_DIR="${CACHE_DIR:-}"
 [ -n "$CACHE_DIR" ] || CACHE_DIR="$(untilde "$(cfg tokens.usage_dir)")"
 [ -n "$CACHE_DIR" ] || CACHE_DIR="$HOME/.cache/claude-usage"
 
-# Absolute-size ceiling for --if-optimal: force a clear at/above this many context
-# tokens even when the cache is warm (the cost verdict would otherwise KEEP forever).
-CEILING_TOKENS="${SELF_CLEAR_CEILING_TOKENS:-}"
-[ -n "$CEILING_TOKENS" ] || CEILING_TOKENS="$(cfg self_clear.ceiling_tokens)"
-[ -n "$CEILING_TOKENS" ] || CEILING_TOKENS=175000
+PROJECTS_DIR="${CLAUDE_PROJECTS_DIR:-}"
+[ -n "$PROJECTS_DIR" ] || PROJECTS_DIR="$(untilde "$(cfg context.projects_dir)")"
+[ -n "$PROJECTS_DIR" ] || PROJECTS_DIR="$HOME/.claude/projects"
 
-# Read THIS session's own context size (CTX_TOKENS) into $ctx from the usage cache:
-# one KEY=VALUE file per session (written by the statusline) whose CWD= equals this
-# repo root. Sets $ctx to the integer token count, or "" when unknown. Self-clear
-# lives in a venture repo, so it reads the cache directly (no shared lib).
-read_ctx_tokens() {
-	ctx=""
-	shopt -s nullglob
-	local f
-	for f in "$CACHE_DIR"/usage.*; do
-		[[ "$(sed -n 's/^CWD=//p' "$f" | head -1)" == "$PWD" ]] || continue
-		ctx="$(sed -n 's/^CTX_TOKENS=//p' "$f" | head -1)"
-		break
-	done
-}
-
-# Is the working tree dirty in a way that should BLOCK a clear? A dirty tree means
-# uncommitted operator work — but the email channel rewrites data/mail/*.jsonl (a
-# git-TRACKED file) continuously, which is not "work" and must never jam the gate.
-# `/clear` wipes only Claude context, never the working tree, so leaving volatile
-# mail uncommitted is safe. Exclude it with a native git pathspec (robust vs. line
-# parsing). Returns 0 (dirty) only when non-volatile changes remain.
-tree_dirty() {
-	[ -n "$(git status --porcelain -- . ':(exclude)data/mail' 2>/dev/null)" ]
-}
+MARKER_DIR="${OPERATE_MARKER_DIR:-}"
+[ -n "$MARKER_DIR" ] || MARKER_DIR="$(untilde "$(cfg self_clear.marker_dir)")"
+[ -n "$MARKER_DIR" ] || MARKER_DIR="$HOME/.cache/operate-idle-clear"
 
 force=0
-if_bloated=0
-if_optimal=0
-threshold_arg=""
 for a in "$@"; do
 	case "$a" in
 	--force) force=1 ;;
-	--if-bloated) if_bloated=1 ;;
-	--if-optimal) if_optimal=1 ;;
-	[0-9]*) threshold_arg="$a" ;;
+	--if-optimal | --if-bloated) ;;                # deprecated aliases — declaring is now unconditional
+	[0-9]*) ;;                                      # deprecated --if-bloated threshold arg
 	-h | --help) awk 'NR==1{next} /^#/{sub(/^# ?/,"");print;next}{exit}' "$0"; exit 0 ;;
 	*) echo "self-clear: unknown arg '$a'" >&2; exit 2 ;;
 	esac
 done
 
-# --- VERDICT + CEILING GATE (--if-optimal only): clear when EITHER this session's
-# own size is at/over the absolute ceiling (warm or not) OR `operate context`'s
-# cost verdict is CLEAR. Anything else (KEEP below the ceiling, or UNKNOWN when the
-# transcript / jq is unavailable) is a silent no-op — safe to call every pass.
-if [[ "$if_optimal" == 1 ]]; then
-	read_ctx_tokens
-	reason=""
-	if [[ "$ctx" =~ ^[0-9]+$ ]] && (( ctx >= CEILING_TOKENS )); then
-		reason="ceiling ($((ctx / 1000))k >= $((CEILING_TOKENS / 1000))k)"
-	else
-		ctx_bin="$SELF_DIR/operate-context"
-		verdict=""
-		[ -x "$ctx_bin" ] && verdict="$("$ctx_bin" 2>/dev/null | tail -n1 | awk '{print $1}')"
-		if [[ "$verdict" != "CLEAR" ]]; then
-			echo "self-clear: context verdict ${verdict:-UNKNOWN} — kept."
-			exit 0
-		fi
-		reason="cost verdict CLEAR"
-	fi
-	# Clearing, but honor the clean-boundary doctrine: a dirty tree no-ops (volatile
-	# channel-rewritten mail is excluded from the dirtiness test — see tree_dirty).
-	if [[ "$force" != 1 ]] && tree_dirty; then
-		echo "self-clear: $reason but tree DIRTY — commit + log your pass first; kept."
-		exit 0
-	fi
-	echo "self-clear: $reason — clearing."
+# THIS session's own CTX_TOKENS (informational for the marker) from the usage cache:
+# one KEY=VALUE file per session (statusline-written) whose CWD= equals this repo root.
+ctx=""
+shopt -s nullglob
+for f in "$CACHE_DIR"/usage.*; do
+	[[ "$(sed -n 's/^CWD=//p' "$f" | head -1)" == "$PWD" ]] || continue
+	ctx="$(sed -n 's/^CTX_TOKENS=//p' "$f" | head -1)"
+	break
+done
+
+# THIS session's id = the basename of its most-recent transcript for this cwd.
+session=""
+munged="$(printf '%s' "$PWD" | sed 's/[^a-zA-Z0-9]/-/g')"
+tdir="$PROJECTS_DIR/$munged"
+[ -d "$tdir" ] && { latest="$(ls -t "$tdir"/*.jsonl 2>/dev/null | head -1)"; [ -n "$latest" ] && session="$(basename "$latest" .jsonl)"; }
+
+# Clean-boundary guard: a dirty tree (volatile channel-rewritten mail excluded — a
+# native git pathspec, robust vs. line parsing) is NOT a boundary; decline.
+if [[ "$force" != 1 ]] && [ -n "$(git status --porcelain -- . ':(exclude)data/mail' 2>/dev/null)" ]; then
+	echo "self-clear: working tree is DIRTY — commit + log your pass first (or --force); not declared."
+	exit 0
 fi
 
-# --- SIZE GATE (--if-bloated only): decide from THIS session's own context size.
-# All outcomes here EXIT 0 without ever needing $TMUX_PANE, so this is safe to call
-# every pass. Only a genuinely-bloated (and clean) tree falls through to clear.
-if [[ "$if_bloated" == 1 ]]; then
-	threshold="${threshold_arg:-${SELF_CLEAR_BLOAT_TOKENS:-}}"
-	[ -n "$threshold" ] || threshold="$(cfg self_clear.bloat_threshold_tokens)"
-	[ -n "$threshold" ] || threshold=160000
-	# Read our own CTX_TOKENS from the usage cache (see read_ctx_tokens).
-	read_ctx_tokens
-	if ! [[ "$ctx" =~ ^[0-9]+$ ]]; then
-		echo "self-clear: unknown ctx (no usage cache for $PWD) — kept."
-		exit 0
-	fi
-	if (( ctx < threshold )); then
-		printf 'self-clear: lean (%dk < %dk threshold), kept.\n' "$((ctx / 1000))" "$((threshold / 1000))"
-		exit 0
-	fi
-	if [[ "$force" != 1 ]] && tree_dirty; then
-		echo "self-clear: bloated ($ctx ctx) but tree DIRTY — commit + log your pass first; kept."
-		exit 0
-	fi
-	echo "self-clear: bloated ($ctx >= $threshold) — clearing."
-fi
-
+# The supervisor clears by pane id, so a marker without one is useless — no-op.
 if [[ -z "${TMUX_PANE:-}" ]]; then
-	echo "self-clear: not running inside a tmux pane (no \$TMUX_PANE) — refusing." >&2
-	exit 1
+	echo "self-clear: not inside a tmux pane (no \$TMUX_PANE) — nothing for the supervisor to clear; skipped."
+	exit 0
 fi
 
-# Safety net for the HARD RULE: never wipe an uncommitted working tree. In the
-# gated modes this was already soft-checked above (a dirty tree no-ops there);
-# here it's the hard-error guard for the plain invocation. --force overrides both.
-if [[ "$if_bloated" != 1 && "$if_optimal" != 1 && "$force" != 1 ]] && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-	if tree_dirty; then
-		echo "self-clear: working tree is DIRTY — commit + log your pass first (or --force)." >&2
-		echo "self-clear: /clear wipes working state; refusing to clear mid-work." >&2
-		exit 1
-	fi
-fi
+mkdir -p "$MARKER_DIR"
+key="${session:-$munged}"
+{
+	printf 'SESSION=%s\n' "$session"
+	printf 'CWD=%s\n' "$PWD"
+	printf 'PANE=%s\n' "$TMUX_PANE"
+	printf 'TS=%s\n' "$(date +%s)"
+	printf 'CTX_TOKENS=%s\n' "$ctx"
+} >"$MARKER_DIR/$key.marker"
 
-# Literal text then a separate Enter — the operator's own /clear injection.
-tmux send-keys -t "$TMUX_PANE" -l "/clear"
-tmux send-keys -t "$TMUX_PANE" Enter
-echo "self-clear: queued /clear to $TMUX_PANE — it submits when this turn ends. Stop now."
+echo "self-clear: declared ready-marker (${ctx:-?} ctx, pane $TMUX_PANE) — supervisor clears once idle ≥5m. Stop now."
