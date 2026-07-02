@@ -112,6 +112,7 @@ module CafeCar
       when :decimal  then :text_field
       when :text, :json then :text_area
       when :integer  then :number_field
+      when :boolean  then :check_box
       when :date     then :date_field
       when :datetime then :datetime_field
       when :password then :password_field

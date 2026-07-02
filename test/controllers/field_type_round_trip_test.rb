@@ -53,6 +53,16 @@ class FieldTypeRoundTripTest < ActionDispatch::IntegrationTest
     assert_equal BigDecimal("19.99"), line_item.reload.price
   end
 
+  round_trip "boolean         → Invoice#paid" do
+    invoice = create(:invoice, paid: false)
+    # Unlike a successful update (which redirects), the edit form actually renders the
+    # boolean field — the render-layer path that a missing :boolean input branch 500s.
+    get url_for(controller: "admin/#{invoice.model_name.plural}", action: :edit, id: invoice.id)
+    assert_response :success, "edit form with a boolean field failed to render"
+    submit invoice, paid: "1"
+    assert invoice.reload.paid, "boolean did not flip to true through the update path"
+  end
+
   round_trip "date            → Invoice#issued_on" do
     invoice = create(:invoice)
     submit invoice, issued_on: "2026-03-04"

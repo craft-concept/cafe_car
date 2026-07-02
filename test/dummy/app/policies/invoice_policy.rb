@@ -11,7 +11,7 @@ class InvoicePolicy < ApplicationPolicy
     # Rails' `fields_for` submits nested associations under `<assoc>_attributes`,
     # and `allow_destroy: true` needs `:id` (to target existing rows) + `:_destroy`
     # permitted — not the bare `line_items:` a scalar-only permit would use.
-    [ *(:client_id if object.new_record?), :number, :issued_on, :note,
+    [ *(:client_id if object.new_record?), :number, :issued_on, :note, :paid,
       line_items_attributes: [ :id, :_destroy, *policy(LineItem).permitted_attributes ] ]
   end
 
