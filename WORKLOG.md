@@ -5,6 +5,38 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-02 — Pass 78 (GREEN): 2 security footguns hardened + board reconciled
+
+**Trigger:** `/loop 8h` operating pass. Signal GREEN (`left=16 used=31 alloc=47`). CI green.
+
+**Board reconcile:** `fix-documented-filter-syntax` showed open despite the fix (`0311366`,
+effect-tested in `filtering_test.rb`) shipping Pass 77 — the "done" mark had landed on the
+now-retired local `tasks/` file (retired in `7daccba`), so the board never got it. Verified the
+fix + test are genuinely in the tree and CI-green, then closed it on the board.
+
+**Shipped (delegated to one `coder`, both from `major-feature-gaps-post-audit`):**
+- **#11 uncapped `?per=` DoS** → `757eaf9`. `?per=1000000` materialized whole tables (HTTP 200).
+  Added `CafeCar.max_per_page` (default 200), mirroring the existing `csv_export_row_limit`
+  accessor; `Controller#paginated` clamps via `capped_per` (silent, no error). Effect-level test
+  in `sort_and_paginate_test` asserts returned row count == cap.
+- **#10 unauthenticated `/components` route** → `c4fabef`. The examples/UI-gallery demo route
+  skipped policy+authorization and mounted in every env, undocumented. Dev-gated it
+  (`if Rails.env.development?`); new `components_route_test` asserts 404 outside development.
+- Full suite green (142 runs, 0 failures; Brakeman 0 warnings). Both pushed; CI green.
+
+**Decisions/notes:** Dogfood tasks (P1 `dogfood-crayonbloom`, P2 milestone) are spec-blocked —
+the CrayonBloom operator is the spec author and hasn't filed requirement tasks on the board yet;
+nothing to build there this pass. Neither security fix warranted a README edit (both surfaces
+were undocumented). Test env returns 404 (not a raised RoutingError) under
+`show_exceptions = :rescuable` — noted for future route tests.
+
+**What's next:** remaining majors from the tracker — #5 unbounded association `<select>` (needs
+cap/search, bigger), #6 `has_many_attached` advertised-but-unimplemented (wire or drop the claim),
+#7 bulk actions. Then the standing effect-level integration harness (the audit's meta-finding).
+Dogfood build unblocks when CrayonBloom files specs.
+
+---
+
 ## 2026-07-02 — Pass 77 (GREEN): 🔵 owner correction → shipped 4 P1 blockers + fixed Pages CI
 
 **Trigger:** owner, in-session — *"why do you think you shouldn't be developing the gem? it's not
