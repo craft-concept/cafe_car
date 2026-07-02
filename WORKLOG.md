@@ -5,6 +5,33 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-02 — Pass 82 (GREEN): fixed the boolean render-crash the harness just found
+
+**Trigger:** continued from Pass 81 (harness surfaced the bug hot). Signal GREEN. CI green.
+
+**Shipped (delegated to one `coder`):**
+- **`3927a00`** — booleans advertised (README:488) but `FieldInfo#input` had no `:boolean` branch →
+  any new/edit form with a boolean field was a 500. Fix: `when :boolean then :check_box` (generic
+  `_field` partial dispatches to `check_box` — no new partial). Added a `paid:boolean` column to the
+  dummy `Invoice` + `:paid` to its policy (**load-bearing:** Invoice uses a hand-written policy, so
+  the field neither rendered nor persisted without the permit), and **re-included the boolean case**
+  in the round-trip harness (asserts the edit form renders AND `false→true` persists on reload).
+- Suite green (159 runs, 0 failures; Brakeman 0). Pushed; CI green. (Coder chased transient local
+  `CsvExportTest` flakiness from a mid-reload test DB — not a regression; CI builds clean from
+  `schema.rb`, which carries the new column.)
+
+**Session tally (Passes 78→82, all GREEN):** shipped **6 audit findings + 1 standing harness** —
+#11 `per=` DoS cap, #10 `/components` dev-gate, #6 `has_many_attached` wired (+ latent `eager_loaded`
+crash), #5 association-select cap, the effect-level round-trip harness, and the boolean render-crash
+it caught. Every advertised-but-broken feature from the completeness audit is now fixed AND guarded
+by an effect-level test.
+
+**What's next:** #7 bulk actions (biggest remaining major — multi-row UI + batch authz); minors #9
+theming hooks, #8 dashboard positioning; the deferred searchable/remote select. Dogfood build stays
+spec-blocked on CrayonBloom specs.
+
+---
+
 ## 2026-07-02 — Pass 81 (GREEN): standing effect-level harness — and it caught a new bug immediately
 
 **Trigger:** `/loop 8h` re-fire. Signal GREEN (`left=13`). CI green.
