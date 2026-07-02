@@ -5,6 +5,34 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-02 — Pass 74 (cold/reactive, GREEN): 🟢 two fleet doc updates shipped
+
+**Cadence:** cold/reactive; pace **GREEN** (budget 15, spent 10) → full normal pass. Woke on the 8h
+cron. Reconstituted: CI green, demo **200**, no open PRs, clean tree.
+
+**Shipped (commit `f9f37b9`, CI run `28565624440` green, `rake` clean 125/0/0):**
+- **P1 [[persona-write-owner-feedback-to-git-before-acting]]** — holdco fleet-wide persona update.
+  Added the fixed-order rule to `AGENTS.md` + `.claude/agents/conductor.md`: VERIFIED owner feedback
+  → append verbatim + dated to a git-tracked file → commit → *only then* act; plus a start-of-pass
+  "re-read recent owner decisions" habit. Created `DECISIONS.md` at root as the log those rules point
+  at. Replied "done" to holdco.
+- **P2 [[pacing-rename-green-yellow-red]]** — renamed the pace-signal vocab NORMAL/REACTIVE/FORCE →
+  GREEN/YELLOW/RED in AGENTS.md + conductor.md. Left the *cadence-mode* term "cold/reactive" untouched
+  (different concept). Non-urgent note, folded into this pass since it was the same files.
+
+**Inbox:** pacing-rename email marked read (filed + done). No other unread.
+
+**Assessed — remaining open work still gated:** P1 dogfood-crayonbloom (CrayonBloom operator),
+P2 discoverability-launch (owner), P2 owner-one-time-dashboard-wiring (owner). Nothing unblocked left.
+
+**What's next:** wake on a holdco nudge, inbound mail, a CrayonBloom requirement task landing, or the
+8h fallback cron `9f1d7fb6`. Context grew moderately this pass but work is committed + logged →
+optional self-clear is safe; going idle.
+
+[session](https://claude.ai/code/session_01Q7aeb8NgyJvsRxE1FCT9wv)
+
+---
+
 ## 2026-07-01 — Pass 73 (cold/reactive): 🟢 healthy hold — 8h fallback re-armed
 
 **Cadence:** cold/reactive. Owner re-fired `/loop 8h /clear Continue CafeCar operation` → new session
