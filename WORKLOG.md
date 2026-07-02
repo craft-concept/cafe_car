@@ -5,6 +5,31 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-02 — Pass 80 (GREEN): capped unbounded association `<select>` (3rd cap, same pattern)
+
+**Trigger:** in-session "Continue CafeCar operation." Signal GREEN (`left=14`). CI green.
+
+**Shipped (delegated to one `coder`, from `major-feature-gaps-post-audit` #5):**
+- **`a7f7417`** — `FieldInfo#collection` was `reflection.klass.all` (no bound), backing BOTH the
+  edit-form `collection_select` and the filter sidebar: a `belongs_to` with 10k rows rendered a
+  10k-`<option>` select on every form/index load. Now `reflection.klass.limit(
+  CafeCar.max_collection_options)` (default 100) — `.limit` on the AR relation, so at most the cap
+  ever materializes. This is the **3rd cap in the same family** (`csv_export_row_limit`,
+  `max_per_page`, now `max_collection_options`) — a consistent, discoverable safety pattern.
+  Effect-level test asserts the materialized (`.to_a.size`) option count is bounded by the cap.
+- Full suite green (145 runs, 0 failures; Brakeman 0). Pushed; CI green.
+
+**Scope decision:** split #5 — this pass is the **cap** (stops the unbounded load). The
+searchable/remote select (Tom Select typeahead for associations larger than the cap) is a bigger
+front-end change (JS dep + remote options endpoint) → filed as a separate deferred follow-up
+(`searchable-remote-association-select-tom-select-enhancement`), not blocking.
+
+**What's next:** #7 bulk actions (multi-row select UI + per-row batch authz — the biggest remaining
+major); minors #9 theming hooks, #8 dashboard positioning decision. Then the standing effect-level
+integration harness (audit meta-finding). Dogfood build stays spec-blocked on CrayonBloom.
+
+---
+
 ## 2026-07-02 — Pass 79 (GREEN): has_many_attached wired end-to-end (+ latent bug fixed)
 
 **Trigger:** `/loop 8h` heartbeat re-fire. Signal GREEN (`left=14 used=33`), tightening. Per the
