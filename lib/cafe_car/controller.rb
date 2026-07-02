@@ -149,7 +149,34 @@ module CafeCar
     def scope   = model.all.then { policy_scope _1 }
                            .then { sorted _1 }
                            .then { filtered _1 }
+                           .then { eager_loaded _1 }
                            .then { paginated _1 }
+
+    # Preload the associations an index will render so a multi-row table costs a
+    # bounded number of queries instead of one-per-row-per-association (N+1).
+    def eager_loaded(scope) = scope.includes(*eager_loaded_associations)
+
+    # The displayed belongs_to / has_many associations, each nested with the
+    # attachment its preview renders (so the association's own avatar isn't a
+    # second-order N+1). Intersecting with `displayable_associations` drops
+    # polymorphic ones — which can't be naively `.includes`d — since it already
+    # excludes them.
+    def eager_loaded_associations
+      policy = policy(model.new)
+      (policy.displayable_attributes & policy.displayable_associations).map { with_preview(_1) }
+    end
+
+    # `name`, or `{ name => { logo_attachment: :blob } }` when the associated
+    # record's preview shows a logo attachment.
+    def with_preview(name)
+      klass      = model.reflect_on_association(name).klass
+      logo       = policy(klass.new).logo_attribute
+      attachment = logo && klass.reflect_on_attachment(logo)
+      return name unless attachment
+
+      plural = attachment.macro == :has_many_attached
+      { name => { "#{logo}_attachment#{'s' if plural}": :blob } }
+    end
     def objects = instance_variable_get("@#{model_name.plural}")
     def objects=(value)
       instance_variable_set("@#{model_name.plural}", value)

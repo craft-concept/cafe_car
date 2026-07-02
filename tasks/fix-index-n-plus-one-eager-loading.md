@@ -2,9 +2,10 @@
 id: fix-index-n-plus-one-eager-loading
 title: N+1 queries on every index that shows an association (no eager loading anywhere)
 priority: P1
-status: open
+status: done
 domain: Eng
-created: 2026-07-02
+created: '2026-07-02'
+updated: '2026-07-02'
 ---
 
 **Source:** completeness audit 2026-07-02 (graybeard), blocker #3. Empirically measured: 5 rows w/
@@ -32,3 +33,18 @@ subscription per row.
 - `bundle exec rake` green. `CHANGELOG.md` `[Unreleased]` entry.
 
 Related scale footgun: [[major-feature-gaps-post-audit]] #5 (unbounded association `<select>`).
+
+**Resolution (2026-07-02):** Added an `eager_loaded` step to `Controller#scope` that
+`includes` the displayed non-polymorphic associations. Query-count regression test in
+`test/controllers/eager_loading_test.rb` (distinct owner per client, warmup + equal-count
+assertion) — fails on main (22 queries / 10 rows), green after (constant).
+
+What the audit got wrong: `lib/cafe_car/table/head_builder.rb:18` *already* did
+`@objects.includes!(method)` for association columns in the table view, so the direct
+`belongs_to` (owner) was already batched — the primary FK column was **not** the live N+1.
+The genuinely unbounded N+1 was the association's **preview attachment** (each rendered
+`owner`'s avatar → one `active_storage_attachments` + one `active_storage_blobs` per row).
+The controller fix centralizes eager loading (view-agnostic, not only the table view) *and*
+nests the preview logo attachment (`{ owner: { avatar_attachment: :blob } }`) to kill that
+second-order N+1. The `7 + 2N` fit came from a two-association index; for single-association
+indexes it was `const + N`.

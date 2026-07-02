@@ -66,32 +66,6 @@ Priority: `P0` launch-blocking · `P1` important, soon · `P2` nice-to-have / la
         - Tests exercise range + comparison filters using the **documented** syntax (none exist today).
         - README filter examples verified to actually work end-to-end.
         - `bundle exec rake` green. `CHANGELOG.md` `[Unreleased]` entry.
-- [ ] (P1) N+1 queries on every index that shows an association (no eager loading anywhere)
-        **Source:** completeness audit 2026-07-02 (graybeard), blocker #3. Empirically measured: 5 rows w/
-        distinct associations = 17 queries, 15 rows = 37 queries — clean `7 + 2N` fit. Works fine in a 5-row
-        demo (how a prospect first tries it), degrades linearly on every real table.
-
-        **Bug:** Any index rendering a `belongs_to`/`has_many` column (the default —
-        `displayable_attributes` auto-includes associations) issues one query per row per association. No
-        `.includes`/`.preload` anywhere.
-
-        **Root cause:** `lib/cafe_car/controller.rb#scope` pipeline is
-        `model.all.then { policy_scope }.then { sorted }.then { filtered }.then { paginated }` — no eager
-        loading. `app/presenters/cafe_car/presenter.rb#show` calls `object.try(method)` directly per row.
-        Secondary: `lib/cafe_car/table/row_builder.rb#to_html` opens a `turbo_stream_from(@object)`
-        subscription per row.
-
-        **Fix:** Add `.includes` to the scope pipeline based on the association set in
-        `policy.displayable_attributes`. Watch polymorphic associations (can't be naively `.includes`d).
-
-        **Acceptance:**
-        - A **query-count regression test** — the repo has NONE today, so even a correct fix has nothing
-          stopping it from silently regressing. ⚠️ Trap for the implementer: FactoryBot `.sample`-based
-          association helpers + AR's per-request query cache make a *broken* fix look correct (flat query
-          count) unless the test forces DISTINCT associations per row. The audit hit this — control for it.
-        - `bundle exec rake` green. `CHANGELOG.md` `[Unreleased]` entry.
-
-        Related scale footgun: [[major-feature-gaps-post-audit]] #5 (unbounded association `<select>`).
 
 ## 🧭 Product
 
@@ -563,6 +537,7 @@ Short memory aid only — git history is the full record. Trim as this grows.
 
 - cafe_car:resource generates an unsavable policy for belongs_to/:references fields — **Source:** completeness audit 2026-07-02 (graybeard), blocker #4. Confirmed by running the
 - Nested has_many forms silently fail to save (flagship feature broken) — **Source:** completeness audit 2026-07-02 (graybeard), blocker #1. Empirically reproduced
+- N+1 queries on every index that shows an association (no eager loading anywhere) — **Source:** completeness audit 2026-07-02 (graybeard), blocker #3. Empirically measured: 5 rows w/
 - Release workflow — auto-create the GitHub release (action alone doesn't) — **Recurring manual step to eliminate.** On the v0.2.1 release (pass 69), `rubygems/release-gem@v1`
 - README Installation still lists cnc as a required gem (stale — cnc was cut) — The README **Installation** section (~line 104) still lists `cnc` as a required dependency.
 - Add a copy-paste "60-second try" quickstart at the top of the README — **Outcome (2026-07-01): not shipped — verification killed it.** Ran the full

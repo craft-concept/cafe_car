@@ -12,6 +12,13 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Fixed
 
+- Index pages now eager-load the associations they render, so a table is a
+  bounded number of queries instead of one-per-row-per-association (N+1). The
+  scope pipeline `includes` each displayed `belongs_to`/`has_many` column and
+  nests the association's preview attachment (e.g. an `owner`'s avatar) so it
+  isn't a second-order N+1 either. Polymorphic associations are skipped (they
+  can't be naively `includes`d). Previously a 15-row table issued ~37 queries
+  and grew linearly with row count.
 - Nested `accepts_nested_attributes_for` forms now persist. The form-inference layer
   resolved a nested-attributes permit only under the bare association name
   (`line_items`), but Rails' `fields_for` and strong-params name the key
