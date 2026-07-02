@@ -5,6 +5,36 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-02 — Pass 79 (GREEN): has_many_attached wired end-to-end (+ latent bug fixed)
+
+**Trigger:** `/loop 8h` heartbeat re-fire. Signal GREEN (`left=14 used=33`), tightening. Per the
+standing owner correction (GREEN → develop the gem), picked the most self-contained remaining major.
+
+**Shipped (delegated to one `coder`, from `major-feature-gaps-post-audit` #6):**
+- **`2aab30e`** — `has_many_attached` was advertised (README ~484) but only `has_one_attached`
+  worked: forms silently handled one file. Coder **wired it** (effort was clean, so feature > README
+  cut): `FieldInfo#multiple?` detects the `:has_many_attached` macro; `FormBuilder#input` renders
+  `<input type=file multiple name="…[]">`; `Controller#permitted_attributes` (Pundit override)
+  expands `has_many_attached` keys to `{name => []}` so the array survives strong-params — works for
+  auto-gen AND hand-written policies (keys off the model's reflections, not the policy shape).
+  Effect-level test attaches 2 files through the real update flow, asserts both persist.
+- **Latent bug fixed en route:** `eager_loaded` called `scope.includes(*[])` →
+  `ArgumentError: must contain arguments` whenever a model's displayable attrs and associations
+  don't intersect (true for any association-less model — breaks show/update for a whole class). No
+  existing test exercised such a model through a cafe_car controller, so the green suite never caught
+  it. Coder fixed the root cause (skip `.includes` when nothing to preload), not a workaround.
+- Full suite green (144 runs, 0 failures; Brakeman 0). Pushed; CI green.
+
+**Notes:** The `filter/form_builder.rb` TODO the audit flagged is a red herring — it's the
+search-filter builder (multi-value query params), a different feature; the attachment path is
+`CafeCar::FormBuilder`. Left the filter TODO untouched.
+
+**What's next:** remaining majors — #5 unbounded association `<select>` (needs cap/search — bigger,
+Tom Select), #7 bulk actions (multi-row UI + batch authz). Then the standing effect-level
+integration harness (audit meta-finding). Dogfood build stays spec-blocked on CrayonBloom specs.
+
+---
+
 ## 2026-07-02 — Pass 78 (GREEN): 2 security footguns hardened + board reconciled
 
 **Trigger:** `/loop 8h` operating pass. Signal GREEN (`left=16 used=31 alloc=47`). CI green.
