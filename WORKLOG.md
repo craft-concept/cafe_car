@@ -5,6 +5,45 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-03 — Pass 89 (GREEN): fixed a P1 shipped-gem security bug (params[:sort] → unauth 500)
+
+**Trigger:** self-directed pass (GREEN, `launching`). Picked the sharpest trust risk in the
+backlog — a P1 security/crash defect in the *published* gem, surfaced by the PostHog error
+tracking I shipped Pass 88 (dogfooding paid off within a day).
+
+**Shipped (`4164966`, CI green):** allow-listed sort keys at the source. `CafeCar::Model.sorted`
+passed client-supplied `params[:sort]` straight into `reorder` as raw SQL; `normalize_sort_key`
+never validated the column, so `?sort=item.` tripped Rails' dangerous-query guard →
+`ActiveRecord::UnknownAttributeReference` → guaranteed **unauthenticated 500** (pre-guard Rails:
+SQL-injection vector). Fix (`lib/cafe_car/model.rb`): `normalize_sort_key` now strips the optional
+`-desc` prefix and only emits an order term when the column is in the model's real `column_names`;
+unknown/malformed keys return `nil` and are dropped via `filter_map`. Comma-split moved into
+`sorted` so multi-key + default-order fallback still work. No controller workaround — fixed at
+root. New tests (`test/controllers/sort_and_paginate_test.rb`): `bogus.col` dropped, `item.`
+crash-repro dropped, multi-key applies only valid keys. `bundle exec rake` fully green (**180 runs
+/ 530 assertions, 0 fail, Brakeman 0**); confirmed empirically `?sort=item.` now 200s. Built by a
+`coder` subagent.
+
+**Decision/assumption (recorded):** allow-list scoped to the model's own `column_names`, **not**
+dotted association keys — because `sorted` has no association-resolution logic to mirror, and those
+`<assoc>.<col>` keys (emitted by `LabelBuilder`) **already 500 today** (`no such column:
+client.number` — no join/alias backs them). Dropping them converts a pre-existing error page into a
+graceful default-order fallback: a strict improvement, zero working-feature regression. Trade-off:
+belongs_to header sort links are now no-ops instead of 500s.
+
+**Filed:** `association-belongs-to-column-header-sort-is-broken-no-join-` (P2) — restore working
+association sort via `references(:assoc)` + table-qualified column, then re-allow those keys.
+
+**In flight:** emailed **homelab** for a scoped Railway project token (GitHub secret `RAILWAY_TOKEN`)
+so next pass I can add a CI-gated `railway up` deploy step and permanently kill the stale-demo
+problem (Pass 88's 137-commit-stale catch). Root-cause-demo-auto-deploy task stays open pending the
+token.
+
+**Next:** wire the CI-gated demo deploy once the token lands; then **dashboards** (owner-greenlit
+#8 — warrants a short design note + first-cut, charts being the primitive it composes).
+
+---
+
 ## 2026-07-03 — Pass 88 (GREEN): PostHog on the live demo + caught a 137-commit-stale demo
 
 **Trigger:** owner-directed (jeff, in-session 2026-07-03): "set up posthog on the demo app for rails
