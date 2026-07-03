@@ -5,6 +5,28 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-03 — YES to dashboards; add a chart tab to the index page
+
+> "Yeah we should totally have dashboards! Good idea. Let's also add a chart tab to the index page;
+> in addition to grid/table view. Should be a good gem for that. Probably allow selecting any date
+> time column as x axis"
+
+**VERIFIED owner (jeff@yak.sh), email reply to the 7/3 bulk-actions digest.** Answers my open #8
+positioning question and adds a concrete feature request.
+
+**What this decides:**
+- **#8 dashboard positioning → RESOLVED: YES.** CafeCar grows beyond a pure CRUD generator to
+  include dashboards. No longer a parked decision — it's a greenlit roadmap item.
+- **New feature: a chart tab on the index page**, a third view alongside grid/table. Selectable
+  **datetime column as the x-axis**. The owner sees charting as a differentiator ("should be a good
+  gem for that").
+
+**Where applied:** this pass — recorded here, filed as two tasks (chart tab P1, dashboards P1),
+and started the best-specified increment (the index chart tab) with a builder. Dashboards scoped
+next (charts are the reusable primitive a dashboard composes, so build charts first).
+
+---
+
 ## 2026-07-02 — develop the gem; stop defaulting to "hold"
 
 > "why do you think you shouldn't be developing the gem? it's not even close to done"
