@@ -59,6 +59,8 @@ class FieldTypeRoundTripTest < ActionDispatch::IntegrationTest
     # boolean field — the render-layer path that a missing :boolean input branch 500s.
     get url_for(controller: "admin/#{invoice.model_name.plural}", action: :edit, id: invoice.id)
     assert_response :success, "edit form with a boolean field failed to render"
+    # The boolean field renders a native checkbox (themed via ui/Input.css), inside a Field.
+    assert_select ".Field input[type=checkbox][name=?]", "invoice[paid]", 1
     submit invoice, paid: "1"
     assert invoice.reload.paid, "boolean did not flip to true through the update path"
   end
