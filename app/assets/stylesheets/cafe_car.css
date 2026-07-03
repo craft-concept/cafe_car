@@ -4,6 +4,7 @@
 
 @import url(trix.css) layer(vendor);
 @import url(iconoir.css) layer(vendor);
+@import url(tom-select.css) layer(vendor);
 @import url(cafe_car/trix.css);
 
 @import url(cafe_car/pagination.css);

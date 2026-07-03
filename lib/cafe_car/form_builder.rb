@@ -19,11 +19,45 @@ module CafeCar
       return show(info.input_key) if info.polymorphic? and object.persisted?
       return hidden(*info.polymorphic_methods) if info.polymorphic?
 
-      collection              ||= info.collection
+      collection              ||= with_selected(info)
       # options[:prompt]      ||= info.prompt
       options[:include_blank] ||= info.prompt
 
-      input(info.input_key, collection, :id, -> { @template.present(_1).title }, as: :collection_select, **options)
+      collection_select(info.input_key, collection, :id,
+                        -> { @template.present(_1).title }, options, searchable_select(info))
+    end
+
+    # HTML options that flag an association <select> for Tom Select enhancement
+    # (see cafe_car.js). When the associated model exposes an `options` typeahead
+    # feed, its URL rides along so keystroke search can reach records past
+    # `max_collection_options`; without it the field degrades to a plain select.
+    def searchable_select(info)
+      data = { "searchable-select": "" }
+      url  = options_url(info.reflection&.klass)
+      data["searchable-select-url"] = url if url
+      { data: }
+    end
+
+    # URL of the associated model's typeahead feed in the current namespace, or nil
+    # when no such route exists. e.g. `belongs_to :owner` -> `options_admin_users_path`.
+    def options_url(klass)
+      return unless klass
+      helper = [ :options, *@template.namespace, klass.model_name.route_key, :path ].join("_")
+      @template.public_send(helper) if @template.respond_to?(helper)
+    end
+
+    # The capped option collection, guaranteeing the currently-associated record is
+    # among the options even when it sorts past the cap — otherwise editing a record
+    # whose association is beyond `max_collection_options` would silently drop the value.
+    def with_selected(info)
+      collection = info.collection
+      return collection unless info.reflection&.belongs_to?
+
+      selected = object.try(info.reflection.name)
+      return collection unless selected
+
+      records = collection.to_a
+      records.include?(selected) ? records : [ selected, *records ]
     end
 
     def hidden(*methods, **, &)

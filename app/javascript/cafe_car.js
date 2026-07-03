@@ -1,4 +1,42 @@
 import "@hotwired/turbo-rails"
+import "tom-select" // decorates [data-searchable-select] selects; sets globalThis.TomSelect
+
+// Searchable association selects. Tom Select DECORATES an existing <select>, so the
+// field keeps working as a plain select if this never runs (progressive enhancement).
+// A `data-searchable-select-url` points at the model's JSON typeahead feed, letting
+// the field reach records past `CafeCar.max_collection_options`; without it the select
+// falls back to local search over the rendered options.
+function enhanceSelects() {
+  document.querySelectorAll("select[data-searchable-select]").forEach(el => {
+    if (el.tomselect) return // Tom Select errors on an already-enhanced element
+
+    let url = el.dataset.searchableSelectUrl
+    let config = { maxOptions: null }
+
+    if (url) Object.assign(config, {
+      valueField: "value",
+      labelField: "text",
+      searchField: ["text"],
+      load(query, callback) {
+        fetch(`${url}?q=${encodeURIComponent(query)}`, { headers: { Accept: "application/json" } })
+          .then(response => response.json())
+          .then(callback)
+          .catch(() => callback())
+      }
+    })
+
+    new TomSelect(el, config)
+  })
+}
+
+addEventListener("turbo:load", enhanceSelects)
+addEventListener("turbo:frame-render", enhanceSelects)
+
+// Revert enhancement before Turbo snapshots the page, so a restored cache doesn't
+// carry a duplicated (already-decorated) widget.
+addEventListener("turbo:before-cache", () => {
+  document.querySelectorAll("select[data-searchable-select]").forEach(el => el.tomselect?.destroy())
+})
 
 Object.assign(Turbo.StreamActions, {
   // <turbo-stream action="navigate" target="Hello, world"></turbo-stream>

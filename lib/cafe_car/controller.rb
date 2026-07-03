@@ -40,9 +40,10 @@ module CafeCar
         before_action :build_object,      only: _only.(%i[new create])
         before_action :find_objects,      only: _only.(%i[index])
         before_action :assign_attributes, only: _only.(%i[create update])
-        # `batch` is excluded: it authorizes each selected record on its own
-        # (see #batch), rather than one blanket object/collection check.
-        before_action :authorize!, except: %i[batch]
+        # `batch` and `options` are excluded: each authorizes on its own —
+        # `batch` per selected record (see #batch), `options` via `index?` plus
+        # the policy scope on the typeahead feed (see #options).
+        before_action :authorize!, except: %i[batch options]
 
         after_action :verify_authorized, :verify_policy_scoped
       end
@@ -120,6 +121,19 @@ module CafeCar
       redirect_to url_for(action: :index), success: batch_notice(action, batched.size)
     end
 
+    # JSON typeahead feed for a searchable association select (Tom Select). Returns
+    # `[{value, text}]` for the model, filtered by the `?q=` keyword search and
+    # capped at `max_collection_options` — so an association field can reach records
+    # PAST the render cap. Authorized twice: `index?` gates list access at all, and
+    # `policy_scope` narrows rows to those the user may see (never leaking hidden ones).
+    def options
+      authorize model, :index?
+      scope = policy_scope(model)
+      scope = scope.query([ search_term ]) if search_term
+      records = scope.limit(CafeCar.max_collection_options)
+      render json: records.map { |record| { value: record.id, text: option_label(record) } }
+    end
+
     def respond_with(*resources, **options, &block)
       super(*namespace, *resources, **options, &block)
     end
@@ -138,6 +152,14 @@ module CafeCar
 
     def batch_notice(action, count)
       "#{action.label} #{count} #{model_name.human(count:).downcase}"
+    end
+
+    # Plain-text label for a typeahead option — the record's policy title attribute
+    # (e.g. a user's name), falling back to its id. Kept scalar so the JSON feed
+    # never serializes the HTML the presenter's #title emits.
+    def option_label(record)
+      attribute = policy(record).title_attribute
+      record.public_send(attribute).to_s.presence || record.to_s
     end
 
     def sorted(scope)
@@ -280,6 +302,10 @@ module CafeCar
     end
 
     def _render_with_renderer_json(obj, options)
+      # Plain payloads (e.g. the #options typeahead feed's [{value, text}] array)
+      # aren't records — serialize them verbatim rather than deriving model columns.
+      return super unless obj.is_a?(CafeCar::Model) || obj.respond_to?(:klass)
+
       # permitted_attributes is record-oriented, so ask a record for the column
       # list even when serializing a collection.
       record = obj.is_a?(CafeCar::Model) ? obj : obj.klass.new

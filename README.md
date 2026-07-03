@@ -506,7 +506,15 @@ The form builder automatically detects field types:
 <%= f.association :category %>
 ```
 
-Automatically creates a select dropdown with all categories.
+Creates a select dropdown for the association. The select is **searchable**: it's
+enhanced with [Tom Select](https://tom-select.js.org) (vendored — no CDN, no
+bundler) for keystroke typeahead. To keep large associations from rendering
+thousands of `<option>`s, the initial list is capped at
+`CafeCar.max_collection_options` (default 100); the typeahead then queries a JSON
+`options` endpoint (`GET /categories/options?q=…`) so records **past the cap stay
+reachable**. That endpoint is authorized through the model's policy scope, so the
+search never returns rows the user can't see. Enhancement is progressive — if
+JavaScript is disabled or fails, the field stays a working plain select.
 
 ### Filtering & Sorting
 
@@ -845,6 +853,18 @@ CafeCar.theme = :cool
 The selected theme is injected as a `<link>` into every CafeCar page's `<head>`,
 so it takes effect without recompiling assets. It defaults to `:warm` (the theme
 the engine has always shipped); an unknown value raises `ArgumentError`.
+
+### Association select size
+
+`f.association` selects render at most `CafeCar.max_collection_options` options
+(default 100) to keep a large association from loading its whole target table into
+every form. Records past the cap stay reachable through the searchable select's
+typeahead feed (see [Forms](#forms)). Raise or lower the cap globally:
+
+```ruby
+# config/initializers/cafe_car.rb
+CafeCar.max_collection_options = 250
+```
 
 ### Custom Form Builder
 

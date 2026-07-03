@@ -12,6 +12,18 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Added
 
+- Searchable association selects. A `belongs_to`/`has_many` field (`f.association`)
+  is now enhanced with [Tom Select](https://tom-select.js.org) (vendored — no CDN,
+  no bundler, no runtime dependency) for keystroke typeahead. The initial option
+  list is still capped at `CafeCar.max_collection_options`, but the typeahead now
+  queries a per-model JSON `options` endpoint (`GET /<resources>/options?q=`), so a
+  record **past the cap** is reachable — closing the gap where a large association
+  was usable-but-truncated. The endpoint is authorized through `index?` plus the
+  policy scope, so search never returns rows the user can't see, and results are
+  capped at the same page size. Enhancement is progressive: with JavaScript
+  disabled or failing, the field stays a working plain select, and the currently
+  associated record is always kept among the options even when it sorts past the
+  cap (so editing never silently drops the value).
 - Bulk actions on index tables. Every index now carries a per-row checkbox and a
   "select all" header checkbox; selected rows are submitted to a `batch`
   collection endpoint that applies a named action to them. **Delete** ships built
