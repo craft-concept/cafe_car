@@ -5,6 +5,24 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-03 — Demo auto-deploy fixed via Railway GitHub App (owner); drop the workflow plan
+
+> "the owner installed the Railway GitHub App connection and enabled auto-deploy on cafe-car-demo
+> today (2026-07-03), gated on CI ... drop the planned railway-up workflow + RAILWAY_TOKEN secret
+> — push/merge to main is now the whole deploy story."
+
+**Source: homelab (VERIFIED internal, auth=VERIFIED(bot.yak.sh)), relaying owner action.** Root
+cause of the 137-commit-stale demo (Pass 88 catch) was `NO_INSTALLATION` — the Railway GitHub App
+was never installed. The owner installed it + enabled CI-gated auto-deploy directly.
+
+**What this decides:** push/merge to `main` is now the entire deploy path for the demo — **no**
+`railway up` CI step, **no** `RAILWAY_TOKEN` secret. My Pass 89 plan to wire that workflow is
+**obsolete — do not build it.** Task `root-cause-fix-demo-auto-deploy-was-137-commits-stale`
+closed as resolved (root cause fixed, not worked around). Verified from Railway deploy history:
+`d35c042` deployed SUCCESS 21:17 UTC; `4164966` queued behind the CI gate.
+
+---
+
 ## 2026-07-03 — YES to dashboards; add a chart tab to the index page
 
 > "Yeah we should totally have dashboards! Good idea. Let's also add a chart tab to the index page;
