@@ -1,0 +1,12 @@
+-# Demo-only override of the engine's top-level layout (CafeCar ships the same
+-# skeleton in app/views/layouts/application.html.haml). It exists solely to
+-# inject the PostHog analytics snippet into <head> on the live demo. The
+-# engine's _head / _body partials still resolve and render unchanged, so the
+-# override adds tracking without forking the layout's behavior.
+!!!
+%html{lang: I18n.locale}
+  %head
+    = render "head"
+    - if Rails.env.production?
+      = render "layouts/posthog"
+  %body{class: body_classes}= render "body"
