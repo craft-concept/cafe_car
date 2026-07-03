@@ -5,7 +5,43 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
-## 2026-07-03 — Pass 87 (GREEN): shipped the index chart view (owner-requested)
+## 2026-07-03 — Pass 88 (GREEN): PostHog on the live demo + caught a 137-commit-stale demo
+
+**Trigger:** owner-directed (jeff, in-session 2026-07-03): "set up posthog on the demo app for rails
+logs, error-tracking, analytics, etc. I added a CafeCar org to posthog for you." Board task
+`instrument-the-live-demo-with-posthog-analytics-error-tracki` (P1).
+
+**Shipped (`0cb94f3`, CI green):** PostHog wired into the demo (`test/dummy`) **only**, fully
+production-guarded so the minitest suite stays offline. Via `posthog-ruby`/`posthog-rails` 3.16.0:
+- **Analytics** — posthog-js frontend snippet (autocapture/pageviews/session recording), injected
+  through a demo-only 4-line layout override (`test/dummy/app/views/layouts/application.html.haml`
+  + `_posthog.html.haml`). **Zero** PostHog code in the shipped gem/engine (their layout is
+  shipped to every consumer — never instrument strangers' apps).
+- **Error tracking** — `auto_capture_exceptions` + `report_rescued_exceptions` +
+  `auto_instrument_active_job`. `capture_user_context = false` (demo has no web `current_user`).
+- **Logs** — `logs_enabled = true` forwards `Rails.logger` over OTel (gems added `require: false`).
+- PostHog: CafeCar org, project `496903`, public token `phc_nw2…eEMHN`, host `us.i.posthog.com`.
+  Whole initializer guarded on `Rails.env.production?`. `bundle exec rake` green (177 tests, 0
+  fail, Brakeman 0); offline confirmed in test env. Built by a `coder` subagent.
+
+**🔎 Caught: the live demo was 137 commits stale.** Railway's last deploy was **2026-06-28**
+(`6023e556`) — auto-deploy on push stopped firing, so the demo silently served ~2-week-old code
+(missing bulk actions, theming, searchable selects, chart view, *and* PostHog). **Manually
+triggered a deploy** (`railway up`, build `ed4c8bce`) — recovered current code + PostHog in one
+shot. Filed P1 `root-cause-fix-demo-auto-deploy-was-137-commits-stale` to fix the trigger (or add
+a CI deploy step). A stale demo directly undercuts the trust/conversion goal.
+
+**Verified live ingestion** (project 496903, ~2h window): `$exception` **46**, `$pageview` **2**,
+`$autocapture` **1**, and **351** Rails log records tagged `posthog-rails@3.16.0` (real request
+logs — `Started GET` / `Processing by …Controller` / `Completed 200 OK`). All three asks confirmed
+end-to-end, not just deployed.
+
+**Notable:** error tracking already caught a recurring `ActiveRecord::RecordNotFound` in
+`CafeCar::Controller#find_object` (`lib/cafe_car/controller.rb:188`) — worth a later glance; could
+be probe/bot traffic or a genuine bad-id path. That's error tracking earning its keep on day one.
+
+**Next:** owner digest sent (PostHog live + stale-demo catch). Watching the auto-deploy fix (P1)
+and dashboards (`dashboards-home-overview-capability-owner-greenlit-8`, still the top feature item).
 
 **Trigger:** owner-directed feature (jeff, 2026-07-03 — see `DECISIONS.md`): "add a chart tab to the
 index page… allow selecting any date time column as x axis." Board task
