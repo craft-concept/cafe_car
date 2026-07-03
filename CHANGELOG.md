@@ -12,6 +12,17 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Added
 
+- Dashboard overview. A new opt-in surface that composes an app's data into a
+  single overview page. A host declares it once with a `CafeCar.dashboard { ... }`
+  block of **metric tiles** (`metric "Users", -> { User.count }` — a label over a
+  number from a host-supplied callable) and **charts** (`chart "New users", model:
+  User, x: :created_at, by: :month` — the same inline-SVG bar chart the index Chart
+  view uses). Widgets render in a responsive grid at `dashboard_path` (no
+  JavaScript, CSP-safe). The route is mounted **only** when a dashboard is
+  declared, so a CRUD-only host never inherits a blank page. Chart widgets keep the
+  Chart-view security discipline: the x column is validated against the model's
+  date-column allowlist and truncated via portable Arel, so a column name can never
+  reach SQL raw.
 - Chart view on index pages. Alongside grid and table, every index now offers a
   **Chart** view that aggregates records into time buckets and plots them as a
   count-per-bucket bar chart. Pick any date/datetime column as the x-axis and a

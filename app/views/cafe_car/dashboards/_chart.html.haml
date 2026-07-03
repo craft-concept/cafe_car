@@ -1,0 +1,11 @@
+-# A dashboard chart widget: title + inline SVG, no filter controls. The x column
+-# is host config but still runs through ChartBuilder's date-column allowlist, so
+-# a bad column name can never be interpolated as raw SQL.
+- chart = chart_for(widget.objects, column: widget.x.to_s, bucket: widget.by)
+
+.Dashboard-tile.Dashboard-chart
+  %h4.Dashboard-chartTitle= widget.title
+  - if chart.columns.include?(chart.column)
+    = chart
+  - else
+    .center No date column to chart.

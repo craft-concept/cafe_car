@@ -131,6 +131,8 @@ admin that you extend with ordinary Rails code.
   model's text columns with zero per-model setup
 - 📈 **Chart view** - A third index view (beside grid/table) that buckets records
   over any date column and plots count-per-bucket as dependency-free inline SVG
+- 📊 **Dashboard** - An opt-in overview page composing metric tiles and charts
+  from a declarative `CafeCar.dashboard { ... }` block; off by default
 - ⬇️ **CSV export** - One-click "Download CSV" of the current filtered, sorted
   view on any index
 - ☑️ **Bulk actions** - Select rows and act on many at once (delete ships built
@@ -721,6 +723,38 @@ CafeCar.bulk_action(:archive, query: :update?, &:archive!)
   `:"#{name}?"`). An action only appears on a table whose policy answers that
   predicate, so a resource without a `publish?` policy method simply won't show
   the "Publish" button.
+
+### Dashboard
+
+CafeCar can render a single **dashboard** overview — an at-a-glance page that
+composes your data into metric tiles and charts. It's **opt-in**: declare one in
+an initializer and the route appears; declare nothing and there's no dashboard at
+all, so a CRUD-only app never inherits a blank page.
+
+```ruby
+# config/initializers/cafe_car.rb
+Rails.application.config.to_prepare do
+  CafeCar.dashboard do
+    metric "Users",         -> { User.count }
+    metric "Signups today", -> { User.where(created_at: Date.current.all_day).count }
+    chart  "New users", model: User, x: :created_at, by: :month
+  end
+end
+```
+
+Two widget types:
+
+- **`metric "Label", callable`** — a tile showing a label over the number your
+  callable returns. The callable is your trusted config, evaluated each render.
+- **`chart "Title", model:, x:, by:`** — the same dependency-free inline-SVG bar
+  chart as the index [Chart view](#advanced-usage), bucketing `model`'s records
+  over the `x` date column at `by` granularity (`:day`/`:week`/`:month`, default
+  `:month`). The `x` column is validated against the model's date-column allowlist
+  and truncated with portable Arel, so it's never interpolated as raw SQL.
+
+Widgets render in a responsive grid at `dashboard_path` (no JavaScript, CSP-safe),
+in the order declared. Declare the block inside `to_prepare` so your app's models
+are loaded when it runs.
 
 ### Current Context
 

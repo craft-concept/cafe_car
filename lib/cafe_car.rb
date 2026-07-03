@@ -5,6 +5,7 @@ require "cafe_car/engine"
 require "cafe_car/resolver"
 require "cafe_car/proc_helpers"
 require "cafe_car/bulk_action"
+require "cafe_car/dashboard"
 
 module CafeCar
   include Resolver
@@ -75,6 +76,32 @@ module CafeCar
   end
 
   bulk_action :destroy
+
+  # The host's dashboard, or nil until `CafeCar.dashboard { ... }` declares one.
+  # Stored under a distinct name so the `.dashboard` DSL method below can both
+  # declare (with a block) and fetch (without) it.
+  mattr_accessor :dashboard_config, default: nil
+
+  # Declare or fetch the dashboard overview. A host writes this once (in an
+  # initializer's `to_prepare`, so app models are loaded) to compose metric tiles
+  # and charts; called without a block it returns the current dashboard (or nil).
+  # A declaring call REPLACES any prior dashboard, so re-running under a code
+  # reload rebuilds rather than duplicating widgets. Zero declared widgets means no
+  # dashboard and no route — the overview is opt-in, off by default.
+  #
+  #   CafeCar.dashboard do
+  #     metric "Users", -> { User.count }
+  #     chart  "New users", model: User, x: :created_at, by: :month
+  #   end
+  def self.dashboard(&block)
+    return dashboard_config unless block
+    self.dashboard_config = Dashboard.new
+    dashboard_config.instance_exec(&block)
+    dashboard_config
+  end
+
+  # Whether a non-empty dashboard has been declared — gates the opt-in route mount.
+  def self.dashboard? = dashboard_config&.any? || false
 
   # The host's user model, resolved lazily so the constant need not exist at
   # boot. Used by CafeCar::Session for authentication.

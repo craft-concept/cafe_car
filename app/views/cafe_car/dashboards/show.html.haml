@@ -1,0 +1,8 @@
+- heading = t("cafe_car.dashboard.title", default: "Dashboard")
+- title heading
+
+= Page title: heading do |page|
+  = page.Body do
+    .Dashboard
+      - CafeCar.dashboard.widgets.each do |widget|
+        = render "cafe_car/dashboards/#{widget.type}", widget:

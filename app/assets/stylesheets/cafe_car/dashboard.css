@@ -1,0 +1,43 @@
+@layer component {
+  .Dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--gap);
+    align-items: start;
+  }
+
+  .Dashboard-tile {
+    padding: var(--gap);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+  }
+
+  /* A chart spans wider than a metric tile so its bars have room to breathe. */
+  .Dashboard-chart {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 60rem) {
+    .Dashboard-chart {
+      grid-column: span 2;
+    }
+  }
+
+  .Dashboard-chartTitle {
+    margin: 0 0 var(--half-gap);
+  }
+
+  .Metric-value {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--accent);
+  }
+
+  .Metric-label {
+    margin-block-start: var(--half-gap);
+    color: var(--dim);
+    font-size: 0.9rem;
+  }
+}
