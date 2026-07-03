@@ -22,6 +22,36 @@ class SortAndPaginateTest < ActionDispatch::IntegrationTest
     assert_equal %w[Charlie Bravo Alpha], names
   end
 
+  # Client-supplied `?sort=` is allow-listed against real columns before it can
+  # reach `reorder` — an unknown or malformed key is dropped, never raised, so a
+  # crafted param can't trip Rails' dangerous-query guard into an unauth 500.
+  test "an unknown association-looking key is dropped, not a 500" do
+    seed_clients
+
+    get "/admin/clients", params: { sort: "bogus.col" }, as: :json
+
+    assert_response :success
+    assert_equal 3, names.size
+  end
+
+  test "a malformed key with a trailing dot is dropped, not a 500" do
+    seed_clients
+
+    get "/admin/clients", params: { sort: "item." }, as: :json
+
+    assert_response :success
+    assert_equal 3, names.size
+  end
+
+  test "a multi-key sort applies only the valid columns" do
+    seed_clients
+
+    get "/admin/clients", params: { sort: "bogus.col,name" }, as: :json
+
+    assert_response :success
+    assert_equal %w[Alpha Bravo Charlie], names, "the invalid key is ignored, `name` still orders"
+  end
+
   test "pagination limits per page and honors the page param" do
     owner = create(:user)
     9.times { |i| create(:client, name: "C%02d" % i, owner:) }
@@ -52,6 +82,11 @@ class SortAndPaginateTest < ActionDispatch::IntegrationTest
   private
 
   def names = response.parsed_body.map { _1["name"] }
+
+  def seed_clients
+    owner = create(:user)
+    %w[Charlie Alpha Bravo].each { |n| create(:client, name: n, owner:) }
+  end
 
   def with_max_per_page(cap)
     original = CafeCar.max_per_page
