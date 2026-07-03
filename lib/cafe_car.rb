@@ -3,13 +3,11 @@ require "cafe_car/core_ext"
 require "cafe_car/version"
 require "cafe_car/engine"
 require "cafe_car/resolver"
-require "cafe_car/auto_resolver"
 require "cafe_car/proc_helpers"
 require "cafe_car/bulk_action"
 
 module CafeCar
   include Resolver
-  extend AutoResolver
   extend ProcHelpers
 
   class MissingAttributeError < StandardError

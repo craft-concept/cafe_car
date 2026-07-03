@@ -3,30 +3,6 @@
     {
       "warning_type": "Dangerous Eval",
       "warning_code": 13,
-      "fingerprint": "9f7c27406a84219ad1d93b07b8c1acd435ad75921861a85a647e32f3d07d1289",
-      "check_name": "Evaluation",
-      "message": "Dynamic string evaluated as code",
-      "file": "lib/cafe_car/auto_resolver.rb",
-      "line": 16,
-      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
-      "code": "TOPLEVEL_BINDING.eval(\"class #{mod.name}::#{name} < CafeCar[:ApplicationController]\\n  include CafeCar::Controller\\n  cafe_car\\n  self\\nend\\n\", \"lib/cafe_car/auto_resolver.rb\", 16)",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "CafeCar::AutoResolver",
-        "method": "define"
-      },
-      "user_input": null,
-      "confidence": "Weak",
-      "cwe_id": [
-        913,
-        95
-      ],
-      "note": ""
-    },
-    {
-      "warning_type": "Dangerous Eval",
-      "warning_code": 13,
       "fingerprint": "48dbe3b4398088c5313b96ac86384413140275ce8852e516f8f3638b4ffdf999",
       "check_name": "Evaluation",
       "message": "Dynamic string evaluated as code",
@@ -39,30 +15,6 @@
         "type": "method",
         "class": "CafeCar::Caching",
         "method": "cache!"
-      },
-      "user_input": null,
-      "confidence": "Weak",
-      "cwe_id": [
-        913,
-        95
-      ],
-      "note": ""
-    },
-    {
-      "warning_type": "Dangerous Eval",
-      "warning_code": 13,
-      "fingerprint": "f14f192898bdd59525b84317d91ecbbdc952f71e28dbeca457caf4c11bee0bc7",
-      "check_name": "Evaluation",
-      "message": "Dynamic string evaluated as code",
-      "file": "lib/cafe_car/auto_resolver.rb",
-      "line": 24,
-      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
-      "code": "TOPLEVEL_BINDING.eval(\"class #{mod.name}::#{name} < CafeCar[:ApplicationPolicy]\\n  def admin? = Rails.env.development?\\n\\n  def index?   = admin?\\n  def show?    = admin?\\n  def create?  = admin?\\n  def update?  = admin?\\n  def destroy? = admin?\\n\\n  def permitted_attributes\\n    model.info.fields.names.then do |names|\\n      [*model.primary_key].reverse.map(&:to_sym) & names | names\\n    end\\n  end\\n\\n  class Scope < Scope\\n    def resolve = scope.all\\n  end\\n  self\\nend\\n\", \"lib/cafe_car/auto_resolver.rb\", 24)",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "CafeCar::AutoResolver",
-        "method": "define"
       },
       "user_input": null,
       "confidence": "Weak",
