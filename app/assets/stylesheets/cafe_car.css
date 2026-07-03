@@ -11,8 +11,11 @@
 @import url(cafe_car/utility.css);
 @import url(ui/components.css);
 @import url(Lexend.css);
-@import url(cafe_car/themes/warm.css);
-@import url(cafe_car/themes/warm-dark.css) (prefers-color-scheme: dark);
+
+/* The theme's custom properties are injected per-request in <head> by
+   CafeCar::Helpers#theme_stylesheet_tag, selected via `CafeCar.theme`
+   (default :warm). Don't @import a theme here — that would pin it and
+   defeat the config API. */
 
 @import url(cafe_car/code/base16-light.css);
 @import url(cafe_car/code/base16-dark.css) (prefers-color-scheme: dark);

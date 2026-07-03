@@ -33,6 +33,14 @@ module CafeCar
 
     def body_classes = [ *controller_path.split(?/), action_name, *@body_class ]
 
+    # Stylesheet <link> for the active bundled theme (`CafeCar.theme`), injected
+    # into every CafeCar page's <head>. Each theme is self-contained — its light
+    # tokens plus a `prefers-color-scheme: dark` block — so dark mode needs no
+    # separate tag. Emitted after `application.css` so its `:root` tokens win.
+    def theme_stylesheet_tag
+      stylesheet_link_tag "cafe_car/themes/#{CafeCar.theme}", "data-turbo-track": "reload"
+    end
+
     def title(object)
       present(object).title.presence.tap do |title|
         content_for(:title, title)

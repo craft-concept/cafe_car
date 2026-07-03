@@ -1,3 +1,5 @@
+/* The `cool` palette with translucent cards/borders and a darker dark-mode
+   background — a distinct variant, selectable via `CafeCar.theme = :cool2`. */
 @import url(defaults.css);
 
 :root {

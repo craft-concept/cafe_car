@@ -826,6 +826,26 @@ Creates the `sessions` table migration. The `CafeCar::Session` model and
 
 ## Configuration
 
+### Theme
+
+CafeCar ships three bundled themes, each a set of CSS custom properties with a
+built-in `prefers-color-scheme: dark` variant. Pick one with `CafeCar.theme`:
+
+```ruby
+# config/initializers/cafe_car.rb
+CafeCar.theme = :cool
+```
+
+| Theme    | Look                                                      |
+| -------- | --------------------------------------------------------- |
+| `:warm`  | Warm neutrals on off-white — the default.                 |
+| `:cool`  | Cool blue-grey on a crisp light background.               |
+| `:cool2` | The `cool` palette with translucent cards and darker dark mode. |
+
+The selected theme is injected as a `<link>` into every CafeCar page's `<head>`,
+so it takes effect without recompiling assets. It defaults to `:warm` (the theme
+the engine has always shipped); an unknown value raises `ArgumentError`.
+
 ### Custom Form Builder
 
 ```ruby

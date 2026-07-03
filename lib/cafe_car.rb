@@ -40,6 +40,26 @@ module CafeCar
   # associations larger than this — a separate follow-up.)
   mattr_accessor :max_collection_options, default: 100
 
+  # Bundled themes selectable via `CafeCar.theme`. Each lives at
+  # `app/assets/stylesheets/cafe_car/themes/<name>.css` as a set of CSS custom
+  # properties layered over `themes/defaults.css`, with its own dark-mode block.
+  THEMES = %i[warm cool cool2].freeze
+
+  # The active bundled theme, injected as a <link> into every CafeCar page's
+  # <head> (see `CafeCar::Helpers#theme_stylesheet_tag`). Defaults to `:warm` —
+  # the theme the engine has always shipped — so an unset host renders unchanged.
+  # Assigning a value outside THEMES raises rather than rendering unstyled.
+  mattr_reader :theme, default: :warm
+
+  def self.theme=(name)
+    name = name&.to_sym
+    unless THEMES.include?(name)
+      raise ArgumentError,
+        "unknown CafeCar theme #{name.inspect} (valid: #{THEMES.map(&:inspect).join(", ")})"
+    end
+    @@theme = name
+  end
+
   # Registered bulk actions, keyed by name, offered on index tables. Ships with
   # `:destroy`; a host adds its own with `CafeCar.bulk_action` (see below).
   mattr_accessor :bulk_actions, default: {}

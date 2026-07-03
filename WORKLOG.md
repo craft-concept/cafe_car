@@ -5,6 +5,31 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-03 — Pass 84 (GREEN): theming hooks — hosts pick a bundled theme (audit gap #9)
+
+**Trigger:** proactive wake, signal GREEN. Audit gap #9: five theme CSS files shipped but only
+`warm`/`warm-dark` were hard-`@import`ed in `cafe_car.css` — `cool`/`cool2` were dead code and a
+host had no way to choose a theme. Delegated to one `coder`.
+
+**Shipped:**
+- **Config API** — `CafeCar.theme = :cool` (`lib/cafe_car.rb`): a `mattr_reader` (default `:warm`,
+  preserving today's rendering) with a validating `theme=` writer that raises `ArgumentError` on a
+  value outside `THEMES = %i[warm cool cool2]`.
+- **Wiring** — `CafeCar::Helpers#theme_stylesheet_tag` emits the selected theme's `<link>` into
+  every page's `<head>` (`app/views/application/_head.html.haml`), after `application.css` so its
+  `:root` tokens win. Removed the hard `@import`s from `cafe_car.css` — nothing is pinned now.
+- **Normalized `warm`** — merged `warm-dark.css` into a `prefers-color-scheme: dark` block inside
+  `warm.css` and deleted the companion file, so every theme is one self-contained file with
+  built-in dark mode (matching cool/cool2's existing pattern). Dark mode still works.
+- **`cool2` decision** — kept as a distinct selectable variant (translucent cards + darker dark
+  background), not dead; added a one-line header comment noting that.
+- **Tests** — `test/controllers/theme_test.rb`: renders an index with `theme = :cool` and asserts
+  the cool link present + warm/cool2 absent; default `:warm` present when unset; invalid theme
+  raises. README documents the option + the three bundled themes.
+- Full `bundle exec rake` green: rubocop clean, 166 runs/495 assertions/0 failures, brakeman 0.
+
+---
+
 ## 2026-07-03 — Pass 83 (GREEN): shipped bulk actions — the last major feature gap
 
 **Trigger:** proactive wake, signal GREEN, CI green, no unread mail. Per the owner's 2026-07-02
