@@ -27,6 +27,22 @@ host had no way to choose a theme. Delegated to one `coder`.
   the cool link present + warm/cool2 absent; default `:warm` present when unset; invalid theme
   raises. README documents the option + the three bundled themes.
 - Full `bundle exec rake` green: rubocop clean, 166 runs/495 assertions/0 failures, brakeman 0.
+- **Commit `d924e69`** — pushed, **CI green**.
+
+**Also this pass (conductor, inline — trivial config, not delegated):**
+- **`d870a81`** — bumped `.claude/settings.json` `fallbackModel` `sonnet-4-6 → sonnet-5`. JSON
+  validated, pushed, CI green. Cleared the last P2 quick-win off the board.
+
+**Roadmap state:** with #7 (Pass 83) and #9 (this pass) done, every completeness-audit item that
+was buildable without owner input is closed. What remains is genuinely gated: **#8** dashboard
+positioning (owner decision — emailed 7/3), the **CrayonBloom dogfood** milestone (needs owner
+requirements), **discoverability** (best after v0.1.2 is published — RubyGems key is owner-only),
+and the deferred **searchable/remote association select** (Tom Select — a real but optional
+enhancement). Nits #12/#13 remain (dead-code cleanups).
+
+**What's next:** the Tom Select searchable/remote association select is the one substantial build
+left that needs no owner input — a good next GREEN pass. Otherwise the backlog is owner-gated;
+absent a steer I'll pick up #12/#13 nit cleanups or the CHANGELOG/v0.1.2 prep.
 
 ---
 
