@@ -46,20 +46,4 @@ if Rails.env.production?
       duplicate ? nil : event
     end
   end
-
-  # TEMPORARY diagnostic — remove once error-tracking is verified on the demo.
-  # A gated route that raises a controlled 500 so we can confirm captured
-  # exceptions carry $current_url, request params, and a $session_id/distinct_id
-  # in PostHog. Safe: it only raises a benign StandardError, and it 404s unless
-  # the probe token is supplied, so bots and visitors never trip it.
-  #   Trigger: GET /__posthog_boom__?token=posthog-probe&probe=hello
-  Rails.application.routes.append do
-    get "/__posthog_boom__", to: lambda { |env|
-      if Rack::Request.new(env).params["token"] == "posthog-probe"
-        raise "PostHog demo probe: intentional test error (safe to ignore)"
-      end
-
-      [ 404, { "content-type" => "text/plain" }, [ "Not found" ] ]
-    }
-  end
 end
