@@ -169,12 +169,14 @@ module CafeCar
 
     # Wraps the index table in the form that submits the selected row ids and the
     # chosen bulk action. With no bulk actions available, the table renders as-is.
+    # The action bar itself lives up in the index toolbar (next to the search box);
+    # its buttons reach back into this form by id via their `form="BulkForm"`.
     def bulk_form(&block)
       content = capture(&block)
       return content unless bulk_actions?
 
-      form_tag(url_for(action: :batch), method: :post, class: "BulkForm") do
-        safe_join [ render("bulk_actions"), content ]
+      form_tag(url_for(action: :batch), method: :post, class: "BulkForm", id: "BulkForm") do
+        content
       end
     end
 

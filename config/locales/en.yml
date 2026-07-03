@@ -17,6 +17,9 @@ en:
       passwords: key
       versions: multiple-pages
 
+  helpers:
+    bulk_confirm: "Apply “%{action}” to the selected rows?"
+
   list_html:
     zero: "(none)"
     one: "%{list}"

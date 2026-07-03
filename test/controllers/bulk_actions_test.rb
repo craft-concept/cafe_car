@@ -43,9 +43,25 @@ class BulkActionsTest < ActionDispatch::IntegrationTest
     get "/admin/articles"
 
     assert_response :success
-    assert_select ".BulkActions button", { text: /Destroy/, count: 1 }
     assert_select "input[type=checkbox][data-bulk-select-all]", 1
     assert_select "input[type=checkbox][name=?]", "ids[]", 2
+    assert_select "form.BulkForm[id=BulkForm]", 1
+  end
+
+  test "the bulk-action button uses the locale label, sits in the toolbar, and hides until a row is selected" do
+    create_list(:article, 2, :draft)
+
+    get "/admin/articles"
+
+    assert_response :success
+    # Label comes from the locale (`en.destroy: Delete`), not the humanized action name.
+    assert_select ".IndexToolbar .BulkActions button", { text: "Delete", count: 1 }
+    # Hidden by default — revealed by JS only once a row is checked.
+    assert_select ".BulkActions[hidden]", 1
+    # The button submits the table's BulkForm from outside it, via the `form` attribute.
+    assert_select ".BulkActions button[form=BulkForm][value=destroy]", 1
+    # The bar shares the toolbar row with the search box.
+    assert_select ".IndexToolbar form.search", 1
   end
 
   private

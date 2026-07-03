@@ -1,4 +1,7 @@
-= render "search"
+.IndexToolbar
+  = render "search"
+  - if view.to_s == "table" && bulk_actions?
+    = render "bulk_actions"
 
 = render(view).presence or render("empty")
 

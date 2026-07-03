@@ -99,13 +99,35 @@ addEventListener("click", event => {
   }
 })
 
-// Bulk-select: the header checkbox toggles every row checkbox in its form.
+// Bulk-select: the header checkbox toggles every row checkbox in its form, and
+// the bulk-action bar stays hidden until at least one row is selected. The bar
+// lives in the index toolbar (outside the table's form), so visibility keys off
+// any checked `ids[]` box on the page, and the header box shows an indeterminate
+// state when only some rows are picked.
+function refreshBulkBar() {
+  let boxes    = document.querySelectorAll("input[name='ids[]']")
+  let checked  = [...boxes].filter(box => box.checked)
+  let selected = checked.length > 0
+
+  document.querySelectorAll("[data-bulk-bar]").forEach(bar => bar.hidden = !selected)
+  document.querySelectorAll("[data-bulk-select-all]").forEach(all => {
+    all.checked       = selected && checked.length === boxes.length
+    all.indeterminate = selected && checked.length < boxes.length
+  })
+}
+
 addEventListener("change", event => {
   let all = event.target.closest("[data-bulk-select-all]")
-  if (!all) return
-  let form = all.closest("form")
-  form.querySelectorAll("input[name='ids[]']").forEach(box => box.checked = all.checked)
+  if (all) {
+    let form = all.closest("form")
+    form.querySelectorAll("input[name='ids[]']").forEach(box => box.checked = all.checked)
+    refreshBulkBar()
+  } else if (event.target.matches("input[name='ids[]']")) {
+    refreshBulkBar()
+  }
 })
+
+addEventListener("turbo:load", refreshBulkBar)
 
 function animationEnd({ target }) {
   if (target.matches(".remove")) target.remove()
