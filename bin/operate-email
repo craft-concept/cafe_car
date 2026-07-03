@@ -1,0 +1,174 @@
+#!/usr/bin/env bash
+#
+# operate-email — read this venture's own @bot.yak.sh inbox (read-only).
+#
+# Read-only client for the fleet-mail store (the holdco-inbox Worker's HTTP API).
+# Standalone bash+curl+jq — no holdco repo on the box; config comes from this
+# venture's own operate.json + .env (same pattern as operate-tasks).
+#
+#   operate email                    unread inbox (this operator's own address)
+#   operate email --all              full inbound history, newest last
+#   operate email read <id>          one message in full (headers + whole body)
+#   operate email search <query>     free-text search (subject/body/from/to) of
+#                                    this inbox's whole history
+#   --json on list/search            raw rows for scripting
+#
+# SENDING IS NOT HERE. Replies go through the email plugin's `email_reply` tool
+# (use the from= address of the inbound <channel source="email"> event). New
+# internal mail arrives in-session via the email channel automatically — this
+# tool is for history, triage, and anything that landed while you were asleep
+# (external mail is never auto-delivered; find it with `operate email --all`).
+#
+# Own address: EMAIL_CHANNEL_ADDR (launcher-bound), else derived from
+# operate.json `run.title` (first word, lowercased) @bot.yak.sh — the same
+# derivation the fleet registry uses. Never assume <venture-id>@.
+#
+# Config (all venture-local; env wins over .env):
+#   FLEET_MAIL_API_URL     store URL (default https://holdco-inbox.yaks.workers.dev)
+#   FLEET_MAIL_API_TOKEN   bearer token for the store API (.env, gitignored) —
+#                          missing token is a loud error: ask holdco to provision it.
+#
+# Deps: bash, curl, jq.
+
+set -uo pipefail
+export LC_ALL=C
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO="$(cd "$DIR/.." && pwd)"
+JQ="$(command -v jq 2>/dev/null || true)"
+CONFIG="${OPERATE_CONFIG:-$REPO/operate.json}"
+cfg() { [ -n "$JQ" ] && [ -f "$CONFIG" ] && "$JQ" -r ".$1 // empty" "$CONFIG" 2>/dev/null || true; }
+
+die() { echo "operate email: $*" >&2; exit 1; }
+
+usage() {
+	sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'
+}
+
+case "${1:-}" in -h | --help)
+	usage
+	exit 0
+	;;
+esac
+
+[ -n "$JQ" ] || die "jq not found — install it (this tool renders JSON with jq)."
+
+# ---- config: this venture's .env + operate.json -------------------------------
+ENV_FILE="${OPERATE_ENV_FILE:-$REPO/.env}"
+envval() { # <KEY> — value from the environment, else from .env (unquoted)
+	local k="$1" v="${!1:-}"
+	if [ -n "$v" ]; then printf '%s' "$v"; return; fi
+	[ -f "$ENV_FILE" ] || return 0
+	sed -n "s/^${k}=//p" "$ENV_FILE" 2>/dev/null | head -n1 | sed 's/^"\(.*\)"$/\1/'
+}
+
+URL="$(envval FLEET_MAIL_API_URL)"; [ -n "$URL" ] || URL="https://holdco-inbox.yaks.workers.dev"
+URL="${URL%/}"
+TOKEN="$(envval FLEET_MAIL_API_TOKEN)"
+[ -n "$TOKEN" ] || die "no FLEET_MAIL_API_TOKEN in $ENV_FILE — the mail store requires auth.
+File a task for holdco to provision this venture's fleet-mail token (it is never committed)."
+
+# Own address: launcher-bound env, else run.title first word (the registry derivation).
+ADDR="${EMAIL_CHANNEL_ADDR:-}"
+if [ -z "$ADDR" ]; then
+	word="$(cfg run.title)"; word="${word%% *}"
+	[ -n "$word" ] || word="$(cfg venture)"
+	[ -n "$word" ] || die "can't resolve my address — set EMAIL_CHANNEL_ADDR or operate.json run.title/venture."
+	ADDR="$(printf '%s' "$word" | tr '[:upper:]' '[:lower:]')@bot.yak.sh"
+fi
+
+# ---- http core ----------------------------------------------------------------
+# get <curl -G args…> — GET $URL/messages with bearer auth; prints the JSON body,
+# dies loudly (server error verbatim) on transport failure or HTTP >= 400.
+get() {
+	local out code
+	out="$(mktemp)"
+	code="$(curl -sS -G --retry 2 --retry-connrefused \
+		-H "Authorization: Bearer $TOKEN" \
+		-o "$out" -w '%{http_code}' "$@" "$URL/messages" 2>"$out.err")" || {
+		cat "$out.err" >&2; rm -f "$out" "$out.err"
+		die "can't reach the fleet-mail store at $URL — note it in WORKLOG and retry next pass."
+	}
+	if [ "$code" -ge 400 ]; then
+		cat "$out" >&2; echo >&2; rm -f "$out" "$out.err"
+		die "fleet-mail store returned HTTP $code."
+	fi
+	cat "$out"; rm -f "$out" "$out.err"
+}
+
+# render <label> — pretty-print a JSON array of message rows from stdin.
+render() {
+	"$JQ" -r --arg label "$1" '
+		if length == 0 then "no \($label) messages" else
+		"\(length) \($label) message\(if length == 1 then "" else "s" end)\n" +
+		( map(
+			"── \(.received_at)\(if .read then " [read]" else " [unread]" end)\(if .auth then "  (\(.auth))" else "" end)\n" +
+			"   from:    \(.from_header // .from)\n" +
+			"   subject: \(.subject)\n" +
+			"   id:      \(.id)\n" +
+			"   \((.text // "") | gsub("\\s+"; " ") | .[0:200])"
+		  ) | join("\n\n") ) +
+		"\n\nfull message: operate email read <id> · reply: the email_reply tool"
+		end'
+}
+
+json_out=0
+args=()
+for a in "$@"; do
+	case "$a" in
+	--json) json_out=1 ;;
+	*) args+=("$a") ;;
+	esac
+done
+set -- ${args[@]+"${args[@]}"}
+
+cmd="${1:-list}"
+case "$cmd" in
+
+list | --all)
+	if [ "$cmd" = "--all" ]; then
+		body="$(get --data-urlencode "to=$ADDR" --data-urlencode "dir=in" --data-urlencode "limit=50")"
+		label="inbox (newest 50)"
+	else
+		body="$(get --data-urlencode "to=$ADDR" --data-urlencode "dir=in" --data-urlencode "unread=1" --data-urlencode "limit=50")"
+		label="unread"
+	fi
+	if [ "$json_out" = 1 ]; then printf '%s\n' "$body" | "$JQ" .; else
+		printf '%s' "$body" | render "$label"
+		[ "$cmd" = "--all" ] || echo "history: operate email --all"
+	fi
+	;;
+
+read)
+	id="${2:-}"; [ -n "$id" ] || die "usage: operate email read <id>"
+	body="$(get --data-urlencode ".id=$id")"
+	[ "$(printf '%s' "$body" | "$JQ" 'length')" != 0 ] || die "no message with id $id."
+	if [ "$json_out" = 1 ]; then printf '%s\n' "$body" | "$JQ" '.[0]'; else
+		printf '%s' "$body" | "$JQ" -r '.[0] |
+			"When:     \(.received_at)  (\(.dir), \(if .read then "read" else "unread" end))\n" +
+			"From:     \(.from_header // .from)\n" +
+			"To:       \(.to)\n" +
+			"Subject:  \(.subject)\n" +
+			"Auth:     \(.auth // "?")\n" +
+			"Id:       \(.id)\n\n" +
+			(.text // "")'
+		echo
+		echo "reply: use the email_reply tool (to = the From address above)."
+	fi
+	;;
+
+search)
+	q="${2:-}"; [ -n "$q" ] || die "usage: operate email search <query>"
+	body="$(get --data-urlencode "to=$ADDR" --data-urlencode "q=$q" --data-urlencode "limit=200")"
+	if [ "$json_out" = 1 ]; then printf '%s\n' "$body" | "$JQ" .; else
+		printf '%s' "$body" | render "matching"
+	fi
+	;;
+
+*)
+	echo "operate email: unknown command '$cmd'" >&2
+	echo >&2
+	usage >&2
+	exit 2
+	;;
+esac
