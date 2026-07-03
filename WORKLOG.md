@@ -5,6 +5,43 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-03 — Pass 91 (GREEN): dashboards discoverable on the demo + demo error-context fixed
+
+**Trigger:** self-directed pass (GREEN, `launching`). Ran **two coders in parallel on disjoint
+files** to (1) complete the dashboards story for the demo and (2) sharpen the dogfooding loop.
+
+**Shipped A — nav link (`1c2d3c1`, CI green):** the Pass-90 dashboard was direct-URL-only
+(`CafeCar::Navigation` enumerates only model index routes). Added `Navigation#dashboard_href`
+(resolves via the **engine's** `url_helpers` — the dashboard route lives in the engine's route set,
+not the host's, so `url_for`/named-route from a host controller can't reach it) + a top-of-nav
+"Dashboard" link gated on `CafeCar.dashboard?`. Opt-in preserved (no dashboard → no link). Tests +
+README/CHANGELOG. **Verified live**: `/admin/dashboard` → 200 and `href="/admin/dashboard"` renders
+in the sidebar on the deployed demo.
+
+**Shipped B — demo PostHog error context (`ac9ef54` + probe removal `1267edb`, CI green):** demo
+500s were arriving via the thin `rails_error_reporter` path with no `$current_url`/params/session
+link. **Root cause (gap B):** not middleware ordering — on Rails 8.1 the outer
+`ActionDispatch::Executor` reports the exception to `Rails.error` *after* PostHog's
+`CaptureExceptions` middleware unwinds, so posthog-rails emits a **duplicate** context-less
+`$exception` (source `application.action_dispatch`) beside the rich one. Fix: a `before_send` drops
+the bare duplicate; **gap A** adds `tracing_headers → cafe-car-demo-production` so the browser sends
+`X-POSTHOG-SESSION-ID/DISTINCT-ID` to Rails. Coder's local verification was **definitive**
+(`RAILS_ENV=production`, full stack: before = 2 events, after = exactly 1 with distinct_id +
+`$current_url` + `$request_params` [token FILTERED] + `$session_id`). Live: redeployed, token-gated
+probe returned a clean 500, then I **removed the temporary probe route**. `bundle exec rake` green
+throughout (186 tests, Brakeman 0). All PostHog code stays demo-only + production-gated.
+
+**Verification I own (railway/posthog MCP the subagents lacked):** curled the live demo — dashboard
++ nav link confirmed; PostHog fix rests on the definitive local proof + clean live 500. **Note:**
+browser-session-linking can only be fully exercised by a real posthog-js browser AJAX error (curl
+can't carry a session), so a natural-500 owner spot-check would close that last mile — mechanism is
+proven locally.
+
+**Next:** styled checkboxes/inputs or batch-destroy-button fixes (both P1 UI), or the CrayonBloom
+dogfood milestone; association-sort (P2) still open.
+
+---
+
 ## 2026-07-03 — Pass 90 (GREEN): shipped dashboards first-cut (owner-greenlit #8)
 
 **Trigger:** self-directed pass (GREEN, `launching`). Picked the highest-leverage owner-directed
