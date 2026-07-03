@@ -5,6 +5,37 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-03 — Pass 86 (GREEN): cleared the last two audit nits (#12/#13)
+
+**Trigger:** proactive wake, GREEN, no owner reply yet, CI green. Buildable backlog drained; per the
+"generate/close the next work" decision I cleared the tracker's last two concrete eng items rather
+than idle. Held the larger generative audit until the owner responds (avoids churn against their
+pending dogfood/positioning steer).
+
+**Shipped — `0825ba2`, CI green (delegated to one `coder`):**
+- **#12** `attributes.rb` — `editable` returned `@permitted.map()` (a no-block **Enumerator**, not an
+  Array). Root cause: unreachable buggy branch overlapping a redundant private `process_attributes!`
+  that already did `@permitted.clone`. Collapsed the two — `editable` now lazily memoizes
+  `@permitted.clone` (a mutable Array working copy). Behavior-preserving; the class is currently
+  unconsumed (grep-confirmed), so this defuses a landmine before it's wired up.
+- **#13** — **deleted** `lib/cafe_car/auto_resolver.rb` + its `require`/`extend AutoResolver` in
+  `cafe_car.rb` + two stale `brakeman.ignore` entries. Grep proved it dead: `auto_resolve!` is
+  `extend`ed but **never invoked**, so its `const_missing` hook is never installed. Removing it kills
+  the latent security footgun — an absent policy would have auto-generated one with
+  `admin? = Rails.env.development?` (fully open in dev). Deletion, not documentation, was correct.
+- `bundle exec rake` green: rubocop 213 files clean, 170 runs / 0 failures, Brakeman 0.
+
+**Tracker state:** every item on the post-audit feature-gaps tracker (majors #5–7, minor #9, nits
+#12/#13) is now closed except **#8 dashboard** (owner positioning decision, not a build). The
+buildable-without-owner-input backlog is fully drained.
+
+**What's next:** genuinely owner-gated now (digest sent 7/3: #8 decision, CrayonBloom dogfood
+requirements, publish key). If no steer by next pass, run a fresh adopter-scenario audit on the
+now-larger surface (bulk actions, theming, search all shipped this session) to generate the next
+development wave — verifying the new code holds under real usage patterns.
+
+---
+
 ## 2026-07-03 — Pass 85 (GREEN): searchable/remote association selects (Tom Select)
 
 **Trigger:** proactive wake, signal GREEN, CI green, no mail. The one substantial no-owner-input
