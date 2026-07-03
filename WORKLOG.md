@@ -5,6 +5,53 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-03 — Pass 90 (GREEN): shipped dashboards first-cut (owner-greenlit #8)
+
+**Trigger:** self-directed pass (GREEN, `launching`). Picked the highest-leverage owner-directed
+work — **dashboards**, greenlit 7/3 ("we should totally have dashboards... should be a good gem
+for that"), deferred two passes while its composing primitive (the Pass-87 chart engine) landed.
+As manager I made the first-cut design decisions, recorded them as the durable spec on the task,
+dispatched a `coder` to build + dogfood, and emailed the owner the design note for course-correction.
+
+**Shipped (`3fed953`, CI green):** an opt-in dashboard overview surface — CafeCar grows beyond pure
+CRUD. Declarative DSL mirroring the `bulk_action`/`theme` config idiom:
+```ruby
+Rails.application.config.to_prepare do   # to_prepare so app models are loaded
+  CafeCar.dashboard do
+    metric "Users",         -> { User.count }
+    metric "Signups today", -> { User.where(created_at: Date.current.all_day).count }
+    chart  "New users", model: User, x: :created_at, by: :month
+  end
+end
+```
+- **Two widget types** (per spec): `metric "Label", callable` (tile: label + number) and
+  `chart "Title", model:, x:, by:` — the chart widget **reuses `ChartBuilder`** (portable
+  date-bucketing, dependency-free inline SVG, same date-column allowlist). No reinvented charting.
+- **Opt-in mount**: `get "dashboard"` drawn only when `CafeCar.dashboard?`; controller also
+  `head :not_found` when unconfigured (defense-in-depth + clean test seam). Zero config → no
+  dashboard, no route.
+- New: `lib/cafe_car/dashboard.rb`, `app/controllers/cafe_car/dashboards_controller.rb`,
+  `app/views/cafe_car/dashboards/{show,_metric,_chart}.html.haml`, `dashboard.css`. Dogfooded in
+  `test/dummy` (2 metrics + 1 chart over `Article`) → live on the demo at `/admin/dashboard`.
+  README + CHANGELOG updated. `bundle exec rake` fully green (**184 tests, 541 assertions, 0
+  fail, Brakeman 0**); smoke-tested `/admin/dashboard` → 200 with tiles + `svg.Chart` bars. Built
+  by a `coder` subagent.
+
+**Decisions beyond spec (all sound):** `to_prepare` wrapping (app models aren't autoloaded at
+plain-initializer time; DSL replaces-on-declare so reload rebuilds not duplicates); no auth on the
+dashboard action (matches the components gallery — host controls the mount point; chart widgets
+still resolve the model policy for the allowlist, nil-user-safe) — flagged to owner for a v2
+auth decision.
+
+**Filed:** `surface-the-dashboard-in-the-sidebar-nav-cafecar-navigation-` (P2) — `CafeCar::Navigation`
+lists only index routes, so the dashboard is direct-URL only. High-leverage for *demo
+discoverability* (a differentiator nobody can find is half a feature).
+
+**Next:** nav auto-link (above) to surface dashboards on the demo; then the PostHog error-context
+fix (URL/params/session_id on captured errors) or CrayonBloom dogfood milestone.
+
+---
+
 ## 2026-07-03 — Pass 89 (GREEN): fixed a P1 shipped-gem security bug (params[:sort] → unauth 500)
 
 **Trigger:** self-directed pass (GREEN, `launching`). Picked the sharpest trust risk in the
