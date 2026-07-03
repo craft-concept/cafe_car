@@ -5,6 +5,50 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-03 — Pass 83 (GREEN): shipped bulk actions — the last major feature gap
+
+**Trigger:** proactive wake, signal GREEN, CI green, no unread mail. Per the owner's 2026-07-02
+"develop the gem" decision, product development is default-on: the completeness audit's advertised-
+but-broken findings were all closed (Passes 78→82), leaving **#7 bulk actions** as the biggest
+remaining major (table-stakes vs. ActiveAdmin/Avo/Administrate). Picked it, filed it P1, delegated.
+
+**Shipped (delegated to one `coder`):**
+- **`ce5d6fe`** — bulk actions live on every index table. Design: a registry on the module,
+  `CafeCar.bulk_action(name, query:, &block)` storing a `BulkAction` (name + policy predicate +
+  per-record op); block defaults to `record.public_send("#{name}!")`, `query:` to `:"#{name}?"`.
+  **Bulk-delete ships built-in**; hosts add custom actions in an initializer. Selection posts row
+  ids + action name to a new `post :batch` collection route.
+- **Per-record authz (the load-bearing part).** `Controller#batch` narrows candidates to
+  `policy_scope(model)`, then checks each row individually via `action.allowed?(policy(record))`;
+  unauthorized rows are dropped, never bulk-bypassed. `batch` is excluded from the blanket
+  `authorize!` and uses Pundit's `skip_authorization` escape hatch while `policy_scope` satisfies
+  `verify_policy_scoped`.
+- **Effect-level tests** (per the audit meta-finding, not request-shape): seeds 3 drafts + 2
+  published, batch-deletes all 5 → asserts the 3 drafts gone from the DB AND the 2 published
+  survive (per-record boundary proven by DB state); a second test asserts a single `WHERE id IN`
+  SELECT for 3- and 8-row batches (authz is in-memory, no N+1); unknown-action → 400; UI renders
+  select-all + per-row `ids[]` checkboxes + the Delete bar.
+- `bundle exec rake` fully green: RuboCop 212 files 0 offenses, tests **163 runs / 0 failures /
+  0 errors**, Brakeman 0. Pushed; **CI green** (rubocop, brakeman, test, screenshot all ✓).
+
+**Decisions/assumptions (recorded by the coder, ratified here):** (1) the bulk-action bar is
+policy-gated (an action shows only if the resource's policy answers its predicate) — sufficient
+boundary for v1. (2) Dummy `ArticlePolicy#destroy?` now protects published articles — a deliberate
+test-fixture change giving the per-record authz test a real allow/deny split; keeps existing
+`AllControllersTest` green (factory articles are drafts).
+
+**Roadmap state:** every P1 major from the completeness audit is now closed. Remaining feature-gap
+items are all minor/positioning: **#8** dashboard/homepage (a positioning *decision* — stay a CRUD
+generator vs. full admin framework — worth an owner ping), **#9** theming hooks (themes exist but
+aren't imported/selectable), nits **#12/#13**. Plus the deferred searchable/remote association
+select (Tom Select) and the CrayonBloom dogfood milestone (needs owner requirements input).
+
+**What's next:** #9 theming hooks is the cleanest next build (self-contained, no owner input). #8
+dashboard is a decision to surface to the owner, not a build. Dogfood + discoverability still await
+owner input / a green light.
+
+---
+
 ## 2026-07-02 — Pass 82 (GREEN): fixed the boolean render-crash the harness just found
 
 **Trigger:** continued from Pass 81 (harness surfaced the bug hot). Signal GREEN. CI green.
