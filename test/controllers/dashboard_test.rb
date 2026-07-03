@@ -47,6 +47,22 @@ class DashboardTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the sidebar nav links to the dashboard when one is configured" do
+    get "/admin/articles"
+
+    assert_response :success
+    assert_select "nav a[href=?]", "/admin/dashboard", text: /Dashboard/
+  end
+
+  test "the sidebar nav omits the dashboard link when none is configured" do
+    with_dashboard(nil) do
+      get "/admin/articles"
+
+      assert_response :success
+      assert_select "nav a[href=?]", "/admin/dashboard", count: 0
+    end
+  end
+
   private
 
   def t(date) = Time.zone.parse(date)

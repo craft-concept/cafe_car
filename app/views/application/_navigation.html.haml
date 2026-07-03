@@ -1,4 +1,9 @@
 = Navigation tag: :nav do |nav|
+  - if href = navigation.dashboard_href
+    = nav.Link(href:) do
+      = Icon t(:dashboard, scope: "navigation.icon").to_sym
+      Dashboard
+
   = render "navigation_links", nav:
 
   - if try(:authenticated?)

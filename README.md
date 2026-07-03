@@ -754,7 +754,8 @@ Two widget types:
 
 Widgets render in a responsive grid at `dashboard_path` (no JavaScript, CSP-safe),
 in the order declared. Declare the block inside `to_prepare` so your app's models
-are loaded when it runs.
+are loaded when it runs. Once declared, a **Dashboard** link appears at the top of
+the sidebar nav — declare nothing and no link shows.
 
 ### Current Context
 

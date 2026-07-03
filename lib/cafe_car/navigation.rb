@@ -43,6 +43,15 @@ module CafeCar
 
     def router = Rails.application.routes.router
     def named_routes = Rails.application.routes.named_routes.to_h.values.map { Route.new(_1, template: @template) }
+
+    # Path to the opt-in dashboard overview, or nil until a host declares one.
+    # The dashboard route lives in the engine (not the host's routes), so it's
+    # resolved through the engine's own url helpers — that works from any host
+    # controller regardless of where CafeCar is mounted. Guarded by `dashboard?`
+    # so an unconfigured host (route never drawn) never calls the missing helper.
+    def dashboard_href
+      CafeCar::Engine.routes.url_helpers.dashboard_path if CafeCar.dashboard?
+    end
     def index_routes = named_routes.select(&:index?)
     def groups = routes.group_by(&:group)
 

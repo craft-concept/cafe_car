@@ -22,7 +22,8 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
   declared, so a CRUD-only host never inherits a blank page. Chart widgets keep the
   Chart-view security discipline: the x column is validated against the model's
   date-column allowlist and truncated via portable Arel, so a column name can never
-  reach SQL raw.
+  reach SQL raw. When declared, the dashboard also gets a link at the top of the
+  sidebar nav, so it's reachable without knowing the URL.
 - Chart view on index pages. Alongside grid and table, every index now offers a
   **Chart** view that aggregates records into time buckets and plots them as a
   count-per-bucket bar chart. Pick any date/datetime column as the x-axis and a
