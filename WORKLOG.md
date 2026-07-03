@@ -28,6 +28,24 @@ index page… allow selecting any date time column as x axis." Board task
   `created_at`, zero-rows empty chart with axis.
 - Docs: README Features bullet + "Chart view" usage section; CHANGELOG Unreleased entry.
 - `bundle exec rake` green: rubocop 215 files clean, 177 runs / 0 failures, Brakeman 0.
+- **Commit `5a2724b`** — pushed, **CI green**.
+
+**Context (conductor):** the owner replied to the 7/3 digest — VERIFIED steer recorded in
+`DECISIONS.md`: **YES to dashboards** (resolves audit #8 as a greenlit build, not a parked
+decision) **and** this chart-tab request. Filed two P1s from it — this chart tab (done) and
+**dashboards** (`dashboards-home-overview-capability-owner-greenlit-8`, next). Built charts first
+because they're the reusable primitive a dashboard composes. The post-audit feature-gaps tracker is
+now fully closed.
+
+**Follow-ups filed** (`chart-tab-follow-ups-...`, P3): (1) the aggregation's Postgres `date_trunc`
+path isn't exercised in CI (SQLite-only) though the live demo runs Postgres — smoke-check on the
+demo or add a PG lane; (2) selectable y-metric (sum/avg of a numeric column) — currently count-only,
+`chart_by` param already reserved.
+
+**What's next:** **dashboards** — scope + first-cut. Design decisions to make/propose: single admin
+home vs. per-namespace, which widgets (metric tiles, charts reusing this ChartBuilder,
+recent-activity, quick links), and a host-facing config API to declare dashboard contents. Charts
+being done means the dashboard can compose them. This is now the top of the buildable backlog again.
 
 ---
 
