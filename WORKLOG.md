@@ -5,6 +5,41 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-03 — Pass 94 (GREEN): designed the DSL→views/partials convention, proposed to owner
+
+**Trigger:** self-directed (GREEN, budget tightening `left=18`). Top of backlog = the three
+owner-directed P1 reworks from Pass 93. Judgment call: the dashboards/bulk-actions reworks set a
+**convention**, and I promised the owner (Pass 93) to show him the approach before committing it —
+so this pass is **design + propose**, not build-blind (redoing a full rework after his feedback is
+the exact waste to avoid under a tightening budget).
+
+**Delegated the design** to a coder (kept my context clean): discover CafeCar's existing view/partial
+convention, then produce a concrete proposed host-facing API for both features. Result — design note
+`docs/design/dsl-to-views-partials.md` (commit `3e517d9`, rake green), grounded in the real
+convention (override a default template at the resource path; compose with view helpers; behavior on
+the model, authz on the policy — the view IS the config surface).
+
+**The proposed convention:**
+- **Dashboards** = one host-authored `app/views/cafe_car/dashboard/show.html.haml` composing `metric`
+  / `chart` helpers; the template's existence is the opt-in; reuses `ChartBuilder` + its column
+  allowlist unchanged. No `CafeCar.dashboard` block.
+- **Bulk actions** = decompose into the three idiomatic homes they always were: a button in the
+  overridable `_bulk_actions` partial (`bulk_action :publish`), a model bang method (`publish!`), a
+  policy predicate (`publish?`). `Controller#batch` derives apply/authorize from the action name;
+  per-record policy check stays the security boundary; registry deleted. A neat *simplification* —
+  the DSLs mostly restated conventions the host could express directly.
+
+**Proposed to the owner** (the preview I promised): emailed the approach + the two example code
+blocks + my recommendations, with two taste questions genuinely his call (bulk-action whitelist home:
+policy method vs partial-only; dashboard template path). Full note on the Tailscale share. Recorded
+in `IDEAS.md` (proposed). **Both rework tasks set `blocked` on owner sign-off** — will NOT build
+until he answers.
+
+**Next:** on owner go → build both reworks to the agreed convention. Unblocked meanwhile: the
+positioning-copy reframe (P1, independent), or CrayonBloom reqs when they reply.
+
+---
+
 ## 2026-07-03 — Pass 93 (owner steering): product-direction correction baked + reworks filed
 
 **Trigger:** holdco (VERIFIED) urgently relayed three VERIFIED owner (jeff@yak.sh) emails from this
