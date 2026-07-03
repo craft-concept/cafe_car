@@ -49,4 +49,8 @@
   posthog.init("phc_nw2YF4GBQ9Df3bvE5WbTVenggYCbi3CT3EVjARWeEMHN", {
     api_host: "https://us.i.posthog.com",
     defaults: "2026-05-30",
+    // Attach X-POSTHOG-DISTINCT-ID / X-POSTHOG-SESSION-ID to browser requests
+    // aimed at the demo backend, so posthog-rails can stitch server-side
+    // exceptions to this session's replay. Hostname only (no scheme/path/port).
+    tracing_headers: ["cafe-car-demo-production.up.railway.app"],
   });
