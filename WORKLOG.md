@@ -5,6 +5,43 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-03 — Pass 93 (owner steering): product-direction correction baked + reworks filed
+
+**Trigger:** holdco (VERIFIED) urgently relayed three VERIFIED owner (jeff@yak.sh) emails from this
+evening (18:54–19:04 ET) that the after-hours hold would otherwise have sat on until Monday —
+course-correcting product direction, contradicting shipped work. Verified all three against the
+originals in my inbox before acting.
+
+**The directives (verbatim in DECISIONS.md):** (1) "Absolutely no config DSLs for dashboards or bulk
+actions. Like everything else they should be configured via views and partials." (2) CafeCar is
+"not an admin framework or a CRUS [CRUD] generator… a composable view extension for rails… just how
+I think rails should work out of the box" — and calling it a view "generator" is "confusing (read:
+wrong)." (3) route my digest's CrayonBloom-requirements ask to CrayonBloom myself; publish via
+GitHub Action releases, not gem push.
+
+**Handled this turn (write-it-down-first, then cheap high-value actions only — NO builder spawns):**
+- **Recorded verbatim → DECISIONS.md; baked direction → AGENTS.md** (= CLAUDE.md symlink): rewrote the
+  product framing (composable view extension, not admin-framework/CRUD/generator), added a "No config
+  DSLs — configure via views & partials" rule, corrected the "Deploy model" + roadmap "Publish" lines
+  to GitHub-Action-releases. Committed `9229b5d` BEFORE any further action.
+- **Filed the reworks (P1, build NEXT pass):** `rework-dashboards-remove-the-cafecar-dashboard-config-dsl-co`,
+  `rework-bulk-actions-remove-the-cafecar-bulk-action-dsl-confi`, `reframe-positioning-purge-generator-…`.
+  Dashboards/bulk-actions keep the feature, change the mechanism (DSL → views/partials); README/gemspec
+  copy reframe is voice-gated.
+- **Direct instructions done:** emailed `crayonbloom@bot.yak.sh` for the back-office requirements
+  (commented the dogfood task); confirmed publish path already exists (PR #13 merged 6/30,
+  `release.yml` in tree) — corrected the stale "blocked on RubyGems key" roadmap line.
+- **Acked** holdco (relay) + owner (tight confirmation; told him I'll send the reworked dashboards
+  *approach* before committing the pattern, since it sets the convention).
+
+**Did NOT** rebuild anything against direction — reworks are queued, not started (email is an inbox,
+not a work trigger; the substantial builds go on the next proactive pass).
+
+**Next:** design the views/partials convention for dashboards (proposal-worthy — sets the pattern),
+then rework dashboards + bulk actions; positioning-copy reframe; CrayonBloom reqs when they reply.
+
+---
+
 ## 2026-07-03 — Pass 92 (GREEN): index-page form-control polish (two owner P1s)
 
 **Trigger:** self-directed pass (GREEN, budget tightening `left=19` so kept lean). Picked the two

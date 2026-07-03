@@ -127,8 +127,10 @@ execute). Dreaming itself still runs nightly.
 The conductor's focus is adoption and trust. Key milestones:
 
 1. **CHANGELOG** — write a `CHANGELOG.md` documenting what's in each version.
-2. **Publish v0.1.2** — blocked on the user providing the RubyGems publish key; prep everything
-   else (gemspec clean, CHANGELOG current, tests green, tag ready).
+2. **Publish** — via **GitHub Action releases** (Trusted Publishing / OIDC — `release.yml`, PR #13
+   merged 2026-06-30), NOT manual `gem push` and NOT blocked on any owner API key. Cut a `v*` tag →
+   the workflow publishes (owner approves in the GitHub UI). Keep gemspec clean, CHANGELOG current,
+   tests green so a tag is always release-ready. _(Owner direction 2026-07-03.)_
 3. **Resolve the `cnc` dependency** — DONE: the owner ratified cutting `cnc` wholesale (inline the
    two core-ext methods, switch lint to `rubocop-rails-omakase`). See `cut-cnc-switch-to-omakase`.
 4. **OSS hygiene** — `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, GitHub issue +
