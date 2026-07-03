@@ -32,6 +32,13 @@ module CafeCar::Table
       ui.Cell(:shrink, :shy, :controls, *args) { present(@object).controls(*args, **options) }
     end
 
+    def select(*args)
+      return unless @template.bulk_actions?
+      ui.Cell(:select, *args) do
+        @template.check_box_tag("ids[]", @object.id, false, id: nil, "aria-label": "Select this row")
+      end
+    end
+
     def to_html
       ui.Row { safe_join [ capture(self, &@block), @template.turbo_stream_from(@object) ] }
     end

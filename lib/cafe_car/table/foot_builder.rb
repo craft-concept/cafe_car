@@ -8,6 +8,7 @@ module CafeCar::Table
     def cell!           = (@count += 1; nil)
     def cell(...)       = (super; cell!)
     def controls(...)   = cell!
+    def select(...)     = (cell! if @template.bulk_actions?)
 
     def to_html = ""
   end

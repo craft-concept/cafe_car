@@ -5,6 +5,7 @@ require "cafe_car/engine"
 require "cafe_car/resolver"
 require "cafe_car/auto_resolver"
 require "cafe_car/proc_helpers"
+require "cafe_car/bulk_action"
 
 module CafeCar
   include Resolver
@@ -38,6 +39,24 @@ module CafeCar
   # table into memory each request. (A searchable/remote select is the fix for
   # associations larger than this — a separate follow-up.)
   mattr_accessor :max_collection_options, default: 100
+
+  # Registered bulk actions, keyed by name, offered on index tables. Ships with
+  # `:destroy`; a host adds its own with `CafeCar.bulk_action` (see below).
+  mattr_accessor :bulk_actions, default: {}
+
+  # Register a bulk action available on index tables. The predicate each selected
+  # record is authorized against defaults to `:"#{name}?"`; the block receives one
+  # record and defaults to `record.public_send(:"#{name}!")`. Examples:
+  #
+  #   CafeCar.bulk_action(:destroy)                              # record.destroy!
+  #   CafeCar.bulk_action(:publish) { _1.update!(published_at: Time.current) }
+  #   CafeCar.bulk_action(:archive, query: :update?, &:archive!)
+  def self.bulk_action(name, ...)
+    action = BulkAction.new(name, ...)
+    bulk_actions[action.name] = action
+  end
+
+  bulk_action :destroy
 
   # The host's user model, resolved lazily so the constant need not exist at
   # boot. Used by CafeCar::Session for authentication.

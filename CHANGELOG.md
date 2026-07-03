@@ -10,6 +10,19 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ## [Unreleased]
 
+### Added
+
+- Bulk actions on index tables. Every index now carries a per-row checkbox and a
+  "select all" header checkbox; selected rows are submitted to a `batch`
+  collection endpoint that applies a named action to them. **Delete** ships built
+  in. Authorization is per-record: the candidate set is narrowed to the policy
+  scope, then each row is checked against the action's policy predicate
+  (`destroy?` for delete) — unauthorized rows are skipped, never bulk-bypassed.
+  Hosts register custom actions with `CafeCar.bulk_action(:publish) { … }`
+  (optional `query:` names the policy predicate; the block defaults to
+  `record.public_send(:"#{name}!")`). Candidates load and authorize in a single
+  query regardless of batch size.
+
 ### Fixed
 
 - The documented URL filter syntax now works. Filtering is a headline feature,

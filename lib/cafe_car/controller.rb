@@ -40,7 +40,9 @@ module CafeCar
         before_action :build_object,      only: _only.(%i[new create])
         before_action :find_objects,      only: _only.(%i[index])
         before_action :assign_attributes, only: _only.(%i[create update])
-        before_action :authorize!
+        # `batch` is excluded: it authorizes each selected record on its own
+        # (see #batch), rather than one blanket object/collection check.
+        before_action :authorize!, except: %i[batch]
 
         after_action :verify_authorized, :verify_policy_scoped
       end
@@ -101,6 +103,23 @@ module CafeCar
       respond_with object
     end
 
+    # Apply a registered bulk action to the selected records. Every record is
+    # authorized ON ITS OWN — the candidate set is first narrowed to the policy
+    # scope (rows the user may see), then each is checked against the action's
+    # policy predicate; unauthorized rows are skipped, never bulk-bypassed. The
+    # per-record authorization here is the security boundary, so Pundit's blanket
+    # `verify_authorized` is satisfied by `skip_authorization` after the fact.
+    def batch
+      skip_authorization # authorization is per-record below, not one blanket check
+      records = policy_scope(model).where(id: Array(params[:ids]))
+      action  = CafeCar.bulk_actions[params[:bulk_action].to_s.to_sym] or return head(:bad_request)
+
+      batched = records.select { |record| action.allowed? policy(record) }
+      batched.each { |record| action.apply(record) }
+
+      redirect_to url_for(action: :index), success: batch_notice(action, batched.size)
+    end
+
     def respond_with(*resources, **options, &block)
       super(*namespace, *resources, **options, &block)
     end
@@ -115,6 +134,10 @@ module CafeCar
 
     def flash!
       flash[:success] = present(object).i18n("#{action_name}_html", scope: :flashes)
+    end
+
+    def batch_notice(action, count)
+      "#{action.label} #{count} #{model_name.human(count:).downcase}"
     end
 
     def sorted(scope)

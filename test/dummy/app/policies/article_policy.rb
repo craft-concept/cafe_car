@@ -3,7 +3,9 @@ class ArticlePolicy < ApplicationPolicy
   def show?    = object.published? || edit?
   def create?  = true
   def update?  = true # object.author_id == user.id
-  def destroy? = update?
+  # Published articles are protected from deletion; drafts can be removed. Gives
+  # bulk-delete a per-record authorization boundary to exercise.
+  def destroy? = !object.published?
 
   def permitted_attributes
     [ :title, :author_id, :published_at, :summary, :body ]

@@ -1,0 +1,6 @@
+.BulkActions{data: { bulk_bar: true }}
+  - bulk_actions.each do |action|
+    - danger = :danger if action.name == :destroy
+    - confirm = "Apply “#{action.label}” to the selected rows?"
+    = Button(*danger, tag: :button, type: :submit, name: :bulk_action, value: action.name, data: { turbo_confirm: confirm }) do
+      = action.label

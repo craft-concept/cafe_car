@@ -21,6 +21,12 @@ module CafeCar::Table
 
     def controls(*, **) = cell(:controls, :controls, *, label: nil, **)
 
+    def select(*, **)
+      return unless @template.bulk_actions?
+      check_all = @template.tag.input(type: :checkbox, data: { bulk_select_all: true }, "aria-label": "Select all")
+      cell(:select, :select, *, label: check_all, **)
+    end
+
     def to_html = ui.Head(:sticky) { capture(self, &@block) }
   end
 end

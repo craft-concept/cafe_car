@@ -6,7 +6,7 @@ module CafeCar
       @concerns[:batchable] || begin
         concern :batchable do
           collection do
-            patch :update_all
+            post :batch
           end
         end
       end

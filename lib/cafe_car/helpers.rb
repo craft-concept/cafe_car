@@ -143,6 +143,28 @@ module CafeCar
       CafeCar[:TableBuilder].new(self, objects:, **options, &block)
     end
 
+    # The bulk actions offered on this model's index table: every registered
+    # action whose policy predicate the model's policy answers. This only decides
+    # which buttons show — each selected row is still authorized one-by-one in the
+    # controller, so a shown action never bulk-bypasses a per-record denial.
+    def bulk_actions(klass = model)
+      policy = policy(klass.new)
+      CafeCar.bulk_actions.values.select { policy.respond_to?(_1.query) }
+    end
+
+    def bulk_actions? = bulk_actions.any?
+
+    # Wraps the index table in the form that submits the selected row ids and the
+    # chosen bulk action. With no bulk actions available, the table renders as-is.
+    def bulk_form(&block)
+      content = capture(&block)
+      return content unless bulk_actions?
+
+      form_tag(url_for(action: :batch), method: :post, class: "BulkForm") do
+        safe_join [ render("bulk_actions"), content ]
+      end
+    end
+
     def debug?   = params.key?(:debug)
     def console? = params.key?(:console)
 

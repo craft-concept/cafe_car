@@ -1,6 +1,8 @@
-= table_for objects do |t|
-  = t.logo
-  = t.title
-  = t.remaining
-  = t.timestamps
-  = t.controls
+= bulk_form do
+  = table_for objects do |t|
+    = t.select
+    = t.logo
+    = t.title
+    = t.remaining
+    = t.timestamps
+    = t.controls

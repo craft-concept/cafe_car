@@ -131,6 +131,8 @@ admin that you extend with ordinary Rails code.
   model's text columns with zero per-model setup
 - ⬇️ **CSV export** - One-click "Download CSV" of the current filtered, sorted
   view on any index
+- ☑️ **Bulk actions** - Select rows and act on many at once (delete ships built
+  in); every selected record is authorized against your policy on its own
 - 📄 **Pagination & sorting** - Kaminari integration with sortable columns
 - ⚡ **Hotwire ready** - Turbo Streams support out of the box
 - 📝 **Intelligent forms** - Auto-generated forms with smart field detection
@@ -660,6 +662,32 @@ In views:
   <%= link_to "Edit", edit_product_path(@product) %>
 <% end %>
 ```
+
+### Bulk Actions
+
+Every index table carries a checkbox per row and a "select all" checkbox in the
+header. Pick some rows, choose an action from the bar, and CafeCar applies it to
+the selection. **Delete** ships built in.
+
+Each selected record is authorized on its own: the candidate set is first
+narrowed to the policy scope, then every row is checked against the action's
+policy predicate (`destroy?` for delete). Rows the current user isn't allowed to
+touch are skipped — a batch never bulk-bypasses a per-record denial.
+
+Register your own action once, in an initializer:
+
+```ruby
+# config/initializers/cafe_car.rb
+CafeCar.bulk_action(:publish) { |record| record.update!(published_at: Time.current) }
+CafeCar.bulk_action(:archive, query: :update?, &:archive!)
+```
+
+- The block receives one record; it defaults to `record.public_send(:"#{name}!")`,
+  so `bulk_action(:destroy)` maps to `record.destroy!`.
+- `query:` names the policy predicate each record is checked against (defaults to
+  `:"#{name}?"`). An action only appears on a table whose policy answers that
+  predicate, so a resource without a `publish?` policy method simply won't show
+  the "Publish" button.
 
 ### Current Context
 

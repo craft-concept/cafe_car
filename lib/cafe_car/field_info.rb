@@ -47,7 +47,7 @@ module CafeCar
 
     def default_type
       case method
-      when :controls then method
+      when :controls, :select then method
       end
     end
 

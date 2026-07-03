@@ -98,4 +98,15 @@
   &-controls {
     text-align: right;
   }
+
+  &-select {
+    text-align: center;
+    padding-inline: 0.5em;
+  }
+}
+
+.BulkActions {
+  display: flex;
+  gap: var(--gap);
+  padding: var(--gap) 0;
 }

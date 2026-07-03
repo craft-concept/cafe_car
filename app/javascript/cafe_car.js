@@ -61,6 +61,14 @@ addEventListener("click", event => {
   }
 })
 
+// Bulk-select: the header checkbox toggles every row checkbox in its form.
+addEventListener("change", event => {
+  let all = event.target.closest("[data-bulk-select-all]")
+  if (!all) return
+  let form = all.closest("form")
+  form.querySelectorAll("input[name='ids[]']").forEach(box => box.checked = all.checked)
+})
+
 function animationEnd({ target }) {
   if (target.matches(".remove")) target.remove()
   else if (target.matches(".popup")) {
