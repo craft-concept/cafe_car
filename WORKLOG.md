@@ -5,6 +5,42 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-03 — Pass 92 (GREEN): index-page form-control polish (two owner P1s)
+
+**Trigger:** self-directed pass (GREEN, budget tightening `left=19` so kept lean). Picked the two
+remaining owner-filed (jeff) P1 UI tasks. Recognized they're **coupled** (both touch index-page
+checkboxes / selection state / toolbar), so dispatched **one `designer`** to do both together
+rather than two parallel builders fighting the same files.
+
+**Shipped A — styled inputs (`ab03a6c`, CI green):** checkboxes/radios were the gap (text/textarea/
+select already flowed through `ui/Input.css`, the component-theme layer). Routed them through the
+same layer — `appearance:none` + custom `::before` mark, `:focus-visible`, `:checked`/
+`:indeterminate` (drives select-all tri-state)/`:disabled`, all off theme tokens. Native input kept
+(keyboard-operable, `aria` intact). Live: 27 native styled checkboxes render on the demo.
+
+**Shipped B — batch-destroy button (`92a665f`, CI green):** all three owner asks — (1) **locale
+label** via `t(action.name)` → "Delete"; (2) **placement** in a new `.IndexToolbar` flex row with
+the search box (`_index.html.haml` wraps `search` + `bulk_actions`); (3) **visibility** hidden by
+default, revealed by selection JS (`cafe_car.js`) when ≥1 `ids[]` box is checked, submitting via
+`form="BulkForm"`. `bundle exec rake` green (187 tests, Brakeman 0). Live markers confirmed on the
+demo (`BulkForm`, `hidden`, `value=destroy`, locale "Delete").
+
+**Decision — scope split on "styled inputs":** owner's words were "rendered using components AND
+styled with the theme/component system." Delivered the **styling** (visible win) and **closed** the
+task; **deferred** the Ruby component-*object* rendering (the half-built `lib/cafe_car/inputs/*`) as
+separate scope — filed `render-form-inputs-through-ruby-component-objects-complete-l` (P2). Owner
+can reprioritize.
+
+**Verification note:** source (`_index.html.haml`) + passing toolbar-placement tests confirm the
+`.IndexToolbar` wrapper; a live curl couldn't grep the class (CDN/caching or settling deploy), so
+asked the owner to eyeball the toolbar + custom-checkbox visual on the demo (generated visuals
+warrant a human pass anyway).
+
+**Next:** CrayonBloom dogfood milestone (P1, big — needs scoping), or discoverability/launch (P2),
+or the component-object input rewrite; association-sort (P2) still open.
+
+---
+
 ## 2026-07-03 — Pass 91 (GREEN): dashboards discoverable on the demo + demo error-context fixed
 
 **Trigger:** self-directed pass (GREEN, `launching`). Ran **two coders in parallel on disjoint
