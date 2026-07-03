@@ -13,6 +13,17 @@ generator/admin-framework/CRUD tool in any copy.)_
 Ruby config DSLs — like everything else in CafeCar. (The Pass-90 `CafeCar.dashboard` DSL and the
 `CafeCar.bulk_action` registry predate this and are being reworked to views/partials.)
 
+**The policy is the source of truth.** Per owner direction (2026-07-03, DECISIONS.md): "the policy
+declares what's editable and the UI renders that by default. so the policy is the source of truth
+unless explicitly overridden by the user." E.g. `permitted_bulk_actions` and `permitted_metrics`
+live on the policy; the default partials loop those lists; overriding a partial is the explicit
+opt-out.
+
+**No styles outside of components.** Per owner direction (2026-07-03, DECISIONS.md): global CSS
+breaks UI elements reused elsewhere (checkboxes in the Layout Menu, etc.). All styling goes through
+component styling. **All UI copy goes in locales** — no hardcoded strings; button styles (e.g.
+`destroy` → danger) are configured in the locale with shipped defaults.
+
 ## Our purpose and our standard
 
 Everything we build is for the glory of God. This is the first filter on all our work — above

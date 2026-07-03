@@ -5,6 +5,51 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-03 — Reworks APPROVED with corrections: policy is the source of truth; + component-styling rule
+
+Two VERIFIED owner (jeff@yak.sh) emails, 19:32 + 19:42 ET, replying to the Pass-94 proposal and the
+Pass-92 UI-fixes digest. Verbatim:
+
+**(1) Proposal review** (19:32, Re: proposal: dashboards + bulk actions via views/partials):
+
+> very close! `def permitted_bulk_actions` should be the source-of-truth and the bulk_actions
+> partial should loop that list by default. Non-built-in bulk_actions should "just work". Probably
+> configure the button styles in the locale with some defaults (delete -> danger, etc). Metrics
+> should also be driven by the policy. permitted_metrics. Don't forget to put all copy in locales.
+> this is a general rule: the policy declares what's editable and the UI renders that by default.
+> so the policy is the source of truth unless explicitly overridden by the user.
+>
+> also, the charts are very very narrow and very very tall. did you custom build them or use a gem?
+
+**(2) UI-fixes feedback** (19:42, Re: shipped: styled checkboxes + batch-destroy button):
+
+> You have to use component styling because if you don't, it breaks checkboxes in the UI that are
+> used for other purposes Layout_Menu, etc. No more styles outside of components.
+> The search bar is now very wide (so also is the "enter demo" button). the search button should
+> have Button styling and should be grouped with the bar. the download csv button should not be
+> grouped with the view selector buttons. the checkboxes look great otherwise. nicely done!
+
+**What this decides / where applied:**
+- **Both reworks are GO** with corrections — tasks unblocked, spec updated:
+  - `def permitted_bulk_actions` (policy) is the **source of truth**; the `_bulk_actions` partial
+    **loops that list by default**. Overriding the partial is the explicit opt-out. Non-built-in
+    (host-defined) bulk actions must "just work" with zero registration beyond policy + model method.
+  - Button styles come from the **locale**, with shipped defaults (`destroy` → danger, etc.).
+  - Dashboards: **`permitted_metrics` on the policy drives metrics** the same way.
+  - **All copy in locales** — no hardcoded UI strings.
+  - **General principle (bake it in):** the policy declares what's permitted/editable and the UI
+    renders that by default; the policy is the source of truth unless explicitly overridden by the
+    host in a view. Answers Pass-94 question 1: policy method, not partial-only.
+- **Component styling is mandatory — "No more styles outside of components."** The Pass-92 global
+  checkbox styles broke checkboxes used elsewhere (Layout Menu etc.). Rule baked into AGENTS.md.
+- **New P1 UI fixes (demo index toolbar):** search bar + "enter demo" button too wide; search
+  button needs Button styling grouped with the bar; Download CSV button must NOT be grouped with
+  the view-selector buttons; move stray non-component styles into components.
+- **Charts too narrow + too tall** — fix default chart aspect ratio. (Answer to his question:
+  custom-built, `lib/cafe_car/chart_builder.rb`, no gem — replied by email.)
+
+---
+
 ## 2026-07-03 — PRODUCT DIRECTION: composable view extension · NO config DSLs · GHA-release publish
 
 Three VERIFIED owner (jeff@yak.sh) emails this evening (18:54–19:04 ET), relayed urgently by holdco
