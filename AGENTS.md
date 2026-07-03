@@ -1,8 +1,17 @@
 # Working on CafeCar
 
-CafeCar is a Rails engine + published gem that auto-generates CRUD UI with sensible defaults —
-admin panels, internal tools, and rapid prototyping, batteries included. The goal is to grow it
-into a widely adopted, trusted open-source gem. Barriers are **visibility and trust**, not tech.
+CafeCar is a **composable view extension for Rails** — an extension of Rails' view and controller
+layer, convention over configuration. It is **NOT** an admin framework, **NOT** a CRUD generator,
+and **NOT** a view "generator" (Rails already has generators; CafeCar does the opposite — it lets
+you *delete* view files, not spit them out). It happens to make admin UI and dashboards very easy,
+but should be thought of as how Rails ought to work out of the box. The goal is to grow it into a
+widely adopted, trusted open-source gem. Barriers are **visibility and trust**, not tech.
+_(Owner product direction, 2026-07-03 — see DECISIONS.md. Do not describe CafeCar as a
+generator/admin-framework/CRUD tool in any copy.)_
+
+**No config DSLs.** Per owner direction, features are configured **via views and partials**, not via
+Ruby config DSLs — like everything else in CafeCar. (The Pass-90 `CafeCar.dashboard` DSL and the
+`CafeCar.bulk_action` registry predate this and are being reworked to views/partials.)
 
 ## Our purpose and our standard
 
@@ -187,8 +196,11 @@ state down so a future you can read it back.
 - **Check suite (run before every push):** `bundle exec rake` (runs rubocop + test + brakeman).
   All three must be green. "Green on my files" ≠ green CI — run the full suite. Use `bundle exec` —
   bare `rake` aborts with a `Gem::LoadError` (system rake 13.3.1 vs Gemfile 13.4.2).
-- **Deploy model:** publishing to RubyGems.org is manual (`gem push`) and requires the owner's
-  API key. A `git push` does NOT auto-publish. CI runs on every push via `.github/workflows/`.
+- **Deploy model:** we publish to RubyGems.org via **GitHub Action releases** (Trusted Publishing /
+  OIDC — see `.github/workflows/release.yml` / PR #13), **not** manual `gem push`. Cut a `v*` tag and
+  the release workflow publishes (owner-approval enforced in the GitHub UI; no long-lived API key in
+  the tree). A plain `git push` does NOT publish — only a version tag triggers a release. CI runs on
+  every push via `.github/workflows/`. _(Owner direction 2026-07-03 — see DECISIONS.md.)_
 - **All customer-visible copy passes the voice gate.** Every customer-visible string — the README,
   the gem description, docs, and any demo/landing copy — goes through the designer's voice gate
   (`/copy`) against **`BRAND.md`** before it ships. The designer carries the universal anti-slop

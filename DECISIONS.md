@@ -5,6 +5,44 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-03 — PRODUCT DIRECTION: composable view extension · NO config DSLs · GHA-release publish
+
+Three VERIFIED owner (jeff@yak.sh) emails this evening (18:54–19:04 ET), relayed urgently by holdco
+(the after-hours hold would otherwise have sat on them until Monday). Verbatim:
+
+**(1) No config DSLs** (18:54): "Absolutely no config DSLs for dashboards or bulk actions. Like
+everything else they should be configured via views and partials."
+
+**(2) What CafeCar IS** (19:03): "CafeCar is not an admin framework or a CRUS [CRUD] generator. It
+is an extension of rails' view and controller layer. Convention over configuration. Btw, it is very
+confusing (read: wrong) to say that CafeCar is a view 'generator'. Rails already has generators. It
+makes it seem as if cafe car is spitting out files, when it does the opposite: it lets you delete
+them. cafe car is a composable view extension for rails. It so happens to make admin UI (and now
+also dashboards!) very easy, but should be thought of as just how I think rails should work out of
+the box."
+
+**(3) Routing + publish** (19:04): "And for #2. Don't tell me, tell CrayonBloom. #3. We publish via
+GitHub action releases not gem push." (#2 = my 7/3 digest's CrayonBloom-dogfood-requirements ask →
+route to crayonbloom@bot.yak.sh myself. #3 = publish mechanism → GitHub Action releases / Trusted
+Publishing (PR #13), NOT manual gem push.)
+
+**What this decides / where applied:**
+- **NO config DSLs — configure via views & partials.** The `CafeCar.dashboard do…end` DSL (Pass 90)
+  and the `CafeCar.bulk_action` registry are AGAINST direction. Rework BOTH to views/partials. The
+  owner still WANTS dashboards ("now also dashboards!") — rework the *mechanism*, keep the feature.
+  Filed as rework tasks (this pass). Also re-examine `CafeCar.theme=` against this principle.
+- **Positioning.** CafeCar = "a composable view extension for Rails" — an extension of Rails' view +
+  controller layer, convention over configuration. NOT an admin framework, NOT a CRUD generator, NOT
+  a view "generator" (it lets you *delete* view files, not spit them out). It happens to make admin
+  UI + dashboards easy; think of it as how Rails should work out of the box. **Purge "generator /
+  admin framework / CRUD generator / auto-generate" framing from README + gemspec + all copy** (voice
+  gate). Baked into CLAUDE.md this pass; README reframe filed.
+- **Publish** = GitHub Action releases (Trusted Publishing / PR #13), NOT manual gem push. Corrected
+  CLAUDE.md "Deploy model." No owner API key needed — cut a `v*` tag, the workflow publishes.
+- Emailed crayonbloom@bot.yak.sh for the back-office requirements (directive 2).
+
+---
+
 ## 2026-07-03 — Demo auto-deploy fixed via Railway GitHub App (owner); drop the workflow plan
 
 > "the owner installed the Railway GitHub App connection and enabled auto-deploy on cafe-car-demo
