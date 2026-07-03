@@ -5,6 +5,50 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-03 — Pass 85 (GREEN): searchable/remote association selects (Tom Select)
+
+**Trigger:** proactive wake, signal GREEN, CI green, no mail. The one substantial no-owner-input
+build left (per Pass 84's plan): make large `belongs_to` selects reachable past the render cap via
+typeahead. Verified first that the JS pipeline is **importmap + propshaft** (engine already vendors
+turbo/trix/actiontext) — so Tom Select is a clean, reversible *vendored pin*, not a bundler
+commitment. That made it a routine maintainer call (cheap/reversible envelope), delegated to one
+`coder`.
+
+**Shipped — `b62a5bd`, CI green:**
+- **Vendored Tom Select 2.4.3** (`tom-select.complete.min.js` pinned in `config/importmap.rb`; CSS
+  `@import`ed under the `vendor` layer) — matches the existing turbo/trix vendoring, no CDN/bundler.
+- **Remote authorized endpoint** — the routing concern now adds `GET /<resources>/options` to every
+  cafe_car resource (same mechanism as Pass 83's `batch`). Returns `[{value,text}]` filtered by the
+  model's `default_search` (`?q=`), capped at `max_collection_options`. **Authorized twice**:
+  `authorize model, :index?` + `policy_scope(model)` — never leaks unauthorized rows. Search is
+  Arel `matches` + `sanitize_sql_like` (parameterized, Brakeman 0).
+- **Progressive enhancement** — form builder renders the normal `collection_select` tagged
+  `data-searchable-select` (+ feed URL, only when the model's route exists — else degrades to a
+  plain capped select). `cafe_car.js` inits on `turbo:load`/`turbo:frame-render`, guards
+  double-init via `el.tomselect`, reverts on `turbo:before-cache`. Works with no JS.
+- **Latent bug fixed en route** — `with_selected` now keeps the currently-associated record in the
+  options even when it sorts past the cap (editing a beyond-cap association previously dropped the
+  value silently); plus a root-cause fix to the JSON renderer override so array payloads pass to
+  `super`.
+- **Effect-level tests** (`searchable_association_options_test.rb`): a `q=` surfaces a record past
+  the cap (the core proof); feed is `policy_scope`d (hidden row absent); capped at page size; select
+  renders the hook + feed URL. `bundle exec rake` green — rubocop 214 files clean, **170 runs / 0
+  failures**, Brakeman 0.
+
+**Decision (maintainer call, recorded):** Tom Select is **Apache-2.0**, not MIT as the task assumed.
+Apache-2.0 is permissive and compatible with bundling in an MIT gem; the vendored files retain their
+license header. Standard vendoring — not escalated. If the owner prefers zero third-party licenses
+in the tree, that's a reversible swap (remove the pin, keep the endpoint + plain capped select).
+
+**What's next:** the buildable-without-owner-input backlog is now essentially drained. Remaining is
+owner-gated — **#8** dashboard positioning (decision emailed 7/3), **CrayonBloom dogfood** (needs
+requirements), **discoverability** (best post-publish; RubyGems key is owner-only), the owner's
+one-time dashboard-wiring task. Next GREEN passes: nits #12/#13 cleanup, then likely a fresh
+completeness/adopter-scenario audit to generate the next development wave (per the "a drained
+backlog is not a hold — generate the next work" decision).
+
+---
+
 ## 2026-07-03 — Pass 84 (GREEN): theming hooks — hosts pick a bundled theme (audit gap #9)
 
 **Trigger:** proactive wake, signal GREEN. Audit gap #9: five theme CSS files shipped but only
