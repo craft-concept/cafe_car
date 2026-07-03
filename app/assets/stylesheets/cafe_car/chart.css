@@ -1,0 +1,34 @@
+@layer component {
+  .ChartControls {
+    display: flex;
+    gap: var(--half-gap);
+    align-items: center;
+    margin-block-end: var(--gap);
+  }
+
+  .Chart {
+    display: block;
+    width: 100%;
+    height: auto;
+    color: var(--accent);
+    overflow: visible;
+  }
+
+  .Chart-bar rect {
+    transition: opacity var(--duration);
+  }
+
+  .Chart-bar:hover rect {
+    opacity: 0.8;
+  }
+
+  .Chart-value {
+    fill: var(--dim);
+    font-size: 11px;
+  }
+
+  .Chart-label {
+    fill: var(--dim);
+    font-size: 11px;
+  }
+}

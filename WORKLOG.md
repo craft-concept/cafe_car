@@ -5,6 +5,32 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-03 — Pass 87 (GREEN): shipped the index chart view (owner-requested)
+
+**Trigger:** owner-directed feature (jeff, 2026-07-03 — see `DECISIONS.md`): "add a chart tab to the
+index page… allow selecting any date time column as x axis." Board task
+`index-chart-tab-third-view-grid-table-chart-with-selectable-`.
+
+**Shipped:**
+- **Third index view — Chart** — alongside grid/table, reusing the existing `view` param /
+  `view_url` toggle mechanism (no parallel path). New `_chart.html.haml` renders through the same
+  `render(view)` dispatch; new toggle button in `_index_actions.html.haml`.
+- **`CafeCar::ChartBuilder`** (`lib/cafe_car/chart_builder.rb`) — aggregates the controller's already
+  policy-scoped + filtered `objects` relation (strips pagination/order/eager-load, keeps the WHERE),
+  `GROUP BY` a **portable Arel date truncation** (`date_trunc` on Postgres, `strftime` on SQLite — no
+  raw SQL, Brakeman-clean), `COUNT(*)` per bucket. X-axis param validated against an allowlist of the
+  model's displayable date columns (never interpolated as a column name). Renders dependency-free
+  inline SVG (no JS, CSP-safe). Default `created_at` + month, so it renders zero-config.
+- Controls form (GET) to pick x-axis column + day/week/month granularity; composes with active
+  filters/sort/search. `chart_x`/`chart_by` added to `CONTROL_PARAMS`. New `chart.css`.
+- **Tests** (`test/controllers/chart_view_test.rb`, 7): exact bucket counts (month + day), filter
+  narrows, `policy_scope` hides rows, NULL x-axis dropped, bogus/injection param falls back to
+  `created_at`, zero-rows empty chart with axis.
+- Docs: README Features bullet + "Chart view" usage section; CHANGELOG Unreleased entry.
+- `bundle exec rake` green: rubocop 215 files clean, 177 runs / 0 failures, Brakeman 0.
+
+---
+
 ## 2026-07-03 — Pass 86 (GREEN): cleared the last two audit nits (#12/#13)
 
 **Trigger:** proactive wake, GREEN, no owner reply yet, CI green. Buildable backlog drained; per the

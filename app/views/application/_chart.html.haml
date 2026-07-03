@@ -1,0 +1,16 @@
+- chart = chart_for(objects)
+
+- if chart.columns.empty?
+  .center No date columns to chart.
+- else
+  = form_with url: "", method: :get, class: "ChartControls" do |f|
+    - filter_params.each do |key, value|
+      = hidden_field_tag key, value
+    = hidden_field_tag :view, :chart
+    = hidden_field_tag :q, params[:q] if params[:q].present?
+    = hidden_field_tag :sort, params[:sort] if params[:sort].present?
+    = select_tag :chart_x, options_for_select(chart.column_options, chart.column)
+    = select_tag :chart_by, options_for_select(chart.bucket_options, chart.bucket.to_s)
+    = f.button "Update", name: nil
+
+  = chart

@@ -151,6 +151,11 @@ module CafeCar
       CafeCar[:TableBuilder].new(self, objects:, **options, &block)
     end
 
+    def chart_for(objects, **options)
+      CafeCar[:ChartBuilder].new(self, objects:,
+        column: params[:chart_x], bucket: params[:chart_by], **options)
+    end
+
     # The bulk actions offered on this model's index table: every registered
     # action whose policy predicate the model's policy answers. This only decides
     # which buttons show — each selected row is still authorized one-by-one in the

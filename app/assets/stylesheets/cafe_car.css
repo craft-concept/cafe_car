@@ -7,6 +7,7 @@
 @import url(tom-select.css) layer(vendor);
 @import url(cafe_car/trix.css);
 
+@import url(cafe_car/chart.css);
 @import url(cafe_car/pagination.css);
 @import url(cafe_car/tooltips.css);
 @import url(cafe_car/utility.css);

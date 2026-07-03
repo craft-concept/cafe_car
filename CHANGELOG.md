@@ -12,6 +12,18 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Added
 
+- Chart view on index pages. Alongside grid and table, every index now offers a
+  **Chart** view that aggregates records into time buckets and plots them as a
+  count-per-bucket bar chart. Pick any date/datetime column as the x-axis and a
+  day/week/month granularity from a small GET form that composes with the active
+  filters and sort. The chart aggregates over the **same policy-scoped, filtered
+  relation** the table renders, so filters narrow it and rows the user can't see
+  are never counted. Aggregation is a database `GROUP BY` on a portable Arel date
+  truncation (`strftime` on SQLite, `date_trunc` on Postgres) — no raw SQL — and
+  the x-axis column is validated against an allowlist of the model's displayable
+  date columns, so a param can never be interpolated as a column name. Rendered as
+  dependency-free inline SVG (no JavaScript, CSP-safe). Models with no date column
+  show a friendly message instead.
 - Searchable association selects. A `belongs_to`/`has_many` field (`f.association`)
   is now enhanced with [Tom Select](https://tom-select.js.org) (vendored — no CDN,
   no bundler, no runtime dependency) for keystroke typeahead. The initial option

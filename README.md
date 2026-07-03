@@ -129,6 +129,8 @@ admin that you extend with ordinary Rails code.
   association filters
 - 🔎 **Keyword search** - Turnkey search box on every index, matching across a
   model's text columns with zero per-model setup
+- 📈 **Chart view** - A third index view (beside grid/table) that buckets records
+  over any date column and plots count-per-bucket as dependency-free inline SVG
 - ⬇️ **CSV export** - One-click "Download CSV" of the current filtered, sorted
   view on any index
 - ☑️ **Bulk actions** - Select rows and act on many at once (delete ships built
@@ -589,6 +591,29 @@ and logs a warning. Raise the limit in an initializer if your tables are larger:
 ```ruby
 CafeCar.csv_export_row_limit = 50_000
 ```
+
+**Chart view:**
+
+Every index offers a third view beside grid and table. The **Chart** toggle
+buckets records over a date column and plots count-per-bucket as a bar chart:
+
+```
+/articles?view=chart&chart_x=published_at&chart_by=month
+```
+
+Pick the x-axis from any of the model's displayable date/datetime columns
+(`chart_x`) and the bucket size from `day`, `week`, or `month` (`chart_by`,
+default `month`) using the form above the chart — it defaults to `created_at`
+and month, so the chart renders with zero configuration. Only date columns the
+policy exposes are offered, and the selected column is validated against that
+allowlist, so the parameter is never used as a raw column name.
+
+The chart aggregates the **same** collection the table shows: the active filters
+narrow it and `policy_scope` still applies, so it never plots rows the current
+user can't see. Aggregation is a single database `GROUP BY` (a portable Arel date
+truncation — `date_trunc` on Postgres, `strftime` on SQLite), and the result is
+dependency-free inline SVG — no JavaScript, CSP-safe. A model with no date column
+shows a short "no date columns to chart" message instead.
 
 **In models:**
 
