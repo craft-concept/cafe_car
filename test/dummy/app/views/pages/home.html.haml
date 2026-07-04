@@ -11,7 +11,14 @@
   sorting, and pagination — with no hand-written CRUD views. This dummy app
   defines the models; CafeCar renders the whole admin.
 
-%p= Button "Enter the demo →", :primary, href: "/admin/clients"
+- if current_user
+  %p= "Signed in as #{current_user.name} — the demo now sends this user to PostHog."
+  %p= Button "Continue to the admin →", :primary, href: "/admin/clients"
+- else
+  -# Sign in as the seeded demo account through the real session flow, so the
+  -# demo has a persistent current_user (see User::DEMO_*).
+  %p= button_to "Enter the demo →", session_path, class: "Button Button-primary",
+        params: { session: { email: User::DEMO_EMAIL, password: User::DEMO_PASSWORD } }
 
 %p
   Or jump to a resource:

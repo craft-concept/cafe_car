@@ -1,4 +1,10 @@
 class User < ApplicationRecord
+  # Frictionless "Enter the demo" login: seeds create this account and the demo
+  # home page signs visitors in as it, so the live demo always has a working
+  # current_user (drives PostHog identify) without a real signup.
+  DEMO_EMAIL    = "demo@cafecar.dev"
+  DEMO_PASSWORD = "cafecar-demo"
+
   has_many :articles, inverse_of: :author
   has_many :clients,  inverse_of: :owner
   has_many :invoices, inverse_of: :sender

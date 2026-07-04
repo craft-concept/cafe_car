@@ -7,6 +7,9 @@ def group(label)
 end
 
 group "users" do
+  # A known account so "Enter the demo" can sign visitors in (see User::DEMO_*).
+  create(:user, name: "Ada Demo", email: User::DEMO_EMAIL,
+                password: User::DEMO_PASSWORD, password_confirmation: User::DEMO_PASSWORD)
   create_list(:user, 20)
 end
 
