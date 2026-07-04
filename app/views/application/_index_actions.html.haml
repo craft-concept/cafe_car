@@ -5,7 +5,8 @@
     = icon(:table_rows)
   = Button href: view_url(:chart), tip: "Chart View" do
     = icon(:stats_report)
-  = Button href: csv_url, tip: "Download CSV" do
-    = icon(:download)
+
+= Button href: csv_url, tip: "Download CSV" do
+  = icon(:download)
 
 = link(model.build).new(class: ui.Button(:primary).class_name, params: filter_params) { icon(:plus) + _1}

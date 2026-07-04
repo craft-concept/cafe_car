@@ -2,5 +2,7 @@
   - filter_params.each do |key, value|
     = hidden_field_tag key, value
   = hidden_field_tag :sort, params[:sort] if params[:sort].present?
-  = f.search_field :q, value: search_term, placeholder: t(:search, scope: :helpers, default: "Search")
-  = f.button "Search", name: nil
+  - label = t(:search, scope: :helpers, default: "Search")
+  = Group do
+    = f.search_field :q, value: search_term, placeholder: label
+    = f.button label, name: nil, class: ui.Button.class_name

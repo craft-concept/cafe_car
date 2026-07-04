@@ -11,12 +11,19 @@ module CafeCar
     FORMATS        = { day: "%Y-%m-%d", week: "%Y-%W", month: "%Y-%m" }.freeze
     DEFAULT_BUCKET = :month
 
-    # SVG geometry (user units; the viewBox scales it to fit its container).
-    BAR_WIDTH  = 40
-    BAR_GAP    = 14
-    HEIGHT     = 200
-    PAD_TOP    = 14 # room for the value label above the tallest bar
-    PAD_BOTTOM = 22 # room for the x-axis (bucket) labels
+    # SVG geometry (user units; the viewBox scales it to fit its container). WIDTH
+    # and HEIGHT are FIXED so the chart keeps one landscape shape at ANY bucket
+    # count. The CSS gives `.Chart` a full-width block with `height: auto`, so the
+    # rendered height follows the viewBox aspect ratio — a column-per-bucket layout
+    # made that viewBox near-square for a few buckets (rendered tall and narrow) and
+    # very wide for many (rendered flat and short). Distributing the bars across a
+    # fixed WIDTH instead holds a steady ~3.5:1 landscape that always fills the column.
+    WIDTH      = 1000
+    HEIGHT     = 280
+    PAD_TOP    = 14  # room for the value label above the tallest bar
+    PAD_BOTTOM = 22  # room for the x-axis (bucket) labels
+    MAX_BAR    = 72  # cap bar width so a handful of buckets don't balloon
+    BAR_RATIO  = 0.6 # bar width as a fraction of its slot
 
     delegate :tag, :safe_join, to: :@template
 
@@ -100,33 +107,35 @@ module CafeCar
     def svg
       points = data
       max    = points.values.max || 0
-      width  = [ points.size * (BAR_WIDTH + BAR_GAP) + BAR_GAP, BAR_WIDTH + 2 * BAR_GAP ].max
       plot   = HEIGHT - PAD_TOP - PAD_BOTTOM
+      slot   = points.empty? ? WIDTH : WIDTH.to_f / points.size
+      bar_w  = [ slot * BAR_RATIO, MAX_BAR ].min
 
       tag.svg(class: "Chart", role: "img", "aria-label": aria_label,
-              "viewBox": "0 0 #{width} #{HEIGHT}", preserveAspectRatio: "xMinYMid meet") do
-        safe_join [ baseline(width), *bars(points, max, plot) ]
+              "viewBox": "0 0 #{WIDTH} #{HEIGHT}", preserveAspectRatio: "xMidYMid meet") do
+        safe_join [ baseline, *bars(points, max, plot, slot, bar_w) ]
       end
     end
 
-    def baseline(width)
+    def baseline
       y = HEIGHT - PAD_BOTTOM
-      tag.line(class: "Chart-axis", x1: 0, y1: y, x2: width, y2: y,
+      tag.line(class: "Chart-axis", x1: 0, y1: y, x2: WIDTH, y2: y,
                stroke: "currentColor", "stroke-opacity": "0.25")
     end
 
-    def bars(points, max, plot)
+    def bars(points, max, plot, slot, bar_w)
       points.each_with_index.map do |(label, count), i|
-        x = BAR_GAP + i * (BAR_WIDTH + BAR_GAP)
-        h = max.zero? ? 0 : (count.to_f / max * plot).round
-        y = HEIGHT - PAD_BOTTOM - h
+        cx = slot * (i + 0.5)
+        x  = cx - bar_w / 2
+        h  = max.zero? ? 0 : (count.to_f / max * plot).round
+        y  = HEIGHT - PAD_BOTTOM - h
 
         tag.g(class: "Chart-bar", "data-bucket": label, "data-count": count) do
           safe_join [
             tag.title("#{label}: #{count}"),
-            tag.rect(x:, y:, width: BAR_WIDTH, height: h, rx: 2, fill: "currentColor"),
-            tag.text(count, x: x + BAR_WIDTH / 2, y: y - 4, class: "Chart-value", "text-anchor": "middle"),
-            tag.text(label, x: x + BAR_WIDTH / 2, y: HEIGHT - PAD_BOTTOM + 15, class: "Chart-label", "text-anchor": "middle")
+            tag.rect(x:, y:, width: bar_w, height: h, rx: 2, fill: "currentColor"),
+            tag.text(count, x: cx, y: y - 4, class: "Chart-value", "text-anchor": "middle"),
+            tag.text(label, x: cx, y: HEIGHT - PAD_BOTTOM + 15, class: "Chart-label", "text-anchor": "middle")
           ]
         end
       end

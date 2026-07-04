@@ -14,83 +14,91 @@ select {
    CafeCar controls, not raw browser widgets. `appearance: none` drops the OS
    chrome while keeping the element a real, keyboard-operable input — focus,
    Space/Enter, and label association all stay native. The mark is drawn with a
-   ::before so no extra markup or image is needed. */
-input[type="checkbox"],
-input[type="radio"] {
-  appearance: none;
-  -webkit-appearance: none;
-  flex: none;
-  display: inline-grid;
-  place-content: center;
-  width: 1.15em;
-  height: 1.15em;
-  margin: 0;
-  padding: 0;
-  color: inherit;
-  background: var(--input);
-  border: 1px solid var(--border);
-  border-radius: var(--control-radius);
-  box-shadow: rgba(34, 32, 29, 0.05) 0px 1px 2px;
-  cursor: pointer;
-  vertical-align: -0.2em;
-  transition: background var(--duration), border-color var(--duration);
-}
+   ::before so no extra markup or image is needed.
 
-input[type="radio"] {
-  border-radius: 50%;
-}
+   SCOPED to the components that own these controls — form fields (.Field) and the
+   table's select column (.Table_Cell-select). Left global, an `input[type=checkbox]`
+   rule outweighs (specificity 0,1,1) the class-based styling of checkboxes reused for
+   other purposes — e.g. the sidebar's .Layout_Menu toggle — and clobbers them. Styling
+   lives inside the component, per "no styles outside of components." */
+:where(.Field, .Table_Cell-select) {
+  input[type="checkbox"],
+  input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: none;
+    display: inline-grid;
+    place-content: center;
+    width: 1.15em;
+    height: 1.15em;
+    margin: 0;
+    padding: 0;
+    color: inherit;
+    background: var(--input);
+    border: 1px solid var(--border);
+    border-radius: var(--control-radius);
+    box-shadow: rgba(34, 32, 29, 0.05) 0px 1px 2px;
+    cursor: pointer;
+    vertical-align: -0.2em;
+    transition: background var(--duration), border-color var(--duration);
+  }
 
-input[type="checkbox"]::before,
-input[type="radio"]::before {
-  content: "";
-  width: 0.68em;
-  height: 0.68em;
-  transform: scale(0);
-  transition: transform var(--duration) ease-in-out;
-  background: var(--white);
-}
+  input[type="radio"] {
+    border-radius: 50%;
+  }
 
-input[type="checkbox"]::before {
-  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-}
+  input[type="checkbox"]::before,
+  input[type="radio"]::before {
+    content: "";
+    width: 0.68em;
+    height: 0.68em;
+    transform: scale(0);
+    transition: transform var(--duration) ease-in-out;
+    background: var(--white);
+  }
 
-input[type="radio"]::before {
-  border-radius: 50%;
-  width: 0.55em;
-  height: 0.55em;
-}
+  input[type="checkbox"]::before {
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  }
 
-input[type="checkbox"]:checked,
-input[type="radio"]:checked {
-  background: var(--accent);
-  border-color: var(--accent);
-}
+  input[type="radio"]::before {
+    border-radius: 50%;
+    width: 0.55em;
+    height: 0.55em;
+  }
 
-input[type="checkbox"]:checked::before,
-input[type="radio"]:checked::before {
-  transform: scale(1);
-}
+  input[type="checkbox"]:checked,
+  input[type="radio"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
 
-input[type="checkbox"]:indeterminate {
-  background: var(--accent);
-  border-color: var(--accent);
-}
+  input[type="checkbox"]:checked::before,
+  input[type="radio"]:checked::before {
+    transform: scale(1);
+  }
 
-input[type="checkbox"]:indeterminate::before {
-  clip-path: inset(45% 15%);
-  transform: scale(1);
-}
+  input[type="checkbox"]:indeterminate {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
 
-input[type="checkbox"]:focus-visible,
-input[type="radio"]:focus-visible {
-  outline: 2px solid var(--outline);
-  outline-offset: 2px;
-}
+  input[type="checkbox"]:indeterminate::before {
+    clip-path: inset(45% 15%);
+    transform: scale(1);
+  }
 
-input[type="checkbox"]:disabled,
-input[type="radio"]:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+  input[type="checkbox"]:focus-visible,
+  input[type="radio"]:focus-visible {
+    outline: 2px solid var(--outline);
+    outline-offset: 2px;
+  }
+
+  input[type="checkbox"]:disabled,
+  input[type="radio"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
 input,

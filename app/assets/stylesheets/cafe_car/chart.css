@@ -6,10 +6,17 @@
     margin-block-end: var(--gap);
   }
 
+  /* Fill the column at the SVG's fixed landscape viewBox ratio (see
+     ChartBuilder::WIDTH/HEIGHT). `height: auto` lets the height track that ratio,
+     so the chart stays a steady ~3.5:1 landscape at any bucket count instead of
+     rendering tall-and-narrow (few buckets) or flat (many). max-height keeps it
+     from getting oversized on very wide screens; the SVG's preserveAspectRatio
+     letterboxes cleanly if the cap trims the ratio. */
   .Chart {
     display: block;
     width: 100%;
     height: auto;
+    max-height: 360px;
     color: var(--accent);
     overflow: visible;
   }

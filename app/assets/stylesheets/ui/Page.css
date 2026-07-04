@@ -79,6 +79,13 @@
   /* overflow: auto; */
 }
 
+/* The body is a stretch column, so cards/tables/forms fill its width. A lone
+   button is an action, not a block — size it to its label and align it left
+   instead of letting it span the whole page. */
+.Page_Body > .Button {
+  align-self: start;
+}
+
 .Page-slim .Page_Body,
 .Page_Body-slim {
   max-width: 720px;
