@@ -153,3 +153,25 @@ when for an incomplete product it's the primary work.
 **Where applied:** this pass — kicked off an honest completeness/gap audit of the gem, turning the
 result into a real prioritized development backlog and starting execution. Behavior change recorded
 here so a cleared context can't revert me to the passive default.
+
+---
+
+## 2026-07-03 — PostHog on the demo app (owner-directed; back-filled by dream 2026-07-04)
+
+> "set up posthog on the demo app for rails logs, error-tracking, analytics, etc. I added a CafeCar
+> org to posthog for you."
+
+**Standing scope rule that fell out of it (pass 88):** instrumentation is demo-only — PostHog
+config/JS lives entirely in `test/dummy`, production-gated. **Zero analytics code in the shipped
+gem** (gemspec, engine views, layouts). Org/project ids + client token: see the operator's
+`demo-posthog` memory; project 496903.
+
+---
+
+## 2026-06-26 — cnc cut wholesale; lint → rubocop-rails-omakase; sessions optional+finished; homepage on GitHub Pages (back-filled by dream 2026-07-04)
+
+Owner ratified (pass 6, pre-dating this file): drop the `cnc` runtime dependency entirely (inline
+the two core-ext methods), switch lint to `rubocop-rails-omakase`, make sessions support optional
+AND finish it, and host the project homepage on GitHub Pages. All four shipped in late June; the
+lint/no-cnc/Pages choices remain standing policy. Recorded here so the decision ledger covers the
+pre-2026-07-02 era.

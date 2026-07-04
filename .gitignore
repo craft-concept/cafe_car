@@ -14,3 +14,7 @@
 /test/dummy/config/initializers/better_errors.rb
 .idea
 docs/dreams/.last
+
+# dream-cycle local cursors (plain-file state, never committed)
+docs/dreams/.floor
+docs/dreams/.last
