@@ -12,7 +12,6 @@ default: &default
 cable: &cable
   <<: *default
   migrations_paths: db/cable_migrate
-  database_tasks: false
 
 development:
   primary:
