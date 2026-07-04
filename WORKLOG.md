@@ -5,6 +5,49 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-04 — Pass 95 (GREEN): owner approved the reworks — both DSLs deleted + his 5 UI fixes shipped
+
+**Trigger:** 8h operating loop (GREEN, `left=17`). Inbox held two VERIFIED owner replies (7/3
+19:32 + 19:42 ET) — the Pass-94 proposal came back **approved with corrections** ("very close!"),
+plus UI feedback on the Pass-92 fixes.
+
+**Owner corrections (verbatim in DECISIONS.md, commit `58ffa7c`; standing rules baked into
+AGENTS.md):**
+- **The policy is the source of truth** — `permitted_bulk_actions` / `permitted_metrics` on the
+  policy; default partials loop those lists; overriding a partial is the explicit opt-out.
+  "the policy declares what's editable and the UI renders that by default."
+- **No styles outside of components** — the Pass-92 global checkbox CSS broke checkboxes reused in
+  the Layout Menu. All styling through components; all copy + button styles (destroy → danger) in
+  locales.
+
+**Shipped (two parallel builders, disjoint files, both rake-green):**
+- **`12416c0` (coder) — both reworks.** `CafeCar.bulk_action` registry and `CafeCar.dashboard` DSL
+  deleted. Bulk actions: policy `permitted_bulk_actions` (default `%i[destroy]`) → `_bulk_actions`
+  partial loops it; host action = policy predicate + model bang method, zero registration;
+  `#batch` derives apply/authorize through the whitelist (Brakeman-clean). Dashboards: host
+  template `cafe_car/dashboard/show` is the opt-in (route always mounted, 404 without it);
+  `metric`/`chart` helpers; `permitted_metrics` drives default tiles. Demo shows a working custom
+  "Publish" bulk action. README/CHANGELOG purged of DSL copy. 189 tests / 556 assertions green.
+- **`374b36d` (designer) — all 5 owner UI fixes.** Checkbox styles scoped into
+  `:where(.Field, .Table_Cell-select)` (root cause: bare attribute selectors out-ranked
+  `.Layout_Menu`); search form capped `flex: 0 1 24em` with Button-styled submit grouped in a
+  `.Group`; `.Button` → `inline-flex` (buttons size to label); Download CSV ungrouped from the
+  view selector; charts fixed to a steady 1000×280 landscape viewBox (verified sparse + dense).
+  Screenshot-verified against the dummy app; auto-deploys to the demo.
+
+**Also:** both rework tasks + the toolbar P1 closed on the board; IDEAS.md proposal → kept;
+answered the owner's chart question (custom ChartBuilder, no gem) in the shipped email — an
+immediate reply was suppressed by the anti-nag guard as a thread bump, folded it here instead.
+
+**Friction noted:** the two parallel builders share one working tree — the designer's commit
+transiently clobbered the coder's uncommitted WIP (coder reapplied from context; both commits
+verified disjoint + green). Next time: worktree isolation for parallel builders.
+
+**Next:** positioning-copy reframe (P1, README/gemspec purge of generator/admin-framework
+language), CrayonBloom requirements when they reply, association-sort bug (P2).
+
+---
+
 ## 2026-07-03 — Pass 94 (GREEN): designed the DSL→views/partials convention, proposed to owner
 
 **Trigger:** self-directed (GREEN, budget tightening `left=18`). Top of backlog = the three
