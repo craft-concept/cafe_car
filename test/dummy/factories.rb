@@ -1,14 +1,17 @@
-AVATARS = Rails.root.join("db/seeds/avatars").glob("*.svg").freeze
+# Raster (PNG) avatars: Active Storage only builds image variants/previews for
+# raster content types, so SVGs render as a bare file figure (no <img>). PNGs
+# render as real image previews everywhere the demo shows an attachment.
+AVATARS = Rails.root.join("db/seeds/avatars").glob("*.png").freeze
 
 FactoryBot.define do
   factory :user do
-    name     { @name = Faker::Religion::Bible.character }
-    email    { "#{@name.parameterize}@#{Faker::Internet.domain_name}" }
+    name     { Faker::Religion::Bible.character }
+    email    { "#{name.parameterize}@#{Faker::Internet.domain_name}" }
     password { @pw = Faker::Internet.password }
     password_confirmation { @pw }
     avatar do
       file = AVATARS.sample
-      { io: file.open, filename: file.basename.to_s, content_type: "image/svg+xml" }
+      { io: file.open, filename: file.basename.to_s, content_type: "image/png" }
     end
   end
 
