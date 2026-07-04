@@ -1,34 +1,27 @@
 require "test_helper"
 
-# The opt-in dashboard overview: a host declares metric tiles + charts via
-# `CafeCar.dashboard { ... }`; the engine renders them in a grid. The dummy app
-# declares a demo dashboard (test/dummy/config/initializers/cafe_car_dashboard.rb),
-# so the route is live here. These prove the DSL registers widgets, the widgets
-# reach the rendered page, and an un-configured dashboard 404s rather than blanks.
+# The opt-in dashboard overview. A host defines it by WRITING one template —
+# `app/views/cafe_car/dashboard/show.html.haml` — that composes the metric/chart
+# helpers; its existence is the opt-in (no config DSL). The dummy app ships one
+# (test/dummy/app/views/cafe_car/dashboard/show.html.haml), so the route is live
+# here. These prove the policy-driven metrics reach the page, charts render, and an
+# un-written dashboard 404s (and drops its nav link) rather than blanking.
 class DashboardTest < ActionDispatch::IntegrationTest
   setup { sign_in }
 
-  test "the DSL registers metric and chart widgets in declared order" do
-    dashboard = CafeCar::Dashboard.new
-    dashboard.metric "Users", -> { 42 }
-    dashboard.chart  "New", model: Article, x: :created_at, by: :month
+  test "policy-driven metric tiles render their counts" do
+    create_list(:article, 2, :draft)
+    create(:article, :published)
 
-    assert_equal %i[metric chart], dashboard.widgets.map(&:type)
-    assert_equal "Users", dashboard.widgets.first.label
-    assert_equal 42,      dashboard.widgets.first.call
-    assert_equal :created_at, dashboard.widgets.last.x
-  end
-
-  test "a metric tile renders its callable's number" do
     get "/admin/dashboard"
 
     assert_response :success
-    values = tiles
-    assert_equal Article.count,                          values[0]
-    assert_equal Article.where.not(published_at: nil).count, values[1]
+    # ArticlePolicy#permitted_metrics => %i[all published]: total, then published.
+    assert_equal Article.count,             tiles[0]
+    assert_equal Article.published.count,   tiles[1]
   end
 
-  test "a chart widget renders an inline SVG bar per bucket" do
+  test "a chart tile renders an inline SVG bar per bucket" do
     create(:article, published_at: t("2026-01-10"), created_at: t("2026-01-10"))
     create(:article, published_at: t("2026-02-10"), created_at: t("2026-02-10"))
 
@@ -40,22 +33,22 @@ class DashboardTest < ActionDispatch::IntegrationTest
            "expected at least one chart bar"
   end
 
-  test "the dashboard 404s when no dashboard is configured" do
-    with_dashboard(nil) do
+  test "the dashboard 404s when the host has not written the template" do
+    without_dashboard_template do
       get "/admin/dashboard"
       assert_response :not_found
     end
   end
 
-  test "the sidebar nav links to the dashboard when one is configured" do
+  test "the sidebar nav links to the dashboard when the template exists" do
     get "/admin/articles"
 
     assert_response :success
     assert_select "nav a[href=?]", "/admin/dashboard", text: /Dashboard/
   end
 
-  test "the sidebar nav omits the dashboard link when none is configured" do
-    with_dashboard(nil) do
+  test "the sidebar nav omits the dashboard link when no template exists" do
+    without_dashboard_template do
       get "/admin/articles"
 
       assert_response :success
@@ -72,11 +65,16 @@ class DashboardTest < ActionDispatch::IntegrationTest
     Nokogiri::HTML5(response.body).css(".Metric-value").map { _1.text.strip.to_i }
   end
 
-  def with_dashboard(config)
-    saved = CafeCar.dashboard_config
-    CafeCar.dashboard_config = config
+  # Temporarily hide the host dashboard template so the opt-in reads as "off",
+  # clearing the view-lookup caches so the filesystem change is seen this request.
+  def without_dashboard_template
+    path  = Rails.root.join("app/views/cafe_car/dashboard/show.html.haml")
+    moved = "#{path}.off"
+    FileUtils.mv(path, moved)
+    ActionView::LookupContext::DetailsKey.clear
     yield
   ensure
-    CafeCar.dashboard_config = saved
+    FileUtils.mv(moved, path)
+    ActionView::LookupContext::DetailsKey.clear
   end
 end

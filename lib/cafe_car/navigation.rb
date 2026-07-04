@@ -44,13 +44,14 @@ module CafeCar
     def router = Rails.application.routes.router
     def named_routes = Rails.application.routes.named_routes.to_h.values.map { Route.new(_1, template: @template) }
 
-    # Path to the opt-in dashboard overview, or nil until a host declares one.
-    # The dashboard route lives in the engine (not the host's routes), so it's
-    # resolved through the engine's own url helpers — that works from any host
-    # controller regardless of where CafeCar is mounted. Guarded by `dashboard?`
-    # so an unconfigured host (route never drawn) never calls the missing helper.
+    # Path to the opt-in dashboard overview, or nil until a host writes the
+    # dashboard template (`app/views/cafe_car/dashboard/show.html.haml`) — its
+    # existence is the opt-in. The dashboard route lives in the engine (not the
+    # host's routes), so it's resolved through the engine's own url helpers — that
+    # works from any host controller regardless of where CafeCar is mounted.
     def dashboard_href
-      CafeCar::Engine.routes.url_helpers.dashboard_path if CafeCar.dashboard?
+      return unless @template.lookup_context.exists?("show", %w[cafe_car/dashboard], false)
+      CafeCar::Engine.routes.url_helpers.dashboard_path
     end
     def index_routes = named_routes.select(&:index?)
     def groups = routes.group_by(&:group)

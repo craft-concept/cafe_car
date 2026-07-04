@@ -13,17 +13,18 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 ### Added
 
 - Dashboard overview. A new opt-in surface that composes an app's data into a
-  single overview page. A host declares it once with a `CafeCar.dashboard { ... }`
-  block of **metric tiles** (`metric "Users", -> { User.count }` — a label over a
-  number from a host-supplied callable) and **charts** (`chart "New users", model:
-  User, x: :created_at, by: :month` — the same inline-SVG bar chart the index Chart
-  view uses). Widgets render in a responsive grid at `dashboard_path` (no
-  JavaScript, CSP-safe). The route is mounted **only** when a dashboard is
-  declared, so a CRUD-only host never inherits a blank page. Chart widgets keep the
-  Chart-view security discipline: the x column is validated against the model's
-  date-column allowlist and truncated via portable Arel, so a column name can never
-  reach SQL raw. When declared, the dashboard also gets a link at the top of the
-  sidebar nav, so it's reachable without knowing the URL.
+  single overview page — configured, like everything in CafeCar, **through a view,
+  not a config DSL.** A host turns it on by writing one template,
+  `app/views/cafe_car/dashboard/show.html.haml`, that composes three helpers:
+  **`metric("Label") { … }`** (a label over a number), **`metrics(Model)`** (the
+  count tiles a model policy declares in `permitted_metrics` — the policy is the
+  source of truth, same as bulk actions), and **`chart "Title", model:, x:, by:`**
+  (the same inline-SVG bar chart the index Chart view uses). The template's
+  existence is the opt-in: no template → a direct hit 404s and no nav link shows,
+  so a CRUD-only host never inherits a blank page. Tiles render in a responsive grid
+  at `dashboard_path` (no JavaScript, CSP-safe). Charts keep the Chart-view security
+  discipline: the x column is validated against the model's date-column allowlist
+  and truncated via portable Arel, so a column name can never reach SQL raw.
 - Chart view on index pages. Alongside grid and table, every index now offers a
   **Chart** view that aggregates records into time buckets and plots them as a
   count-per-bucket bar chart. Pick any date/datetime column as the x-axis and a
@@ -51,12 +52,17 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 - Bulk actions on index tables. Every index now carries a per-row checkbox and a
   "select all" header checkbox; selected rows are submitted to a `batch`
   collection endpoint that applies a named action to them. **Delete** ships built
-  in. Authorization is per-record: the candidate set is narrowed to the policy
-  scope, then each row is checked against the action's policy predicate
-  (`destroy?` for delete) — unauthorized rows are skipped, never bulk-bypassed.
-  Hosts register custom actions with `CafeCar.bulk_action(:publish) { … }`
-  (optional `query:` names the policy predicate; the block defaults to
-  `record.public_send(:"#{name}!")`). Candidates load and authorize in a single
+  in. The **policy is the source of truth**: a policy declares the actions its
+  index offers with `permitted_bulk_actions` (default `%i[destroy]`), and the
+  action bar renders exactly that list — override the `_bulk_actions` partial to
+  opt out. A custom action "just works" from three conventional pieces with no
+  registration anywhere: its name in `permitted_bulk_actions`, a model bang method
+  (`publish!`) for behavior, and a policy predicate (`publish?`) for authorization.
+  `batch` derives both from the name and rejects any name outside the policy list.
+  Authorization is per-record: the candidate set is narrowed to the policy scope,
+  then each row is checked against `name?` — unauthorized rows are skipped, never
+  bulk-bypassed. Button labels and styles come from the locale (`en.destroy`;
+  `bulk_actions.styles.destroy: danger`). Candidates load and authorize in a single
   query regardless of batch size.
 
 ### Fixed

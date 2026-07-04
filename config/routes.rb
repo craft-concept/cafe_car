@@ -11,10 +11,12 @@ CafeCar::Engine.routes.draw do
   # request_authentication can redirect to new_session_path.
   resource :session, only: %i[new create destroy], controller: "cafe_car/sessions"
 
-  # The dashboard overview is opt-in: its route exists only when a host has
-  # declared widgets via `CafeCar.dashboard { ... }`. With nothing declared the
-  # engine mounts no route, so a CRUD-only host never inherits a blank page.
-  if CafeCar.dashboard?
-    get "dashboard", to: "cafe_car/dashboards#show", as: :dashboard
-  end
+  # The dashboard overview is opt-in via a host template, not config: the route
+  # always mounts, but the controller 404s unless the host has written
+  # `app/views/cafe_car/dashboard/show.html.haml`. So a CRUD-only host that never
+  # writes the template sees no dashboard (404 on direct hit, no nav link), while
+  # opt-in stays a matter of "drop a view" — the same convention as every other
+  # CafeCar surface. (Routes are drawn at boot, before any view context, so the
+  # template check can't gate the mount itself.)
+  get "dashboard", to: "cafe_car/dashboards#show", as: :dashboard
 end

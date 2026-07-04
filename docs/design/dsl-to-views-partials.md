@@ -1,7 +1,10 @@
 # Design proposal — dashboards & bulk actions via views/partials (not config DSLs)
 
-Status: **proposal, awaiting owner sign-off.** No feature code is touched in the commit that
-adds this doc. The conductor reviews, then forwards to the owner.
+Status: **SHIPPED (2026-07-03).** Owner approved with corrections (`DECISIONS.md`, top entry): the
+POLICY is the source of truth — `permitted_bulk_actions` / `permitted_metrics` drive the UI by
+default, overridden explicitly by a host view; button styles come from the locale; all copy in
+locales. Both DSLs (`CafeCar.bulk_action`, `CafeCar.dashboard`) and their classes are removed. See
+the "What shipped vs. the proposal" note at the end for the resolved open questions.
 
 ## Why
 
@@ -302,3 +305,31 @@ can't cheaply read a partial's contents).
 - **O5 — scope creep check.** The same email flagged re-examining `CafeCar.theme=` against
   "no config DSLs." `theme=` is a single scalar setting, not a builder DSL — treat separately, or
   fold into this rework? (Recommend separate; it's a different shape of question.)
+
+---
+
+## What shipped vs. the proposal (2026-07-03)
+
+Resolved per the owner's approval-with-corrections:
+
+- **O1 — dashboard route mount → A1.** The route always mounts (`get "dashboard"`); the controller
+  404s unless the host wrote `app/views/cafe_car/dashboard/show.html.haml`. Template existence is
+  the opt-in, checked with `template_exists?("show", %w[cafe_car/dashboard], false)` — resolved via
+  the host's `app/views` (the engine ships no `show`, only the `_metric`/`_chart` tile partials).
+- **O2 — bulk-action whitelist → B1, on the policy.** `Policy#permitted_bulk_actions` (default
+  `%i[destroy]`) is the source of truth. The `_bulk_actions` partial **loops that list by default**
+  via a `bulk_action` view helper; overriding the partial is the explicit opt-out. `Controller#batch`
+  derives `name?` (per-record authorization, unchanged security boundary) and `name!` (model bang
+  method) from the action name and rejects any name outside the policy list as a bad request.
+- **Metrics are policy-driven too** (owner correction): `Policy#permitted_metrics` (default `[]`,
+  a list of model scope names; `:all` = the whole relation) drives the `metrics` view helper, which
+  renders a count tile per entry. A host template overrides by calling `metric`/`chart` directly.
+- **Button styles from the locale** (owner correction): `bulk_actions.styles.<name>` maps an action
+  to a Button flag (shipped default `destroy → danger`). All labels/copy live in `config/locales`.
+- **`metric` / `chart` helpers** replace the widget structs, composing the unchanged `ChartBuilder`
+  and its date-column allowlist. The chart aspect-ratio polish (owner: "narrow and tall") shipped
+  alongside as a `ChartBuilder` geometry change.
+
+**Removed:** `lib/cafe_car/bulk_action.rb`, `lib/cafe_car/dashboard.rb`, the `CafeCar.bulk_action`
+registry + `CafeCar.dashboard` DSL + `dashboard_config` (all of `lib/cafe_car.rb`'s DSL block), the
+`cafe_car/dashboards/` views, and the dummy app's `cafe_car_dashboard.rb` initializer.

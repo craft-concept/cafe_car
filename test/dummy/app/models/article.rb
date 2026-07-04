@@ -14,4 +14,7 @@ class Article < ApplicationRecord
 
   def published? = published_at && published_at < Time.zone.now
   def draft?     = published_at && published_at > Time.zone.now
+
+  # Bang method a `:publish` bulk action derives + calls (see ArticlePolicy).
+  def publish! = update!(published_at: Time.zone.now)
 end

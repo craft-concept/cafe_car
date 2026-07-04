@@ -1,11 +1,9 @@
 -# Bulk-action bar. It sits in the index toolbar (next to the search box), but its
 -# buttons submit the BulkForm that wraps the table — `form: "BulkForm"` ties them
 -# to that form so the checked `ids[]` ride along. Hidden until JS (cafe_car.js)
--# reveals it once at least one row is selected.
+-# reveals it once at least one row is selected. The buttons loop the model policy's
+-# `permitted_bulk_actions` (the source of truth); override this partial for a
+-# bespoke set. Each button's label + style come from the locale (see #bulk_action).
 .BulkActions{hidden: true, data: { bulk_bar: true }}
-  - bulk_actions.each do |action|
-    - danger = :danger if action.name == :destroy
-    - label = t(action.name, default: action.label)
-    - confirm = t(:bulk_confirm, scope: :helpers, default: "Apply “%{action}” to the selected rows?", action: label)
-    = Button(*danger, tag: :button, type: :submit, form: "BulkForm", name: :bulk_action, value: action.name, data: { turbo_confirm: confirm }) do
-      = label
+  - bulk_actions.each do |name|
+    = bulk_action name

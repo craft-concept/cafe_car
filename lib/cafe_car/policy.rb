@@ -16,6 +16,19 @@ module CafeCar::Policy
     @title_attribute ||= displayable_attributes.first
   end
 
+  # The bulk actions offered on this model's index table — the policy is the source
+  # of truth. Each name maps to a policy predicate (`name?`, authorized per record
+  # in Controller#batch) and a model bang method (`name!`, applied to each). Ships
+  # with `:destroy`; a host lists its own (e.g. `%i[publish destroy]`) by overriding
+  # this, with no registration anywhere else. Return `[]` to offer none.
+  def permitted_bulk_actions = %i[destroy]
+
+  # The metrics the dashboard renders for this model by default — the same
+  # policy-is-source-of-truth pattern as #permitted_bulk_actions. Each name is a
+  # model scope (`:all` = the whole relation) whose row count becomes a tile; the
+  # `metrics` view helper reads this list. Empty by default (opt in per model).
+  def permitted_metrics = []
+
   def logo_attribute
     model.info.fields.listable.attachments.first&.method
   end

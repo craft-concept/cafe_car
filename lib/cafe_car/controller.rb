@@ -104,19 +104,26 @@ module CafeCar
       respond_with object
     end
 
-    # Apply a registered bulk action to the selected records. Every record is
-    # authorized ON ITS OWN — the candidate set is first narrowed to the policy
-    # scope (rows the user may see), then each is checked against the action's
-    # policy predicate; unauthorized rows are skipped, never bulk-bypassed. The
-    # per-record authorization here is the security boundary, so Pundit's blanket
+    # Apply a bulk action, named by `params[:bulk_action]`, to the selected records.
+    # The action name is derived, not registered: the model policy's
+    # `permitted_bulk_actions` is the whitelist (a name outside it is a bad request),
+    # `name?` is the per-record authorization predicate, and `name!` the model bang
+    # method applied. Every record is authorized ON ITS OWN — the candidate set is
+    # first narrowed to the policy scope (rows the user may see), then each is checked
+    # against `name?`; unauthorized rows are skipped, never bulk-bypassed. That
+    # per-record check is the security boundary, so Pundit's blanket
     # `verify_authorized` is satisfied by `skip_authorization` after the fact.
     def batch
       skip_authorization # authorization is per-record below, not one blanket check
-      records = policy_scope(model).where(id: Array(params[:ids]))
-      action  = CafeCar.bulk_actions[params[:bulk_action].to_s.to_sym] or return head(:bad_request)
+      action = permitted_bulk_action(params[:bulk_action])
+      unless action
+        skip_policy_scope # no candidate query on the reject path
+        return head(:bad_request)
+      end
 
-      batched = records.select { |record| action.allowed? policy(record) }
-      batched.each { |record| action.apply(record) }
+      records = policy_scope(model).where(id: Array(params[:ids]))
+      batched = records.select { |record| bulk_action_allowed?(record, action) }
+      batched.each { |record| record.public_send("#{action}!") }
 
       redirect_to url_for(action: :index), success: batch_notice(action, batched.size)
     end
@@ -150,8 +157,27 @@ module CafeCar
       flash[:success] = present(object).i18n("#{action_name}_html", scope: :flashes)
     end
 
+    # The permitted bulk action matching `param` — a symbol drawn from the model
+    # policy's `permitted_bulk_actions` whitelist, or nil for a name outside it.
+    # #batch sends `<action>!`/`<action>?`, so resolving through the whitelist here
+    # means the derived method is always a policy-declared name, never the raw
+    # request value (a bare `params[:bulk_action]` would be a dynamic-send footgun).
+    def permitted_bulk_action(param)
+      policy(model.new).permitted_bulk_actions.find { |a| a.to_s == param.to_s }
+    end
+
+    # Whether this record grants `action` — its `action?` policy predicate. Guarded
+    # by `respond_to?` so a permitted action without a predicate simply denies rather
+    # than erroring.
+    def bulk_action_allowed?(record, action)
+      policy    = policy(record)
+      predicate = "#{action}?"
+      policy.respond_to?(predicate) && policy.public_send(predicate)
+    end
+
     def batch_notice(action, count)
-      "#{action.label} #{count} #{model_name.human(count:).downcase}"
+      label = I18n.t(action, default: action.to_s.humanize)
+      "#{label} #{count} #{model_name.human(count:).downcase}"
     end
 
     # Plain-text label for a typeahead option — the record's policy title attribute

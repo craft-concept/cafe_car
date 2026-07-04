@@ -1,0 +1,11 @@
+-# A dashboard chart tile: title + inline SVG, no filter controls. Rendered by the
+-# `chart` helper. The x column is host-supplied but still runs through
+-# ChartBuilder's date-column allowlist, so a bad column can never reach SQL raw.
+- chart = chart_for(objects, column: x.to_s, bucket: by)
+
+.Dashboard-tile.Dashboard-chart
+  %h4.Dashboard-chartTitle= title
+  - if chart.columns.include?(chart.column)
+    = chart
+  - else
+    .center= t("cafe_car.dashboard.no_date_column", default: "No date column to chart.")

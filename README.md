@@ -131,8 +131,8 @@ admin that you extend with ordinary Rails code.
   model's text columns with zero per-model setup
 - 📈 **Chart view** - A third index view (beside grid/table) that buckets records
   over any date column and plots count-per-bucket as dependency-free inline SVG
-- 📊 **Dashboard** - An opt-in overview page composing metric tiles and charts
-  from a declarative `CafeCar.dashboard { ... }` block; off by default
+- 📊 **Dashboard** - An opt-in overview page composing metric tiles and charts;
+  you write one view to turn it on, off by default
 - ⬇️ **CSV export** - One-click "Download CSV" of the current filtered, sorted
   view on any index
 - ☑️ **Bulk actions** - Select rows and act on many at once (delete ships built
@@ -709,53 +709,75 @@ narrowed to the policy scope, then every row is checked against the action's
 policy predicate (`destroy?` for delete). Rows the current user isn't allowed to
 touch are skipped — a batch never bulk-bypasses a per-record denial.
 
-Register your own action once, in an initializer:
+**The policy is the source of truth.** A policy declares the actions its index
+offers with `permitted_bulk_actions`, and the bar renders exactly that list:
 
 ```ruby
-# config/initializers/cafe_car.rb
-CafeCar.bulk_action(:publish) { |record| record.update!(published_at: Time.current) }
-CafeCar.bulk_action(:archive, query: :update?, &:archive!)
+class ArticlePolicy < ApplicationPolicy
+  def permitted_bulk_actions = %i[publish destroy]
+
+  def publish? = user.editor?   # per-record authorization for the batch
+  def destroy? = !object.published?
+end
 ```
 
-- The block receives one record; it defaults to `record.public_send(:"#{name}!")`,
-  so `bulk_action(:destroy)` maps to `record.destroy!`.
-- `query:` names the policy predicate each record is checked against (defaults to
-  `:"#{name}?"`). An action only appears on a table whose policy answers that
-  predicate, so a resource without a `publish?` policy method simply won't show
-  the "Publish" button.
+A custom action "just works" from three conventional pieces — no registration:
+
+1. list its name in `permitted_bulk_actions` (the policy),
+2. a **model bang method** for the behavior (`Article#publish!`),
+3. a **policy predicate** for authorization (`publish?`).
+
+`batch` derives both from the name — it calls `record.publish!` on each row the
+policy answers `publish?` for. Button labels and styles come from your locale
+(`en.destroy: Delete`; `bulk_actions.styles.destroy: danger`), and you override
+the whole bar for a resource by dropping an `_bulk_actions.html.haml` partial in
+its view directory.
 
 ### Dashboard
 
 CafeCar can render a single **dashboard** overview — an at-a-glance page that
-composes your data into metric tiles and charts. It's **opt-in**: declare one in
-an initializer and the route appears; declare nothing and there's no dashboard at
-all, so a CRUD-only app never inherits a blank page.
+composes your data into metric tiles and charts. It's **opt-in the CafeCar way:
+you write one view.** Its existence turns the dashboard on; delete it and there's
+no dashboard at all (a direct hit 404s, no nav link), so a CRUD-only app never
+inherits a blank page.
 
-```ruby
-# config/initializers/cafe_car.rb
-Rails.application.config.to_prepare do
-  CafeCar.dashboard do
-    metric "Users",         -> { User.count }
-    metric "Signups today", -> { User.where(created_at: Date.current.all_day).count }
-    chart  "New users", model: User, x: :created_at, by: :month
-  end
-end
+Write `app/views/cafe_car/dashboard/show.html.haml`:
+
+```haml
+- title "Dashboard"
+
+= Page title: "Dashboard" do |page|
+  = page.Body do
+    .Dashboard
+      = metrics User
+      = metric("Signups today") { User.where(created_at: Date.current.all_day).count }
+      = chart "New users", model: User, x: :created_at, by: :month
 ```
 
-Two widget types:
+Three helpers compose the page:
 
-- **`metric "Label", callable`** — a tile showing a label over the number your
-  callable returns. The callable is your trusted config, evaluated each render.
+- **`metric("Label") { … }`** — a tile showing a label over the number your block
+  returns.
+- **`metrics(Model)`** — the tiles a **policy** declares. `Model`'s policy lists
+  the scopes to surface in `permitted_metrics` (`:all` = the whole relation), and
+  CafeCar renders a count tile for each — the same policy-is-source-of-truth rule
+  as bulk actions.
 - **`chart "Title", model:, x:, by:`** — the same dependency-free inline-SVG bar
   chart as the index [Chart view](#advanced-usage), bucketing `model`'s records
   over the `x` date column at `by` granularity (`:day`/`:week`/`:month`, default
   `:month`). The `x` column is validated against the model's date-column allowlist
   and truncated with portable Arel, so it's never interpolated as raw SQL.
 
-Widgets render in a responsive grid at `dashboard_path` (no JavaScript, CSP-safe),
-in the order declared. Declare the block inside `to_prepare` so your app's models
-are loaded when it runs. Once declared, a **Dashboard** link appears at the top of
-the sidebar nav — declare nothing and no link shows.
+```ruby
+class UserPolicy < ApplicationPolicy
+  def permitted_metrics = %i[all active]   # total, then User.active.count
+end
+```
+
+Tiles render in a responsive grid at `dashboard_path` (no JavaScript, CSP-safe).
+Because the dashboard is a plain view, you can drop in headings, your own
+partials, or any markup between tiles. Once the template exists, a **Dashboard**
+link appears at the top of the sidebar nav — no template, no link.
 
 ### Current Context
 

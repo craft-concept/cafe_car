@@ -20,6 +20,15 @@ en:
   helpers:
     bulk_confirm: "Apply “%{action}” to the selected rows?"
 
+  # Button style (a Button component flag) per bulk action — a shipped default a
+  # host can extend/override. Unlisted actions fall back to the neutral style.
+  bulk_actions:
+    styles:
+      destroy: danger
+
+  dashboard:
+    no_date_column: No date column to chart.
+
   list_html:
     zero: "(none)"
     one: "%{list}"

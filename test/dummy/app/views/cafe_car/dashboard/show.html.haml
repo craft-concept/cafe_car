@@ -1,0 +1,11 @@
+-# Writing this file IS the dashboard — its existence opts the host in. Delete it
+-# and the dashboard is gone (404, no nav link). It composes the metric/chart
+-# helpers; `metrics Article` renders the policy-driven tiles (ArticlePolicy's
+-# permitted_metrics), and `chart` adds a bespoke tile alongside them.
+- title "Dashboard"
+
+= Page title: "Dashboard" do |page|
+  = page.Body do
+    .Dashboard
+      = metrics Article
+      = chart "Articles by month", model: Article, x: :created_at, by: :month

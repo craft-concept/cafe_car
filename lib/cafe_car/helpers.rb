@@ -156,16 +156,70 @@ module CafeCar
         column: params[:chart_x], bucket: params[:chart_by], **options)
     end
 
-    # The bulk actions offered on this model's index table: every registered
-    # action whose policy predicate the model's policy answers. This only decides
-    # which buttons show — each selected row is still authorized one-by-one in the
+    # The bulk actions offered on this model's index table — the model policy's
+    # `permitted_bulk_actions` list is the source of truth. This only decides which
+    # buttons show; each selected row is still authorized one-by-one in the
     # controller, so a shown action never bulk-bypasses a per-record denial.
     def bulk_actions(klass = model)
-      policy = policy(klass.new)
-      CafeCar.bulk_actions.values.select { policy.respond_to?(_1.query) }
+      policy(klass.new).permitted_bulk_actions
     end
 
     def bulk_actions? = bulk_actions.any?
+
+    # A single bulk-action submit button, wired to the table's BulkForm from the
+    # toolbar (`form: "BulkForm"`). The label comes from the locale (`en.destroy`),
+    # never a hardcoded string, and the button style from the locale too — a shipped
+    # default maps `destroy` to `:danger` (see `bulk_actions.styles`). The default
+    # `_bulk_actions` partial loops `bulk_actions` calling this; a host overriding
+    # the partial can call it directly for a bespoke set.
+    def bulk_action(name, style = bulk_action_style(name))
+      label   = t(name, default: name.to_s.humanize)
+      confirm = t(:bulk_confirm, scope: :helpers, action: label)
+      Button(*style, tag: :button, type: :submit, form: "BulkForm",
+        name: :bulk_action, value: name, data: { turbo_confirm: confirm }) { label }
+    end
+
+    # The button style (a Button flag like `:danger`) for a bulk action, from the
+    # locale under `bulk_actions.styles`, or nil for the default style.
+    def bulk_action_style(name)
+      t("bulk_actions.styles.#{name}", default: nil)&.to_sym
+    end
+
+    # A dashboard metric tile: a label over the value captured from the block. The
+    # block is host-authored (a real view), evaluated at render.
+    def metric(label, &block)
+      render "cafe_car/dashboard/metric", label:, value: capture(&block)
+    end
+
+    # A dashboard chart tile: a title over the dependency-free inline-SVG bar chart,
+    # built from `model`'s records bucketed over the `x` date column at `by`
+    # granularity. `x` runs through ChartBuilder's date-column allowlist unchanged,
+    # so a column name can never reach SQL raw.
+    def chart(title, model:, x:, by: nil)
+      render "cafe_car/dashboard/chart", title:, objects: model.all, x:, by:
+    end
+
+    # The policy-driven metric tiles for `model`: one count tile per name in the
+    # model policy's `permitted_metrics` (`:all` = the whole relation). This is the
+    # default dashboard behavior — a host template overrides by calling `metric`
+    # directly instead.
+    def metrics(model)
+      policy = policy(model.new)
+      safe_join(policy.permitted_metrics.map { metric_for(model, _1) })
+    end
+
+    def metric_for(model, name)
+      scope = name.to_sym == :all ? model.all : model.public_send(name)
+      metric(metric_label(model, name)) { scope.count }
+    end
+
+    # A metric tile's label, from the locale: the pluralized model name for the
+    # whole-relation `:all` metric, else `metrics.<name>` (defaulting to the
+    # humanized scope name).
+    def metric_label(model, name)
+      return model.model_name.human(count: 2) if name.to_sym == :all
+      t("metrics.#{name}", default: name.to_s.humanize)
+    end
 
     # Wraps the index table in the form that submits the selected row ids and the
     # chosen bulk action. With no bulk actions available, the table renders as-is.

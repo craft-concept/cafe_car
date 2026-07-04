@@ -37,6 +37,46 @@ class BulkActionsTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  test "a name outside the policy's permitted_bulk_actions is a bad request" do
+    draft = create(:article, :draft)
+    # `update` is a real policy predicate + model method, but it's NOT in
+    # ArticlePolicy#permitted_bulk_actions — the whitelist rejects it.
+    post "/admin/articles/batch", params: { bulk_action: "update", ids: [ draft.id ] }
+
+    assert_response :bad_request
+  end
+
+  # A host-defined action "just works" from a policy predicate (`publish?`) + a model
+  # bang method (`publish!`) listed in `permitted_bulk_actions` — no registration.
+  # #batch derives both from the action name; the per-record predicate stays the
+  # security boundary (a published row can't be re-published).
+  test "a host-defined bulk action derives its behavior from the action name" do
+    drafts    = create_list(:article, 2, :draft)      # publish? => true
+    published = create(:article, :published)          # publish? => false
+    was       = published.published_at
+
+    post "/admin/articles/batch",
+      params: { bulk_action: "publish", ids: (drafts + [ published ]).map(&:id) }
+
+    assert_redirected_to "/admin/articles"
+    assert drafts.all? { _1.reload.published? }, "authorized drafts should be published"
+    assert_equal was, published.reload.published_at,
+      "an already-published row is unauthorized to publish and must be left untouched"
+  end
+
+  test "button styles come from the locale — destroy is danger, others are neutral" do
+    create(:article, :draft)
+
+    get "/admin/articles"
+
+    assert_response :success
+    # `bulk_actions.styles.destroy: danger` in the locale flags the Button component.
+    assert_select ".BulkActions button.Button-danger[value=destroy]", 1
+    # An action with no locale style stays the neutral default (no danger flag).
+    assert_select ".BulkActions button[value=publish]", 1
+    assert_select ".BulkActions button.Button-danger[value=publish]", 0
+  end
+
   test "the index table renders selection checkboxes and a bulk-action bar" do
     create_list(:article, 2, :draft)
 
