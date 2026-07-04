@@ -5,6 +5,43 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-04 — PostHog demo follow-ups: test_mode not env guard · send current_user · demo fixes · investigate missing request context
+
+Owner (jeff@yak.sh) email 12:12 ET, replying to the Pass-96 "PostHog live on the demo" ship mail
+(owner also confirmed in-session: "check your email. we'll do some work today"). Verbatim:
+
+> no need for this guard since the test/dummy is not shipped with the gem.
+> https://github.com/craft-concept/cafe_car/blob/main/test/dummy/config/initializers/posthog.rb#L10
+>
+> instead, use `config.test_mode = !Rails.env.production?`. this way the posthog code is still
+> tested to run properly in dev, but doesn't report anything.
+>
+> also, there *is* a current_user and we should enable the feature to send it. file a separate
+> ticket to ensure sessions and login work on the demo.
+>
+> can we fix all the broken images on the demo? also there should be users seeded.
+>
+> also, something appears to be wrong with posthog-rails' capturing of request context. it has not
+> showed up in any of our logged exceptions. the PR that added it is relatively recent and is here:
+> https://github.com/PostHog/posthog-ruby/pull/144/changes can you investigate what's going on
+> here? why aren't we getting any request details (current_url, params, etc) on our reported
+> exceptions. afterwards, we'll open a ticket or PR to fix, since i don't think we're using it
+> wrong, but maybe we are. please investigate!
+
+**What this decides / where applied:**
+- **PostHog initializer:** drop the production-only guard in
+  `test/dummy/config/initializers/posthog.rb` — the dummy isn't shipped with the gem. Use
+  `config.test_mode = !Rails.env.production?` so the PostHog path runs in dev/test without
+  reporting.
+- **Identify users:** enable sending `current_user` to PostHog. Separate ticket: make sessions +
+  login work on the demo.
+- **Demo content:** fix all broken images; seed users.
+- **Investigate posthog-ruby request context** (PostHog/posthog-ruby#144): exceptions in project
+  496903 carry no current_url/params. Find out whether it's our usage or an upstream bug; then
+  open an upstream issue/PR.
+
+---
+
 ## 2026-07-03 — Reworks APPROVED with corrections: policy is the source of truth; + component-styling rule
 
 Two VERIFIED owner (jeff@yak.sh) emails, 19:32 + 19:42 ET, replying to the Pass-94 proposal and the
