@@ -5,6 +5,52 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-04 — Pass 96 (owner-directed): PostHog follow-ups — demo fixed live, request-context mystery solved, upstream issue filed
+
+**Trigger:** Owner in-session ("check your email. we'll do some work today") + his 12:12 ET reply
+to the PostHog ship mail with four asks. Recorded verbatim first (DECISIONS.md, `95a36ca`), four
+P1s filed, then executed — owner present, so email-triage deferral didn't apply.
+
+**Shipped (demo-coder, serial on test/dummy; all rake-green, deployed + verified live):**
+- **`9c7340d` — PostHog init per owner spec.** Production guard dropped; reporting gated by
+  `config.test_mode = !Rails.env.production?` (no-op worker off-prod, suite stays offline).
+  `capture_user_context=true`; frontend `posthog.identify(id, {email,name})` for current_user.
+  JS-snippet guard kept (posthog-js has no server no-op).
+- **`ad35581` — sessions/login fixed.** Root cause: "Enter the demo" was a bare link to /admin and
+  seeded users had random passwords — login was impossible. Now a demo account
+  (`demo@cafecar.dev`/`cafecar-demo`, public by design) + real POST to /session. Live-verified:
+  session persists across requests ("Signed in as Ada Demo").
+- **`3044107` + `9f6d4bf` — broken images fixed + users seeded.** SVG avatars (unrenderable as
+  variants) → committed PNGs; live 500s were the missing `ruby-vips` gem (libvips in Docker, gem
+  not in bundle). Live-verified: variants 200. Seeds: 20 users + demo account.
+- **`c8d8c8a` (turbo-coder) — the error-flood root cause.** `database_tasks: false` on the dummy's
+  cable DB excluded it from `db:prepare` → `solid_cable_messages` never existed on Railway →
+  every broadcast raised `ArgumentError: No unique index found for id` (1,012/30d, 98% of error
+  volume). One line removed; live-verified in Railway logs (broadcasts perform, TrimJob spawns,
+  zero errors).
+
+**Investigation (ph-investigator, read-only): the "no request context" premise was false.**
+posthog-ruby 3.16.0 includes PR #144 and it works — 17/17 web exceptions carry
+$current_url/method/path/params (live sample confirmed). The flood was the Turbo job above; jobs
+have no HTTP request by design. Side-finding: posthog-rails double-captures job exceptions
+(506/506 split, `error_subscriber.rb` guards only `in_web_request?`) — **filed upstream with
+owner's go-ahead: PostHog/posthog-ruby#217** (verified in gem source + searched for dupes before
+filing; offered to PR).
+
+**Board:** 4 owner P1s filed + done; investigation done; new: Turbo bug (done, `c8d8c8a`), P2
+dedupe stopgap (open, linked to #217).
+
+**Flags:** (1) demo creds public by design — surfaced to owner; (2) identify *event* in PostHog
+unconfirmed until a real browser visit (wiring verified in served HTML); (3) two red CI runs
+mid-sequence from demo-coder's per-task split (HEAD green, deploy gated, no live impact);
+(4) demo-coder + turbo-coder had SendMessage disabled — both relayed reports via board comments,
+which worked well as a fallback.
+
+**Next:** watch #217 for maintainer response (PR offer stands); P2 dedupe stopgap; confirm
+identify event after a browser visit; remaining backlog per board.
+
+---
+
 ## 2026-07-04 — Pass 95 (GREEN): owner approved the reworks — both DSLs deleted + his 5 UI fixes shipped
 
 **Trigger:** 8h operating loop (GREEN, `left=17`). Inbox held two VERIFIED owner replies (7/3
