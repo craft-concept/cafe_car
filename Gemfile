@@ -11,14 +11,20 @@ gem "puma"
 gem "sqlite3"
 gem "solid_cable"
 gem "image_processing", "~> 2.0"
+# ruby-vips is image_processing's :vips backend (the Rails 8 default variant
+# processor). Without it, generating an Active Storage image variant/preview
+# 500s even though libvips (the native lib) is installed — so demo avatars
+# render as broken images. libvips ships in the demo Dockerfile.
+gem "ruby-vips"
 gem "paper_trail"
 gem "factory_bot_rails"
 gem "faker"
 gem "rouge"
 
 # PostHog instruments the live demo (test/dummy) only — product analytics,
-# exception tracking, and Rails log forwarding. All PostHog code is
-# production-guarded and confined to test/dummy; nothing ships in the gem.
+# exception tracking, and Rails log forwarding. All PostHog code is confined to
+# test/dummy and gated by test_mode (reports only in production); nothing ships
+# in the gem.
 gem "posthog-ruby", require: "posthog"
 gem "posthog-rails"
 # OpenTelemetry powers posthog-rails log forwarding; loaded lazily when logs

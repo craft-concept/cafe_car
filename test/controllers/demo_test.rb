@@ -54,6 +54,11 @@ class DemoTest < ActionDispatch::IntegrationTest
     user = create(:user)
     assert_predicate user.avatar, :representable?, "PNG avatar should render as an <img>, not a file figure"
 
+    # Actually process a variant — the <img> tag renders regardless, but the
+    # representation URL 500s at request time unless the :vips backend is
+    # available (this is what broke images on the live demo). Prove it works.
+    assert_nothing_raised { user.avatar.representation(resize_to_limit: [ 100, 100 ]).processed }
+
     sign_in user
     get "/admin/active_storage/attachments"
 
