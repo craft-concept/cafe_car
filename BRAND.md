@@ -62,7 +62,15 @@ They already talk in `model`/`controller`/`Turbo`/`Pundit` — meet them there.
 
 | Always use | Sometimes use | Never use |
 |---|---|---|
-| Rails engine; auto-generated; one line; override; sensible defaults; the `cafe_car` macro; back-office / admin / internal tools; convention | turnkey (as in the keyword-search bullet); zero-config (only when literally true); emoji (feature-bullet lists only) | effortless(ly); seamless(ly); blazing-fast; magical / magic; revolutionary; game-changer; supercharge; "powerful" as a standalone claim; leverage (as a verb) |
+| composable view extension for Rails; Rails engine; rendered from the model / renders straight from your models; one line; override; sensible defaults; the `cafe_car` macro; back-office / admin / internal tools; convention | turnkey (as in the keyword-search bullet); zero-config (only when literally true); emoji (feature-bullet lists only) | admin framework; CRUD generator; view generator; "auto-generate(d) CRUD/admin"; effortless(ly); seamless(ly); blazing-fast; magical / magic; revolutionary; game-changer; supercharge; "powerful" as a standalone claim; leverage (as a verb) |
+
+**Positioning (owner direction, 2026-07-03):** CafeCar is **a composable view extension for
+Rails** — an extension of the view and controller layer, "how Rails ought to work out of the box."
+It is **not** an admin framework, a CRUD generator, or a view generator (Rails already generates
+files; CafeCar does the opposite — it lets you *delete* view files, not spit them out). Say it
+**renders** views straight from the model at runtime; never that it "auto-generates" them. It's fine
+— good, even — to say it makes admin UIs and dashboards trivial; what's banned is framing the *gem
+itself* as a generator or admin framework.
 
 ## On-voice / off-voice examples
 

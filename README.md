@@ -4,36 +4,39 @@
   CafeCar
 </h1>
 
-<p><em>🚋 Recline in the cafe car while your Rails views build themselves.</em></p>
+<p><em>🚋 Recline in the cafe car while Rails renders your views for you.</em></p>
 
 [![CI](https://img.shields.io/github/actions/workflow/status/craft-concept/cafe_car/ci.yml?branch=main&label=CI)](https://github.com/craft-concept/cafe_car/actions/workflows/ci.yml)
 [![Gem Version](https://img.shields.io/gem/v/cafe_car)](https://rubygems.org/gems/cafe_car)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
 > 🚀 **[Live demo →](https://cafe-car-demo-production.up.railway.app)** — click straight
-> into a real auto-generated admin (clients, invoices, articles, users, notes). No signup;
-> the data resets periodically.
+> into a real admin, rendered from plain models (clients, invoices, articles, users, notes).
+> No signup; the data resets periodically.
 
 <p align="center">
   <a href="https://cafe-car-demo-production.up.railway.app/admin/invoices">
     <img src="https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/admin-invoices-index.png"
-         alt="CafeCar's auto-generated admin: an invoices index with sortable columns, currency formatting, association links, sender avatars, and pagination — all rendered straight from the model with no view code."
+         alt="A CafeCar admin rendered straight from the model: an invoices index with sortable columns, currency formatting, association links, sender avatars, and pagination — no view code."
          width="900">
   </a>
 </p>
 <p align="center">
   <em>A complete admin index — sortable columns, formatted values, association links, and
-  pagination — auto-generated from a model with one line of controller code.
+  pagination — rendered from a model with one line of controller code.
   <a href="https://cafe-car-demo-production.up.railway.app">Try the live demo →</a></em>
 </p>
 
 Your model already knows its columns, types, and associations — a full
 description of a resource. Rails still makes you hand-write a controller, seven
 actions, and a folder of view templates before any of it renders in a browser.
-CafeCar closes that gap: a Rails engine that renders index, show, new, and edit
-straight from the model — with Pundit authorization, filtering, and Hotwire —
-from one line of controller code. Every default is a starting point: override
-any view, presenter, or policy with ordinary Rails when the default is wrong.
+CafeCar closes that gap. It's a composable view extension for Rails — an
+extension of the view and controller layer that renders index, show, new, and
+edit straight from the model, with Pundit authorization, filtering, and Hotwire,
+from one line of controller code. It's how Rails ought to work out of the box:
+render something for your models by default, then get out of the way. Every
+default is a starting point — override any view, presenter, or policy with
+ordinary Rails when the default is wrong.
 
 **Perfect for**: Rails developers who need a working admin this week — not a
 second framework to learn and configure.
@@ -118,8 +121,8 @@ admin that you extend with ordinary Rails code.
 
 ## Features
 
-- 🚀 **Auto-generated CRUD interfaces** - One line of code generates complete
-  index, show, new, edit views
+- 🚀 **Index, show, new, edit from the model** - One line of controller code
+  renders all four, straight from your model
 - 🎨 **Component-based UI system** - Flexible, composable components for
   building interfaces
 - 🔐 **Built-in authorization** - Pundit integration for attribute-level
@@ -139,7 +142,8 @@ admin that you extend with ordinary Rails code.
   in); every selected record is authorized against your policy on its own
 - 📄 **Pagination & sorting** - Kaminari integration with sortable columns
 - ⚡ **Hotwire ready** - Turbo Streams support out of the box
-- 📝 **Intelligent forms** - Auto-generated forms with smart field detection
+- 📝 **Intelligent forms** - Forms rendered from your schema, with smart field
+  detection
 
 ## Prerequisites
 
@@ -461,13 +465,13 @@ CafeCar provides an enhanced form builder with smart field detection.
 <p align="center">
   <a href="https://cafe-car-demo-production.up.railway.app/admin/invoices/new">
     <img src="https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/admin-invoice-form.png"
-         alt="CafeCar's auto-generated new-invoice form with a client association select, typed inputs, and nested has_many line items (add/remove rows)."
+         alt="A CafeCar new-invoice form rendered from the model, with a client association select, typed inputs, and nested has_many line items (add/remove rows)."
          width="760">
   </a>
 </p>
 <p align="center">
-  <em>An auto-generated form with a typed date field, an association select, and nested
-  <code>has_many</code> line items — add and remove rows inline.</em>
+  <em>A form rendered from the model, with a typed date field, an association select, and
+  nested <code>has_many</code> line items — add and remove rows inline.</em>
 </p>
 
 **Basic forms:**

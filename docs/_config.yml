@@ -1,5 +1,5 @@
 title: CafeCar
-description: Auto-generate CRUD admin UI for your Rails models, with sensible overridable defaults.
+description: A composable view extension for Rails — render index, show, new, and edit straight from your models, with sensible overridable defaults.
 theme: jekyll-theme-cayman
 show_downloads: false
 
@@ -18,7 +18,7 @@ defaults:
         path: https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/og-card.png
         width: 1731
         height: 909
-        alt: "CafeCar — auto-generated CRUD admin UI for Rails, with overridable defaults"
+        alt: "CafeCar — a composable view extension for Rails that renders admin UI straight from your models"
 
 # jekyll-sitemap (GitHub-Pages-supported, no Gemfile change) generates /sitemap.xml.
 plugins:

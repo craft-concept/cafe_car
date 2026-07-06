@@ -9,27 +9,27 @@ layout: default
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
 > 🚀 **[Live demo →](https://cafe-car-demo-production.up.railway.app)** — click straight
-> into a real auto-generated admin (clients, invoices, articles, users, notes). No signup;
-> the data resets periodically.
+> into a real admin, rendered from plain models (clients, invoices, articles, users, notes).
+> No signup; the data resets periodically.
 
 <p align="center">
   <a href="https://cafe-car-demo-production.up.railway.app/admin/invoices">
     <img src="images/admin-invoices-index.png"
-         alt="CafeCar's auto-generated admin: an invoices index with sortable columns, currency formatting, association links, sender avatars, and pagination — all rendered straight from the model with no view code."
+         alt="A CafeCar admin rendered straight from the model: an invoices index with sortable columns, currency formatting, association links, sender avatars, and pagination — no view code."
          width="900">
   </a>
 </p>
 <p align="center">
   <em>A complete admin index — sortable columns, formatted values, association links, and
-  pagination — auto-generated from a model with one line of controller code.
+  pagination — rendered from a model with one line of controller code.
   <a href="https://cafe-car-demo-production.up.railway.app">Try the live demo →</a></em>
 </p>
 
-**CafeCar is a Rails engine that auto-generates CRUD admin UI from your models** —
-complete index, show, new, and edit interfaces with no boilerplate. Sensible defaults
-cover authorization, presenters, filtering, keyword search, sorting, pagination, CSV
-export, and Hotwire-ready forms, and every default can be overridden application-wide
-or per model.
+**CafeCar is a composable view extension for Rails** — an extension of the view and
+controller layer that renders complete index, show, new, and edit interfaces straight
+from your models, with no boilerplate. Sensible defaults cover authorization, presenters,
+filtering, keyword search, sorting, pagination, CSV export, and Hotwire-ready forms, and
+every default can be overridden application-wide or per model.
 
 **Perfect for** admin panels, internal tools, and rapid prototyping.
 
@@ -45,7 +45,7 @@ $ bundle install
 $ rails generate cafe_car:install
 ```
 
-## One line to a full CRUD interface
+## One line to a working admin
 
 ```ruby
 class ProductsController < ApplicationController

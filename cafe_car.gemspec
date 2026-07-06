@@ -6,15 +6,15 @@ Gem::Specification.new do |spec|
   spec.authors     = [ "Jeff Peterson" ]
   spec.email       = [ "jeff@yak.sh" ]
   spec.homepage    = "https://craft-concept.github.io/cafe_car"
-  spec.summary     = "Auto-generate a CRUD admin UI for your Rails models — index, show, new, edit — with keyword search, filtering, CSV export, and Pundit authorization."
+  spec.summary     = "A composable view extension for Rails — render index, show, new, and edit straight from your models, with keyword search, filtering, CSV export, and Pundit authorization, then override any default with ordinary Rails."
   spec.description = <<~DESC.tr("\n", " ").strip
-    CafeCar is a Rails engine that renders complete index, show, new, and edit interfaces
-    straight from your models, with no DSL and no boilerplate. Every index ships with
-    keyword search, URL-based filtering and sorting, pagination, and one-click CSV export.
-    Authorization runs on Pundit with attribute-level permissions; forms and Turbo Stream
-    (Hotwire) responses are generated automatically. Every default can be overridden
-    application-wide or per model. Good for admin panels, internal tools, and back-office
-    apps on Rails 8.
+    CafeCar is a composable view extension for Rails: it renders complete index, show, new,
+    and edit interfaces straight from your models, with no DSL and no boilerplate. Every
+    index ships with keyword search, URL-based filtering and sorting, pagination, and
+    one-click CSV export. Authorization runs on Pundit with attribute-level permissions;
+    forms and Turbo Stream (Hotwire) responses render automatically. Every default can be
+    overridden application-wide or per model with ordinary Rails. It makes admin panels,
+    internal tools, and back-office apps on Rails 8 trivial.
   DESC
   spec.license     = "MIT"
 
