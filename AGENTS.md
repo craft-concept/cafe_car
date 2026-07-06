@@ -11,7 +11,8 @@ generator/admin-framework/CRUD tool in any copy.)_
 
 **No config DSLs.** Per owner direction, features are configured **via views and partials**, not via
 Ruby config DSLs — like everything else in CafeCar. (The Pass-90 `CafeCar.dashboard` DSL and the
-`CafeCar.bulk_action` registry predate this and are being reworked to views/partials.)
+`CafeCar.bulk_action` registry predated this and were replaced with policy-driven views/partials in
+12416c0, 2026-07-04.)
 
 **The policy is the source of truth.** Per owner direction (2026-07-03, DECISIONS.md): "the policy
 declares what's editable and the UI renders that by default. so the policy is the source of truth

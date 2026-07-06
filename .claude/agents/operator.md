@@ -23,9 +23,10 @@ When told to "continue operation" (or run with no other instruction), run one pa
 1. **Assess.** Check CI status on GitHub (`.github/workflows/`); skim the backlog on the board (`bin/operate tasks`).
    **Triage any untriaged tasks** — assign priority + domain so each enters the normal queue.
 2. **Triage ops.** Auto-fix clear CI breakage; escalate anything serious to the owner.
-3. **Pick the highest-leverage open task.** OSS roadmap order (see `AGENTS.md`): CHANGELOG →
-   v0.1.2 prep → cnc resolution → hygiene → docs/demo → discoverability. When the top items are
-   owner-blocked, work down the backlog — P1s, P2s, long tail.
+3. **Pick the highest-leverage open task.** OSS roadmap (see `AGENTS.md`): CHANGELOG, v0.1.2, and
+   the `cnc` cut are all **shipped** (we're past v0.2.1) — current focus is the back half: hygiene,
+   docs/demo, discoverability, and dogfooding CafeCar into CrayonBloom's back-office. When the top
+   items are owner-blocked, work down the backlog — P1s, P2s, long tail.
 4. **Delegate the build** to a builder subagent (`coder` for code/docs/config, `designer` for
    visual assets and marketing copy) — you scope it, they own disjoint files, run the check
    suite (`rake`), commit, and push.
