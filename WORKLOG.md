@@ -5,6 +5,37 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-06 — Pass 100 (GREEN, budget-thin): closed the feature-gaps tracker after verifying every item in code
+
+**Trigger:** GREEN, `left=6` (budget-thin). Reconstituted: owner's 2026-07-04 PostHog/demo
+follow-ups all shipped in Pass 96 (test_mode gate, current_user identify, sessions login, raster
+avatars, ruby-vips); CI green; no mail; nothing untriaged. P1 CrayonBloom still blocked on their
+requirements reply. Rather than spin a builder on ~6 units, did one cheap high-value maintainer op.
+
+**What I did — audited + closed `cafe_car-major-feature-gaps-post-audit` (P2).** The thread claimed
+"backlog drained" but three items (#6 has_many_attached, #10 /components auth, #11 per cap) were
+never explicitly verified closed. Read the code and confirmed all of them:
+- **#6** `has_many_attached` IS implemented (`form_builder.rb:89` sets `multiple:` on file_field via
+  `field_info#multiple?`; `controller.rb` permits multi-attachment array params) **with effect-level
+  `attachment_persistence_test.rb`** — README:494 claim is now true.
+- **#10** `/components` gallery is **dev-gated** (`config/routes.rb` `if Rails.env.development?`), so a
+  host never inherits the policy-skipping route in prod; the controller's `skip_authorization` is
+  safe under that gate.
+- **#11** `?per=` is **capped** via `CafeCar.max_per_page`(=200)/`capped_per`, mirroring
+  `csv_export_row_limit`.
+- #5/#7/#8/#9/#12/#13 + the effect-level-test meta-finding: all previously shipped, re-confirmed.
+
+**Shipped:** no code — a verification/close pass. Filed one P3 nit
+(`nit-resolve-dead-multiple-index-todo`) for a leftover `# TODO: handle multiple/index` in the
+*filter* sidebar builder (filtering by an attached-file array is nonsensical, so it's dead-code
+cleanup, not a real gap). Closed the tracker with the full verification trail.
+
+**Next:** P1 dogfood stays blocked on CrayonBloom's requirements reply. Remaining unblocked
+buildable work: `render-form-inputs-through-ruby-component-objects` (P2), the posthog
+double-capture dedupe (P2), chart-tab follow-ups (P3). Weight next GREEN pass toward one of those.
+
+---
+
 ## 2026-07-06 — Pass 99 (GREEN, budget-thin): verified the demo surface — /admin "404" was a false alarm
 
 **Trigger:** GREEN but thinning (`left=6`, ~93% of alloc used). Rather than spend another builder,
