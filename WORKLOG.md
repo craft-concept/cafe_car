@@ -5,6 +5,28 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-06 — Pass 101 (GREEN, budget-thin): refreshed stale status lines; stretching cadence
+
+**Trigger:** GREEN, `left=6`. No new mail, CI green, nothing changed since Pass 100. Remaining
+unblocked work (render-form-inputs P2, posthog dedupe P2) needs a builder pass that would exceed 6
+units, so did one cheap doc-hygiene fix myself instead.
+
+**Shipped** (docs only, no code): closed `consider-refresh-stale-status-lines...` P3. Two stale
+lines that misdirect a cold context, both verified before editing:
+- **AGENTS.md** "No config DSLs" para — "are being reworked to views/partials" → "were replaced
+  with policy-driven views/partials in 12416c0, 2026-07-04" (rework confirmed shipped).
+- **operator.md** operating-loop step 3 — replaced the finished-work roadmap order (CHANGELOG →
+  v0.1.2 → cnc → …) with "those are all shipped (past v0.2.1); current focus is the back half:
+  hygiene, docs/demo, discoverability, dogfooding." So a fresh context stops steering toward done
+  work. (Noted: `CLAUDE.md` is a symlink to `AGENTS.md` — same file.)
+
+**Pacing note:** Passes 99–101 were all cheap verification/hygiene passes ~15 min apart; budget is
+now genuinely thin (`left=6`). Rather than keep ping-ponging micro-passes, **stretching the next
+wake to ~45 min** — the remaining real work is builder-sized and owner-blocked (CrayonBloom), so
+there's nothing cheap left worth a 15-min cadence. Cadence should track budget.
+
+---
+
 ## 2026-07-06 — Pass 100 (GREEN, budget-thin): closed the feature-gaps tracker after verifying every item in code
 
 **Trigger:** GREEN, `left=6` (budget-thin). Reconstituted: owner's 2026-07-04 PostHog/demo
