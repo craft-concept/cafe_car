@@ -5,6 +5,31 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-06 — Pass 99 (GREEN, budget-thin): verified the demo surface — /admin "404" was a false alarm
+
+**Trigger:** GREEN but thinning (`left=6`, ~93% of alloc used). Rather than spend another builder,
+did one cheap high-value verification: the P3 I filed earlier
+(`confirm-authenticated-admin-resolves-on-live-demo-unauth-pro`). P1 CrayonBloom still blocked (no
+requirements/reply); CI green; no mail.
+
+**Finding — RESOLVED, not breakage.** The `/admin` 404 I flagged during the 7/05 YELLOW glance is a
+non-issue: there is **no bare `/admin` index route** by design. Every real admin page serves **200
+unauthenticated** (the demo is frictionless/open — Pass 96): `/admin/users`, `/admin/invoices`,
+`/admin/clients`, `/admin/dashboard` all 200; the home CTAs all point to `/admin/<resource>`;
+`/admin/users` renders a CafeCar table with zero error/exception markers. Login is a Turbo
+`button_to` POST `/session` (no creds) — curl can't faithfully drive it (got 400/422), but that's
+moot since the pages serve without auth. Same false-alarm class as the bare-host-404
+([[demo-url]]). Closed the P3. Deep effect verification belongs to the queued browser-driven
+smoke-check idea (IDEAS.md), not curl.
+
+**No code changes this pass** — a verification/triage pass. Kept budget light on purpose.
+
+**Next:** CrayonBloom dogfood P1 once requirements land; unblocked P2s (form-inputs component,
+feature-gaps tracking, discoverability, posthog dedupe); P3s (OG-card regen, persona-roadmap
+refresh). Backlog per board.
+
+---
+
 ## 2026-07-06 — Pass 98 (GREEN): fixed the belongs_to column-sort bug + finished the Dependabot sweep
 
 **Trigger:** GREEN (`left=7`). Both P1s blocked — the reframe P1 shipped last pass; the CrayonBloom
