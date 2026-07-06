@@ -5,6 +5,38 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-06 — Pass 98 (GREEN): fixed the belongs_to column-sort bug + finished the Dependabot sweep
+
+**Trigger:** GREEN (`left=7`). Both P1s blocked — the reframe P1 shipped last pass; the CrayonBloom
+dogfood milestone (`cafe_car-dogfood-crayonbloom`) is still waiting on CrayonBloom's back-office
+requirements (emailed 7/3, no reply in inbox; their operator files requirement tasks directly to
+our board, none arrived yet). So worked down the P2 backlog.
+
+**Shipped (coder, `6809cf9`, pushed, CI green):** the P2 bug
+`association-belongs-to-column-header-sort-is-broken-no-join-` — `belongs_to` header-sort links
+were silent no-ops (Pass-89 allow-list dropped the dotted `<assoc>.<col>` keys that `Model.sorted`
+couldn't resolve). Fix in `lib/cafe_car/model.rb`: `normalize_sort_key` routes dotted keys to a new
+`association_sort_key` that requires a real non-polymorphic `belongs_to` + a real column, then
+qualifies ORDER BY to the **reflected** table via `reflection.klass.arel_table` (so `class_name`/
+custom `table_name` resolve, e.g. `sender`→`users`); `sorted` collects `SortKey` value objects and
+applies `left_outer_joins`. Coder empirically caught that the task's suggested `references(:assoc)`
+does **not** build the join (SQL had no JOIN → would still 500) and used `left_outer_joins` instead
+— good root-cause diligence. Strictness preserved: unknown assoc/column and raw fragments
+(`client.name;DROP`) still drop to default order, no injection surface reintroduced. New
+`test/cafe_car/sorted_test.rb` (zero coverage before) asserts the **effect** — SQL contains the
+LEFT OUTER JOIN + qualified column AND records come back in the right order — plus the security-drop
+cases. `bundle exec rake` green (197 runs / 599 assertions / 0 fail / 0 err / brakeman 0). Done.
+
+**Hygiene:** merged the last Dependabot PR #22 (configure-pages 5→6, `1dea907`) after its rebase —
+all four Actions bumps now landed.
+
+**Next:** CrayonBloom dogfood P1 still the top item once requirements arrive (watch board + inbox);
+remaining unblocked P2s — form-inputs component work (`render-form-inputs-through-ruby-component-
+objects`), major-feature-gaps tracking, discoverability (Awesome Rails/RubyFlow/launch post),
+posthog job-exception dedupe; P3s — authenticated-/admin confirm, OG-card regen. Backlog per board.
+
+---
+
 ## 2026-07-06 — Pass 97 (GREEN): shipped the P1 positioning reframe + merged 3 Dependabot bumps
 
 **Trigger:** Signal flipped GREEN (`left=8`, alloc 81) after two YELLOW idle passes (7/05). Two
