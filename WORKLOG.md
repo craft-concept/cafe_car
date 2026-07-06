@@ -5,6 +5,40 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-06 — Pass 97 (GREEN): shipped the P1 positioning reframe + merged 3 Dependabot bumps
+
+**Trigger:** Signal flipped GREEN (`left=8`, alloc 81) after two YELLOW idle passes (7/05). Two
+idle passes: budget was spent (`left=-8`); on both I confirmed no urgent items (no unread mail,
+demo healthy — `/` `/session/new` `/up` all 200) and slept. During the first I filed P3
+`confirm-authenticated-admin-resolves-on-live-demo-unauth-pro` (unauth `/admin` 404 is auth-masking,
+not breakage — Pass 96 verified the authenticated flow; confirm effect-level next GREEN pass).
+
+**Shipped (designer, `b2c3f32`, pushed to main, CI green):** the P1
+`reframe-positioning-purge-generator-admin-framework-crud-lan` — VERIFIED owner direction (7/3,
+DECISIONS.md): CafeCar is a **composable view extension for Rails**, NOT a CRUD generator / admin
+framework / view generator. Purged that framing from the README hero + feature bullets + image
+alts/captions, `cafe_car.gemspec` summary+description (was literally "Auto-generate a CRUD admin
+UI…"), `docs/index.md`, `docs/_config.yml` (OG/SEO), and the demo landing copy. Voice gate PASS vs
+`BRAND.md`; `bundle exec rake` green (194 runs / 573 assertions / 0 fail / 0 err / brakeman 0).
+Marked done.
+
+**Also merged (routine hygiene):** Dependabot GitHub-Actions bumps #24 (checkout 5→7), #21
+(upload-pages-artifact 3→5), #23 (deploy-pages 4→5). #22 (configure-pages 5→6) conflicted on the
+shared Pages workflow — triggered `@dependabot rebase`; will land next pass.
+
+**Flags / follow-ups filed:**
+- **`BRAND.md` edited out-of-strict-scope (kept).** The designer moved "auto-generated" from
+  Always-use → Never-use and added "composable view extension" + a Positioning note. Correct call —
+  leaving it would regress the framing on the next copy pass. Reversible; kept.
+- **P3 filed** `regenerate-og-social-card-png-…` — the OG-card *raster* PNG may still bake the old
+  wording (alt/SEO text fixed, image not). Art asset → owner-iterate before publishing live.
+
+**Next:** #22 rebase lands; the two remaining P1s are the CrayonBloom dogfood milestone
+(`cafe_car-dogfood-crayonbloom`, big product/eng push) and it has a linked P2 build task; then the
+P3 authenticated-/admin confirm, form-inputs component work, assoc-sort bug. Backlog per board.
+
+---
+
 ## 2026-07-04 — Pass 96 (owner-directed): PostHog follow-ups — demo fixed live, request-context mystery solved, upstream issue filed
 
 **Trigger:** Owner in-session ("check your email. we'll do some work today") + his 12:12 ET reply
