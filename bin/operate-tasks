@@ -20,11 +20,17 @@
 #                                       generic PATCH — triage IS update (priority=P1 domain=Eng),
 #                                       reassignment IS update (assignee=jeff --reason "need keys")
 #   operate tasks comment <id> "text"   post a comment (authored as this venture)
+#   operate tasks ack <id>              mark the owner's changes on <id> seen (all non-self comments)
 #
 # A `--reason` is the commit-message "why": stored on the timeline and — when a
 # field changed — dual-written as a thread comment, which bin/holdco deliver relays
 # to the affected operator. Reassignment to `jeff` is how a task reaches the owner
 # (blocked-on-user is retired: his queue is just `.assignee=jeff`).
+#
+# Acting on a task (show/claim/done/update/comment) auto-acks the owner comments
+# already delivered to this operator's inbox — so the owner sees ✓✓ seen without
+# a manual step; `ack <id>` is the explicit form. Ack is best-effort (never blocks
+# the primary command).
 #
 # Config (all venture-local): venture id from operate.json `venture` (fallback
 # TASKS_VENTURE_ID in .env); URL from TASKS_WORKER_URL (default workers.dev);
@@ -110,6 +116,33 @@ json_obj() {
 	"$JQ" -n "${jqargs[@]}" "$filter"
 }
 
+# ---- acknowledge (layered "seen") -------------------------------------------
+# When this operator acts on a task it has "seen" the owner's changes, so we
+# stamp acknowledged_at on the task's non-self comments (POST /comments/:id/ack,
+# idempotent). Best-effort throughout: a missing/failed ack must NEVER break the
+# primary command — we warn and carry on, never `req` (which would exit on error).
+
+# Best-effort ack of one comment id — warn-only on failure.
+ack_post() { # <comment-id>
+	curl -sS --retry 1 -o /dev/null \
+		-H "Authorization: Bearer $TOKEN" \
+		-H "Content-Type: application/json" \
+		-X POST "$URL/api/v1/comments/$1/ack" 2>/dev/null \
+		|| echo "operate tasks: warn: ack of comment $1 failed (non-fatal)" >&2
+}
+
+# Auto-ack after acting on a task: the comments delivered to this operator's inbox
+# but not yet acked and NOT authored by it. Fully best-effort (own curl, not req).
+auto_ack() { # <url-encoded task id>
+	local eid="$1" comments ids cid
+	comments="$(curl -sS --retry 1 \
+		-H "Authorization: Bearer $TOKEN" -H "Accept: application/json" \
+		"$URL/api/v1/tasks/$eid/comments" 2>/dev/null)" || return 0
+	ids="$(printf '%s' "$comments" | "$JQ" -r --arg me "$VENTURE" \
+		'.[]? | select(.author != $me and .delivered_at != null and .acknowledged_at == null) | .id' 2>/dev/null)" || return 0
+	for cid in $ids; do ack_post "$cid"; done
+}
+
 # ---- rendering --------------------------------------------------------------
 list_fmt='.[] | "  \(.priority // "P2")  \(.title)\(if .domain then "  [\(.domain)]" else "" end)  \(.status)  \((.assignee // "") | if . == "" then "" else "→\(.) " end)\(.venture_title // .venture_id // "—")  \(.id)"'
 
@@ -183,6 +216,21 @@ cmd_show() {
 			(if .field == "created" then "created" else "\(.field): \(.old // "∅") → \(.new // "∅")" end) +
 			(if .reason then " — \(.reason)" else "" end)'
 	fi
+	auto_ack "$eid"
+}
+
+# Explicit acknowledge: mark every non-self comment on the task seen (not just the
+# delivered-but-unacked set auto_ack handles). Idempotent server-side.
+cmd_ack() {
+	need_auth
+	local id="${1:-}"; [ -n "$id" ] || die "ack: need a task id"
+	local eid; eid="$("$JQ" -rn --arg s "$id" '$s|@uri')"
+	local comments ids cid n=0
+	comments="$(req "$URL/api/v1/tasks/$eid/comments")"
+	ids="$(printf '%s' "$comments" | "$JQ" -r --arg me "$VENTURE" \
+		'.[] | select(.author != $me and .acknowledged_at == null) | .id')"
+	for cid in $ids; do ack_post "$cid"; n=$((n + 1)); done
+	echo "  acked $n comment$([ "$n" = 1 ] || echo s) on $id"
 }
 
 # PATCH a task's status (claim/done/cancel) with an optional --reason.
@@ -198,6 +246,8 @@ patch_status() { # <verb> <new-status> <id> [--reason "…"]
 	local body; body="$(json_obj status "$status" actor "$VENTURE" reason "$reason")"
 	req -X PATCH --data-raw "$body" "$URL/api/v1/tasks/$eid" \
 		| "$JQ" -r '"  ✓ \(.id) → \(.status)"'
+	# Acting on a task (claim/done) means the operator has seen the owner's changes.
+	case "$verb" in claim | done) auto_ack "$eid" ;; esac
 }
 
 cmd_update() { # <id> field=value… [--reason "…"]
@@ -217,6 +267,7 @@ cmd_update() { # <id> field=value… [--reason "…"]
 	local body; body="$(json_obj "${pairs[@]}" actor "$VENTURE" reason "$reason")"
 	req -X PATCH --data-raw "$body" "$URL/api/v1/tasks/$eid" \
 		| "$JQ" -r '"  ✓ \(.id) updated"'
+	auto_ack "$eid"
 }
 
 cmd_comment() {
@@ -227,6 +278,7 @@ cmd_comment() {
 	local body; body="$(json_obj author "$VENTURE" body "$text")"
 	req -X POST --data-raw "$body" "$URL/api/v1/tasks/$eid/comments" >/dev/null
 	echo "  commented on $id"
+	auto_ack "$eid"
 }
 
 help() { awk 'NR<=2{next} /^#/{sub(/^# ?/,"");print;next}{exit}' "$0"; }
@@ -244,6 +296,7 @@ done) shift; patch_status done done "$@" ;;
 cancel) shift; patch_status cancel cancelled "$@" ;;
 update) shift; cmd_update "$@" ;;
 comment) shift; cmd_comment "$@" ;;
+ack) shift; cmd_ack "$@" ;;
 .* | *=*) cmd_list "$@" ;; # implicit list from a filter/control-param first arg
 *) die "unknown subcommand '$sub' — run 'operate tasks --help'" ;;
 esac
