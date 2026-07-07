@@ -5,6 +5,40 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-07 — Pass 110 (GREEN): durable scheduling for the demo smoke check — the demo now self-monitors
+
+**Trigger:** GREEN, `left=9/15`, launching, CI green, clean, no owner reply yet on the Pass-106
+launch greenlight. Best fully-unblocked item = the P3 I filed last pass
+(`schedule-the-live-demo-smoke-check-durable-monitor`): its note allowed a "separate scheduled GH
+Action (never push-coupled)", and since `bin/demo-smoke` uses the demo's **public** seeded login it
+needs **no secrets** — so this is entirely within my envelope, and it converts Pass-109's one-shot
+check into standing protection of the #1 conversion surface. Beat the discretionary OG-card regen.
+
+**Shipped (coder, `840e6d0`, verified):** `.github/workflows/demo-smoke.yml` — a 22-line workflow
+that runs `bin/demo-smoke` against the live demo on a **6-hourly cron** (`17 */6 * * *`, off-peak
+minute) + `workflow_dispatch`. Deliberately **NOT** push/PR-triggered (coupling to the external
+demo's uptime would flake real CI — the whole reason it's a separate workflow). `ruby/setup-ruby`
+auto-reads `.ruby-version` (3.3.5), **no `bundle install`** (script is stdlib-only → fast). False-
+alarm guard: `bin/demo-smoke || (sleep 30 && bin/demo-smoke)` — fails the job (→ owner email) only
+if the retry also fails, so a transient blip won't page.
+
+**Verified END-TO-END (not just a lint):** builder dispatched it via `gh workflow run` — run
+`28881769336` → **success in 7s**, log shows `SMOKE OK: all 7 flows green`, exercising the GH
+runner's egress to the demo + Ruby setup + the retry step. I independently confirmed: conclusion
+`success`, diff scoped to the one new file, tree clean, the other four workflows (ci/release/pages/
+copilot) untouched.
+
+**Now standing:** the live demo self-checks at the effect level 4×/day and emails the owner only on
+a confirmed (retried) break — the Pass-77 "shape-green hid broken features" failure mode is now
+guarded continuously on the marketing surface, not just at one manual run.
+
+**Next:** owner launch greenlight (Pass 106) still gates the discoverability publish chain. Unblocked
+queue is again drained (the smoke-check follow-up is now closed). Owner-gated remainder: form-inputs
+descope, CrayonBloom requirements, monetization, OG-card upload, auto-PR-review (GitHub App).
+Subsequent GREEN passes stay light (ideation / IDEAS.md items / prep) until the owner responds.
+
+---
+
 ## 2026-07-07 — Pass 109 (GREEN): live-demo effect-level smoke check — ran an IDEAS.md idea; demo confirmed healthy
 
 **Trigger:** GREEN, `left=10/15`, launching, CI green, clean, still no owner reply on the Pass-106
