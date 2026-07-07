@@ -5,6 +5,43 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-07 — Pass 109 (GREEN): live-demo effect-level smoke check — ran an IDEAS.md idea; demo confirmed healthy
+
+**Trigger:** GREEN, `left=10/15`, launching, CI green, clean, still no owner reply on the Pass-106
+launch greenlight. Substantive unblocked backlog drained + every open lever owner-gated — so instead
+of manufacturing marginal builder work, ran the best **unblocked, on-thesis** idea from IDEAS.md:
+the "Live-demo effect-level smoke check" (2026-07-04, was `proposed`). Applied the cheap-envelope
+3-line rubric (internal script, reversible, no owner resource / smallest = one self-cleaning
+create→assert→destroy + read-only dashboard/chart asserts / known-worked = exits non-zero when an
+advertised demo flow is silently broken) — it cleared, so I ran the reversible script-build myself
+(only durable scheduling touches infra, kept as a follow-up).
+
+**Shipped (coder, `e89e420`, CI green):** `bin/demo-smoke` (+ `rake demo:smoke` wrapper) — a
+standalone stdlib `Net::HTTP` script that logs into the live demo (the seeded "Enter the demo"
+account, `ad35581`) and asserts **effects, not 200s** across 7 advertised flows: auth (current_user
+set), create→read-back (marker persists), filter (set actually narrows), sort (names actually
+ordered), destroy (marker gone — self-cleaning), dashboard (metric tiles + chart bars present),
+chart view (`data-bucket` bars present). Deliberately **NOT** wired into push CI (would couple repo
+CI to the external demo's uptime → flaky); on-demand + a durable-monitor follow-up filed
+(`schedule-the-live-demo-smoke-check-durable-monitor`, P3). `bundle exec rake` green, rubocop clean.
+
+**The genuine value delivered:** ran it 3× against production — **all 7 flows green, stable,
+self-cleaning**: the #1 marketing surface actually *works* end-to-end right now, not just renders
+(the Pass-77 shape-green-hid-broken-features lesson, now guarded on the demo). The one initial red
+was **script brittleness, not a demo bug** — `Net::HTTP` pre-sets `Accept: */*`, so after any
+`.json` read Rails' content negotiation resolved a plain HTML page to JSON (chart page came back as
+a JSON array, no `data-bucket`). Coder root-caused it (isolated probes) and fixed by forcing
+`Accept: text/html` on page reads — a real debugging win, not papered over. No false-alarm on the
+PostHog `captureException` string (positive-content assertions only). IDEAS.md idea marked `kept`
+(fixed its Pass-number label 107→109).
+
+**Next:** durable scheduling of the smoke check (P3 follow-up) — likely routes to homelab for a
+cron/monitor, since it shouldn't live in push CI. Owner launch greenlight (Pass 106) still gates the
+publish chain. With the unblocked queue drained, subsequent GREEN passes stay light (ideation /
+IDEAS.md items / prep) until the owner responds or new work lands.
+
+---
+
 ## 2026-07-07 — Pass 108 (GREEN): README docs-currency — documented the shipped chart y-metric
 
 **Trigger:** GREEN, `left=10/15`, launching, CI green, clean, no owner reply yet on the Pass-106
