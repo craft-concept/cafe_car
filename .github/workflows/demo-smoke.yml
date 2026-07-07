@@ -1,0 +1,22 @@
+name: Demo smoke
+
+# Effect-level smoke check against the live demo. Deliberately NOT triggered on
+# push/pull_request — coupling repo CI to the external demo's uptime would flake
+# real CI. It runs on a schedule and on demand instead.
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"   # every 6 hours, off-peak minute
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # No bundler-cache: bin/demo-smoke is stdlib-only, so skip bundle install.
+      - uses: ruby/setup-ruby@v1
+      # Retry once after a blip before failing: a scheduled failure emails the
+      # owner, so don't page on a transient demo hiccup.
+      - name: Smoke check the live demo
+        run: bin/demo-smoke || (sleep 30 && bin/demo-smoke)
