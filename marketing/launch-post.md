@@ -12,15 +12,17 @@ allowed to do what. And yet the view layer sits there with its hands in its
 pockets, rendering nothing, until you spell out every field by hand.
 
 That's the gap [CafeCar](https://github.com/craft-concept/cafe_car) closes. It's
-a Rails engine that extends the view layer so your models render *something*
-useful by default — a real CRUD admin — and lets you override any part of it when
-the default isn't what you want.
+a composable view extension for Rails — an engine that extends the view and
+controller layer so your models render *something* useful by default, and lets
+you override any part of it when the default isn't what you want. Point it at your
+models and you get a usable admin UI (and dashboards) without writing the views.
 
 **Try it before you read another word:**
 **[the live demo](https://cafe-car-demo-production.up.railway.app)** drops you
-straight into an auto-generated admin for clients, invoices, articles, and users.
+straight into a working admin for clients, invoices, articles, and users.
 No signup. Click around, sort a column, filter a range, edit a record. Every
-screen you see was generated from ordinary models — nobody wrote those views.
+screen you see was rendered straight from ordinary models — nobody wrote those
+views.
 
 ## One line, not one folder
 
@@ -84,15 +86,31 @@ view, write a `ProductPresenter` to control how a record displays, define a
 custom policy `Scope` to filter what each user sees. No DSL to adopt wholesale;
 it's the Rails layers you already know, with the boilerplate removed.
 
+## Pick your view primitive — CafeCar sits above it
+
+Rails discourse this year keeps circling the same argument: ViewComponent, Phlex,
+or plain partials, and whether partials are the wrong answer for 2026. CafeCar is
+orthogonal to that fight. It's the convention layer *above* whichever primitive
+you pick, and it composes with all three.
+
+ViewComponent and Phlex answer "what's the unit of reuse for the UI I write?"
+CafeCar answers a different question: "why hand-write the index, show, and form
+views at all?" Different layers. CafeCar renders the boilerplate screens straight
+from the model; you keep your ViewComponent or Phlex components for the screens
+worth building by hand and drop them into a CafeCar view or presenter like any
+other partial. Whatever you settled on for your view primitive, CafeCar deletes
+the boilerplate views on top of it — you write only the ones that earn their keep.
+
 ## What it actually is
 
-Being honest about the shape of it: the core — the auto-CRUD controller, the
-Pundit-backed authorization with attribute-level permissions, the filtering and
-sorting DSL, the generators, and view overriding — is the solid, well-exercised
-center of the gem. There's a type-aware presenter system, a composable UI
-component layer, smart form building, and opt-in email/password sessions layered
-on top. It targets Ruby 3.3+ and Rails 8. It's MIT licensed and still pre-1.0, so
-expect some sharp edges and tell me about the ones you hit.
+Being honest about the shape of it: the core — the controller macro that renders
+CRUD straight from the model, the Pundit-backed authorization with attribute-level
+permissions, the filtering and sorting DSL, the generators, and view overriding —
+is the solid, well-exercised center of the gem. There's a type-aware presenter
+system, a composable UI component layer, smart form building, and opt-in
+email/password sessions layered on top. It targets Ruby 3.3+ and Rails 8. It's MIT
+licensed and still pre-1.0, so expect some sharp edges and tell me about the ones
+you hit.
 
 The pitch isn't "replace your admin framework." It's smaller and more
 opinionated than that: your models already contain enough information to render a
