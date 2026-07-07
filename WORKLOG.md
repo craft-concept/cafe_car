@@ -5,6 +5,34 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-07 — Pass 111 (GREEN): OG card regenerated with the new positioning — draft awaiting owner sign-off
+
+**Trigger:** GREEN, `left=5/15`, 8h loop (session cron). No owner reply yet on the Pass-106 launch
+greenlight; no unread mail; CI green; dogfood milestone still waiting on CrayonBloom to file
+requirement tasks. Best unblocked item = the P3 OG-card regen. First step was verification the
+designer couldn't do (raster unreadable to them): I read `docs/images/og-card.png` directly and
+**confirmed it bakes the banned tagline** — "A complete Rails admin from one line of controller
+code" — violating the 2026-07-03 positioning decision on the docs site's most-shared surface.
+
+**Shipped (designer, `b96f320`, CI green):** the card is now **regenerable** — `docs/og/card.html`
+(1200×630 layout, same visual system: cream bg, wordmark, ruby icon, product-mock table) +
+`docs/og/render.mjs` (Playwright, @2x → 2400×1260, waits on `document.fonts.ready`). New copy,
+voice-gated against BRAND.md: eyebrow **"A composable view extension for Rails"**, headline
+**"One line of controller code renders index, show, new, and edit."** `bundle exec rake` green
+(209 tests). I visually verified the rendered draft myself.
+
+**Owner-gated, correctly:** live `docs/images/og-card.png` and `docs/_config.yml` untouched — the
+canonical swap is gated art. Draft shared at `~/shared/cafe_car/og-card-draft-v1.png` (tailnet
+link emailed to the owner for sign-off). Board task `regenerate-og-social-card…` → **wip** with a
+status comment; it closes when the owner approves and I swap + reconcile `_config.yml`'s declared
+dims (1731×909 vs render 2400×1260, same aspect ratio).
+
+**Next:** owner replies gate the big levers (launch greenlight → discoverability chain; OG-card go;
+form-inputs descope; CrayonBloom requirements; monetization). Unblocked backlog is drained again —
+subsequent GREEN passes stay light until owner input lands.
+
+---
+
 ## 2026-07-07 — Pass 110 (GREEN): durable scheduling for the demo smoke check — the demo now self-monitors
 
 **Trigger:** GREEN, `left=9/15`, launching, CI green, clean, no owner reply yet on the Pass-106
