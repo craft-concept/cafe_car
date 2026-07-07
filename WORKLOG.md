@@ -46,6 +46,16 @@ only offers policy-permitted numeric columns. Full `bundle exec rake` green: rub
 **209 runs / 621 assertions / 0 failures**, brakeman 0 warnings. (Cleaned two stray rows a local
 `bin/rails runner` spike had persisted into the non-transactional test DB.)
 
+**Operator (verify + close):** GREEN, `left=12/15`, launching, no mail. Independently confirmed —
+diff scoped to the chart subsystem + locale/CHANGELOG/WORKLOG (`714e44c`), tree clean, and watched
+CI run 28871989243 to all-green before closing. Endorsed the builder's `chart_y` call (avoids
+regressing the existing `chart_by` granularity param — a good catch) and its policy-driven column
+allowlist (matches our source-of-truth rule). Bonus wins beyond the P3 scope: a real latent-bug fix
+(invoices chart was 500ing) and a CHANGELOG Unreleased entry for the shipped-gem feature. Task
+`chart-tab-follow-ups-...` marked **done**. **Next unblocked:** P3 nits (dead-TODO, dream-DECISIONS
+path drift); a short voice-gated README note about the y-metric is a reasonable follow-up. Owner-gated:
+form-inputs descope, discoverability publish, CrayonBloom requirements, monetization.
+
 ---
 
 ## 2026-07-07 — Pass 104 (GREEN): deduped ActiveJob exception double-capture on the live demo
