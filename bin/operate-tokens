@@ -21,7 +21,11 @@
 #   operate tokens          readable table (default)
 #   operate tokens --tmux    one-liner for the status bar
 #   operate tokens --pace    one machine-readable line for loops/schedulers:
-#                            "<sleep_seconds> <SIGNAL> left=<n> used=<n> alloc=<n>"
+#                            "<sleep_seconds> <SIGNAL> left=<n> used=<n> alloc=<n> cap=<n>"
+#                            `cap=` is the 7-day HARD-CAP % used (0..100) — distinct
+#                            from the allowance-relative used=/alloc=/left=. The email
+#                            channel reads cap= for its >95%-only hold gate (deliver
+#                            mail unless the fleet is over 95% of the 7-day cap).
 #                            The signal folds in this venture's registry status when
 #                            tokens.registry_file (operate.json) is configured AND
 #                            present: a `hold` status pins YELLOW with the long
@@ -190,18 +194,21 @@ done
 # lands at the next midnight and funds the overnight dream cycle). Underspend just
 # rolls forward. remaining = allowance − used(7-day %). Signals: RED iff used ≥ 90
 # (the ONLY RED trigger); YELLOW iff remaining ≤ 0 OR it's a Michigan weekend;
-# GREEN otherwise. Sleeps are fixed — GREEN 15m, YELLOW/RED 1h. Max full week ≈
-# 5×15 + 7×1 = 82%. All day/time logic uses Michigan time. See docs/COST.md.
+# GREEN otherwise. Sleeps are fixed — GREEN 15m, YELLOW/RED 1h. Raw full week ≈
+# 5×15 + 7×1 = 82%, but the allowance HARD-CAPS at ALLOC_CAP (80% — owner directive
+# 2026-07-06; the band above is owner-reserved for assigned specials). All day/time
+# logic uses Michigan time. See docs/COST.md.
 # Budgets/sleeps/hard-cap are operate.json-overridable (tokens.*); defaults below.
 DAY_BUDGET="$(cfg tokens.day_budget_pct)";   [ -n "$DAY_BUDGET" ]   || DAY_BUDGET=15    # % per Michigan work-day (incl. today)
 NIGHT_BUDGET="$(cfg tokens.night_budget_pct)"; [ -n "$NIGHT_BUDGET" ] || NIGHT_BUDGET=1  # % per night completed (each midnight crossed)
 GREEN_SLEEP="$(cfg tokens.green_sleep_s)";   [ -n "$GREEN_SLEEP" ]  || GREEN_SLEEP=900   # 15m — the GREEN cadence
 BUSY_SLEEP="$(cfg tokens.busy_sleep_s)";     [ -n "$BUSY_SLEEP" ]   || BUSY_SLEEP=3600   # 1h  — both YELLOW and RED
 HARD="$(cfg tokens.red_at_pct)";             [ -n "$HARD" ]         || HARD=90           # 7-day cap % that turns RED (the ONLY RED trigger)
+ALLOC_CAP="$(cfg tokens.alloc_cap_pct)";     [ -n "$ALLOC_CAP" ]    || ALLOC_CAP=80     # allowance hard-caps here (owner directive 2026-07-06); band above is owner-reserved for assigned specials
 SEVEN_WIN=604800 # 7-day window in seconds
 
-pace_signal="GREEN"; pace_sleep="$GREEN_SLEEP"; pace_have=0; pace_mday=""
-pace_used=0 pace_alloc=0 pace_left=0 pace_days=0 pace_nights=0
+pace_signal="GREEN"; pace_sleep="$GREEN_SLEEP"; pace_have=0; pace_mday=""; pace_dow=0
+pace_used=0 pace_alloc=0 pace_left=0 pace_days=0 pace_nights=0 pace_capped=0
 if [ -n "$cur_seven" ] && [ "$cur_seven" != "-1" ] && [[ "$cur_seven_reset" =~ ^[0-9]+$ ]]; then
 	pace_have=1
 	pace_dow="$(TZ="$MICH_TZ" date -d "@$now" +%u)" # 6=Sat 7=Sun
@@ -219,6 +226,11 @@ if [ -n "$cur_seven" ] && [ "$cur_seven" != "-1" ] && [[ "$cur_seven_reset" =~ ^
 	done
 	pace_used="$(round "$cur_seven")"
 	pace_alloc=$((DAY_BUDGET * pace_days + NIGHT_BUDGET * pace_nights))
+	# Allowance hard-caps at ALLOC_CAP (owner directive 2026-07-06): the band above
+	# is owner-reserved for special projects he assigns, not the fleet's to spend on
+	# its own pacing. Clamp AFTER computing days/nights so the table can still show
+	# the honest uncapped breakdown alongside a "capped" marker.
+	if ((pace_alloc > ALLOC_CAP)); then pace_alloc=$ALLOC_CAP; pace_capped=1; fi
 	pace_left=$((pace_alloc - pace_used))
 	# Signal: RED at the hard cap; YELLOW when the cumulative allowance is spent or
 	# it's the weekend; GREEN otherwise. Sleep is fixed per signal.
@@ -249,8 +261,24 @@ if [ "$MODE" = "pace" ]; then
 	fi
 fi
 
+# Monday burn-down hint (owner directive 2026-07-06): on a Michigan Monday, the
+# fleet's duty is to spend the remaining 7-day window budget down to ~99% by the
+# Tuesday 07:00 reset. Append a compact, machine-parseable hint AFTER alloc= while
+# there is still window budget to burn (used < 99). Field positions 1/2 and the
+# left=/used=/alloc= fields are untouched, so positional parsers are unaffected.
+pace_hint=""
+if [ "$pace_have" = 1 ] && ((pace_dow == 1)) && ((pace_used < 99)); then
+	pace_hint=" MONDAY-BURN target~99 by Tue 07:00"
+fi
+
 if [ "$MODE" = "pace" ]; then
-	printf '%s %s left=%s used=%s alloc=%s\n' "$pace_sleep" "$pace_signal" "$pace_left" "$pace_used" "$pace_alloc"
+	# cap= is the raw 7-day HARD-CAP % used (= pace_used; RED fires at cap >= HARD).
+	# It is appended AFTER alloc= (before any Monday hint) so positional parsers of
+	# the first fields are untouched; the email channel greps cap= for its >95% hold
+	# gate. When there's no cap data (pace_have=0) cap=0 — the channel fails open
+	# (delivers) rather than holding on an unknown budget.
+	printf '%s %s left=%s used=%s alloc=%s cap=%s%s\n' \
+		"$pace_sleep" "$pace_signal" "$pace_left" "$pace_used" "$pace_alloc" "$pace_used" "$pace_hint"
 	exit 0
 fi
 
@@ -377,9 +405,11 @@ if [ "$pace_have" = 1 ]; then
 	# Fleet pacing: cumulative allowance (work-days × 15% + nights × 1%) vs used,
 	# the remaining headroom, the signal, and the fixed next-wake cadence.
 	gc=""; case "$pace_signal" in GREEN) gc="$grn" ;; YELLOW) gc="$ylw" ;; RED) gc="$redc" ;; esac
-	printf '  %-11s used %s%% · alloc %s%% %s(%d×15%% days + %d×1%% nights)%s · left %s%% · %s%s%s · next pass ~%s   %s(Michigan %s)%s\n' \
-		"Pacing:" "$pace_used" "$pace_alloc" "$dim" "$pace_days" "$pace_nights" "$rst" "$pace_left" \
-		"$gc" "$pace_signal" "$rst" "$(human_until "$pace_sleep")" "$dim" "$pace_mday" "$rst"
+	cap_note=""; ((pace_capped)) && cap_note=" ${dim}(capped)${rst}"
+	burn_note=""; [ -n "$pace_hint" ] && burn_note="  ${bold}MONDAY-BURN${rst} ${dim}target ~99% by Tue 07:00${rst}"
+	printf '  %-11s used %s%% · alloc %s%%%s %s(%d×15%% days + %d×1%% nights)%s · left %s%% · %s%s%s · next pass ~%s   %s(Michigan %s)%s%s\n' \
+		"Pacing:" "$pace_used" "$pace_alloc" "$cap_note" "$dim" "$pace_days" "$pace_nights" "$rst" "$pace_left" \
+		"$gc" "$pace_signal" "$rst" "$(human_until "$pace_sleep")" "$dim" "$pace_mday" "$rst" "$burn_note"
 fi
 if [ -n "$cost_today" ]; then
 	# ccusage merges every agent CLI's own logs (claude + codex here — verified:
