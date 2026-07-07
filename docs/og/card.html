@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!--
+    CafeCar OG / social share card — regenerable source.
+    Rendered to PNG at 1200x630 (2x = 2400x1260) by docs/og/render.mjs.
+    Do not hand-edit the PNG; edit this file and re-render.
+    Copy is governed by BRAND.md (composable view extension framing — never
+    "admin framework" / "CRUD generator" / "view generator").
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream:    #f4f3ef;
+      --cream-2:  #efeee8;
+      --ink:      #14130f;
+      --muted:    #6b6a63;
+      --ruby:     #ec1c24;
+      --ruby-2:   #c8151c;
+      --line:     #ecece6;
+      --panel:    #ffffff;
+      --green-bg: #e7f4ec; --green-fg: #1f7a44;
+      --amber-bg: #fbf0d6; --amber-fg: #9a6b12;
+      --gray-bg:  #f0f0ee; --gray-fg:  #6b6a63;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1200px; height: 630px; }
+    body {
+      font-family: "Inter", "Nimbus Sans", "Liberation Sans", sans-serif;
+      background:
+        radial-gradient(1200px 700px at 12% 30%, #f8f7f3 0%, var(--cream) 55%, var(--cream-2) 100%);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* ---- Left column: wordmark + tagline ---- */
+    .left {
+      width: 512px;
+      flex: none;
+      padding: 0 0 0 76px;
+    }
+    .wordmark {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .wordmark h1 {
+      font-weight: 800;
+      font-size: 92px;
+      letter-spacing: -0.045em;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .ruby {
+      width: 74px; height: 74px;
+      border-radius: 18px;
+      background: linear-gradient(160deg, var(--ruby) 0%, var(--ruby-2) 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 10px 24px -8px rgba(200, 21, 28, 0.55);
+      flex: none;
+    }
+    .ruby svg { width: 40px; height: 40px; }
+
+    .eyebrow {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--ruby-2);
+      margin-bottom: 16px;
+    }
+    .tagline {
+      font-size: 43px;
+      font-weight: 700;
+      line-height: 1.16;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .tagline code {
+      font-family: inherit;
+      font-weight: 800;
+    }
+
+    /* ---- Right column: product mock panel ---- */
+    .right {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding-right: 0;
+    }
+    .panel {
+      width: 760px;
+      margin-left: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px 0 0 20px;
+      border-right: none;
+      box-shadow: 0 40px 80px -40px rgba(20, 19, 15, 0.28),
+                  0 8px 24px -12px rgba(20, 19, 15, 0.12);
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: left;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    thead th.sorted { color: var(--ruby); }
+    thead th .caret { margin-left: 6px; opacity: 0.6; }
+    thead th.sorted .caret { opacity: 1; }
+    tbody td {
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--line);
+      font-size: 16.5px;
+      color: var(--ink);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    .user { display: flex; align-items: center; gap: 13px; }
+    .avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      flex: none;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 600; color: #fff;
+    }
+    .name { font-weight: 600; line-height: 1.25; }
+    .email { font-size: 14px; color: var(--muted); line-height: 1.25; }
+    .role { color: var(--muted); font-weight: 500; }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .badge.active   { background: var(--green-bg); color: var(--green-fg); }
+    .badge.invited  { background: var(--amber-bg); color: var(--amber-fg); }
+    .badge.inactive { background: var(--gray-bg);  color: var(--gray-fg); }
+    .updated { color: var(--muted); font-size: 15px; }
+    .updated .time { display: block; font-size: 13px; opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <div class="left">
+    <div class="wordmark">
+      <h1>CafeCar</h1>
+      <span class="ruby">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 3h12l4 6-10 12L2 9l4-6z" fill="#fff"/>
+          <path d="M6 3h12l4 6H2l4-6z" fill="#fff" opacity="0.82"/>
+          <path d="M2 9h20L12 21 2 9z" fill="#fff" opacity="0.62"/>
+          <path d="M9 3l3 6 3-6M2 9h20M9.2 9L12 21l2.8-12" stroke="#ec1c24" stroke-width="0.8" opacity="0.55"/>
+        </svg>
+      </span>
+    </div>
+    <div class="eyebrow">A composable view extension for Rails</div>
+    <div class="tagline">One line of controller code renders <code>index</code>, <code>show</code>, <code>new</code>, and <code>edit</code>.</div>
+  </div>
+
+  <div class="right">
+    <div class="panel">
+      <table>
+        <thead>
+          <tr>
+            <th>User <span class="caret">&#8645;</span></th>
+            <th>Role <span class="caret">&#8645;</span></th>
+            <th class="sorted">Status <span class="caret">&#8595;</span></th>
+            <th>Updated <span class="caret">&#8645;</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="user"><span class="avatar" style="background:#7c9cf0">OR</span><span><span class="name">Olivia Rhye</span><br><span class="email">olivia@example.com</span></span></div></td>
+            <td class="role">Admin</td>
+            <td><span class="badge active">Active</span></td>
+            <td class="updated">May 12, 2024<span class="time">10:24 AM</span></td>
+          </tr>
+          <tr>
+            <td><div class="user"><span class="avatar" style="background:#5bb98c">PB</span><span><span class="name">Phoenix Baker</span><br><span class="email">phoenix@example.com</span></span></div></td>
+            <td class="role">Editor</td>
+            <td><span class="badge active">Active</span></td>
+            <td class="updated">May 11, 2024<span class="time">3:15 PM</span></td>
+          </tr>
+          <tr>
+            <td><div class="user"><span class="avatar" style="background:#e08b52">LS</span><span><span class="name">Lana Steiner</span><br><span class="email">lana@example.com</span></span></div></td>
+            <td class="role">Author</td>
+            <td><span class="badge invited">Invited</span></td>
+            <td class="updated">May 10, 2024<span class="time">9:42 AM</span></td>
+          </tr>
+          <tr>
+            <td><div class="user"><span class="avatar" style="background:#9b7bd6">DW</span><span><span class="name">Demi Wilkinson</span><br><span class="email">demi@example.com</span></span></div></td>
+            <td class="role">Viewer</td>
+            <td><span class="badge inactive">Inactive</span></td>
+            <td class="updated">May 9, 2024<span class="time">11:08 AM</span></td>
+          </tr>
+          <tr>
+            <td><div class="user"><span class="avatar" style="background:#6bb0c4">CW</span><span><span class="name">Candice Wu</span><br><span class="email">candice@example.com</span></span></div></td>
+            <td class="role">Editor</td>
+            <td><span class="badge active">Active</span></td>
+            <td class="updated">May 8, 2024<span class="time">4:50 PM</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
