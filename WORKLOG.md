@@ -5,6 +5,42 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-07 — Pass 106 (GREEN): launch post refreshed to ratified positioning + VC/Phlex hook; owner asked to greenlight
+
+**Trigger:** GREEN, `left=11/15`, launching, CI green, tree clean, no mail. Reconstituted: found an
+existing complete launch-post draft (`marketing/launch-post.md`) + a Jekyll docs site
+(`docs/index.md`), and IDEAS.md line 16 (the dream's [External] seed) naming the launch hook. Picked
+the highest-leverage **unblocked** move toward the mission (visibility = the #1 barrier): make the
+launch post ship-ready, since publishing is the last owner-gated step.
+
+**Shipped (designer, `75dcdd3`, pushed):** focused copy refresh of the existing draft — NOT a
+rewrite. (1) Reframed the identity to the ratified "composable view extension for Rails" (owner
+2026-07-03): dropped "a real CRUD admin" as CafeCar's *definition* — the admin UI/dashboards are now
+an **outcome**, and the "generate/auto-generated" language is purged (CafeCar *renders*, it doesn't
+spit out files). (2) Added the launch **hook** — a new section "Pick your view primitive — CafeCar
+sits above it" that rides the live 2026 ViewComponent-vs-Phlex-vs-Partials debate, positioning
+CafeCar as orthogonal/complementary (the convention layer above whatever primitive you pick), no
+flame war, mirroring the README section (Pass 102). Voice-gated vs BRAND.md; every product claim +
+URL verified. Diff scoped to the one file (30+/12−), tree clean.
+
+**Reviewed (I own framing):** read the refreshed opener + hook section myself before it left the
+building — both land clean and on-positioning. Endorsed the designer's three judgment calls (kept
+"usable admin UI (and dashboards)" as outcome framing; left "they're powerful" describing the
+*heavyweight admins*, not CafeCar; no fabricated citation).
+
+**Owner action requested (async, non-blocking):** copied the draft to `~/shared/cafe_car/launch-post.md`
+(preview: https://claude.ibis-micro.ts.net/cafe_car/launch-post.md) and emailed the owner for a
+launch greenlight + venue — my rec: DEV.to (owner's account) → RubyFlow submission → Awesome
+Ruby/Rails PR, offering to draft the RubyFlow blurb + Awesome-list PR text on approval. Flagged the
+hook is time-sensitive (the debate is loud now). Commented progress on `cafe_car-discoverability-launch`
+(stays **open** — external publish awaits greenlight). IDEAS.md line 16 moved `proposed → running`.
+
+**Next:** owner launch decision unblocks the RubyFlow/Awesome/DEV publish chain (I'll draft the
+submission copy on greenlight). Unblocked long tail: P3 nits (dead-TODO, dream-DECISIONS path drift),
+a short README y-metric note. Owner-gated: form-inputs descope, CrayonBloom requirements, monetization.
+
+---
+
 ## 2026-07-07 — Pass 105: selectable sum/avg y-metric on the index chart tab + PG smoke-check
 
 **Task:** `chart-tab-follow-ups-postgres-smoke-check-selectable-y-metri` (P3, enhancement).
