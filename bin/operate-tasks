@@ -11,8 +11,13 @@
 #   operate tasks list [.filters…]      raw dot-filter passthrough (no venture scope)
 #   operate tasks file "Title" [--desc "…"] [--priority P0|P1|P2]
 #                                       [--kind task|idea|bug|feedback|proposal|research|note]
-#                                       [--assign jeff] [--venture <id>]   → POST, prints the id
-#   operate tasks show <id>             task + comment thread + timeline
+#                                       [--assign jeff] [--venture <id>] [--blocked-by <id>]  → POST, prints the id
+#     tip: file ONE atomic task — a single verifiable outcome, not a checklist.
+#          Multi-step work = several small linked tasks (use --blocked-by), not one fat task.
+#   operate tasks show <id>             task + comment thread + timeline + deps
+#   operate tasks dep <id> --by <blocker>       link: <id> is blocked by <blocker>
+#   operate tasks dep <id> --blocks <other>     link: <id> blocks <other>
+#   operate tasks dep rm <id> --by/--blocks <other>   remove a dependency edge
 #   operate tasks claim <id>            status → wip
 #   operate tasks done   <id> [--reason "…"]     status → done
 #   operate tasks cancel <id> [--reason "…"]     status → cancelled (deliberately abandoned)
@@ -144,7 +149,7 @@ auto_ack() { # <url-encoded task id>
 }
 
 # ---- rendering --------------------------------------------------------------
-list_fmt='.[] | "  \(.priority // "P2")  \(.title)\(if .domain then "  [\(.domain)]" else "" end)  \(.status)  \((.assignee // "") | if . == "" then "" else "→\(.) " end)\(.venture_title // .venture_id // "—")  \(.id)"'
+list_fmt='.[] | "  \(.priority // "P2")  \(.title)\(if .domain then "  [\(.domain)]" else "" end)  \(.status)\(if (.open_blockers // 0) > 0 then " ⛔\(.open_blockers)" else "" end)  \((.assignee // "") | if . == "" then "" else "→\(.) " end)\(.venture_title // .venture_id // "—")  \(.slug // .id)"'
 
 render_list() {
 	local json="$1"
@@ -163,17 +168,20 @@ cmd_list() { # [.filters…]  (RAW passthrough — no venture scope injected)
 	render_list "$(req -G "${dataurl[@]}" "$URL/api/v1/tasks")"
 }
 
-cmd_default() { # bare `operate tasks` — MY open/wip/blocked, priority order
+cmd_default() { # bare `operate tasks` — MY ready open/wip/blocked, priority order
 	need_auth
+	# .open_blockers=0 drops tasks with ≥1 OPEN blocker (D2): a blocked task isn't
+	# ready, so it leaves the queue until its blockers close. See `list` for all.
 	render_list "$(req -G \
 		--data-urlencode ".venture=$VENTURE" \
 		--data-urlencode ".status=open,wip,blocked" \
+		--data-urlencode ".open_blockers=0" \
 		"$URL/api/v1/tasks")"
 }
 
 cmd_file() {
 	need_auth
-	local title="" desc="" priority="" kind="" assign="" venture="$VENTURE"
+	local title="" desc="" priority="" kind="" assign="" venture="$VENTURE" blocked_by=""
 	while [ $# -gt 0 ]; do
 		case "$1" in
 		--desc) desc="${2:-}"; shift 2 ;;
@@ -181,6 +189,7 @@ cmd_file() {
 		--kind) kind="${2:-}"; shift 2 ;;
 		--assign) assign="${2:-}"; shift 2 ;;
 		--venture) venture="${2:-}"; shift 2 ;;
+		--blocked-by) blocked_by="${2:-}"; shift 2 ;;
 		-*) die "file: unknown flag '$1'" ;;
 		*) [ -z "$title" ] && title="$1" || die "file: unexpected arg '$1' (quote the title)"; shift ;;
 		esac
@@ -189,8 +198,17 @@ cmd_file() {
 	local body id
 	body="$(json_obj title "$title" venture_id "$venture" actor "$VENTURE" \
 		description "$desc" priority "$priority" kind "$kind" assignee "$assign")"
-	id="$(req -X POST --data-raw "$body" "$URL/api/v1/tasks" | "$JQ" -r '.id')"
+	id="$(req -X POST --data-raw "$body" "$URL/api/v1/tasks" | "$JQ" -r '.slug // .id')"
 	echo "  created $id"
+	# Link the new task under a blocker in the same breath (the atomic-task path:
+	# a step that waits on a prior one). PATCH addBlockedBy, keyed on the new slug.
+	if [ -n "$blocked_by" ]; then
+		local eid dep_body
+		eid="$("$JQ" -rn --arg s "$id" '$s|@uri')"
+		dep_body="$("$JQ" -n --arg o "$blocked_by" --arg a "$VENTURE" '{addBlockedBy:[$o], actor:$a}')"
+		req -X PATCH --data-raw "$dep_body" "$URL/api/v1/tasks/$eid" >/dev/null
+		echo "  ⛔ blocked by $blocked_by"
+	fi
 }
 
 cmd_show() {
@@ -199,10 +217,12 @@ cmd_show() {
 	local eid; eid="$("$JQ" -rn --arg s "$id" '$s|@uri')"
 	local task; task="$(req "$URL/api/v1/tasks/$eid")"
 	printf '%s' "$task" | "$JQ" -r '
-		"  \(.id)   \(.priority // "P2") · \(.status) · \(.kind // "task")\(if .assignee then " · →\(.assignee)" else "" end)\(if .domain then " · [\(.domain)]" else "" end)",
+		"  \(.slug // .id)   \(.priority // "P2") · \(.status) · \(.kind // "task")\(if .assignee then " · →\(.assignee)" else "" end)\(if .domain then " · [\(.domain)]" else "" end)",
 		"  \(.title)",
 		(if .venture_id then "  venture: \(.venture_title // .venture_id)" else empty end),
-		(if (.description // "") != "" then "\n\(.description)" else empty end)'
+		(if (.description // "") != "" then "\n\(.description)" else empty end),
+		(if (.blockedBy // [] | length) > 0 then "\n  -- blocked by --", (.blockedBy[] | "  \(.slug // .id) · \(.status) · \(.title)") else empty end),
+		(if (.blocks // [] | length) > 0 then "\n  -- blocks --", (.blocks[] | "  \(.slug // .id) · \(.status) · \(.title)") else empty end)'
 	local comments; comments="$(req "$URL/api/v1/tasks/$eid/comments")"
 	if [ "$(printf '%s' "$comments" | "$JQ" -r 'length')" != 0 ]; then
 		echo; echo "  -- thread --"
@@ -245,7 +265,7 @@ patch_status() { # <verb> <new-status> <id> [--reason "…"]
 	local eid; eid="$("$JQ" -rn --arg s "$id" '$s|@uri')"
 	local body; body="$(json_obj status "$status" actor "$VENTURE" reason "$reason")"
 	req -X PATCH --data-raw "$body" "$URL/api/v1/tasks/$eid" \
-		| "$JQ" -r '"  ✓ \(.id) → \(.status)"'
+		| "$JQ" -r '"  ✓ \(.slug // .id) → \(.status)"'
 	# Acting on a task (claim/done) means the operator has seen the owner's changes.
 	case "$verb" in claim | done) auto_ack "$eid" ;; esac
 }
@@ -266,7 +286,7 @@ cmd_update() { # <id> field=value… [--reason "…"]
 	local eid; eid="$("$JQ" -rn --arg s "$id" '$s|@uri')"
 	local body; body="$(json_obj "${pairs[@]}" actor "$VENTURE" reason "$reason")"
 	req -X PATCH --data-raw "$body" "$URL/api/v1/tasks/$eid" \
-		| "$JQ" -r '"  ✓ \(.id) updated"'
+		| "$JQ" -r '"  ✓ \(.slug // .id) updated"'
 	auto_ack "$eid"
 }
 
@@ -279,6 +299,37 @@ cmd_comment() {
 	req -X POST --data-raw "$body" "$URL/api/v1/tasks/$eid/comments" >/dev/null
 	echo "  commented on $id"
 	auto_ack "$eid"
+}
+
+# Add or remove a dependency edge (WS3). `dep <id> --by X` = <id> is blocked by X;
+# `dep <id> --blocks Y` = <id> blocks Y. Prefix `rm` to remove. One PATCH to the
+# addressed task with the matching add/remove array; the server rejects self-edges
+# and cycles.
+cmd_dep() {
+	need_auth
+	local remove=0
+	if [ "${1:-}" = "rm" ]; then remove=1; shift; fi
+	local id="${1:-}"; [ -n "$id" ] || die "dep: need a task id"; shift || true
+	local rel="" other=""
+	while [ $# -gt 0 ]; do
+		case "$1" in
+		--by) rel="BlockedBy"; other="${2:-}"; shift 2 ;;
+		--blocks) rel="Blocks"; other="${2:-}"; shift 2 ;;
+		*) die "dep: unexpected arg '$1' — use --by <blocker> or --blocks <task>" ;;
+		esac
+	done
+	[ -n "$rel" ] && [ -n "$other" ] || die "dep: need --by <blocker> or --blocks <task>"
+	local verb field eid body
+	[ "$remove" = 1 ] && verb="remove" || verb="add"
+	field="${verb}${rel}"   # addBlockedBy | removeBlockedBy | addBlocks | removeBlocks
+	eid="$("$JQ" -rn --arg s "$id" '$s|@uri')"
+	body="$("$JQ" -n --arg f "$field" --arg o "$other" --arg a "$VENTURE" '{($f):[$o], actor:$a}')"
+	req -X PATCH --data-raw "$body" "$URL/api/v1/tasks/$eid" >/dev/null
+	if [ "$remove" = 1 ]; then
+		echo "  ✓ $id no longer $([ "$rel" = BlockedBy ] && echo "blocked by" || echo "blocks") $other"
+	else
+		echo "  ✓ $id $([ "$rel" = BlockedBy ] && echo "blocked by" || echo "blocks") $other"
+	fi
 }
 
 help() { awk 'NR<=2{next} /^#/{sub(/^# ?/,"");print;next}{exit}' "$0"; }
@@ -296,6 +347,7 @@ done) shift; patch_status done done "$@" ;;
 cancel) shift; patch_status cancel cancelled "$@" ;;
 update) shift; cmd_update "$@" ;;
 comment) shift; cmd_comment "$@" ;;
+dep) shift; cmd_dep "$@" ;;
 ack) shift; cmd_ack "$@" ;;
 .* | *=*) cmd_list "$@" ;; # implicit list from a filter/control-param first arg
 *) die "unknown subcommand '$sub' — run 'operate tasks --help'" ;;
