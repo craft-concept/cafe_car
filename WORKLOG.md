@@ -5,6 +5,44 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-07 — Pass 102 (GREEN, fresh budget): shipped README positioning vs ViewComponent/Phlex
+
+**Trigger:** GREEN, `left=14/15` (fresh allocation, well past the budget-thin stretch of 99–101).
+Registry `launching`, CI green on latest, no unread mail. P1s still owner-blocked (CrayonBloom
+requirements haven't arrived; monetization needs owner). Ran a dream cycle just before (committed
+`dream: 2026-07-07`) which surfaced the angle below. Highest-leverage **unblocked** item =
+discoverability, per the venture thesis (barriers are visibility + trust, not tech).
+
+**Shipped (designer, `0171d7c` + my review-fix `f42b3bc`, pushed, CI green):** a new README section
+**"How CafeCar relates to ViewComponent & Phlex"** (+ condensed mirror in `docs/index.md`). Rides
+the live 2026 "ViewComponent vs Phlex vs Partials" debate (RubyFlow/GoRails/DEV, "partials are the
+wrong answer for 2026") — the dream's [External]-seed find. Positions CafeCar as **orthogonal**: the
+convention layer *above* whatever view primitive you use (deletes the boilerplate views; keep VC/
+Phlex components for what you customize). Complementary, not a competitor; no partials-vs-components
+flame. Consistent with the ratified "composable view extension, NOT a generator/admin-framework"
+framing (owner 7/3). Voice-gate PASS vs BRAND.md; `bundle exec rake` green (197 runs / 0 fail /
+rubocop clean / brakeman 0).
+
+**Review catch (why I own reviewing framing):** the builder's draft said "CafeCar covers the
+**scaffolding**" — the single most generator-associated word in Rails, and the owner positions
+CafeCar explicitly *against* generators. Tightened to "boilerplate screens" before emailing the
+owner the diff. Also fixed a broken leftover phrase the builder left in `docs/index.md` ("you'd
+otherwise write at all" → "hand-write"). Emailed owner a positioning heads-up (live, reversible,
+invited course-correction).
+
+**Board:** commented progress on `cafe_car-discoverability-launch` (README section is a foundation
+piece + raw material for the launch-post hook; task stays **open** — Awesome Rails PR, RubyFlow,
+blog post still need a link target + owner-in-the-loop for live publish). Filed one P3 in the dream
+(`consider-dream-tooling-references-docs-decisions-md-...`, the DECISIONS path drift, now flagged
+twice).
+
+**Next:** external-publish discoverability items (owner/link-blocked); unblocked P2s —
+`render-form-inputs-through-ruby-component-objects` (also moves CafeCar toward the component world,
+relevant to this same trend), posthog job-exception dedupe; P3 nits. CrayonBloom dogfood P1 still
+top once requirements land.
+
+---
+
 ## 2026-07-06 — Pass 101 (GREEN, budget-thin): refreshed stale status lines; stretching cadence
 
 **Trigger:** GREEN, `left=6`. No new mail, CI green, nothing changed since Pass 100. Remaining
