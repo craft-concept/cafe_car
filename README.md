@@ -73,6 +73,7 @@ When a default is wrong, override that one piece — see
 ## Table of Contents
 
 - [How CafeCar compares](#how-cafecar-compares)
+- [How CafeCar relates to ViewComponent & Phlex](#how-cafecar-relates-to-viewcomponent--phlex)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
@@ -118,6 +119,23 @@ Reach for one of them when its model matches how you want to work:
 
 Reach for CafeCar when you want a Rails-native, convention-over-configuration
 admin that you extend with ordinary Rails code.
+
+## How CafeCar relates to ViewComponent & Phlex
+
+ViewComponent and Phlex answer "what's the unit of reuse for the UI I write?"
+CafeCar answers a different question: "why hand-write the CRUD index, show, and
+form views at all?" They sit at different layers, so they compose rather than
+compete.
+
+CafeCar renders index, show, new, and edit straight from the model — the
+boilerplate you'd otherwise write once per resource and maintain forever. Keep
+your ViewComponent or Phlex components for the screens you customize, and drop
+them into a CafeCar view or presenter like any other partial. CafeCar covers the
+scaffolding; your component library covers the parts worth building by hand.
+
+Plain partials work the same way. Pick whichever view primitive you like —
+CafeCar is the convention layer above it, deleting the boilerplate views so you
+write only the ones that earn their keep.
 
 ## Features
 
