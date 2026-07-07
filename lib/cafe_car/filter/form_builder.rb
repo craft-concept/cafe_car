@@ -13,9 +13,6 @@ module CafeCar::Filter
     def clean(method) = method.to_s.sub(/^\W+|\W+$/, "")
     def info(method)  = super(clean(method))
 
-    def field_name(*methods, multiple: false, index: @options[:index])
-      # TODO: handle multiple/index
-      [ "", *methods ].join(".")
-    end
+    def field_name(*methods) = [ "", *methods ].join(".")
   end
 end
