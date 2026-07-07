@@ -5,6 +5,37 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-07 — Pass 103 (GREEN): shipped "See it live" README demo deep-links; surfaced form-inputs as dead scaffolding
+
+**Trigger:** GREEN, `left=14/15`, `cap=1%` (7-day account hard-cap — wide open; not a per-pass
+limit, confirmed by reading `bin/operate-tokens`). Status `launching`, CI green, no mail (owner
+hasn't yet replied to the Pass-102 positioning heads-up — fine). Reconstituted board; P1s still
+owner-blocked. OSS hygiene audited **complete** (CONTRIBUTING/COC/SECURITY, issue+PR templates, all
+three README badges present) — not a gap.
+
+**Shipped (designer, `014c8d6`, pushed, CI green):** 5 tasteful "See it live →" demo deep-links at
+the natural try-this point of README feature sections — Controllers→`/admin/clients`,
+Forms→`/admin/invoices/new`, Filtering&Sorting→`/admin/users`, Bulk Actions→`/admin/users`,
+Dashboard→`/admin/dashboard`. Three distinct resources linked so they double as "works for any
+model" proof. **I independently re-curled all 5 targets → 200** (not just trusting the builder; a
+dead link in front of a prospect is the failure mode). Conversion work — lets a prospect evaluate a
+feature in one click without installing; pairs with the Pass-102 positioning section. Voice-gate
+PASS (terse, concrete verbs, no hype, positioning clean). Runs the queued IDEAS.md "See it live
+deep-links" idea (2026-07-04) — now **kept**. `bundle exec rake` green.
+
+**Surfaced to owner (board comment on `render-form-inputs-...`):** the top eng P2 is a false lead —
+`lib/cafe_car/inputs/*` is 5 tiny stubs (93–334 B) untouched since repo genesis, unwired from the
+real form path. Completing it = a risky refactor of the gem's CORE shipped rendering for an
+INVISIBLE win (CSS already themes inputs). Recommended **descope** (delete the dead stubs) unless
+the owner wants the component-render path built. Did NOT autonomously build (architectural + core
+rendering risk + "owner may reprioritize" flag) — an owner call.
+
+**Next:** external discoverability items (Awesome Rails/RubyFlow/blog) still need a coordinated
+launch + owner-in-loop; posthog job-exception dedupe (P2, safe internal) and P3 nits remain
+unblocked; form-inputs awaits owner decision; CrayonBloom dogfood P1 awaits requirements.
+
+---
+
 ## 2026-07-07 — Pass 102 (GREEN, fresh budget): shipped README positioning vs ViewComponent/Phlex
 
 **Trigger:** GREEN, `left=14/15` (fresh allocation, well past the budget-thin stretch of 99–101).
