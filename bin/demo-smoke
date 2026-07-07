@@ -1,0 +1,232 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Effect-level smoke check for the CafeCar live demo.
+#
+# The demo (https://cafe-car-demo-production.up.railway.app) auto-deploys from
+# main on every merge, but nothing verifies it actually WORKS — only that pages
+# render (200s). Shape-green 200s have hidden broken-but-advertised features
+# before; on our top marketing surface a prospect must never click into a
+# silently-broken flow. So this drives the advertised flows over real HTTP and
+# asserts PERSISTED EFFECTS, not status codes:
+#
+#   * auth          — "Enter the demo" login establishes a current_user
+#   * create        — a new client with a unique marker persists...
+#   * read-back     — ...and reads back through the index
+#   * filter        — an index filter actually narrows the returned set
+#   * sort          — ?sort=name actually orders the returned set
+#   * destroy       — the marker is gone afterwards (self-cleaning)
+#   * dashboard     — metric tiles + chart bars are present in the HTML
+#   * chart view    — an index ?view=chart renders real time-bucket bars
+#
+# It is deliberately NOT wired into CI (coupling repo CI to the external demo's
+# uptime makes CI flaky). Run it on demand:
+#
+#   bin/demo-smoke                      # against the live demo
+#   DEMO_URL=http://localhost:3000 bin/demo-smoke
+#
+# The demo runs on an ephemeral SQLite DB wiped on every restart, and this
+# script destroys the one record it creates, so it leaves the demo clean.
+# Exits 0 with "all N flows green" on success; non-zero naming the broken flow.
+
+require "net/http"
+require "uri"
+require "json"
+
+BASE   = ENV.fetch("DEMO_URL", "https://cafe-car-demo-production.up.railway.app")
+MARKER = "smoke-check-#{Time.now.strftime('%Y%m%d%H%M%S')}"
+
+# Frictionless demo login (see test/dummy User::DEMO_*).
+DEMO_EMAIL    = "demo@cafecar.dev"
+DEMO_PASSWORD = "cafecar-demo"
+
+class FlowFailure < StandardError; end
+
+# A minimal cookie-jar HTTP client over stdlib Net::HTTP: keeps the session
+# cookie across requests and does not auto-follow redirects (we assert on them).
+class Client
+  def initialize(base)
+    @uri = URI(base)
+    @http = Net::HTTP.new(@uri.host, @uri.port)
+    @http.use_ssl = @uri.scheme == "https"
+    @http.open_timeout = 15
+    @http.read_timeout = 30
+    @http.start
+    @cookies = {}
+  end
+
+  def get(path)  = run(Net::HTTP::Get.new(path))
+
+  def post(path, form)
+    req = Net::HTTP::Post.new(path)
+    req.set_form_data(form)
+    run(req)
+  end
+
+  private
+
+  def run(req)
+    # Ask for HTML explicitly (overriding Net::HTTP's default `Accept: */*`). A
+    # `*/*` accept lets Rails' content negotiation resolve a plain (extensionless)
+    # path to JSON once a `.json` request has been made on the connection — so
+    # pages come back as JSON and effect assertions false-fail. A strict
+    # `text/html` pins page requests to HTML; the `.json` read paths still force
+    # JSON by extension. Must be `=`, not `||=`: the default is already set.
+    req["Accept"] = "text/html"
+    req["User-Agent"] = "cafe-car-demo-smoke"
+    req["Cookie"] = @cookies.map { |k, v| "#{k}=#{v}" }.join("; ") unless @cookies.empty?
+    res = @http.request(req)
+    Array(res.get_fields("set-cookie")).each do |c|
+      name, value = c.split(";", 2).first.split("=", 2)
+      @cookies[name] = value
+    end
+    res
+  end
+end
+
+# --- tiny assertion + flow harness -----------------------------------------
+
+$client  = Client.new(BASE)
+$results = []
+
+def must(condition, message)
+  raise FlowFailure, message unless condition
+end
+
+def flow(name)
+  yield
+  $results << [ name, :ok, nil ]
+  puts "  ok   #{name}"
+rescue FlowFailure => e
+  $results << [ name, :fail, e.message ]
+  puts "  FAIL #{name} — #{e.message}"
+end
+
+# Rails renders a masked per-session CSRF token in a <meta> tag (and form hidden
+# input); any token minted under the current session validates. Grab whichever
+# form the page carries.
+def csrf_token(body)
+  body[/name="csrf-token"\s+content="([^"]+)"/, 1] ||
+    body[/name="authenticity_token"\s+value="([^"]+)"/, 1] or
+    raise FlowFailure, "no CSRF token found on the page"
+end
+
+# A mutation succeeded if it did not error. The status code itself is just
+# content-negotiation noise (a create may 302-redirect like a browser or 201 as
+# JSON) — the following read-back/gone assertions verify the actual EFFECT, which
+# is the whole point of this check.
+def succeeded?(res) = res.code.start_with?("2", "3")
+
+def json(res)
+  JSON.parse(res.body)
+rescue JSON::ParserError => e
+  raise FlowFailure, "expected JSON, got #{e.message} (#{res.body[0, 120].inspect})"
+end
+
+def q(value) = URI.encode_www_form_component(value)
+
+# --- the flows --------------------------------------------------------------
+
+# 1. AUTH — sign in through the real "Enter the demo" POST and confirm a
+#    current_user is established on a later request (effect, not a 200).
+token = nil
+flow "auth: 'Enter the demo' login establishes a current_user" do
+  home = $client.get("/")
+  must home.code == "200", "GET / returned #{home.code}"
+  pre_token = csrf_token(home.body)
+
+  login = $client.post("/session",
+    "authenticity_token" => pre_token,
+    "session[email]" => DEMO_EMAIL, "session[password]" => DEMO_PASSWORD)
+  must succeeded?(login),
+    "login POST /session returned #{login.code}, expected success"
+
+  signed_in = $client.get("/")
+  must signed_in.body.include?("Signed in as"),
+    "home page does not reflect a signed-in user after login"
+  token = csrf_token(signed_in.body)
+end
+
+# The remaining flows depend on a working session; bail cleanly if auth broke
+# rather than emit a cascade of misleading failures.
+if $results.last[1] == :fail
+  puts "\nauth flow failed — skipping the rest (they all require a session)."
+  puts "SMOKE FAILED: auth"
+  exit 1
+end
+
+client_id = nil
+
+# 2. CREATE + READ-BACK — create a client carrying a unique marker, then read it
+#    back through the index and assert the marker persisted.
+flow "create + read-back: a new client persists and reads back by marker" do
+  create = $client.post("/admin/clients",
+    "authenticity_token" => token, "client[name]" => MARKER)
+  must succeeded?(create),
+    "create POST /admin/clients returned #{create.code}, expected success"
+
+  hits = json($client.get("/admin/clients.json?name=#{q(MARKER)}"))
+  must hits.size == 1, "expected exactly 1 client named #{MARKER}, got #{hits.size}"
+  must hits.first["name"] == MARKER, "read-back name mismatch: #{hits.first['name'].inspect}"
+  client_id = hits.first["id"]
+  must client_id, "read-back record has no id to destroy later"
+end
+
+# 3. FILTER — the same filter narrowed the set: unfiltered returns the whole
+#    (seeded) table, the marker filter returns just our one row.
+flow "filter: an index filter actually narrows the returned set" do
+  all = json($client.get("/admin/clients.json"))
+  must all.size > 1, "unfiltered index returned #{all.size} clients (expected the seeded set)"
+  filtered = json($client.get("/admin/clients.json?name=#{q(MARKER)}"))
+  must filtered.size < all.size,
+    "filter did not narrow: #{filtered.size} filtered vs #{all.size} unfiltered"
+end
+
+# 4. SORT — ?sort=name actually orders the returned collection ascending.
+flow "sort: ?sort=name returns the collection ordered ascending" do
+  names = json($client.get("/admin/clients.json?sort=name")).map { _1["name"] }
+  must names.size > 1, "sort returned #{names.size} rows"
+  must names == names.sort, "collection was not sorted ascending by name"
+end
+
+# 5. DESTROY — remove the marker record and confirm it is gone (self-cleaning).
+flow "destroy: the created client is deleted and no longer reads back" do
+  del = $client.post("/admin/clients/#{client_id}",
+    "authenticity_token" => token, "_method" => "delete")
+  must succeeded?(del),
+    "destroy returned #{del.code}, expected success"
+
+  gone = json($client.get("/admin/clients.json?name=#{q(MARKER)}"))
+  must gone.empty?, "CREATE/READ-BACK worked but DESTROY left #{gone.size} record(s) behind"
+end
+
+# 6. DASHBOARD — the opt-in dashboard renders policy-driven metric tiles and a
+#    chart, not a blank 200.
+flow "dashboard: metric tiles and a chart bar render" do
+  res = $client.get("/admin/dashboard")
+  must res.code == "200", "GET /admin/dashboard returned #{res.code}"
+  must res.body.include?("Metric-value"), "no metric tiles (.Metric-value) on the dashboard"
+  must res.body.include?("Chart-bar"), "no chart bars (.Chart-bar) on the dashboard"
+end
+
+# 7. CHART VIEW — an index ?view=chart aggregates real records into time buckets
+#    (inline SVG bars carrying data-bucket markers), not merely a 200.
+flow "chart view: an index ?view=chart renders time-bucket bars" do
+  res = $client.get("/admin/articles?view=chart&chart_x=published_at")
+  must res.code == "200", "chart view returned #{res.code}"
+  must res.body.include?("data-bucket"),
+    "no time-bucket bars (data-bucket) in the chart view"
+end
+
+# --- report -----------------------------------------------------------------
+
+failures = $results.select { _1[1] == :fail }
+puts
+if failures.empty?
+  puts "SMOKE OK: all #{$results.size} flows green against #{BASE}"
+  exit 0
+else
+  puts "SMOKE FAILED: #{failures.map { _1[0].split(':').first }.join(', ')}"
+  failures.each { |name, _, msg| puts "  - #{name}: #{msg}" }
+  exit 1
+end
