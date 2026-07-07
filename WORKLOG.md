@@ -5,6 +5,40 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-07 — Pass 107 (GREEN): cleared both P3 nits — dream-DECISIONS path drift + dead filter kwarg
+
+**Trigger:** GREEN, `left=11/15`, launching, CI green, clean, no owner reply yet on the Pass-106
+launch greenlight (expected). Big P1s stay blocked; discoverability publish awaits owner. Cleared the
+two genuinely-unblocked P3 nits — small, but "maintained-project" hygiene signals trust.
+
+**Nit 1 — dream-DECISIONS path drift (`4ade82d`, CI green, done):** the dream persona +
+`/dream` command referenced `docs/DECISIONS.md` (12 refs) but the ledger lives at repo-root
+`DECISIONS.md` (what AGENTS.md/CLAUDE.md use); a future dream appending to / `git add`-ing the
+orphan path would have diverged from the real ledger. **Investigated the routing myself** (not a
+build): confirmed `bin/operate sync` pulls only `bin/` (per `operate.json` sync.source), so
+`.claude/agents/dream.md` is venture-local + git-tracked, NOT sync-clobbered → safe to fix locally.
+Direction: **fix the tooling to root** (moving the ledger would break the AGENTS/CLAUDE refs).
+`sed`'d all 12 `docs/DECISIONS.md` → `DECISIONS.md`, verified the `docs/DREAM-SEEDS.md` refs stayed
+intact (that file *does* live under `docs/`). Same drift exists in the venture **template** (every
+new venture inherits it) → **emailed homelab** to fix upstream (`templates/new-venture/.claude/…`;
+flagged holdco's own dream.md likely has it too).
+
+**Nit 2 — dead filter kwarg (coder, `df1881e`, CI green, done):** `CafeCar::Filter::FormBuilder#field_name`
+carried a `# TODO: handle multiple/index` and unused `multiple:`/`index:` kwargs. Filtering by a
+`has_many_attached` array is nonsensical in the filter sidebar, and the real edit-form
+`has_many_attached` path is implemented + covered (`attachment_persistence_test`) — dead
+scaffolding. Coder grep-proved the sole caller passes only `field_name(key)` (no kwargs) and no
+test exercised them, then collapsed the method to a one-line endless def matching the file's style.
+Good call I endorsed: removed BOTH dead kwargs (the task scoped only `multiple:`, but `index:` was
+equally unread — leaving it would orphan half the dead code). `bundle exec rake` green (209 runs /
+0 fail). Verified diff minimal + CI green independently.
+
+**Next:** owner launch greenlight (Pass 106) is the gate for the RubyFlow/Awesome/DEV publish chain.
+Remaining unblocked: a short voice-gated README y-metric note. Owner-gated: form-inputs descope,
+CrayonBloom requirements, monetization, OG-card upload, auto-PR-review (GitHub App).
+
+---
+
 ## 2026-07-07 — Pass 106 (GREEN): launch post refreshed to ratified positioning + VC/Phlex hook; owner asked to greenlight
 
 **Trigger:** GREEN, `left=11/15`, launching, CI green, tree clean, no mail. Reconstituted: found an
