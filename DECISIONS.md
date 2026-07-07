@@ -5,6 +5,36 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-07 — Research directive: evaluate replacing the handrolled component primitive (ViewComponent / Phlex / others)
+
+Owner (jeff@yak.sh) email, `auth=VERIFIED(yak.sh)`, replying to the README-positioning ship mail.
+Verbatim:
+
+> can you research if we should be using a different component primitive? ViewComponent, Phlex,
+> etc. Right now, we've handrolled our own, but it's almost certainly slower than templates and
+> these libraries. It's likely that our Components are still a level above these libraries. Or are
+> there others we should consider? partials have really become a head-ache, but what i like about
+> them is that cafe_car can build using the components and then the application can override the
+> templates and classes that need changes for their specific use-case. can we get that with VC or
+> phlex? are these or other libraries getting adoption? do some research and work out some possible
+> paths forward.
+
+**What this directs (research, not yet a decision):**
+- Evaluate whether CafeCar's handrolled component layer should sit on a library primitive
+  (ViewComponent, Phlex, or others worth considering) — performance vs templates is the suspicion.
+- Owner's hypothesis: CafeCar's Components are a level ABOVE these libraries (they could be the
+  rendering substrate underneath, not a replacement for our layer).
+- Hard requirement to preserve: **the override story** — CafeCar builds with components, the host
+  application overrides the templates/classes it needs for its use-case. Any candidate must
+  support that (or the path must show how).
+- Also wants: adoption/momentum data on these libraries.
+- Deliverable: research + worked-out possible paths forward (a report with options, not a ship).
+
+**Where applied:** board task `research-component-primitive-viewcomponent-phlex-paths-forward`
+(filed 2026-07-07, picked up on the next budgeted pass).
+
+---
+
 ## 2026-07-04 — PostHog demo follow-ups: test_mode not env guard · send current_user · demo fixes · investigate missing request context
 
 Owner (jeff@yak.sh) email 12:12 ET, replying to the Pass-96 "PostHog live on the demo" ship mail
