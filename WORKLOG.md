@@ -5,6 +5,30 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-07 — Pass 112: P1 production bug — attachments grid view 500 (arity mismatch)
+
+**Trigger:** board task `c1b93f92` (P1), from a PostHog error on the live demo —
+`ActionView::Template::Error: wrong number of arguments (given 1, expected 0)` on
+`/admin/active_storage/attachments` (index).
+
+**Root cause:** `CafeCar::ActiveStorage::AttachmentPresenter#logo` was defined `def logo = self`
+(zero-arity), narrowing the base `Presenter#logo(*, **, &)`. The `_grid_item.html.haml` partial
+renders each record's logo as `object.logo(href: object)`, so passing `href:` to the zero-arity
+override raised the ArgumentError. Only the **grid** view triggers it — the table view never
+passes args to `logo`, which is why the demo smoke check (table-only) stayed green. The demo's
+`?view=grid` (and the parent `/admin/attachments`, which defaults to grid) hit it.
+
+**Fix (`aa640e1`):** restored the base signature — `def logo(*, **, &) = self` (an attachment is
+its own logo; args ignored, still returns self so the Card can call `.url`). Added an effect-level
+regression test `test/controllers/attachments_grid_view_test.rb` that renders the grid and asserts
+a card + image per attachment (fails with the ArgumentError pre-fix). `bundle exec rake` fully
+green (rubocop 0, 210 tests, brakeman 0).
+
+**Live verified:** post-deploy, authed `GET …/attachments?view=grid` returns 200 with rendered
+cards/images and no error; the old code 500'd on that path. Task `c1b93f92` → done.
+
+---
+
 ## 2026-07-07 — Pass 111 (GREEN): OG card regenerated with the new positioning — draft awaiting owner sign-off
 
 **Trigger:** GREEN, `left=5/15`, 8h loop (session cron). No owner reply yet on the Pass-106 launch
