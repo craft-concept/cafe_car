@@ -9,11 +9,11 @@ a `.md` file with YAML frontmatter; `MEMORY.md` is the one-line-per-file index
 (`- [Description](file.md) — description`). If `$MEM_DIR` doesn't exist yet, skip steps 1–2.
 
 > **HARD SCOPE — read before anything else:**
-> This cycle touches **memory, context hygiene, this journal, `docs/DECISIONS.md`, and the
+> This cycle touches **memory, context hygiene, this journal, `DECISIONS.md`, and the
 > divergent leg's own outputs (`IDEAS.md` + filed proposals) ONLY.**
 > - **MAY:** edit files under `$MEM_DIR`; write `docs/dreams/YYYY-MM-DD.md`; read
->   `docs/DREAM-SEEDS.md` and `docs/DECISIONS.md`; **append** (never edit/reorder) a new dated entry
->   to `docs/DECISIONS.md` when the mining window (step 2) surfaces a genuine new owner decision not
+>   `docs/DREAM-SEEDS.md` and `DECISIONS.md`; **append** (never edit/reorder) a new dated entry
+>   to `DECISIONS.md` when the mining window (step 2) surfaces a genuine new owner decision not
 >   already captured there; apply small safe tool-error patches in step 3 (wrong flag, missing
 >   `--help`, stale usage example); in step 5, append idea lines to `IDEAS.md` and FILE new
 >   `kind=proposal` tasks; read/write `docs/dreams/.floor` (the mining cursor — plain file, not
@@ -24,7 +24,7 @@ a `.md` file with YAML frontmatter; `MEMORY.md` is the one-line-per-file index
 >   decision-drift flag from step 4), FILE a new "consider" task (step 4's mechanism) — never modify
 >   existing ones, never edit the persona/docs yourself to fix drift.
 > - **COMMIT:** stage ONLY the journal (`docs/dreams/YYYY-MM-DD.md`), `IDEAS.md` if you appended to
->   it, `docs/DECISIONS.md` if you appended a decision, and the exact file paths you patched in step
+>   it, `DECISIONS.md` if you appended a decision, and the exact file paths you patched in step
 >   3. **NEVER `git add -A`, `git add .`, or any glob.** One explicit path per `git add`. If a file
 >   you want to stage isn't yours from this pass, skip it. `docs/dreams/.floor` and `.last` are
 >   git-ignored local state — write them with a plain file write, never `git add` them.
@@ -99,7 +99,7 @@ Within that window:
   frontmatter shape as the others) and add its line to `MEMORY.md`. Skip one-offs — only lessons
   worth re-reading.
 - **Decisions:** if the window contains an owner decision that retires, changes, or locks in a
-  policy and it isn't already an entry in `docs/DECISIONS.md`, **append** one (see that file's
+  policy and it isn't already an entry in `DECISIONS.md`, **append** one (see that file's
   format — dated, `RETIRES:` tag if it kills something). Never edit or reorder an existing entry.
 Since entries are re-read across passes, you WILL see the same WORKLOG entry again on a later dream
 — that's by design; skip anything you've already captured rather than re-adding it.
@@ -127,7 +127,7 @@ deliberate review; they are never trimmed in the same pass that surfaces them. N
 global `~/.claude/CLAUDE.md` guidance is not automatically bloat — local restatement can be
 intentional emphasis; flag only pure duplication.
 
-**Decision-drift audit** (same flag-only discipline): for each entry in `docs/DECISIONS.md` that
+**Decision-drift audit** (same flag-only discipline): for each entry in `DECISIONS.md` that
 carries a `RETIRES: <term>` tag, `grep -ri` that term across the operator persona, `AGENTS.md`, and
 `docs/*.md`. A hit means an instruction is still telling us to use something a decision already
 killed. File a "consider" task naming the file/line and the retiring decision; never edit it
@@ -171,7 +171,7 @@ Don't over-produce: a few grounded, deduped ideas beat a slop list. Skip anythin
 Write `docs/dreams/YYYY-MM-DD.md` — short bullets only:
 - **Memory:** what you archived / merged / shortened.
 - **Lessons:** mined from the mining window (note the `[floor, today]` range).
-- **Decisions:** any new `docs/DECISIONS.md` entries appended; any decision-drift flags raised.
+- **Decisions:** any new `DECISIONS.md` entries appended; any decision-drift flags raised.
 - **Tool errors:** what you found and how you classified each.
 - **Persona flags:** bloat / contradictions / dead rules.
 - **Ideas:** the seed pulled (name it) + what you imagined + routing (cheap → `IDEAS.md`; proposal →
@@ -179,12 +179,12 @@ Write `docs/dreams/YYYY-MM-DD.md` — short bullets only:
 
 ## 7. Commit
 Stage ONLY the dream's own outputs — the journal, `IDEAS.md` if you appended to it,
-`docs/DECISIONS.md` if you appended a decision, and any specific files patched in step 3 — then
+`DECISIONS.md` if you appended a decision, and any specific files patched in step 3 — then
 commit (**do not push, do not add -A**):
 ```
 git add docs/dreams/YYYY-MM-DD.md
 git add IDEAS.md                                 # only if you appended idea rows in step 5
-git add docs/DECISIONS.md                        # only if you appended a decision in step 2
+git add DECISIONS.md                        # only if you appended a decision in step 2
 git add <exact-path-of-each-file-you-patched>   # one explicit path per file — never "git add -A" or "."
 git commit -m "dream: YYYY-MM-DD — <one-liner>"
 ```

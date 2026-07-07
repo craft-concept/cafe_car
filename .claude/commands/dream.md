@@ -30,7 +30,7 @@ Work through these steps in order, then stop:
 2. **WORKLOG mining — sliding floor cursor** — NOT the last ~20 entries. Read/seed the persisted
    date in `docs/dreams/.floor` (bootstrap: WORKLOG's oldest entry), mine WORKLOG in `[floor,
    today]` for uncaptured lessons (→ memory) and new owner decisions (→ append to
-   `docs/DECISIONS.md`, never edit existing entries), then advance the floor one day — clamped so
+   `DECISIONS.md`, never edit existing entries), then advance the floor one day — clamped so
    the window never drops below max(20 entries, 7 days) of lookback. Full formula in
    `.claude/agents/dream.md` step 2.
 3. **Tool-error triage** — scan the mining window (and prior `docs/dreams/*.md`) for recurring
@@ -39,7 +39,7 @@ Work through these steps in order, then stop:
    complex as a task (`bin/operate tasks file "..."`).
 4. **Persona hygiene + decision-drift audit** — read your operator persona; FLAG
    bloat/contradictions/dead rules in the journal (don't edit the persona). For each `RETIRES:` tag
-   in `docs/DECISIONS.md`, grep the persona/docs for that term — a hit is stale drift; file a
+   in `DECISIONS.md`, grep the persona/docs for that term — a hit is stale drift; file a
    "consider" task, never edit it here.
 5. **Divergent leg (the FINAL act, on warm context)** — seeded by TWO things, in order: (1) this
    pass's own maintenance delta from steps 1–4 (primary grounding), (2) one dream seed pulled from
@@ -54,7 +54,7 @@ Work through these steps in order, then stop:
    archived/merged/shortened, lessons mined + the mining window, decisions appended/drift flagged,
    tool errors found + classification, persona flags, and the seed pulled + ideas imagined + routing
    (or an abstain note).
-7. **Commit** — stage the journal, `IDEAS.md` (if you appended), `docs/DECISIONS.md` (if you
+7. **Commit** — stage the journal, `IDEAS.md` (if you appended), `DECISIONS.md` (if you
    appended a decision), + any files you fixed, `git commit -m "dream: YYYY-MM-DD — <one-liner>"`.
    Don't push. Don't `git add` `.floor`/`.last` — git-ignored local state.
 
