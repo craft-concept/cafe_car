@@ -285,6 +285,8 @@ end
 - **Callbacks**: Lifecycle hooks for `render`, `update`, `create`, `destroy`
 - **Responders**: JSON, HTML, and Turbo Stream responses
 
+[See it live →](https://cafe-car-demo-production.up.railway.app/admin/clients) — the clients index from that one line.
+
 **Limiting actions:**
 
 ```ruby
@@ -532,6 +534,8 @@ The form builder automatically detects field types:
 <%= f.association :category %>
 ```
 
+[See it live →](https://cafe-car-demo-production.up.railway.app/admin/invoices/new) — add and remove nested line items on a new invoice.
+
 Creates a select dropdown for the association. The select is **searchable**: it's
 enhanced with [Tom Select](https://tom-select.js.org) (vendored — no CDN, no
 bundler) for keystroke typeahead. To keep large associations from rendering
@@ -562,6 +566,8 @@ suffix compares it:
 - **Arrays (IN)**: `tags=red,blue,green`
 
 Combine them freely — `?price.min=10&price.max=50` reads as `price BETWEEN 10 AND 50`.
+
+[See it live →](https://cafe-car-demo-production.up.railway.app/admin/users) — sort, filter, and search a real index.
 
 **Sorting:**
 
@@ -755,6 +761,8 @@ policy answers `publish?` for. Button labels and styles come from your locale
 the whole bar for a resource by dropping an `_bulk_actions.html.haml` partial in
 its view directory.
 
+[See it live →](https://cafe-car-demo-production.up.railway.app/admin/users) — select rows and delete the selection.
+
 ### Dashboard
 
 CafeCar can render a single **dashboard** overview — an at-a-glance page that
@@ -800,6 +808,8 @@ Tiles render in a responsive grid at `dashboard_path` (no JavaScript, CSP-safe).
 Because the dashboard is a plain view, you can drop in headings, your own
 partials, or any markup between tiles. Once the template exists, a **Dashboard**
 link appears at the top of the sidebar nav — no template, no link.
+
+[See it live →](https://cafe-car-demo-production.up.railway.app/admin/dashboard) — metric tiles and a chart on one page.
 
 ### Current Context
 
