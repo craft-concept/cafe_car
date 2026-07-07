@@ -151,7 +151,8 @@ write only the ones that earn their keep.
 - 🔎 **Keyword search** - Turnkey search box on every index, matching across a
   model's text columns with zero per-model setup
 - 📈 **Chart view** - A third index view (beside grid/table) that buckets records
-  over any date column and plots count-per-bucket as dependency-free inline SVG
+  over any date column and plots the count, or a sum/average of a numeric column,
+  as dependency-free inline SVG
 - 📊 **Dashboard** - An opt-in overview page composing metric tiles and charts;
   you write one view to turn it on, off by default
 - ⬇️ **CSV export** - One-click "Download CSV" of the current filtered, sorted
@@ -625,10 +626,11 @@ CafeCar.csv_export_row_limit = 50_000
 **Chart view:**
 
 Every index offers a third view beside grid and table. The **Chart** toggle
-buckets records over a date column and plots count-per-bucket as a bar chart:
+buckets records over a date column and plots them as a bar chart:
 
 ```
 /articles?view=chart&chart_x=published_at&chart_by=month
+/invoices?view=chart&chart_x=issued_on&chart_y=sum:total
 ```
 
 Pick the x-axis from any of the model's displayable date/datetime columns
@@ -637,6 +639,17 @@ default `month`) using the form above the chart — it defaults to `created_at`
 and month, so the chart renders with zero configuration. Only date columns the
 policy exposes are offered, and the selected column is validated against that
 allowlist, so the parameter is never used as a raw column name.
+
+By default the bars measure the record count per bucket. `chart_y` switches that
+to an aggregate of a numeric column: `count` (the default), `sum:<column>`, or
+`avg:<column>` — for example `chart_y=sum:total`. The chartable columns are the
+model's policy-permitted numeric attributes (integer, decimal, or float), the
+same policy-is-source-of-truth pattern as the x-axis dates. A `chart_y` selector
+renders above the chart only when the model has at least one such column;
+otherwise you get the count chart with no selector. An unknown or non-permitted
+`chart_y` is validated against the allowlist and falls back to `count`, so the
+value never reaches SQL raw. Sum and average aggregate through a portable
+ActiveRecord calculation that runs on both SQLite and Postgres.
 
 The chart aggregates the **same** collection the table shows: the active filters
 narrow it and `policy_scope` still applies, so it never plots rows the current
