@@ -34,7 +34,7 @@ every default can be overridden application-wide or per model.
 **Perfect for** admin panels, internal tools, and rapid prototyping.
 
 **Using ViewComponent or Phlex?** They pick the unit of reuse for the UI you
-write; CafeCar renders the CRUD boilerplate you'd otherwise write at all. They
+write; CafeCar renders the CRUD boilerplate you'd otherwise hand-write. They
 sit at different layers and compose — keep your components for the screens you
 customize and drop them into a CafeCar view like any other partial.
 

@@ -131,7 +131,7 @@ CafeCar renders index, show, new, and edit straight from the model — the
 boilerplate you'd otherwise write once per resource and maintain forever. Keep
 your ViewComponent or Phlex components for the screens you customize, and drop
 them into a CafeCar view or presenter like any other partial. CafeCar covers the
-scaffolding; your component library covers the parts worth building by hand.
+boilerplate screens; your component library covers the parts worth building by hand.
 
 Plain partials work the same way. Pick whichever view primitive you like —
 CafeCar is the convention layer above it, deleting the boilerplate views so you
