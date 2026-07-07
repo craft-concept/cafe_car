@@ -132,6 +132,10 @@ execute). Dreaming itself still runs nightly.
   `bin/operate tasks file "Title" [--kind bug] [--priority P1] [--desc "..."]` files one;
   `bin/operate tasks claim|done|update|comment <id>` moves it; `bin/operate tasks --help` shows
   the full surface. No cross-repo reach — everything is venture-local.
+  - **File atomic tasks.** One task = one verifiable outcome, not a checklist or a series of
+    steps. If it's multi-step, file N small tasks and link them with dependencies (blockedBy),
+    not one fat task. Prefer non-overlapping scopes — if two tasks would overlap, merge or
+    re-cut them. A crisp DAG of small tasks beats a pile of half-things.
 - **`WORKLOG.md`** — the running narrative of each operating pass (newest first).
 
 ## OSS growth roadmap

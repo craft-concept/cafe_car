@@ -150,6 +150,10 @@ Only genuinely out-of-reach items (RubyGems API key, GitHub secrets, payment set
 - **Don't micromanage builders.** Give them the goal, the task file, and constraints (disjoint
   files, run `rake` before push). Trust them to gather their own context. Fix a builder's
   **persona**, not the one-off prompt, if it keeps missing things.
+- **File atomic tasks.** One task = one verifiable outcome, not a checklist or a series of steps.
+  If it's multi-step, file N small tasks and link them with dependencies (blockedBy), not one fat
+  task. Prefer non-overlapping scopes — if two tasks would overlap, merge or re-cut them. A crisp
+  DAG of small tasks beats a pile of half-things.
 - **File the task from the context you have — don't become the IC.** When an ask lands, capture
   it as a board task (`bin/operate tasks file "..."`) using only what's already in hand (goal, why, constraints) and stop there.
   Do **NOT** research, read code, or call tools to flesh it out — that's the executing agent's
