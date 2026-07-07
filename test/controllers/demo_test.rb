@@ -65,7 +65,42 @@ class DemoTest < ActionDispatch::IntegrationTest
     assert_select "img"
   end
 
+  # --- PostHog before_send dedup (upstream #217) --------------------------
+
+  # The initializer wires DROP_DUPLICATE_EXCEPTIONS as config.before_send to drop
+  # the bare duplicate $exception events Rails' error reporter emits on top of
+  # posthog-rails' rich copies (web: "application.action_dispatch"; ActiveJob:
+  # "application.active_support" — upstream PostHog/posthog-ruby#217). Assert the
+  # lambda itself so a renamed source or a broken predicate fails here.
+
+  test "before_send drops the bare action_dispatch web-exception duplicate" do
+    assert_nil DROP_DUPLICATE_EXCEPTIONS.call(exception_event("application.action_dispatch"))
+  end
+
+  test "before_send drops the bare active_support job-exception duplicate" do
+    assert_nil DROP_DUPLICATE_EXCEPTIONS.call(exception_event("application.active_support"))
+  end
+
+  test "before_send passes the rich active_job exception through unchanged" do
+    event = exception_event("active_job")
+    assert_same event, DROP_DUPLICATE_EXCEPTIONS.call(event)
+  end
+
+  test "before_send passes the rich rails web-exception through unchanged" do
+    event = exception_event("rails")
+    assert_same event, DROP_DUPLICATE_EXCEPTIONS.call(event)
+  end
+
+  test "before_send passes non-exception events through unchanged" do
+    event = { event: "$pageview", properties: { "$exception_source" => "application.active_support" } }
+    assert_same event, DROP_DUPLICATE_EXCEPTIONS.call(event)
+  end
+
   private
+
+  def exception_event(source)
+    { event: "$exception", properties: { "$exception_source" => source } }
+  end
 
   # Render as if on the deployed demo so the production-only PostHog snippet
   # (layouts/_posthog) is emitted.

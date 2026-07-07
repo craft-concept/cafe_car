@@ -30,6 +30,38 @@ PostHog::Rails.configure do |config|
   config.logs_enabled = true
 end
 
+# Deduplicate exceptions that Rails' error reporter captures a SECOND time, bare,
+# after posthog-rails already captured a rich, context-linked copy. Both bare
+# duplicates are recognised by their $exception_source and dropped, so every error
+# is exactly one replay-/context-linkable event; the rich "rails" and "active_job"
+# sources pass through untouched.
+#
+#   1. Web requests ("application.action_dispatch"). On Rails 8.1,
+#      ActionDispatch::ShowExceptions rescues and renders the error page, and the
+#      *outer* ActionDispatch::Executor (which sits above PostHog's
+#      CaptureExceptions/RequestContext middleware) reports the exception to
+#      Rails.error AFTER our middleware has unwound. By then in_web_request? is
+#      false and no request context is active, so posthog-rails' ErrorSubscriber
+#      emits a second, bare $exception with no $current_url, params, or
+#      $session_id — while CaptureExceptions already captured the rich,
+#      session-linked copy (source "rails").
+#
+#   2. ActiveJob ("application.active_support"). posthog-rails' active_job hook
+#      captures the job exception with the rich source "active_job", then re-raises
+#      into Rails.error, so the ErrorSubscriber captures the SAME exception again
+#      as a bare $exception with no job context. Upstream bug we filed:
+#      https://github.com/PostHog/posthog-ruby/issues/217.
+DUPLICATE_EXCEPTION_SOURCES = %w[
+  application.action_dispatch
+  application.active_support
+].freeze
+
+DROP_DUPLICATE_EXCEPTIONS = lambda do |event|
+  duplicate = event[:event] == "$exception" &&
+    DUPLICATE_EXCEPTION_SOURCES.include?(event.dig(:properties, "$exception_source"))
+  duplicate ? nil : event
+end
+
 # Core client. The public ingestion token is a write-only key, safe to embed;
 # ENV override lets the deploy swap it without a code change.
 PostHog.init do |config|
@@ -41,19 +73,5 @@ PostHog.init do |config|
   # network call — the test suite must never touch posthog.com.
   config.test_mode = !Rails.env.production?
 
-  # Deduplicate web-request exceptions. On Rails 8.1, ActionDispatch::ShowExceptions
-  # rescues and renders the error page, and the *outer* ActionDispatch::Executor
-  # (which sits above PostHog's CaptureExceptions/RequestContext middleware) reports
-  # the exception to Rails.error AFTER our middleware has unwound. By then
-  # in_web_request? is false and no request context is active, so posthog-rails'
-  # ErrorSubscriber emits a second, bare $exception (source
-  # "application.action_dispatch") with no $current_url, params, or $session_id —
-  # while CaptureExceptions already captured the rich, session-linked copy
-  # (source "rails"). Drop the bare Executor duplicate so each web-request error
-  # is exactly one replay-linkable event.
-  config.before_send = lambda do |event|
-    duplicate = event[:event] == "$exception" &&
-      event.dig(:properties, "$exception_source") == "application.action_dispatch"
-    duplicate ? nil : event
-  end
+  config.before_send = DROP_DUPLICATE_EXCEPTIONS
 end
