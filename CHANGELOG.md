@@ -12,6 +12,15 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Added
 
+- Selectable chart y-metric. The index Chart view can now plot the **sum or average
+  of a numeric column** on the y-axis, not just a record count. A `chart_y` select
+  offers `count` (the default — nothing regresses) plus a sum and average per
+  chartable numeric column. The chartable columns come from the **policy** (the
+  model's displayable numeric attributes — the same source of truth as the x-axis
+  date columns), so the policy stays authoritative and a `chart_y` param is validated
+  against that allowlist before it reaches the query — a raw column name can never be
+  interpolated. Aggregation uses adapter-neutral ActiveRecord calculations
+  (`COUNT`/`SUM`/`AVG`), portable across SQLite and Postgres. Labels come from locales.
 - Dashboard overview. A new opt-in surface that composes an app's data into a
   single overview page — configured, like everything in CafeCar, **through a view,
   not a config DSL.** A host turns it on by writing one template,

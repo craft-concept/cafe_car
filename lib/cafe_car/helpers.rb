@@ -153,7 +153,7 @@ module CafeCar
 
     def chart_for(objects, **options)
       CafeCar[:ChartBuilder].new(self, objects:,
-        column: params[:chart_x], bucket: params[:chart_by], **options)
+        column: params[:chart_x], bucket: params[:chart_by], metric: params[:chart_y], **options)
     end
 
     # The bulk actions offered on this model's index table — the model policy's

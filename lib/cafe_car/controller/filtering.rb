@@ -7,7 +7,7 @@ module CafeCar::Controller::Filtering
   # or `?name=Widget` reaches the query DSL without a namespacing prefix.
   CONTROL_PARAMS = %w[
     controller action format id
-    sort page per view tab q chart_x chart_by
+    sort page per view tab q chart_x chart_y chart_by
     _method authenticity_token commit utf8 button _
   ].freeze
 

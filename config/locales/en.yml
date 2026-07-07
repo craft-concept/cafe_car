@@ -29,6 +29,16 @@ en:
   dashboard:
     no_date_column: No date column to chart.
 
+  # Index "chart" view controls. The y-metric labels interpolate the chartable
+  # column's own attribute name (e.g. "Sum of Total").
+  chart:
+    no_columns: No date columns to chart.
+    update: Update
+    metric:
+      count: Count
+      sum: "Sum of %{attribute}"
+      avg: "Average %{attribute}"
+
   list_html:
     zero: "(none)"
     one: "%{list}"

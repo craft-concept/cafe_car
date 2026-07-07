@@ -5,6 +5,49 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-07 — Pass 105: selectable sum/avg y-metric on the index chart tab + PG smoke-check
+
+**Task:** `chart-tab-follow-ups-postgres-smoke-check-selectable-y-metri` (P3, enhancement).
+
+**Shipped (coder, pushed, CI green):** the index Chart view can now plot the **sum or average
+of a numeric column** on the y-axis, not just a record count.
+
+- **Param encoding — `chart_y`, NOT `chart_by`.** The task briefed `chart_by` as the reserved
+  y-metric param, but in the shipped code `chart_by` is already the **bucket-granularity** selector
+  (day/week/month) with a passing test (`chart_by: "day"`). Reassigning it would regress. Chose
+  **`chart_y`** (matching the existing `chart_x` x-axis param — the y-metric literally is the
+  y-axis), encoded `count` (default) / `sum:<col>` / `avg:<col>`. Added `chart_y` to
+  `CONTROL_PARAMS`.
+- **Policy is the source of truth.** Chartable numeric columns come from
+  `policy.displayable_attributes` filtered to numeric types (`integer`/`decimal`/`float`) — the
+  exact mirror of how the x-axis derives its date columns. `pick_metric` validates the `chart_y`
+  column against that allowlist; an unknown/non-numeric column (or injection string) falls back to
+  a plain count, so a raw param never becomes an Arel column ref.
+- **Portable aggregation:** adapter-neutral AR `count`/`sum`/`average` (COUNT/SUM/AVG), same on
+  SQLite + Postgres. `value_for` collapses whole BigDecimals (301.0 → 301) and rounds fractions so
+  a decimal never renders as `0.301e3`.
+- **Copy in locales, no styles outside components:** new `chart.metric.{count,sum,avg}` +
+  `chart.{no_columns,update}` keys; also moved the previously-hardcoded index-chart empty message
+  and Update button into locales.
+- **Root-cause fix (latent bug):** `ChartBuilder#policy` built the policy from the *relation*, but
+  `InvoicePolicy#permitted_attributes` calls `object.new_record?` — only valid on a record. Any
+  chart on such a policy (e.g. `/admin/invoices`) would have 500'd. Now builds from
+  `@objects.klass.new`, matching the rest of CafeCar (`policy(model.new)`).
+
+**Postgres smoke-check (deliverable 2, option b — live HTTP):** curled the live demo
+(`cafe-car-demo-production.up.railway.app`, PG, auto-deploys from main) with `Accept: text/html` —
+the existing `date_trunc` bucketing renders 45 correct `YYYY-MM` bars at HTTP 200 (week granularity
+also 200). Bucketing on Postgres confirmed working. (The new sum/avg lands on PG on the next
+auto-deploy; its aggregation is adapter-neutral AR, so low risk.)
+
+**Verify:** effect-level tests assert the summed/averaged series numerically (count default, sum,
+avg, decimal-sum collapse) + allowlist rejection of a non-numeric/injection `chart_y` + selector
+only offers policy-permitted numeric columns. Full `bundle exec rake` green: rubocop 0 offenses,
+**209 runs / 621 assertions / 0 failures**, brakeman 0 warnings. (Cleaned two stray rows a local
+`bin/rails runner` spike had persisted into the non-transactional test DB.)
+
+---
+
 ## 2026-07-07 — Pass 104 (GREEN): deduped ActiveJob exception double-capture on the live demo
 
 **Trigger:** GREEN, `left=13/15`, status `launching`, CI green, tree clean, no unread mail.
