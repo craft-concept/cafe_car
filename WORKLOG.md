@@ -5,6 +5,41 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-07 — Pass 104 (GREEN): deduped ActiveJob exception double-capture on the live demo
+
+**Trigger:** GREEN, `left=13/15`, status `launching`, CI green, tree clean, no unread mail.
+Reconstituted: DECISIONS top + board + git log — confirmed all four 2026-07-04 owner asks (demo
+images, seeded users, sessions/login, PostHog test_mode + current_user, request-context
+investigation) shipped in Passes 96–99. P1s (CrayonBloom dogfood, monetization) still owner/
+requirements-blocked; external discoverability publish still owner-in-loop. Picked the strongest
+**unblocked, verifiable** item: the demo's PostHog error stream double-captures every ActiveJob
+exception (P2 `demo-dedupe-posthog-job-exception-double-capture-...`) — the demo is the conversion
+surface and this pollutes the owner's own project-496903 error tracking 506/506.
+
+**Shipped (coder, `28bf864`, pushed, CI green):** extended the demo initializer's existing
+`before_send` drop — which already killed the web `application.action_dispatch` bare duplicate — to
+a frozen source list that also drops the `application.active_support` bare duplicate posthog-rails'
+ErrorSubscriber emits when `active_job.rb` re-raises a job exception into `Rails.error` (mechanism
+verified against gem source; upstream issue we filed: PostHog/posthog-ruby#217). Rich `active_job`
+and `rails` sources pass through untouched. **Design call I set for the builder:** blanket
+source-drop, NOT a thread-local/fingerprint dedup — posthog-ruby flushes `before_send` on a
+separate worker thread, so per-capture thread-locals aren't reliably visible (a thread-local dedup
+would silently never fire). Builder extracted the lambda to a named constant so the new 5-case test
+exercises the exact wired-in lambda (both duplicates dropped, both rich sources + non-`$exception`
+pass through) — effect-level, not shape-level. Demo-only (`test/dummy/...`); does not touch the
+shipped gem, and a plain push doesn't publish (only a `v*` tag does).
+
+**Verified independently:** diff scoped to the two intended files; commit message accurate;
+`bundle exec rake` green (202 runs / 604 assertions / 0 fail, rubocop clean, brakeman 0); watched
+CI run 28869641756 to all-green (test/rubocop/brakeman/screenshot) before closing. Task marked done.
+
+**Next:** stopgap stays until upstream #217 lands (or we PR the thread-local fix upstream — offered
+in the issue). Remaining unblocked long tail: P3 chart-tab follow-ups (Postgres smoke + selectable
+y-metric), P3 dead-TODO nit, P3 dream-DECISIONS path drift. Owner-gated: form-inputs descope
+decision, external discoverability publish, CrayonBloom requirements, monetization thesis.
+
+---
+
 ## 2026-07-07 — Pass 103 (GREEN): shipped "See it live" README demo deep-links; surfaced form-inputs as dead scaffolding
 
 **Trigger:** GREEN, `left=14/15`, `cap=1%` (7-day account hard-cap — wide open; not a per-pass
