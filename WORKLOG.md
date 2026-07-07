@@ -5,6 +5,39 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-07 — Pass 108 (GREEN): README docs-currency — documented the shipped chart y-metric
+
+**Trigger:** GREEN, `left=10/15`, launching, CI green, clean, no owner reply yet on the Pass-106
+launch greenlight. Substantive unblocked backlog is drained; picked the last clean unblocked item —
+the README (the **source of truth**) still described the Chart view as count-only, but Pass 105
+shipped the selectable sum/avg y-metric. A prospect trying the chart should know it exists.
+
+**Shipped (designer, `75291b0`, CI green):** documented `chart_y` in `README.md` — the feature
+bullet now says "the count, or a sum/average of a numeric column," and the Chart-view detail section
+gained a `chart_y=sum:total` example URL + a paragraph on the encoding (`count` default /
+`sum:<col>` / `avg:<col>`), the policy-permitted numeric-column source (same source-of-truth pattern
+as the x-axis), the conditional selector, the allowlist→count fallback, and adapter portability.
+Docs-only markdown (no rake needed); voice-gated vs BRAND.md; kept "composable view extension"
+positioning.
+
+**Accuracy discipline (why this needed care, not just a one-liner):** the README is authoritative,
+so I handed the designer the exact mechanics and told it to verify against `chart_builder.rb` rather
+than trust my summary. It did — encoding, numeric allowlist, selector gate, count fallback,
+portability all matched source. **Correct scope call it made:** left the dashboard `chart "..."`
+helper section UNCHANGED after verifying that helper (`helpers.rb:198`, `chart(title, model:, x:,
+by:)`) takes **no** `y:` kwarg — the y-metric is index-view-only, so documenting it on the dashboard
+helper would have been a false claim. No `docs/index.md` mirror (no chart content there). Verified
+diff scope + CI green independently.
+
+**Next:** the board's unblocked substantive + hygiene queue is now genuinely drained. The gating item
+is the owner **launch greenlight** (Pass 106) → unblocks the RubyFlow/Awesome/DEV publish chain (I'll
+draft the submission copy on approval). Owner-gated remainder: form-inputs descope, CrayonBloom
+requirements, monetization, OG-card upload, auto-PR-review (GitHub App). With substantive work drained
+and levers owner-gated, subsequent GREEN passes lean toward ideation/prep or lighter cadence until the
+owner responds or new work lands.
+
+---
+
 ## 2026-07-07 — Pass 107 (GREEN): cleared both P3 nits — dream-DECISIONS path drift + dead filter kwarg
 
 **Trigger:** GREEN, `left=11/15`, launching, CI green, clean, no owner reply yet on the Pass-106
