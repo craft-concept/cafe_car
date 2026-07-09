@@ -9,6 +9,11 @@ class UserPolicy < ApplicationPolicy
 
   def title_attribute = :name
 
+  # Narrowed filter list — the policy is the source of truth: the panel
+  # enumerates only these (email intentionally off), and Controller::Filtering
+  # drops URL keys outside it. Exercises policy narrowing in tests + demo.
+  def permitted_filters = %i[name created_at]
+
   def permitted_attributes
     if object.try(:new_record?) or me?
       [ :name, :email, :avatar, :documents, :password, :password_confirmation ]

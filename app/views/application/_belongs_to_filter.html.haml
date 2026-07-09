@@ -1,0 +1,5 @@
+-# Equality on the foreign key (`?author_id=3`) through the same Tom Select
+-# typeahead the edit form uses (searchable past the render cap).
+= Field do
+  = f.label info.input_key
+  = f.association info.method, include_blank: t(:any, scope: %i[helpers filter]), selected: f.object.value(info.input_key).presence&.to_i

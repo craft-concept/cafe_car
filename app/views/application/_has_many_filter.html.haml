@@ -1,0 +1,7 @@
+-# "Has this associated record" — submits `?<assoc>.id=<id>`, which the query
+-# DSL turns into a where_assoc_exists on the association.
+= Field do
+  = f.label info.method
+  = f.collection_select info.method, info.collection, :id, -> { present(_1).title },
+    { include_blank: t(:any, scope: %i[helpers filter]), selected: f.object.value(info.method, :id).presence&.to_i },
+    { name: f.field_name(info.method, :id), **f.searchable_select(info) }

@@ -20,6 +20,17 @@ en:
   helpers:
     bulk_confirm: "Apply “%{action}” to the selected rows?"
 
+    # The index filter panel (_filters + the _*_filter partials). Per-field
+    # copy nests per model under label/placeholder/hint (see
+    # Filter::FieldInfo#i18n) and scope toggles under scopes.<model>.<scope>.
+    filter:
+      title: Filters
+      submit: Filter
+      any: Any
+      contains: Contains
+      min: Min
+      max: Max
+
   # Button style (a Button component flag) per bulk action — a shipped default a
   # host can extend/override. Unlisted actions fall back to the neutral style.
   bulk_actions:

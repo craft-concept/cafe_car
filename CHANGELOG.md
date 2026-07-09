@@ -12,6 +12,19 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Added
 
+- Typed, policy-driven filter panel on every index. The index aside now renders a
+  filter control per attribute in the model policy's **`permitted_filters`** (the
+  same source of truth the URL-filter gate enforces), each typed by reflection:
+  strings/text get a *contains* input (the `~` dot-op), enums a select of their
+  declared values, booleans an any/true/false select, numerics and dates a min/max
+  range pair (`price.min`/`price.max`; dates parse through Chronic), `belongs_to` the
+  Tom Select typeahead the edit form already uses (`?author_id=…`), and `has_many` a
+  "has this record" typeahead (`?line_items.id=…`). Each `permitted_scopes` entry gets
+  a checkbox toggle (`?published=true`). The form submits via GET, composes with the
+  active search, sort, and view (round-tripped as hidden fields), and active values
+  round-trip back into the controls. Every per-type control is a host-overridable
+  partial (`_string_filter`, `_enum_filter`, `_range_filter`, …) — views, not a config
+  DSL — and all copy lives in locales.
 - Selectable chart y-metric. The index Chart view can now plot the **sum or average
   of a numeric column** on the y-axis, not just a record count. A `chart_y` select
   offers `count` (the default — nothing regresses) plus a sum and average per

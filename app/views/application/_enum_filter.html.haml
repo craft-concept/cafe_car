@@ -1,0 +1,5 @@
+-# Equality against one of the enum's declared values (`?status=1`, the
+-# db value — see Filter::FieldInfo#choices).
+= Field do
+  = f.label info.method
+  = f.enum info.method, info.choices, include_blank: t(:any, scope: %i[helpers filter])

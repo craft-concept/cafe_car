@@ -1,8 +1,14 @@
-= Card :sticky do |card|
+= Card :sticky, title: t(:title, scope: %i[helpers filter]) do |card|
   = filter_form_for objects do |f|
     = card.Section do
-      - f.remaining_attributes.each do |attr|
-        = f.field attr
-
+      -# A GET form replaces the query string wholesale on submit, so the
+      -# composing control params (search, sort, view) ride along as hiddens —
+      -# the same round-trip _search does for the active filters.
+      - { q: search_term, sort: params[:sort], view: params[:view] }.compact_blank.each do |name, value|
+        = hidden_field_tag name, value, id: nil
+      - f.remaining_attributes.each do |attribute|
+        = f.filter attribute
+      - f.scopes.each do |scope|
+        = f.scope_toggle scope
     = card.Foot do
-      = f.submit "Filter", commit: false
+      = f.submit t(:submit, scope: %i[helpers filter]), name: nil

@@ -1,0 +1,4 @@
+-# Substring match — submits the `~` (contains) dot-op, e.g. `?name~=acme`.
+= Field do
+  = f.label info.method
+  = f.text_field "#{info.method}~", id: info.method, placeholder: info.placeholder || t(:contains, scope: %i[helpers filter])

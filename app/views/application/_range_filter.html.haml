@@ -1,0 +1,8 @@
+-# Bounded range via the `.min`/`.max` dot-ops (`?price.min=10&price.max=50`).
+-# Dates parse through Chronic on the query side, so a bare `2026-01-01` works.
+- step = :any if info.type.in? %i[decimal float]
+= Field do
+  = f.label info.method, for: "#{info.method}_min"
+  = Group do
+    = f.public_send info.input, info.method, name: f.field_name(info.method, :min), id: "#{info.method}_min", value: f.object.value(info.method, :min), placeholder: t(:min, scope: %i[helpers filter]), step: step
+    = f.public_send info.input, info.method, name: f.field_name(info.method, :max), id: "#{info.method}_max", value: f.object.value(info.method, :max), placeholder: t(:max, scope: %i[helpers filter]), step: step

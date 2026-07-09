@@ -15,7 +15,8 @@ class AttachmentsGridViewTest < ActionDispatch::IntegrationTest
     get "/admin/active_storage/attachments", params: { view: "grid" }
 
     assert_response :success
-    cards = Nokogiri::HTML5(response.body).css(".Card")
+    # Scoped to the grid: the index aside renders its own Card (the filter panel).
+    cards = Nokogiri::HTML5(response.body).css(".Grid .Card")
     assert_equal ActiveStorage::Attachment.count, cards.size
     assert cards.css("img").any?, "each attachment card renders its image"
   end

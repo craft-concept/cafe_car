@@ -1,0 +1,4 @@
+-# Tri-state: any (blank), true, or false (`?paid=true`).
+= Field do
+  = f.label info.method
+  = f.select info.method, [ [ t(:"true"), "true" ], [ t(:"false"), "false" ] ], include_blank: t(:any, scope: %i[helpers filter])

@@ -1,0 +1,5 @@
+-# Toggle for a policy-permitted model scope (`?published=true`).
+= Field do
+  = f.label scope do
+    = f.check_box scope, { name: f.field_name(scope) }, "true", nil
+    = t(scope, scope: [ :helpers, :filter, :scopes, f.model.model_name.i18n_key ], default: scope.to_s.humanize)
