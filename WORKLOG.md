@@ -5,6 +5,42 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-09 — Pass 114: M1a SHIPPED — the Agent Skill + `cafe_car:agents` install generator (the CrayonBloom fix)
+
+**Shipped (both on Fable, both `rake` green + pushed to main):**
+- **`831d2f3`** — the CafeCar **Agent Skill**: `skills/cafe_car/SKILL.md` (mental model + recipe index,
+  "never hand-roll an admin page", policy-first customization ladder) + `skills/cafe_car/references/*.md`
+  (10 subsystem pages). Verified against real code + `test/dummy`; positioning clean (composable view
+  extension, never generator/framework). Task A1 done.
+- **`f15ed85`** — **`rails g cafe_car:agents`** generator: copies the skill into a host's
+  `.claude/skills/cafe_car/` (+ `.agents/` mirror), writes an **idempotent marker-delimited AGENTS.md
+  block** (never blind-appends; double-run test proves exactly one block), publishes a Claude Code
+  **plugin marketplace** (`.claude-plugin/marketplace.json`), ships **`llms.txt`**, adds a README
+  section, and packages `skills/`+`llms.txt`+`.claude-plugin` in the gemspec (verified via `gem build`).
+  Prints the `npx skills add craft-concept/cafe_car` + `gitmcp.io/craft-concept/cafe_car` one-liners.
+  5-case generator test; full suite 215 tests green. Task A2 done.
+
+**Net:** the primary owner ask — agent-facing docs that reach an agent's context INSIDE a host app —
+is now shippable end to end (a host installs, its agents reach for CafeCar instead of hand-rolling).
+
+**Plan correction (recorded as memory + told owner):** `CafeCar[:Const]` is **engine-first**, NOT a
+universal host-shadow seam — top-level constants only win for names the engine doesn't define. Real
+override seams: view files, presenter naming, Pundit policies, locale keys. (Corrects an over-broad
+exploration claim; bears on the in-flight component-primitive research, whose must-preserve property
+is exactly this override story.)
+
+**Also confirmed:** the `_filters` partial ships but is **not wired** yet (Track B3 scope is real);
+nested-association dot-filters (`?author.name~=bob`) **already work** today (Track C = mostly expose).
+
+**Infra:** box briefly hit 99% disk (external caches on shared rootfs, not our repo); owner grew LXC
+107 rootfs +8GB → 40G/80%/7.7G free; homelab confirmed + is adding a reclaim guardrail. Not blocking.
+
+**In flight:** filtering foundation — B1 (`permitted_filters`/`permitted_scopes` on the policy) + B2
+(enum reflection via `defined_enums`), which unblock B3 (the typed policy-driven filter UI).
+**Next:** B3 filter UI → then custom actions (D1/D3 → D2 → D4).
+
+---
+
 ## 2026-07-09 — Pass 113: kicked off the big project — agent-facing docs + provisioning, policy-driven filtering, custom actions, Attributes refactor
 
 **Trigger:** in-session owner directive (jeff@yak.sh) — "plan and execute a big project to document
