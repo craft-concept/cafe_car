@@ -5,6 +5,36 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-09 — Pass 115: filtering M1 core SHIPPED — policy-driven typed filter UI (B1+B2+B3)
+
+The visible payoff: every index now auto-renders clickable, policy-enumerated filters that write
+dot-query params. Three Fable builders, each `rake` green + pushed:
+- **`efc0bc7`** (B1) — `permitted_filters` (default `displayable_attributes`) + `permitted_scopes`
+  (default `[]`) + predicates on the policy; the controller URL→query path is **gated** to the
+  permitted set (non-permitted keys silently dropped — also fixed a latent 500 on unknown params).
+  Closes the "any public scope is URL-invokable" hole. Filed P3 follow-up to gate `?sort=` too.
+- **`4dc1755`** (B2) — enum reflection: `FieldInfo#enum?`/`#values`/`enum_type` slotted into the type
+  chain; `FormBuilder#enum` select; dummy `Client.status` enum + effect-level round-trip test.
+- **`9b21229`** (B3) — the typed filter panel (`_filters` wired into the index aside): string→contains,
+  enum→select, boolean→tri-state, numeric/date→min-max range, belongs_to/has_many→Tom Select
+  typeahead, scope→toggle; composes with `q`/`sort`/`view`/CSV; all copy in locales, no styles outside
+  components. Fixed the dormant/broken `Filter::FormBuilder` plumbing. 12 effect tests; suite 235 green.
+
+**Found + filed (not worked around silently):** `QueryBuilder#parse_value` `to_i`s integer-backed enum
+**key** strings → `?status=archived` becomes `where(status: 0)` (wrong bucket). B3 stayed in its lane
+(engine not its files), submits the DB value so filters are correct but URLs are ugly, and filed board
+bug `querybuilder-enum-key-strings-are-to-i-d-to-0-on-integer-bac`. Fix it, then flip enum options to keys.
+
+**Design polish (filed, needs a designer + `/copy` pass):** raw enum key labels (want "Active"), busy
+default Created/Updated ranges on every model, checkbox toggle layout, and the README doesn't document
+the panel yet (customer copy → voice gate).
+
+**Remaining filtering:** B4 (active-filter chips + clear), B5 (deeper effect tests), C (nested-assoc UI
+— engine already supports it). **Next tracks:** custom actions (D1/D3→D2→D4), then the Attributes
+refactor (E). **In flight:** none (clean checkpoint). Demo auto-deploys `9b21229` — filter panel goes live.
+
+---
+
 ## 2026-07-09 — Pass 114: M1a SHIPPED — the Agent Skill + `cafe_car:agents` install generator (the CrayonBloom fix)
 
 **Shipped (both on Fable, both `rake` green + pushed to main):**
