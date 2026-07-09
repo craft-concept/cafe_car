@@ -5,6 +5,49 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-09 — Pass 113: kicked off the big project — agent-facing docs + provisioning, policy-driven filtering, custom actions, Attributes refactor
+
+**Trigger:** in-session owner directive (jeff@yak.sh) — "plan and execute a big project to document
+CafeCar in a way that agents can use to write better code that uses CafeCar. Use fable." Plus three
+follow-ups this session: policy-driven filtering (M1 enumerated filter UI, M2 nested joins), custom
+**actions** (member + collection, forward to model bang methods), and a mid-term **P1** to refactor
+policy `*_attributes` into a nested `Attributes` class (`policy.attributes.listable`).
+
+**Planned + approved.** Ran 3 parallel exploration agents (rendering pipeline / view+override+turbo /
+policy+query+docs) + a prior-art research agent. Key reframes captured in plan
+`dapper-zooming-raccoon` (owner-approved): (1) the problem is **discoverability, not coverage** — the
+README is thorough but never reaches an agent's context inside a host app; (2) everything asked for
+is **one law — "the policy declares, the UI renders"** — extended to filters, actions, and
+agent-legibility; (3) the **dot-query engine already exists** (ParamParser+QueryBuilder: ops,
+ranges, arrays, negate/regex, recursive nested-assoc filtering via `activerecord_where_assoc`,
+`sort=assoc.col`) — filtering M1 is a policy-driven UI on top, M2 is mostly expose+gate+document;
+(4) the one greenfield query gap is **enum reflection** (`defined_enums`); (5) research says ship
+the **Agent Skills open standard** (`SKILL.md`) + a Rails generator + a marker-delimited AGENTS.md
+block (Supabase/Stripe/Prisma pattern; no Rails gem has done it yet — real whitespace).
+
+**Shipped this pass:**
+- `DECISIONS.md` entry (verbatim, all four owner messages) — committed **first**, before acting
+  (owner-feedback rule). Commit on main.
+- **15-task DAG filed on the board** (Track A docs+provisioning, B filtering M1, C filtering M2,
+  D custom actions, E Attributes refactor as an explicit **P1**), with `blockedBy` dependencies
+  (A2→A1; B3→B1,B2; B4/B5/C1→B3; D2→D1,D3; D4→D1,D2; D5→D2,D4; E1→B3,D4).
+- **Dispatched the M1a builder on Fable** (task `write-cafecar-agent-skill-…`, claimed wip): writing
+  `skills/cafe_car/SKILL.md` + `references/*.md` (11 subsystems, recipe-shaped, conventions-not-
+  snapshots, human voice, examples verified against test/dummy). Owns `skills/cafe_car/**` only.
+
+**Decisions/assumptions:** features ship first as flat `permitted_*` methods; the Attributes refactor
+folds them all in afterward (owner: "features now, refactor folds them in"). `permitted_scopes` will
+also gate URL-invokable scopes (today any public scope is filterable — a security tightening). Docs
+document only SHIPPED behavior; new-feature doc sections couple to their feature tasks so nothing
+goes stale. Skip Cursor/Copilot-specific rule files (every tool reads AGENTS.md now).
+
+**In flight:** Fable builder on the skill/guide content (A1).
+**Next:** on A1 landing — A2 (`cafe_car:agents` generator + marketplace + llms.txt) unblocks; then
+filtering foundation (B1 `permitted_filters`/`permitted_scopes`, B2 enum reflection) → B3 filter UI;
+custom actions (D1/D3 → D2 → D4). Run tracks serially or worktree-isolated (shared-tree clobber).
+
+---
+
 ## 2026-07-07 — Pass 112: P1 production bug — attachments grid view 500 (arity mismatch)
 
 **Trigger:** board task `c1b93f92` (P1), from a PostHog error on the live demo —
