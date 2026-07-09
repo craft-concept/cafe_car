@@ -5,6 +5,84 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-09 — BIG PROJECT: agent-facing docs + provisioning · policy-driven filtering · custom actions · Attributes refactor (P1)
+
+Four VERIFIED owner (jeff@yak.sh) messages, in-session this date. A single approved roadmap
+(plan `dapper-zooming-raccoon`). Verbatim:
+
+**(1) The project + filtering + "use fable":**
+
+> i need you to plan and execute a big project to document CafeCar in a way that agents can use to
+> write better code that uses CafeCar. Use fable. If CafeCar is installed in a rails app, the agents
+> should naturally reach for it. They should know about all of CafeCar's features and understand
+> what the defaults provide and clear paths to accomplishing different tasks, customizations, and
+> overrides to those defaults. I'm seeing many custom-admin pages in CrayonBloom, for example. They
+> should just be making a cafe_car controller, adding a few buttons to the grid cards and calling it
+> a day. As a result, the experience is really bad: no turbo streams, no standardized query params,
+> no linking to other objects, etc. … [cover: Components + CSS + theming; navigation/sidebar;
+> presenters; partial overrides views/<controller> vs views/application; pundit/scopes; built-in
+> turbo-streams + syncing; forms/form_builder]. everything should be documented in a way that humans
+> benefit, too. … While we're here, filtering is a huge missing feature. the filterable fields
+> should be driven from pundit polices. Every index page should have auto-configured and enumerated
+> filters that the user can select to generate dot query params in the URL. Scopes, enums, search,
+> assocation selection should all be built in. As a second milestone, we should support deeply nested
+> joins and queries and take full advantage of the dot query system.
+
+**(2) Custom actions:**
+
+> another important missing feature: custom "actions". basically, controllers should define actions
+> (and probably even declaring them forwards them from model bang methods by default: `publish!`,
+> etc.) and they can be called via things like a "Publish" button or link. They should then be listed
+> in the policy and they show up on show + index pages. There should be actions both on a scope (set
+> of records) and on the record instance (single record)
+
+**(3) Attributes refactor (file a P1):**
+
+> btw, one mid-term refactoring goal is to refactor all these *_attributes on policies. probably have
+> a nested class like Scope called Attributes. so you can do `policy.attributes.listable`. i think
+> this can pull in the other attribute stuff that i think is a bit messy. create a P1 to refactor all
+> that into something cleaner.
+
+**(4) Delivery mechanism + sequencing (answers to my two plan questions):**
+
+> [doc delivery] append to AGENTS is a good idea. I'd love maybe a generator install rake task that
+> installs skills, etc. I could imagine a url that you can paste to your agent to have them configure
+> their own memories and skills, etc. Maybe do some research on what other projects have done?
+>
+> [sequencing] Features now, refactor folds them in.
+
+**What this decides / where applied:**
+- **Primary deliverable is agent-facing docs + host provisioning** (not just prose). Root cause is
+  *discoverability, not coverage* — the README is already thorough but never reaches an agent's
+  context inside a host app. Ship, per prior-art research (Supabase/Stripe/Prisma pattern): an
+  **Agent Skill** (`skills/cafe_car/SKILL.md`, open standard) + a **Rails generator**
+  (`cafe_car:agents`) that installs it into the host's `.claude/skills/` (+ `.agents/` mirror) and
+  inserts an **idempotent, marker-delimited AGENTS.md block** (never blind-append); plus `llms.txt`
+  + a GitMCP README pointer + a `.claude-plugin/marketplace.json`. Skills teach **conventions, not
+  snapshots**, and must read like a human wrote them (LLM-slop context files measurably *hurt*).
+  Skip Cursor/Copilot-specific rule files — every tool now reads AGENTS.md.
+- **Filtering M1:** policy-driven, auto-enumerated filter UI (`permitted_filters` + `permitted_scopes`
+  on the policy, following the `permitted_bulk_actions` precedent) with typed controls
+  (enum/association/scope/boolean/range/search) that write dot-query params. The dot-query ENGINE
+  already exists — this is a UI + policy layer on top. **M2:** deeply nested association joins (the
+  engine already filters nested assocs recursively via `activerecord_where_assoc`; expose + gate +
+  document). Enum reflection (`defined_enums`) is the one genuine greenfield primitive. Also *gate*
+  URL-invokable scopes (today any public scope is filterable).
+- **Custom actions:** `permitted_actions` on the policy → member (single-record) + collection (set)
+  actions; declaring forwards to the model bang method by default (`publish` → `record.publish!`),
+  gated by `name?`, rendered as buttons/links on show + index/grid, labels/styles from the locale.
+  The collection half already exists as `#batch`/`permitted_bulk_actions`; member actions are new.
+- **Attributes refactor → P1, mid-term:** nested `Attributes` class like `Scope`
+  (`policy.attributes.listable`); one sweep folds ALL `permitted_*` / `*_attributes` into it. Filed
+  as P1. **Sequencing:** features (filters, actions) ship FIRST as flat `permitted_*` methods; the
+  refactor folds them in afterward.
+- **Model:** build + doc-writing runs on **Fable**.
+- **Where applied:** DECISIONS recorded first (this entry); board epics + atomic subtasks filed
+  (Track A–E, Track E as P1); plan `dapper-zooming-raccoon` approved. Build kicked off M1a (skill +
+  provisioning generator) on Fable.
+
+---
+
 ## 2026-07-07 — Research directive: evaluate replacing the handrolled component primitive (ViewComponent / Phlex / others)
 
 Owner (jeff@yak.sh) email, `auth=VERIFIED(yak.sh)`, replying to the README-positioning ship mail.
