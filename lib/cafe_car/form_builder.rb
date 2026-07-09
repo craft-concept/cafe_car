@@ -60,6 +60,17 @@ module CafeCar
       records.include?(selected) ? records : [ selected, *records ]
     end
 
+    # An ActiveRecord enum renders as a plain <select> of its declared values,
+    # read straight off `defined_enums` (see FieldInfo#values).
+    def enum(method, choices = nil, **options)
+      info = info(method)
+
+      choices                 ||= info.values
+      options[:include_blank] ||= info.prompt
+
+      select(method, choices, options)
+    end
+
     def hidden(*methods, **, &)
       methods.map  { input(_1, as: :hidden_field, **, &) }
              .then { @template.safe_join(_1) }

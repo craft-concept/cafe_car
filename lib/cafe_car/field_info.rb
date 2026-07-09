@@ -25,6 +25,8 @@ module CafeCar
     def associated?  = reflection.present?
     def polymorphic? = reflection&.polymorphic?
     def digest?      = method =~ /_digest$/
+    def enum?        = model.try(:defined_enums)&.key?(@method.to_s)
+    def values       = model.defined_enums[@method.to_s].keys
     def password?    = type == :password
     def rich_text?   = reflection&.name =~ /^rich_text_(\w+)$/
     def attachment?  = model.reflect_on_attachment(method)
@@ -52,6 +54,7 @@ module CafeCar
     end
 
     def reflection_type = reflection&.macro
+    def enum_type       = (:enum if enum?)
     def attribute_type  = model.type_for_attribute(@method)&.type
     def digest_type
       key = @method.to_s.chomp("_confirmation")
@@ -90,7 +93,7 @@ module CafeCar
 
     def type
       return if @method.nil?
-      @type ||= nested_attributes_type || reflection_type || attribute_type || digest_type ||
+      @type ||= nested_attributes_type || reflection_type || enum_type || attribute_type || digest_type ||
                 attachment_type || default_type ||
                 raise(NoMethodError.new "Can't find attribute :#{@method} on #{model_name}", @method)
     end
@@ -117,6 +120,7 @@ module CafeCar
       when :datetime then :datetime_field
       when :password then :password_field
       when :nested   then :fields_for
+      when :enum     then :enum
       when :attachment then :file_field
       when :belongs_to, :has_many then :association
       when :has_one

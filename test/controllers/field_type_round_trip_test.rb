@@ -65,6 +65,19 @@ class FieldTypeRoundTripTest < ActionDispatch::IntegrationTest
     assert invoice.reload.paid, "boolean did not flip to true through the update path"
   end
 
+  round_trip "enum            → Client#status" do
+    client = create(:client)
+    # The edit form renders the enum as a <select> of its declared values.
+    get url_for(controller: "admin/clients", action: :edit, id: client.id)
+    assert_response :success, "edit form with an enum field failed to render"
+    assert_select ".Field select[name=?]", "client[status]" do
+      assert_select "option[value=active]", 1
+      assert_select "option[value=archived]", 1
+    end
+    submit client, status: "archived"
+    assert_equal "archived", client.reload.status
+  end
+
   round_trip "date            → Invoice#issued_on" do
     invoice = create(:invoice)
     submit invoice, issued_on: "2026-03-04"

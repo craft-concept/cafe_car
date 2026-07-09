@@ -38,6 +38,24 @@ module CafeCar
       assert_equal :nested, info(Invoice, :line_items).nested_attributes_type
     end
 
+    # `enum_type` sits ahead of `attribute_type`, so an ActiveRecord enum wins
+    # over its raw backing column and the UI can render its declared values.
+    test "enum column resolves to :enum, not its raw column type" do
+      field = info(Client, :status)
+
+      assert_equal :enum, field.type
+      assert_equal :enum, field.input
+    end
+
+    test "enum exposes its declared values" do
+      assert_equal %w[active archived], info(Client, :status).values
+    end
+
+    test "enum_type is nil for non-enum attributes" do
+      assert_nil info(Client, :name).enum_type
+      assert_nil info(Invoice, :number).enum_type
+    end
+
     # A `belongs_to` select must not load the whole target table — `collection`
     # caps the rows at `CafeCar.max_collection_options` on the SQL relation, so a
     # 10k-row association renders at most that many `<option>`s.

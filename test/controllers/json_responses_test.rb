@@ -23,7 +23,7 @@ class JsonResponsesTest < ActionDispatch::IntegrationTest
     body.each do |row|
       assert row["id"].present?, "each record exposes its id"
       assert_includes %w[Alpha Beta], row["name"]
-      assert_equal %w[created_at id name updated_at], row.keys.sort,
+      assert_equal %w[created_at id name status updated_at], row.keys.sort,
                    "only displayable attributes are serialized"
       refute row.key?("owner_id"), "non-displayable foreign key must not leak"
     end

@@ -16,7 +16,7 @@ class CsvExportTest < ActionDispatch::IntegrationTest
     assert_equal "text/csv", response.media_type
 
     # Scalar displayable columns only; `id` is prefixed, associations excluded.
-    assert_equal %w[ID Name Created Updated], header
+    assert_equal %w[ID Name Status Created Updated], header
     assert_equal %w[Alpha Beta], names
   end
 

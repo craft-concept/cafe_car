@@ -3,6 +3,8 @@ class Client < ApplicationRecord
 
   has_many :invoices
 
+  enum :status, %i[active archived]
+
   validates :name, presence: true
 
   broadcasts_refreshes
