@@ -93,6 +93,7 @@ When a default is wrong, override that one piece — see
   - [Policy Generator](#policy-generator)
   - [Notes Generator](#notes-generator)
   - [Sessions Generator](#sessions-generator)
+- [Using CafeCar with AI coding agents](#using-cafecar-with-ai-coding-agents)
 - [Configuration](#configuration)
 - [Testing](#testing)
 - [Contributing](#contributing)
@@ -958,6 +959,32 @@ $ rails generate cafe_car:sessions
 
 Creates the `sessions` table migration. The `CafeCar::Session` model and
 `SessionPolicy` already ship with the engine.
+
+## Using CafeCar with AI coding agents
+
+CafeCar ships an [Agent Skill](skills/cafe_car/SKILL.md) — the mental model (the policy
+declares, the UI renders) plus ten reference pages, written for coding agents. Install it
+into your app:
+
+```bash
+$ rails generate cafe_car:agents
+```
+
+This copies the skill to `.claude/skills/cafe_car/` (Claude Code) and
+`.agents/skills/cafe_car/` (Codex, Copilot, and other agents), and adds a marker-delimited
+pointer block to your `AGENTS.md` so agents read the skill before hand-rolling admin UI.
+Safe to re-run: only the marked block is replaced; the rest of your `AGENTS.md` is never
+touched.
+
+Two more ways to put CafeCar docs in front of an agent:
+
+```bash
+$ npx skills add craft-concept/cafe_car   # install the skill in any skills-aware tool
+```
+
+Or point an MCP-capable agent at
+[gitmcp.io/craft-concept/cafe_car](https://gitmcp.io/craft-concept/cafe_car) for live
+CafeCar docs with zero setup.
 
 ## Configuration
 

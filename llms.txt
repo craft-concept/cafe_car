@@ -1,0 +1,25 @@
+# CafeCar
+
+> CafeCar is a composable view extension for Rails. Point a controller at a model and the Pundit policy drives complete index, show, new, and edit pages — keyword search, URL-based filtering and sorting, pagination, CSV export, bulk actions, and Turbo-morph live updates included. Every default can be overridden with ordinary Rails views and partials; there is no config DSL.
+
+Key conventions: the policy is the source of truth (what's visible, editable, and permitted); customization goes policy → presenter → partial override → controller, cheapest first; UI copy lives in locales; styles live in component CSS.
+
+## Docs
+
+- [README](https://github.com/craft-concept/cafe_car/blob/main/README.md): installation, getting started, and the full feature reference
+- [Agent Skill](https://github.com/craft-concept/cafe_car/blob/main/skills/cafe_car/SKILL.md): the mental model and customization ladder, written for coding agents
+- [Controllers](https://github.com/craft-concept/cafe_car/blob/main/skills/cafe_car/references/controllers.md): the `cafe_car` macro, scope, callbacks, custom actions
+- [Policies](https://github.com/craft-concept/cafe_car/blob/main/skills/cafe_car/references/policies.md): Pundit policies as the source of truth — permissions, scopes, permitted attributes
+- [Presenters](https://github.com/craft-concept/cafe_car/blob/main/skills/cafe_car/references/presenters.md): per-attribute rendering with `show ... as:`
+- [Views](https://github.com/craft-concept/cafe_car/blob/main/skills/cafe_car/references/views.md): the partial-override ladder, per-resource and app-wide
+- [Forms](https://github.com/craft-concept/cafe_car/blob/main/skills/cafe_car/references/forms.md): automatic forms from permitted attributes
+- [Filtering](https://github.com/craft-concept/cafe_car/blob/main/skills/cafe_car/references/filtering.md): URL query params for search, ranges, comparisons, sorting
+- [Components](https://github.com/craft-concept/cafe_car/blob/main/skills/cafe_car/references/components.md): the UI component set and component-scoped styling
+- [Turbo](https://github.com/craft-concept/cafe_car/blob/main/skills/cafe_car/references/turbo.md): Turbo Stream responses and live morph updates
+- [Locales](https://github.com/craft-concept/cafe_car/blob/main/skills/cafe_car/references/locales.md): all UI copy via i18n
+- [Navigation](https://github.com/craft-concept/cafe_car/blob/main/skills/cafe_car/references/navigation.md): menus and layout
+- [CHANGELOG](https://github.com/craft-concept/cafe_car/blob/main/CHANGELOG.md): what changed in each release
+
+## Optional
+
+- [Live demo](https://cafe-car-demo-production.up.railway.app): a clickable CafeCar app, no signup

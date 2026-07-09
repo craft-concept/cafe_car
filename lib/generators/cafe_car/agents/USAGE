@@ -1,0 +1,13 @@
+Description:
+    Installs CafeCar's agent docs into the host app so coding agents reach for
+    CafeCar instead of hand-rolling admin UI.
+
+    Copies the CafeCar Agent Skill to .claude/skills/cafe_car/ (Claude Code)
+    and .agents/skills/cafe_car/ (Codex, Copilot, and other agents), and adds
+    a marker-delimited pointer block to AGENTS.md (created if missing).
+
+    Safe to re-run: the skill copies are overwritten and only the marked
+    block in AGENTS.md is replaced — your own content is never touched.
+
+Example:
+    bin/rails generate cafe_car:agents

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-marketplace.json",
+  "name": "cafe-car",
+  "description": "CafeCar — a composable view extension for Rails",
+  "owner": {
+    "name": "Jeff Peterson",
+    "email": "jeff@yak.sh"
+  },
+  "plugins": [
+    {
+      "name": "cafe-car",
+      "source": "./",
+      "strict": false,
+      "description": "The CafeCar Agent Skill: point a controller at a model and the Pundit policy drives the whole UI — index, show, new, edit, filtering, sorting, CSV export, and Turbo-morph live updates. Teaches agents to extend CafeCar's defaults instead of hand-rolling admin views.",
+      "author": {
+        "name": "Jeff Peterson"
+      },
+      "license": "MIT",
+      "homepage": "https://github.com/craft-concept/cafe_car",
+      "skills": ["./skills/cafe_car"]
+    }
+  ]
+}
