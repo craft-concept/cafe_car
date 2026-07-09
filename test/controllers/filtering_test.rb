@@ -64,4 +64,43 @@ class FilteringTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal [ 5, 15, 25 ], response.parsed_body.map { _1["number"] }.sort
   end
+
+  # --- The policy gate: permitted_filters / permitted_scopes ---
+
+  # Article titles surviving a filter on the admin articles index.
+  def titles(filters)
+    get "/admin/articles.json", params: filters
+    assert_response :success
+    response.parsed_body.map { _1["title"] }.sort
+  end
+
+  test "a hidden column param is ignored, not filtered" do
+    # password_digest is stripped by Rails' parameter filter, so it's outside
+    # permitted_filters — a param naming it must not narrow the result set.
+    create_list(:user, 2)
+    get "/admin/users.json", params: { "password_digest" => "nope" }
+    assert_response :success
+    assert_equal User.count, response.parsed_body.size
+  end
+
+  test "an unknown filter key is ignored, not an error" do
+    assert_equal [ 5, 15, 25 ], numbers("bogus" => "1")
+  end
+
+  test "a permitted scope param invokes the scope" do
+    published = create(:article, :published)
+    create(:article, :draft)
+
+    assert_equal [ published.title ], titles("published" => true)
+  end
+
+  test "a non-permitted scope param is ignored" do
+    published = create(:article, :published)
+    draft     = create(:article, :draft)
+
+    # `unpublished` is a scope Article defines but ArticlePolicy doesn't list —
+    # applied it would match nothing (both articles have a published_at);
+    # ignored, the index stays whole.
+    assert_equal [ draft.title, published.title ].sort, titles("unpublished" => true)
+  end
 end

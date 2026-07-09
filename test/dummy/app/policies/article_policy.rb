@@ -23,6 +23,11 @@ class ArticlePolicy < ApplicationPolicy
   # `metrics Article` helper on the demo dashboard (opt-in, policy is source of truth).
   def permitted_metrics = %i[all published]
 
+  # Named scopes URL filters may invoke (`?draft=true`). Scopes are opt-in —
+  # see CafeCar::Policy#permitted_scopes — so `unpublished` (unlisted) stays
+  # URL-unreachable, which the filtering tests assert.
+  def permitted_scopes = %i[draft published]
+
   class Scope < Scope
     def resolve = scope.all
   end

@@ -29,6 +29,29 @@ module CafeCar::Policy
   # `metrics` view helper reads this list. Empty by default (opt in per model).
   def permitted_metrics = []
 
+  # The attributes (columns and associations) a user may filter an index by —
+  # the same policy-is-source-of-truth pattern: the filter UI enumerates this
+  # list, and Controller::Filtering drops URL filter keys that aren't on it.
+  # Defaults to #displayable_attributes (Rails' parameter filter already strips
+  # password/token columns); a host overrides this to narrow or widen the list.
+  def permitted_filters = displayable_attributes
+
+  # The named model scopes invokable as URL filter params — `?published=true`
+  # calls the `published` scope. Empty by default (opt in per model): a scope
+  # key reaches `QueryBuilder#scope!`, which can invoke any public class method
+  # with a URL-supplied argument, so a host lists the safe ones explicitly.
+  def permitted_scopes = []
+
+  # Is `attribute` filterable? Checks #permitted_filters on the base name — a
+  # foreign key resolves to its association (`client_id` → `:client`), matching
+  # how #displayable_attributes lists it.
+  def permitted_filter?(attribute)
+    attribute = attribute.to_sym
+    permitted_filters.include?(association_for_attribute(attribute) || attribute)
+  end
+
+  def permitted_scope?(name) = permitted_scopes.include?(name.to_sym)
+
   def logo_attribute
     model.info.fields.listable.attachments.first&.method
   end

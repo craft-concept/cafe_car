@@ -18,11 +18,36 @@ module CafeCar::Controller::Filtering
   private
 
   def filtered(scope)
-    scope.query([ parsed_params[""], search_term ].compact_blank)
+    scope.query([ permitted_filter_params, search_term ].compact_blank)
   end
 
   def filtered?
-    parsed_params[""].present? || search_term.present?
+    permitted_filter_params.present? || search_term.present?
+  end
+
+  # The filter params the policy permits — the enforcement half of the
+  # policy-is-source-of-truth pattern (Policy#permitted_filters /
+  # #permitted_scopes). Keys the policy doesn't list are silently dropped: a
+  # stray or hostile param just doesn't filter (no 400, and it never reaches
+  # the query DSL where an unknown key would raise).
+  def permitted_filter_params
+    @permitted_filter_params ||= begin
+      policy = policy(model.new)
+      (parsed_params[""] || {}).select { |key, _| permits_filter?(policy, key) }
+    end
+  end
+
+  # Classify a filter key the way QueryBuilder#param! does — on the base name,
+  # operator suffix stripped (`price>` → price, `title~` → title): a known
+  # attribute or association checks #permitted_filters, anything else is a
+  # would-be scope and checks #permitted_scopes.
+  def permits_filter?(policy, key)
+    base = key.to_s.sub(/\W+$/, "")
+    if model.reflect_on_association(base) || model.columns_hash.key?(base)
+      policy.permitted_filter?(base)
+    else
+      policy.permitted_scope?(base)
+    end
   end
 
   # Keyword term from the index search box. Read raw (not through ParamParser) so a
