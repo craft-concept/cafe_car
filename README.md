@@ -571,6 +571,42 @@ Combine them freely — `?price.min=10&price.max=50` reads as `price BETWEEN 10 
 
 [See it live →](https://cafe-car-demo.up.railway.app/admin/users) — sort, filter, and search a real index.
 
+**The filter panel:**
+
+Every index also renders those filters as a form — a sticky card of controls
+beside the table, with no configuration. CafeCar reads the model policy's
+`permitted_filters` (which defaults to the displayable columns and associations)
+and renders one **typed control per attribute**, matched to the column type:
+
+- **string / text** — a "contains" box (substring match, the `~` operator)
+- **integer / decimal / float / date / datetime** — a min/max pair (the range)
+- **enum** — a select of the enum's own values (blank = Any)
+- **boolean** — a tri-state select (Any / true / false)
+- **belongs_to / has_many** — a searchable **multi-select** of the associated
+  records (the same Tom Select typeahead as the edit form), matching any of the
+  records you pick
+
+The keyword-search box shares the card, and the whole panel submits as one GET
+form — a submission just rewrites the query string above, with the active sort
+and view riding along as hidden fields. Attachments, rich text, polymorphic
+targets, and password columns render no control (there's nothing to filter on).
+
+Named model scopes opt in separately through `permitted_scopes` and render as
+checkbox toggles:
+
+```ruby
+class ArticlePolicy < ApplicationPolicy
+  def permitted_filters = %i[title author published_at]  # narrow the panel
+  def permitted_scopes  = %i[published draft]            # ?published=true
+end
+```
+
+The policy is the source of truth: change `permitted_filters` to change which
+controls appear, and a URL filter for an attribute that isn't on the list is
+dropped before it reaches the query. Control labels read from your locale
+(`helpers.filter`, plus each model's attribute names), and you replace any
+control by dropping a `_<type>_filter.html.haml` partial in the view directory.
+
 **Sorting:**
 
 ```
