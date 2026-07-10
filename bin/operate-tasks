@@ -14,6 +14,12 @@
 #                                       [--assign jeff] [--venture <id>] [--blocked-by <id>]  → POST, prints the id
 #     tip: file ONE atomic task — a single verifiable outcome, not a checklist.
 #          Multi-step work = several small linked tasks (use --blocked-by), not one fat task.
+#          Follow-ups are their own tasks --blocked-by the original — never a "Follow-ups"
+#          section in the description. Short imperative titles; brief descriptions.
+#          Write descriptions AND comments as tidy GFM markdown — real newlines, `-`/`1.`
+#          lists, short paragraphs. The board renders it; a no-newline blob is one wrapped line.
+#          Reference other tasks as links: [title](https://tasks.yak.sh/?task=<id>), never a
+#          bare id the reader must go hunt for.
 #   operate tasks show <id>             task + comment thread + timeline + deps
 #   operate tasks dep <id> --by <blocker>       link: <id> is blocked by <blocker>
 #   operate tasks dep <id> --blocks <other>     link: <id> blocks <other>
