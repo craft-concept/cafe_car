@@ -5,6 +5,34 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-10 — Pass 118: component-primitive research delivered (owner bump)
+
+Owner bumped the 7/7 P1 research directive (evaluate replacing the handrolled component primitive
+with ViewComponent/Phlex/other). The positioning/marketing framing shipped back in Pass 102, but the
+actual **technical evaluation** never did — that's what the bump was about. Executed it (read-only
+research, GREEN, explicitly-bumped P1 → acted rather than re-filed).
+
+- **`12f8da5`** — `docs/research/component-primitive-evaluation.md` (research agent). Grounded in the
+  code (file:line) + external sources (dated). **Recommendation: keep handrolled Components +
+  partials; don't adopt VC/Phlex wholesale; 1-day spike to falsify the perf premise before any
+  move.** Three findings: (1) handrolled is slowest but the mainstream field is within ~1.4–1.9× /
+  sub-ms per node → not a user-visible bottleneck at admin scale (owner right on direction, off on
+  magnitude); (2) our Component is confirmed "a level above" — a convention layer whose HTML emit is
+  a swappable backend, could sit on Phlex/VC; (3) **the override story is the deal-breaker and points
+  AWAY from VC/Phlex** — the file-drop host override (the moat) rests on Rails view-path lookup =
+  partials; VC can't do path-based template override (#411 wontfix), Phlex has no templates. Rails
+  core's own energy is Herb/ReActionView (better ERB, keeps view-path lookup), not a component lib.
+- Emailed owner the exec summary + shared link + one question back (is the pain speed or partial
+  *ergonomics*? — if the latter, Nice Partials targets it without touching overrides). Filed the
+  Option-B/benchmark spike as a P3 follow-up (owner-gated; don't touch the partial override branch).
+
+Research task closed. **Note:** deferred the queued Pass-117 build work (collection-action viewed-
+scope + count hint, docs-with-build, Attributes refactor) — owner greenlit it by email but I held
+execution per the email-inbox rule (told them "reply 'go now'"); this bump was a distinct explicit
+ask on a waiting P1, so I acted on it specifically. Those three remain queued for the next pass.
+
+---
+
 ## 2026-07-09 — Pass 117: custom actions feature SHIPPED + filter polish + tooltip root-caused
 
 Owner in-session directive (DECISIONS.md 2026-07-09 "In-session directive"): build actions + demo
