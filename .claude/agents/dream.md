@@ -15,14 +15,17 @@ a `.md` file with YAML frontmatter; `MEMORY.md` is the one-line-per-file index
 >   `docs/DREAM-SEEDS.md` and `DECISIONS.md`; **append** (never edit/reorder) a new dated entry
 >   to `DECISIONS.md` when the mining window (step 2) surfaces a genuine new owner decision not
 >   already captured there; apply small safe tool-error patches in step 3 (wrong flag, missing
->   `--help`, stale usage example); in step 5, append idea lines to `IDEAS.md` and FILE new
->   `kind=proposal` tasks; read/write `docs/dreams/.floor` (the mining cursor — plain file, not
->   committed).
-> - **MUST NOT:** PATCH any board task's priority or status, cancel or reassign a task,
+>   `--help`, stale usage example); in step 5, make SHAPE-ONLY board-hygiene edits to this
+>   venture's own tasks (shorten titles/descriptions, extract follow-ups into new `--blocked-by`
+>   tasks, add dep edges, cancel exact dups with a `--reason` naming the survivor); in step 6,
+>   append idea lines to `IDEAS.md` and FILE new `kind=proposal` tasks; read/write
+>   `docs/dreams/.floor` (the mining cursor — plain file, not committed).
+> - **MUST NOT:** change any board task's priority, status, assignee, or WHAT it asks for (step 5's
+>   shape-only carve-out is the sole exception, and dup-cancel is its only status change),
 >   assert product decisions, **execute any idea** (you only record/propose — the operator runs
 >   cheap ideas next pass), or make owner-level calls. If a task concern surfaces (including a
->   decision-drift flag from step 4), FILE a new "consider" task (step 4's mechanism) — never modify
->   existing ones, never edit the persona/docs yourself to fix drift.
+>   decision-drift flag from step 4), FILE a new "consider" task (step 4's mechanism) — never
+>   edit the persona/docs yourself to fix drift.
 > - **COMMIT:** stage ONLY the journal (`docs/dreams/YYYY-MM-DD.md`), `IDEAS.md` if you appended to
 >   it, `DECISIONS.md` if you appended a decision, and the exact file paths you patched in step
 >   3. **NEVER `git add -A`, `git add .`, or any glob.** One explicit path per `git add`. If a file
@@ -133,12 +136,28 @@ carries a `RETIRES: <term>` tag, `grep -ri` that term across the operator person
 killed. File a "consider" task naming the file/line and the retiring decision; never edit it
 yourself here.
 
-## 5. Divergent leg — imagine what to try next (the FINAL act, on warm context)
+## 5. Board hygiene — entropy scrub
+The board accretes entropy: duplicate/overlapping tasks, umbrella tasks whose descriptions are
+checklists, lengthy "Follow-ups" sections, bloated titles. Scrub THIS venture's open tasks
+(`bin/operate tasks`). **Shape only, substance never** — never change what a task asks for, its
+priority, assignee, or status (beyond cancelling true dups):
+- Merge duplicates: fold unique detail into the survivor, cancel the loser with
+  `--reason "dup of <survivor-id>"`.
+- Split checklist descriptions into small atomic tasks linked `--blocked-by`.
+- Extract "Follow-ups" sections into their own tasks `--blocked-by` the original.
+- Shorten titles/descriptions. No "preserved before trim" comments — the board's History
+  timeline already records every edit durably (owner, 2026-07-08). Comments are only for
+  LIVE detail that belongs on the task but not in its description.
+- Add dependency edges you can see (`dep <id> --by <blocker>`).
+When unsure whether two tasks are the same outcome, leave both. Owner-assigned (`→jeff`) tasks:
+shorten for skimmability only — never split, cancel, or reword the decision being asked.
+
+## 6. Divergent leg — imagine what to try next (the FINAL act, on warm context)
 This is the imagination engine, run **now — before you clear — while the freshly-consolidated
-memories, mined lessons, and tool signals from steps 1–4 are still in working memory.** Seed the
+memories, mined lessons, and tool signals from steps 1–5 are still in working memory.** Seed the
 question with TWO things, in this order:
 1. **This pass's own maintenance delta FIRST** — the new lessons mined, tool bugs caught, memories
-   consolidated, and decisions logged in steps 1–4 above. This is the primary grounding — the
+   consolidated, and decisions logged in steps 1–5 above. This is the primary grounding — the
    ideas should be grounded in what this venture *just* learned, not a cold blank-slate brainstorm.
 2. **One pulled dream seed** — a provocation/lens/constraint from `docs/DREAM-SEEDS.md`, selected
    deterministically-but-varying so a resumed/repeated run stays replay-safe (see that file's
@@ -167,7 +186,7 @@ curl -sf -X POST "${TASKS_WORKER_URL:-https://holdco-tasks.yaks.workers.dev}/api
 Don't over-produce: a few grounded, deduped ideas beat a slop list. Skip anything already in
 `IDEAS.md` (**killed rows stay listed precisely so you don't re-propose them**).
 
-## 6. Dream journal
+## 7. Dream journal
 Write `docs/dreams/YYYY-MM-DD.md` — short bullets only:
 - **Memory:** what you archived / merged / shortened.
 - **Lessons:** mined from the mining window (note the `[floor, today]` range).
@@ -177,13 +196,13 @@ Write `docs/dreams/YYYY-MM-DD.md` — short bullets only:
 - **Ideas:** the seed pulled (name it) + what you imagined + routing (cheap → `IDEAS.md`; proposal →
   💡 board), or a one-line abstain note.
 
-## 7. Commit
+## 8. Commit
 Stage ONLY the dream's own outputs — the journal, `IDEAS.md` if you appended to it,
 `DECISIONS.md` if you appended a decision, and any specific files patched in step 3 — then
 commit (**do not push, do not add -A**):
 ```
 git add docs/dreams/YYYY-MM-DD.md
-git add IDEAS.md                                 # only if you appended idea rows in step 5
+git add IDEAS.md                                 # only if you appended idea rows in step 6
 git add DECISIONS.md                        # only if you appended a decision in step 2
 git add <exact-path-of-each-file-you-patched>   # one explicit path per file — never "git add -A" or "."
 git commit -m "dream: YYYY-MM-DD — <one-liner>"

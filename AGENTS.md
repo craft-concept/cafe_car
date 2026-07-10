@@ -136,6 +136,10 @@ execute). Dreaming itself still runs nightly.
     steps. If it's multi-step, file N small tasks and link them with dependencies (blockedBy),
     not one fat task. Prefer non-overlapping scopes — if two tasks would overlap, merge or
     re-cut them. A crisp DAG of small tasks beats a pile of half-things.
+  - **Follow-ups are tasks, not description sections.** A "Follow-ups" list inside a
+    description is invisible to the DAG — file each follow-up as its own task,
+    `--blocked-by` the original, and keep it out of the description. Short imperative
+    titles; descriptions carry only what's needed to act (detail goes in comments).
 - **`WORKLOG.md`** — the running narrative of each operating pass (newest first).
 
 ## OSS growth roadmap
