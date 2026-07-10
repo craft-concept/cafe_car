@@ -5,6 +5,42 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-10 — Keep handrolled components; presenter/model-based partial overrides; benchmarks in the release cycle (VERIFIED email, jeff@yak.sh)
+
+Verbatim owner reply to the component-primitive research digest:
+
+> sounds good. let's keep our direction. the pain is mostly just the maintenance
+> complexity of home-rolling components. one problem i have with partial overriding that
+> makes me want to rebuild it: we want partials to override based on the *model* or
+> *presenter*, not the *controller*. So if i render an author form on the article page, it
+> should use `views/users/_form.html`, not `articles/_form.html`. i'm not sure the best way
+> to solve that; i think we'll have to build something that breaks rails conventions, because
+> i just think the rails conventions are basically wrong here. i think if we ensure that
+> partials are tied to *presenters* (or builders), we can have a pretty simple system that
+> isn't too complicated to grasp and the rails override convention becomes more inspiration
+> than implementation. do some ideation here on the best path forward.
+>
+> re perf: let's add benchmarking to our standard release cycle. rendering a page, component,
+> presenter, etc. That way we can at least try to improve and can prevent major regressions.
+
+**What this decides / where applied:**
+- **Direction ratified: KEEP the handrolled components + partials.** Do NOT adopt ViewComponent/Phlex
+  wholesale. Closes the component-primitive question in favor of Option A (keep-as-is). The real pain
+  is maintenance complexity of home-rolling, not the render model.
+- **NEW design direction — partial overrides should resolve by the MODEL/PRESENTER, not the
+  controller.** Rendering an author form on the article page should look up `views/users/_form`, not
+  `articles/_form`. Owner is willing to **break Rails' controller-based view-lookup convention**;
+  wants partials **tied to presenters (or builders)** so the Rails override convention becomes
+  "inspiration, not implementation." Owner explicitly requested **ideation on the best path forward**
+  (filed as a task; NOT a rushed build). NOTE: this reframes the "moat" — the override story stays,
+  but keyed on presenter/model identity rather than controller path.
+- **Benchmarking becomes part of the STANDARD release cycle** — measure render time for page /
+  component / presenter, to catch regressions and drive improvement. Forward-looking (v0.3.0 shipped
+  without it). Extends/absorbs the one-off `spike-benchmark-component-render` P3. Filed as a task.
+- Do NOT re-describe CafeCar as a generator/admin tool; direction unchanged otherwise.
+
+---
+
 ## 2026-07-10 — Publish new gem versions after major upgrades (VERIFIED in-session, jeff@yak.sh)
 
 Verbatim owner message (mid-turn, during the "close all the tickets you can" batch):
