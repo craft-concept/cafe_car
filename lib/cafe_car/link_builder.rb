@@ -45,6 +45,17 @@ module CafeCar
       end
     end
 
+    # A custom member action (Policy#permitted_member_actions) as a POST link —
+    # label, i18n and disable state (the `name?` predicate, via #cant?) all
+    # derive from the action name, like #destroy. The `params` override the
+    # route action: the href hits the generic member-action endpoint
+    # (Controller#member_action), which re-authorizes and forwards to the
+    # record's `name!`.
+    def action(name, *, **opts, &)
+      link(name, @object, *, method: :post,
+        params: { action: :member_action, member_action: name }, **opts, &)
+    end
+
     def show(*, **, &)    = link(:show, @object, *, data: { turbo_stream:  nil }, **, &)
     def edit(...)         = link(:edit, @object, ...)
     def destroy(*, **, &) = link(:destroy, @object, *, method: :delete, confirm: confirm(:destroy), **, &)

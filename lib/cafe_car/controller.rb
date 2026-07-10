@@ -36,14 +36,16 @@ module CafeCar
 
         before_action :set_current_attributes
 
-        before_action :find_object,       only: _only.(%i[show edit update destroy])
+        before_action :find_object,       only: _only.(%i[show edit update destroy member_action])
         before_action :build_object,      only: _only.(%i[new create])
         before_action :find_objects,      only: _only.(%i[index])
         before_action :assign_attributes, only: _only.(%i[create update])
-        # `batch` and `options` are excluded: each authorizes on its own —
-        # `batch` per selected record (see #batch), `options` via `index?` plus
-        # the policy scope on the typeahead feed (see #options).
-        before_action :authorize!, except: %i[batch options]
+        # `batch`, `options` and the custom-action endpoints are excluded: each
+        # authorizes on its own — `batch` per selected record (see #batch),
+        # `options` via `index?` plus the policy scope on the typeahead feed
+        # (see #options), `member_action`/`collection_action` via the named
+        # action's own policy predicate.
+        before_action :authorize!, except: %i[batch options member_action collection_action]
 
         after_action :verify_authorized, :verify_policy_scoped
       end
@@ -122,10 +124,52 @@ module CafeCar
       end
 
       records = policy_scope(model).where(id: Array(params[:ids]))
-      batched = records.select { |record| bulk_action_allowed?(record, action) }
+      batched = records.select { |record| action_allowed?(record, action) }
       batched.each { |record| record.public_send("#{action}!") }
 
       redirect_to url_for(action: :index), success: batch_notice(action, batched.size)
+    end
+
+    # Run a policy-declared custom action on one record:
+    # POST /<resources>/:id/actions/:member_action. The name resolves through the
+    # model policy's `permitted_member_actions` whitelist (anything else is a
+    # 404), its `name?` predicate authorizes, then — by convention — the record's
+    # `name!` bang method runs. A host overrides the behavior by defining a
+    # public controller method of the action's name; it takes over after
+    # authorization and owns the response.
+    def member_action
+      skip_authorization # authorized via the action's own predicate below
+      name = permitted_custom_action(params[:member_action], policy(object).permitted_member_actions)
+      return head(:not_found) unless name
+
+      authorize_action! object, name
+      return public_send(name) if respond_to?(name)
+
+      object.public_send("#{name}!")
+      redirect_back_or_to href_for(object), success: action_notice(:member_action, name)
+    end
+
+    # Run a policy-declared custom action over the collection:
+    # POST /<resources>/actions/:collection_action. Same derivation as
+    # #member_action — `permitted_collection_actions` whitelists, `name?` (asked
+    # of the model class) authorizes — then `name!` runs on the policy scope,
+    # which ActiveRecord delegates to a class method within that scoping. The
+    # whole policy scope, not the filtered view: a collection action's reach
+    # shouldn't silently depend on query params. A host override (a public
+    # controller method of the action's name) must scope its own query.
+    def collection_action
+      skip_authorization # authorized via the action's own predicate below
+      name = permitted_custom_action(params[:collection_action], policy(model.new).permitted_collection_actions)
+      unless name
+        skip_policy_scope # no query on the reject path
+        return head(:not_found)
+      end
+
+      authorize_action! model, name
+      return public_send(name) if respond_to?(name)
+
+      policy_scope(model).public_send("#{name}!")
+      redirect_to url_for(action: :index), success: action_notice(:collection_action, name)
     end
 
     # JSON typeahead feed for a searchable association select (Tom Select). Returns
@@ -157,22 +201,43 @@ module CafeCar
       flash[:success] = present(object).i18n("#{action_name}_html", scope: :flashes)
     end
 
-    # The permitted bulk action matching `param` — a symbol drawn from the model
-    # policy's `permitted_bulk_actions` whitelist, or nil for a name outside it.
-    # #batch sends `<action>!`/`<action>?`, so resolving through the whitelist here
-    # means the derived method is always a policy-declared name, never the raw
-    # request value (a bare `params[:bulk_action]` would be a dynamic-send footgun).
     def permitted_bulk_action(param)
-      policy(model.new).permitted_bulk_actions.find { |a| a.to_s == param.to_s }
+      permitted_custom_action(param, policy(model.new).permitted_bulk_actions)
     end
 
-    # Whether this record grants `action` — its `action?` policy predicate. Guarded
-    # by `respond_to?` so a permitted action without a predicate simply denies rather
-    # than erroring.
-    def bulk_action_allowed?(record, action)
-      policy    = policy(record)
+    # The whitelisted action name matching `param` — a symbol drawn from the
+    # given policy-declared list, or nil for a name outside it. #batch,
+    # #member_action and #collection_action send `<name>!`/`<name>?`, so
+    # resolving through the whitelist here means the derived method is always a
+    # policy-declared name, never the raw request value (a bare param would be
+    # a dynamic-send footgun).
+    def permitted_custom_action(param, permitted)
+      permitted.find { |a| a.to_s == param.to_s }
+    end
+
+    # Whether `subject` (a record, or the model class for collection actions)
+    # grants `action` — its `action?` policy predicate. Guarded by `respond_to?`
+    # so a permitted action without a predicate simply denies rather than erroring.
+    def action_allowed?(subject, action)
+      policy    = policy(subject)
       predicate = "#{action}?"
       policy.respond_to?(predicate) && policy.public_send(predicate)
+    end
+
+    # #action_allowed?, but raising: one denied custom action is a refusal
+    # (rendered by render_unauthorized), not a skippable row like in #batch.
+    def authorize_action!(subject, action)
+      return if action_allowed?(subject, action)
+      raise Pundit::NotAuthorizedError.new(query: "#{action}?", record: subject, policy: policy(subject))
+    end
+
+    # Success flash for a custom action, from the locale —
+    # `flashes.member_action` / `flashes.collection_action`, interpolating the
+    # action's label (`en.<name>`, humanized fallback) and the model name.
+    def action_notice(kind, name)
+      label = I18n.t(name, default: name.to_s.humanize)
+      I18n.t(kind, scope: :flashes, action: label,
+             model: model_name.human.downcase, models: model_name.human(count: 2).downcase)
     end
 
     def batch_notice(action, count)

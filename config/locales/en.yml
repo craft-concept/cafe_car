@@ -19,6 +19,7 @@ en:
 
   helpers:
     bulk_confirm: "Apply “%{action}” to the selected rows?"
+    collection_confirm: "Apply “%{action}” to all %{models}?"
 
     # The index filter panel (_filters + the _*_filter partials). Per-field
     # copy nests per model under label/placeholder/hint (see
@@ -34,6 +35,12 @@ en:
   # Button style (a Button component flag) per bulk action — a shipped default a
   # host can extend/override. Unlisted actions fall back to the neutral style.
   bulk_actions:
+    styles:
+      destroy: danger
+
+  # Button style per custom (member or collection) action — the same convention
+  # as bulk_actions.styles.
+  actions:
     styles:
       destroy: danger
 
@@ -85,6 +92,10 @@ en:
     create_html: "%{Model} created."
     update_html: "%{Model} updated."
     destroy_html: "%{Model} deleted."
+    # Custom-action notices: %{action} is the action's label (en.<name>),
+    # e.g. "Publish article" / "Publish all articles".
+    member_action: "%{action} %{model}"
+    collection_action: "%{action} %{models}"
 
   activerecord:
     models:

@@ -185,6 +185,32 @@ module CafeCar
       t("bulk_actions.styles.#{name}", default: nil)&.to_sym
     end
 
+    # The custom collection actions offered in this model's index toolbar — the
+    # model policy's `permitted_collection_actions` list is the source of truth,
+    # like #bulk_actions. This only decides which buttons show; the controller
+    # re-authorizes the POST (see Controller#collection_action).
+    def collection_actions(klass = model)
+      policy(klass.new).permitted_collection_actions
+    end
+
+    # A collection-action button for the index toolbar: POSTs the named action
+    # to the generic collection route (Controller#collection_action). Label and
+    # style come from the locale like #bulk_action; the confirm warns it applies
+    # to every record the user can see.
+    def collection_action(name, style = action_style(name))
+      label   = t(name, default: name.to_s.humanize)
+      confirm = t(:collection_confirm, scope: :helpers, action: label,
+                  models: model.model_name.human(count: 2).downcase)
+      button_to label, url_for(action: :collection_action, collection_action: name),
+        class: ui.Button(*style).class_name, data: { turbo_confirm: confirm }
+    end
+
+    # The button style for a custom (member or collection) action, from the
+    # locale under `actions.styles` — the same convention as #bulk_action_style.
+    def action_style(name)
+      t("actions.styles.#{name}", default: nil)&.to_sym
+    end
+
     # A dashboard metric tile: a label over the value captured from the block. The
     # block is host-authored (a real view), evaluated at render.
     def metric(label, &block)

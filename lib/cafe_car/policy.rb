@@ -23,6 +23,19 @@ module CafeCar::Policy
   # this, with no registration anywhere else. Return `[]` to offer none.
   def permitted_bulk_actions = %i[destroy]
 
+  # The custom actions offered on a single record — rendered on the show page's
+  # Actions card and on each index row. Same derivation as
+  # #permitted_bulk_actions: the `name?` predicate authorizes and the record's
+  # `name!` bang method runs (see Controller#member_action). Empty by default;
+  # a host lists its own (e.g. `%i[publish]`) with no registration anywhere else.
+  def permitted_member_actions = []
+
+  # The custom actions offered on the whole collection — rendered in the index
+  # toolbar. The `name?` predicate authorizes (asked of the model class, not a
+  # record) and `name!` runs on the policy scope, which ActiveRecord delegates
+  # to a class method (see Controller#collection_action). Empty by default.
+  def permitted_collection_actions = []
+
   # The metrics the dashboard renders for this model by default — the same
   # policy-is-source-of-truth pattern as #permitted_bulk_actions. Each name is a
   # model scope (`:all` = the whole relation) whose row count becomes a tile; the

@@ -17,4 +17,8 @@ class Article < ApplicationRecord
 
   # Bang method a `:publish` bulk action derives + calls (see ArticlePolicy).
   def publish! = update!(published_at: Time.zone.now)
+
+  # Class-level bang method the `:publish_all` collection action calls over the
+  # policy scope (see ArticlePolicy#permitted_collection_actions).
+  def self.publish_all! = unpublished.update_all(published_at: Time.zone.now)
 end

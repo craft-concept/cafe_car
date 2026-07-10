@@ -2,6 +2,12 @@
 - show    = options.delete(:show)    { false }
 - edit    = options.delete(:edit)    { true }
 - destroy = options.delete(:destroy) { true }
+-# Custom member actions (Policy#permitted_member_actions) render per record on
+-# the index; the show page lists them in its Actions card instead. Pass
+-# `actions: false` (or an explicit list of names) to override.
+- actions = options.delete(:actions) { action.index? }
+- actions = policy(object).permitted_member_actions if actions == true
+- actions = Array(actions.presence)
 - links   = link(object)
 
 -# TODO: Handle resources with missing routes
@@ -10,3 +16,5 @@
   = c.Link links.show    if show
   = c.Link links.edit    if edit
   = c.Link links.destroy if destroy
+  - actions.each do |name|
+    = c.Link links.action(name)

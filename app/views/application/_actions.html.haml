@@ -1,1 +1,10 @@
+-# The Actions card (show + edit pages): the record's custom actions
+-# (Policy#permitted_member_actions — the policy is the source of truth), one
+-# POST link per action, labeled + styled from the locale and disabled with a
+-# tooltip when its `name?` predicate denies. `yield :actions` keeps a host's
+-# `content_for :actions` additions; override this partial for a bespoke card.
+- card = local_assigns[:card]
+- policy(object).permitted_member_actions.each do |name|
+  - button = link(object).action(name, class: ui.Button(*action_style(name)).class_name)
+  = card ? card.Section(button) : button
 = yield :actions

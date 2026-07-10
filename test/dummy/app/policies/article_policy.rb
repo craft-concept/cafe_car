@@ -10,10 +10,22 @@ class ArticlePolicy < ApplicationPolicy
   # action a per-record authorization boundary (a published row is skipped).
   def publish? = !object.published?
 
+  # Collection actions authorize against the model class, not a record.
+  def publish_all? = true
+
   # Bulk actions offered on the articles index — the policy is the source of truth.
   # `:publish` is a host-defined action that "just works": a `publish?` predicate
   # here + a `publish!` method on the model, listed here. No registration anywhere.
   def permitted_bulk_actions = %i[publish destroy]
+
+  # Custom member actions — the same derivation as bulk actions: `publish?`
+  # (above) authorizes, `Article#publish!` runs. Renders a Publish button on
+  # each index row and on the show page's Actions card.
+  def permitted_member_actions = %i[publish]
+
+  # Custom collection actions — `publish_all?` authorizes, `Article.publish_all!`
+  # runs over the policy scope. Renders a Publish all button in the index toolbar.
+  def permitted_collection_actions = %i[publish_all]
 
   def permitted_attributes
     [ :title, :author_id, :published_at, :summary, :body ]

@@ -9,4 +9,10 @@
 = Button href: csv_url, tip: "Download CSV" do
   = icon(:download)
 
+-# Custom collection actions (Policy#permitted_collection_actions — the policy
+-# is the source of truth): one POST button per action, labeled + styled from
+-# the locale (see Controller#collection_action).
+- collection_actions.each do |name|
+  = collection_action name
+
 = link(model.build).new(class: ui.Button(:primary).class_name, params: filter_params) { icon(:plus) + _1}
