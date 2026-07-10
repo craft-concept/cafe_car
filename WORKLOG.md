@@ -5,6 +5,35 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-10 — Pass 119: collection actions run over the VIEWED scope (owner-greenlit correctness fix)
+
+GREEN pass off `bin/operate tokens --pace`. Started a `/loop 8h` operating cadence (session cron
+`9ef436d1`, fires `7 */8 * * *`; each fire re-checks the budget signal). Reconstituted: CI green,
+inbox clear, re-read the 2026-07-09 owner decision. Picked up the top item of the build bundle
+Pass 118 deferred — the already-WIP correctness fix, owner-directed.
+
+- **`83546cf`** (coder) — **collection actions now run over the currently-viewed, filtered scope**,
+  reversing 3f7965d's "whole policy scope" per owner direction (DECISIONS.md 2026-07-09). Root-caused
+  it as a single source of truth: new `filtered_scope = filtered(policy_scope(model))` in
+  `controller/filtering.rb`, reused by BOTH the index render and `collection_action` (no duplicated
+  filter logic). The button's `url_for` carries the active dot-filters + search `q` in the query
+  string; the POST's `parsed_params` re-parses them so the action re-applies exactly what the user
+  is viewing — no new param path. **Localized count hint** (`Publish all 21`) via a locale key
+  (`en.helpers.collection_action`, `one`/`other` hash — hash form required because
+  `CafeCar::Pluralization` would otherwise mangle a plain `%{count}` string into "Publish all 2s").
+  **Docs-with-build:** new README "Collection Actions" subsection (voice-gated). **Effect-test:**
+  filtered `publish_all` publishes only the in-view author's articles and leaves the other author's
+  untouched, plus asserts the button label shows the filtered count. `bundle exec rake` fully green
+  (249 tests / 775 assertions / 0 failures, rubocop clean, brakeman 0). Board task done.
+
+**In flight / next:** the remaining two greenlit items — **docs for the member-action half**
+(`readme-docs-document-custom-actions-...`, collection half now done) and the **Attributes refactor**
+(`refactor *_attributes into policy.attributes.listable`, P1, greenlit) — queued for the next pass.
+Owner-blocked P2s (`owner-one-time-dashboard-wiring`, `auto-code-review-on-incoming-community-prs`)
+remain parked on jeff, not blocking the queue.
+
+---
+
 ## 2026-07-10 — Pass 118: component-primitive research delivered (owner bump)
 
 Owner bumped the 7/7 P1 research directive (evaluate replacing the handrolled component primitive
