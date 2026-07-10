@@ -5,6 +5,36 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-09 — Follow-ups on actions/docs/refactor + "always localize" (VERIFIED email, jeff@yak.sh)
+
+Verbatim owner reply to the "[CafeCar] shipped" digest:
+
+> 1. it should run over the scope currently being viewed. maybe make that clear with a count hint
+> "Publish all 21". localize. in fact, remember to always localize text so it can be easily
+> customized by apps
+> 2. go ahead and do the docs. that should always go with a build. an undocumented feature doesn't
+> exist.
+>
+> yep, let's do the attributes refactor too
+
+**What this decides / where applied:**
+- **Collection actions run over the CURRENTLY-VIEWED scope, not the whole policy scope.** Reverses
+  the earlier "whole policy scope" default (Pass 117, commit 3f7965d). The `collection_action`
+  endpoint must apply the active dot-query filters (thread `parsed_params`/`permitted_filter_params`
+  into the scope) so "Publish all" acts on exactly what the user is looking at. Surface the reach
+  with a **localized count hint** on the button — e.g. `Publish all 21` — where 21 is the filtered
+  count. Copy comes from a locale key (customizable), not hardcoded.
+- **Docs ship WITH the build — "an undocumented feature doesn't exist."** A standing rule: every
+  feature build includes its docs (README + agent-skill) in the same effort, not as a deferred
+  follow-up. Do the custom-actions docs and the filter-panel docs now.
+- **Attributes refactor greenlit** (the P1 `refactor *_attributes into policy.attributes.listable`
+  from the 07-09 big project). Proceed.
+- **Always localize.** Reinforces the existing CLAUDE.md rule ("all UI copy goes in locales, no
+  hardcoded strings"): every user-facing string is a locale key so host apps can customize it. Apply
+  to the count hint and everywhere.
+
+---
+
 ## 2026-07-09 — In-session directive: build actions + filter polish + demo/README/tooltip (VERIFIED, jeff@yak.sh)
 
 Verbatim owner message, in-session this date:
