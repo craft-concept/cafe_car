@@ -5,6 +5,39 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-09 — In-session directive: build actions + filter polish + demo/README/tooltip (VERIFIED, jeff@yak.sh)
+
+Verbatim owner message, in-session this date:
+
+> let's build actions. and add some actions to the demo: e.g. Publish on articles.
+>
+> and also go on filter polish. the association select should support multi-select and should
+> match dark-mode. the search bar needs style fixes to match other inputs and should be put in
+> the filters card. "Filters" card title can be removed.
+>
+> the readme should probably link to the shorter https://cafe-car-demo.up.railway.app
+>
+> also, if you can work out why tooltips don't appear below the "view" buttons on the index page,
+> i'd be grateful. they appear right on top right now and it drives me bonkers. i spent a long
+> time trying to fix; it might be a browser bug or i might just not grok the anchor css api. email
+> me if you figure it out.
+
+**What this decides / where applied:**
+- **Custom actions** (member + collection) is the feature to build now — the roadmap item from the
+  07-09 big project. Member = single record (`publish!`), collection = a scope; declared on the
+  policy, forwarded to model bang methods by default, rendered as buttons/links on show + index.
+  Distinct from the existing `permitted_bulk_actions` (checkbox-selected batch). Demo: add a
+  **Publish member action** to articles (model already has `publish!` + `publish?`).
+- **Filter polish:** association select → **multi-select** + **dark-mode** styling; **search bar**
+  restyled to match other inputs and **moved into the filters card**; **"Filters" card title
+  removed**.
+- **README:** link the shorter demo URL `https://cafe-car-demo.up.railway.app`.
+- **Tooltip bug:** on the index page, view-button tooltips render on top of / overlapping the
+  buttons instead of below. Investigate the anchor-positioning CSS (`tooltips.css`); email the
+  owner the diagnosis + fix.
+
+---
+
 ## 2026-07-09 — BIG PROJECT: agent-facing docs + provisioning · policy-driven filtering · custom actions · Attributes refactor (P1)
 
 Four VERIFIED owner (jeff@yak.sh) messages, in-session this date. A single approved roadmap
