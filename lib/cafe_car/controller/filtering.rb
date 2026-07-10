@@ -40,23 +40,47 @@ module CafeCar::Controller::Filtering
   # stray or hostile param just doesn't filter (no 400, and it never reaches
   # the query DSL where an unknown key would raise).
   def permitted_filter_params
-    @permitted_filter_params ||= begin
-      policy = policy(model.new)
-      (parsed_params[""] || {}).select { |key, _| permits_filter?(policy, key) }
+    @permitted_filter_params ||= prune_filters(policy(model.new), model, parsed_params[""] || {})
+  end
+
+  # Recursively keep only filter params whose FULL dot-path the policy permits.
+  # An association keyed to a nested hash (`{client: {status: ...}}`, not an
+  # operator group like `{min:, max:}`) is descended into the far model, extending
+  # the path; every other entry is a leaf validated at its full path. A crafted
+  # `?client.owner.secret=` — an undeclared nested path — is pruned here, before
+  # the query DSL builds any join. The security guarantee is identical to the
+  # top-level gate, just path-aware: the FULL path must clear #permitted_filter?.
+  def prune_filters(policy, klass, params, prefix = "")
+    params.each_with_object({}) do |(key, value), kept|
+      base = key.to_s.sub(/\W+$/, "")
+      ref  = klass.reflect_on_association(base)
+      if ref && value.is_a?(Hash) && !operator_params?(value)
+        nested = prune_filters(policy, ref.klass, value, "#{prefix}#{base}.")
+        kept[key] = nested if nested.present?
+      elsif permits_filter?(policy, klass, "#{prefix}#{base}", base)
+        kept[key] = value
+      end
     end
   end
 
   # Classify a filter key the way QueryBuilder#param! does — on the base name,
   # operator suffix stripped (`price>` → price, `title~` → title): a known
-  # attribute or association checks #permitted_filters, anything else is a
-  # would-be scope and checks #permitted_scopes.
-  def permits_filter?(policy, key)
-    base = key.to_s.sub(/\W+$/, "")
-    if model.reflect_on_association(base) || model.columns_hash.key?(base)
-      policy.permitted_filter?(base)
+  # attribute or association checks #permitted_filters at its full (possibly
+  # nested) path, anything else is a would-be scope and checks #permitted_scopes
+  # (scopes are top-level only, so `base` alone is right there).
+  def permits_filter?(policy, klass, path, base)
+    if klass.reflect_on_association(base) || klass.columns_hash.key?(base)
+      policy.permitted_filter?(path)
     else
       policy.permitted_scope?(base)
     end
+  end
+
+  # A filter value whose keys are ALL comparison operators (`{min:, max:}`) is a
+  # terminal operator group, not a nested-association hash — the same test
+  # QueryBuilder#operators? makes before desugaring it to a range.
+  def operator_params?(hash)
+    hash.any? && hash.keys.all? { CafeCar::QueryBuilder::OPS.key?(_1.to_s) }
   end
 
   # The `?sort=` keys the policy permits — the sort half of the same gate that

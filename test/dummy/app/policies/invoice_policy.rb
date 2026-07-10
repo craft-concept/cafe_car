@@ -7,6 +7,12 @@ class InvoicePolicy < ApplicationPolicy
 
   def title_attribute = :number
 
+  # Nested-association filters: an invoice may be filtered by its client's status
+  # (a nested enum) and its client's owner (a nested belongs_to). Declaring the
+  # dot-path renders the typed control AND whitelists the path — the gate honors
+  # `?client.status=` / `?client.owner_id=` and drops any undeclared deeper path.
+  def permitted_filters = [ *super, :"client.status", :"client.owner" ]
+
   def permitted_attributes
     # Rails' `fields_for` submits nested associations under `<assoc>_attributes`,
     # and `allow_destroy: true` needs `:id` (to target existing rows) + `:_destroy`

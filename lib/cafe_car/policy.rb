@@ -55,13 +55,49 @@ module CafeCar::Policy
   # with a URL-supplied argument, so a host lists the safe ones explicitly.
   def permitted_scopes = []
 
-  # Is `attribute` filterable? Checks #permitted_filters on the base name — a
-  # foreign key resolves to its association (`client_id` → `:client`), matching
-  # how `attributes.displayable` lists it.
+  # Is `attribute` filterable? Compares the attribute's canonical form against the
+  # policy's #permitted_filters, canonicalized the same way — so a foreign key and
+  # its association match (`client_id` ≡ `:client`), and a nested dot-path
+  # (`client.status`) is honored only when its FULL path is permitted. The lone
+  # implicit exception is a permitted association's `.id` set-membership control
+  # (see #set_membership?), which needs no separate declaration.
   def permitted_filter?(attribute)
-    attribute = attribute.to_sym
-    permitted_filters.include?(association_for_attribute(attribute) || attribute)
+    path = canonical_filter(attribute.to_s)
+    permitted_filter_paths.include?(path) || set_membership?(path)
   end
+
+  # The permitted filters as canonical dot-paths (foreign keys resolved to their
+  # associations) — the gate's whitelist, memoized. A nested filter is permitted
+  # iff its canonical path is a member, exactly like a top-level one.
+  def permitted_filter_paths
+    @permitted_filter_paths ||= permitted_filters.map { canonical_filter(_1.to_s) }
+  end
+
+  # `<assoc>.id` is the association-membership control (`?line_items.id[]=`): pick
+  # associated records by id. It's sanctioned whenever the association itself is a
+  # permitted filter, so the has_many `_has_many_filter` control needs no separate
+  # `.id` declaration — the same rule that let it through before nested paths.
+  def set_membership?(path)
+    parent, _, leaf = path.to_s.rpartition(".")
+    leaf == "id" && permitted_filter_paths.include?(parent)
+  end
+
+  # Canonical form of a (possibly dotted) filter key: each association hop keeps
+  # its association name and the terminal foreign key resolves to its association
+  # (`client.owner_id` → `client.owner`), so a declaration and the param a control
+  # posts compare equal regardless of which form the host wrote. Walks segment by
+  # segment through the associated models; a segment that isn't a real association
+  # (a bad hop, or the terminal attribute) passes through untouched, so an
+  # undeclared path simply fails the membership check — it never reaches SQL.
+  def canonical_filter(key, klass = model)
+    head, dot, rest = key.to_s.partition(".")
+    return (info_for(klass, head).reflection&.name || head).to_s if dot.empty?
+
+    ref = klass.reflect_on_association(head) or return key.to_s
+    "#{head}.#{canonical_filter(rest, ref.klass)}"
+  end
+
+  def info_for(klass, method) = CafeCar[:FieldInfo].new(model: klass, method:)
 
   def permitted_scope?(name) = permitted_scopes.include?(name.to_sym)
 
