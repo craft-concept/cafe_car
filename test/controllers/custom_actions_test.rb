@@ -38,7 +38,7 @@ class CustomActionsTest < ActionDispatch::IntegrationTest
     assert Article.exists?(article.id), "the unlisted action must not run"
   end
 
-  test "a collection action runs the class bang method over the policy scope" do
+  test "a collection action runs the class bang method over the whole scope when unfiltered" do
     unpublished = create_list(:article, 3)
 
     post "/admin/articles/actions/publish_all"
@@ -46,6 +46,31 @@ class CustomActionsTest < ActionDispatch::IntegrationTest
     assert_redirected_to "/admin/articles"
     assert unpublished.all? { _1.reload.published? },
       "publish_all! should publish every unpublished article"
+  end
+
+  test "a collection action runs only over the filtered view, not the whole scope" do
+    mine   = create(:user)
+    in_view = create_list(:article, 2, author: mine)
+    hidden  = create_list(:article, 2, author: create(:user))
+
+    # The filter rides the URL query string, exactly as the toolbar button posts it.
+    post "/admin/articles/actions/publish_all?author_id=#{mine.id}"
+
+    assert_redirected_to "/admin/articles"
+    assert in_view.all? { _1.reload.published? }, "the filtered articles are published"
+    assert hidden.none?  { _1.reload.published? }, "articles outside the filter are untouched"
+  end
+
+  test "the collection-action button carries the active filter and shows its count" do
+    mine = create(:user)
+    create_list(:article, 2, author: mine)
+    create_list(:article, 3, author: create(:user)) # outside the filter
+
+    get "/admin/articles", params: { author_id: mine.id }
+
+    assert_response :success
+    assert_select "form[action=?] button",
+      "/admin/articles/actions/publish_all?author_id=#{mine.id}", text: "Publish all 2", count: 1
   end
 
   test "a collection action outside permitted_collection_actions is not found" do
@@ -100,6 +125,6 @@ class CustomActionsTest < ActionDispatch::IntegrationTest
     assert_select "a[data-turbo-method=post][href=?]",
       "/admin/articles/#{article.id}/actions/publish", text: "Publish", count: 1
     assert_select "form[action=?] button", "/admin/articles/actions/publish_all",
-      text: "Publish all", count: 1
+      text: "Publish all 1", count: 1
   end
 end

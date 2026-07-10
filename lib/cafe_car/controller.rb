@@ -152,11 +152,12 @@ module CafeCar
     # Run a policy-declared custom action over the collection:
     # POST /<resources>/actions/:collection_action. Same derivation as
     # #member_action — `permitted_collection_actions` whitelists, `name?` (asked
-    # of the model class) authorizes — then `name!` runs on the policy scope,
-    # which ActiveRecord delegates to a class method within that scoping. The
-    # whole policy scope, not the filtered view: a collection action's reach
-    # shouldn't silently depend on query params. A host override (a public
-    # controller method of the action's name) must scope its own query.
+    # of the model class) authorizes — then `name!` runs on the #filtered_scope,
+    # which ActiveRecord delegates to a class method within that scoping. It runs
+    # over the currently-viewed, filtered set (the button carries the active
+    # filters, its label shows the count) — "Publish all" acts on exactly the
+    # records the user is looking at. A host override (a public controller method
+    # of the action's name) scopes its own query.
     def collection_action
       skip_authorization # authorized via the action's own predicate below
       name = permitted_custom_action(params[:collection_action], policy(model.new).permitted_collection_actions)
@@ -168,7 +169,7 @@ module CafeCar
       authorize_action! model, name
       return public_send(name) if respond_to?(name)
 
-      policy_scope(model).public_send("#{name}!")
+      filtered_scope.public_send("#{name}!")
       redirect_to url_for(action: :index), success: action_notice(:collection_action, name)
     end
 
@@ -311,11 +312,9 @@ module CafeCar
            &.map    { _1.name.to_sym } || []
     end
 
-    def scope   = model.all.then { policy_scope _1 }
-                           .then { sorted _1 }
-                           .then { filtered _1 }
-                           .then { eager_loaded _1 }
-                           .then { paginated _1 }
+    def scope   = filtered_scope.then { sorted _1 }
+                                .then { eager_loaded _1 }
+                                .then { paginated _1 }
 
     # Preload the associations an index will render so a multi-row table costs a
     # bounded number of queries instead of one-per-row-per-association (N+1).

@@ -19,7 +19,16 @@ en:
 
   helpers:
     bulk_confirm: "Apply “%{action}” to the selected rows?"
-    collection_confirm: "Apply “%{action}” to all %{models}?"
+    # A collection-action button's label — the action plus its reach (how many
+    # records the current filtered view holds), e.g. "Publish all 21". A
+    # count-keyed one/other hash so a host can reword either form; both default
+    # to the same "%{action} %{count}".
+    collection_action:
+      one: "%{action} %{count}"
+      other: "%{action} %{count}"
+    collection_confirm:
+      one: "Apply “%{action}” to %{count} %{models}?"
+      other: "Apply “%{action}” to %{count} %{models}?"
 
     # The index filter panel (_filters + the _*_filter partials). Per-field
     # copy nests per model under label/placeholder/hint (see

@@ -194,15 +194,19 @@ module CafeCar
     end
 
     # A collection-action button for the index toolbar: POSTs the named action
-    # to the generic collection route (Controller#collection_action). Label and
-    # style come from the locale like #bulk_action; the confirm warns it applies
-    # to every record the user can see.
+    # to the generic collection route (Controller#collection_action), carrying the
+    # active filters + search so the action runs over exactly the viewed set. The
+    # label appends that set's count (localized `helpers.collection_action` — e.g.
+    # "Publish all 21"); style and confirm come from the locale like #bulk_action.
     def collection_action(name, style = action_style(name))
-      label   = t(name, default: name.to_s.humanize)
-      confirm = t(:collection_confirm, scope: :helpers, action: label,
-                  models: model.model_name.human(count: 2).downcase)
-      button_to label, url_for(action: :collection_action, collection_action: name),
-        class: ui.Button(*style).class_name, data: { turbo_confirm: confirm }
+      count   = filtered_scope.count
+      action  = t(name, default: name.to_s.humanize)
+      label   = t(:collection_action, scope: :helpers, action:, count:)
+      confirm = t(:collection_confirm, scope: :helpers, action:, count:,
+                  models: model.model_name.human(count:).downcase)
+      filters = search_term ? filter_params.merge(q: search_term) : filter_params
+      url     = url_for(filters.merge(action: :collection_action, collection_action: name))
+      button_to label, url, class: ui.Button(*style).class_name, data: { turbo_confirm: confirm }
     end
 
     # The button style for a custom (member or collection) action, from the

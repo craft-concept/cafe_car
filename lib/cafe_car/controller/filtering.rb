@@ -12,13 +12,22 @@ module CafeCar::Controller::Filtering
   ].freeze
 
   included do
-    helper_method :parsed_params, :filter_params, :filtered?, :search_term
+    helper_method :parsed_params, :filter_params, :filtered?, :search_term, :filtered_scope
   end
 
   private
 
   def filtered(scope)
     scope.query([ permitted_filter_params, search_term ].compact_blank)
+  end
+
+  # The policy-scoped collection narrowed by the active filters + keyword search
+  # — the set the index is showing, before sorting/pagination. The single source
+  # of truth for "the viewed scope": #scope sorts + paginates it for display, a
+  # collection action runs its bang over exactly this set (Controller#collection_action),
+  # and the toolbar button counts it (Helpers#collection_action).
+  def filtered_scope(klass = model)
+    filtered(policy_scope(klass))
   end
 
   def filtered?
@@ -64,13 +73,26 @@ module CafeCar::Controller::Filtering
     request.params.except(*CONTROL_PARAMS)
   end
 
+  # Filters always ride the URL, never a request body: on an index GET the whole
+  # param set is filters; on a collection-action POST they ride the query string
+  # (see Helpers#collection_action). A model-mutation POST (create/update) has no
+  # query string, so its body stays raw — it never reads parsed_params anyway.
   def parsed_params
     @parsed_params ||=
       if request.get? || request.head?
-        parsed = CafeCar::ParamParser.new(request.params).parsed
-        parsed.merge("" => parsed.except("", *CONTROL_PARAMS))
+        parse(request.params)
+      elsif request.query_parameters.present?
+        parse(request.query_parameters)
       else
         request.params
       end
+  end
+
+  # Nest dot-keyed params (`price.min` → `{price: {min:}}`) via ParamParser, then
+  # stash the filter subset (control params removed) under "" for
+  # #permitted_filter_params.
+  def parse(params)
+    parsed = CafeCar::ParamParser.new(params).parsed
+    parsed.merge("" => parsed.except("", *CONTROL_PARAMS))
   end
 end

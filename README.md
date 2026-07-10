@@ -777,6 +777,36 @@ its view directory.
 
 [See it live →](https://cafe-car-demo.up.railway.app/admin/users) — select rows and delete the selection.
 
+### Collection Actions
+
+A **collection action** runs one action over a whole set at once, from a single
+toolbar button — no row selection. It's the same three conventional pieces as a
+bulk action, declared with `permitted_collection_actions`:
+
+```ruby
+class ArticlePolicy < ApplicationPolicy
+  def permitted_collection_actions = %i[publish_all]
+
+  def publish_all? = user.editor?   # authorizes against the model class
+end
+
+class Article < ApplicationRecord
+  def self.publish_all! = unpublished.update_all(published_at: Time.current)
+end
+```
+
+The button runs over the **currently-viewed, filtered set** — not the whole
+table. It carries the active filters and search from the URL, so the action hits
+exactly the records the index is showing. Filter `?author_id=7`, and **Publish
+all** publishes that author's articles and nothing else. The button's label shows
+the reach as a count — **Publish all 21** — from your locale
+(`helpers.collection_action`, a `one`/`other` hash you can reword).
+
+Names resolve like member/bulk actions: `publish_all?` authorizes, then
+`Article.publish_all!` runs within the filtered scope. Override the forwarding by
+defining a `publish_all` controller method (scope its own query), and override
+the toolbar by dropping an `_index_actions.html.haml` partial in the view directory.
+
 ### Dashboard
 
 CafeCar can render a single **dashboard** overview — an at-a-glance page that
