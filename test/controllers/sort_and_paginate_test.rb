@@ -52,6 +52,35 @@ class SortAndPaginateTest < ActionDispatch::IntegrationTest
     assert_equal %w[Alpha Bravo Charlie], names, "the invalid key is ignored, `name` still orders"
   end
 
+  # A `?sort=` key must clear the same policy gate as a filter: a user may not
+  # order by a column they may not filter by (ordering leaks a column's values
+  # just as filtering does). UserPolicy#permitted_filters lists only name/
+  # created_at, so email is off it.
+  test "a non-permitted sort key is dropped, ordering falls back to the default" do
+    sign_in
+    # Names and emails are anti-correlated so the two orderings differ: gated out,
+    # the model's `default_scope order(:name)` stands (Aaa before Zzz); honored,
+    # email-asc would flip them (bbb before yyy).
+    create(:user, name: "Zzz", email: "aaa@x.co")
+    create(:user, name: "Aaa", email: "zzz@x.co")
+
+    get "/admin/users", params: { sort: "email" }, as: :json
+
+    assert_operator names.index("Aaa"), :<, names.index("Zzz"),
+      "email is off permitted_filters — the key is ignored, name order stands"
+  end
+
+  test "a permitted sort key orders the collection" do
+    sign_in
+    create(:user, name: "Aaa")
+    create(:user, name: "Zzz")
+
+    get "/admin/users", params: { sort: "-name" }, as: :json
+
+    assert_operator names.index("Zzz"), :<, names.index("Aaa"),
+      "name is on permitted_filters — descending name order applies"
+  end
+
   test "pagination limits per page and honors the page param" do
     owner = create(:user)
     9.times { |i| create(:client, name: "C%02d" % i, owner:) }

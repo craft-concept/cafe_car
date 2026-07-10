@@ -59,6 +59,22 @@ module CafeCar::Controller::Filtering
     end
   end
 
+  # The `?sort=` keys the policy permits — the sort half of the same gate that
+  # guards filtering. Ordering exposes a column's values as surely as filtering
+  # does, so a key is honored only when its base attribute clears
+  # #permitted_filter?; a non-permitted or hidden column (e.g. password_digest,
+  # or an attribute a policy leaves off #permitted_filters) is dropped before it
+  # reaches Model.sorted. A leading "-" (descending) and an `assoc.column`
+  # association-sort suffix are stripped to find the base name.
+  def permitted_sort
+    policy = policy(model.new)
+    sort_keys.select { |key| policy.permitted_filter?(sort_base(key)) }
+  end
+
+  def sort_keys = params[:sort].to_s.split(",").filter_map { _1.strip.presence }
+
+  def sort_base(key) = key.delete_prefix("-").split(".", 2).first
+
   # Keyword term from the index search box. Read raw (not through ParamParser) so a
   # term keeps its literal text, then funneled into the query DSL as a bare String
   # that routes to `QueryBuilder#search!` alongside the dot-filters. Only a String

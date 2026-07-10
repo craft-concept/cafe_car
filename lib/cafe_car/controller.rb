@@ -255,7 +255,7 @@ module CafeCar
     end
 
     def sorted(scope)
-      scope.sorted(*params[:sort].presence)
+      scope.sorted(*permitted_sort)
     end
 
     def paginated(scope, page: params[:page], per: params[:per])
