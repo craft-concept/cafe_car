@@ -31,6 +31,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: actions/configure-pages@v6
+      # Render the reference guide from its single source (skills/cafe_car/references)
+      # into docs/guide/ before Jekyll builds. Keeps one copy of the prose; see
+      # docs/bin/build-guide.
+      - name: Render guide from single source
+        run: ruby docs/bin/build-guide
       - uses: actions/jekyll-build-pages@v1
         with:
           source: ./docs

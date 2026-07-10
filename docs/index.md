@@ -68,6 +68,7 @@ $ rails generate cafe_car:resource Product name:string price:decimal description
 
 ## Learn more
 
+- **[Guide](guide/)** — the reference, page by page: controllers, views, policies, presenters, forms, filtering, navigation, components, locales, Turbo.
 - **[README & full usage guide](https://github.com/craft-concept/cafe_car#readme)** — controllers, policies, presenters, components, forms, filtering.
 - **[Changelog](https://github.com/craft-concept/cafe_car/blob/main/CHANGELOG.md)**
 - **[Contributing](https://github.com/craft-concept/cafe_car/blob/main/CONTRIBUTING.md)** · **[Security policy](https://github.com/craft-concept/cafe_car/blob/main/SECURITY.md)**

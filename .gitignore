@@ -15,6 +15,10 @@
 .idea
 docs/dreams/.last
 
+# Guide pages rendered at build time from skills/cafe_car/references/ (single
+# source) by docs/bin/build-guide — generated, never committed.
+/docs/guide/
+
 # dream-cycle local cursors (plain-file state, never committed)
 docs/dreams/.floor
 docs/dreams/.last
