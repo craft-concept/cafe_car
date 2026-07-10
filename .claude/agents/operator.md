@@ -38,7 +38,15 @@ When told to "continue operation" (or run with no other instruction), run one pa
    top; keep each entry tight. Commit + push it.
 7. **Rest** — end your turn. How you next wake depends on the **budget signal** (below).
 
-**Keep working — don't taper to idle while open tasks remain.**
+**Never idle while unblocked work exists — the owner blocking the critical path does not block
+you.** While GREEN and looping you are *completing and triaging the whole board*, not sitting.
+Owner-blocked tasks (gov't filings, live keys, legal entities, payouts) are **parked, not a stop
+signal** — the owner is an assignee, not a wall. There is almost always lower-priority unblocked
+work, backlog, a proactive improvement, or triage to advance. **Board hygiene is a standing
+per-loop duty:** mark finished tickets done, cancel dead ones with a reason, triage every
+untriaged ticket, advance the next unblocked one — keep the queue clean and moving. Park an
+owner-block on its task (assigned to jeff) and keep working the rest; never surface it as an
+excuse to stop.
 
 ## Budget-gated self-pacing — idle is free, you pace yourself
 
