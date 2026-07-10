@@ -26,9 +26,9 @@ class FilterPanelTest < ActionDispatch::IntegrationTest
         assert_select "option[value=active]",   text: "active"
         assert_select "option[value=archived]", text: "archived"
       end
-      # belongs_to -> Tom Select typeahead on the foreign key
-      assert_select "select[name=owner_id][data-searchable-select]", 1
-      assert_select "select[name=owner_id][data-searchable-select-url=?]", "/admin/users/options"
+      # belongs_to -> multi-select Tom Select typeahead on the foreign key
+      assert_select "select[name='owner_id[]'][multiple][data-searchable-select]", 1
+      assert_select "select[name='owner_id[]'][data-searchable-select-url=?]", "/admin/users/options"
       # datetime -> min/max range pair
       assert_select "input[type=date][name='created_at.min']", 1
       assert_select "input[type=date][name='created_at.max']", 1
@@ -47,7 +47,7 @@ class FilterPanelTest < ActionDispatch::IntegrationTest
         assert_select "option[value=false]", 1
         assert_select "option[value='']",    1 # the tri-state "any"
       end
-      assert_select "select[name='line_items.id']", 1           # has_many
+      assert_select "select[name='line_items.id[]'][multiple]", 1 # has_many (any of)
     end
   end
 
@@ -72,7 +72,7 @@ class FilterPanelTest < ActionDispatch::IntegrationTest
     create(:note)
 
     panel "/admin/notes" do
-      assert_select "select[name=author_id]", 1 # the plain belongs_to renders
+      assert_select "select[name='author_id[]'][multiple]", 1 # the plain belongs_to renders
       assert_select "[name=notable_id]",   0
       assert_select "[name=notable_type]", 0
     end
@@ -140,9 +140,10 @@ class FilterPanelTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "search, sort, and view ride along as hidden fields (not clobbered)" do
+  test "search rides in a visible field; sort and view ride along as hiddens" do
     panel "/admin/clients", q: "acme", sort: "name", view: "grid" do
-      assert_select "input[type=hidden][name=q][value=acme]",    1
+      # Search lives in the filters card now — a visible input, not a hidden field.
+      assert_select "input[type=search][name=q][value=acme]",    1
       assert_select "input[type=hidden][name=sort][value=name]", 1
       assert_select "input[type=hidden][name=view][value=grid]", 1
     end

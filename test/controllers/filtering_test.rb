@@ -87,6 +87,18 @@ class FilteringTest < ActionDispatch::IntegrationTest
     assert_equal [ 5, 15, 25 ], numbers("bogus" => "1")
   end
 
+  test "an association multi-select filters by any of the given ids (IN)" do
+    one, two, three = create_list(:user, 3)
+    create(:article, title: "By One",   author: one)
+    create(:article, title: "By Two",   author: two)
+    create(:article, title: "By Three", author: three)
+
+    # `?author_id[]=<one>&author_id[]=<two>` → WHERE author_id IN (one, two).
+    assert_equal [ "By One", "By Two" ], titles("author_id" => [ one.id, two.id ])
+    # A single id still works (the scalar form).
+    assert_equal [ "By One" ],           titles("author_id" => one.id)
+  end
+
   test "a permitted scope param invokes the scope" do
     published = create(:article, :published)
     create(:article, :draft)

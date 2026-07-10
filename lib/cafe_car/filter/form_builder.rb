@@ -19,8 +19,12 @@ module CafeCar::Filter
     end
 
     def collection_select(method, collection, value_method, text_method, options = {}, html_options = {})
+      # A multi-select posts a set (`author_id[]`). We name every filter control
+      # explicitly, which defeats Rails' automatic `[]` suffix, so restore it here.
+      name  = field_name(clean(method))
+      name += "[]" if html_options[:multiple]
       super(method, collection, value_method, text_method, options,
-            { name: field_name(clean(method)) }.merge(html_options))
+            { name: }.merge(html_options))
     end
 
     def model = object.model

@@ -13,18 +13,22 @@ module CafeCar
     def policy    = @template.policy(@object)
     def show(...) = ui.Input { @template.present(@object).show(...) }
 
-    def association(method, collection: nil, **options)
+    def association(method, collection: nil, multiple: false, **options)
       info = info(method)
 
       return show(info.input_key) if info.polymorphic? and object.persisted?
       return hidden(*info.polymorphic_methods) if info.polymorphic?
 
-      collection              ||= with_selected(info)
-      # options[:prompt]      ||= info.prompt
-      options[:include_blank] ||= info.prompt
+      collection ||= with_selected(info)
+      # A multi-select filters by a set (`author_id[]`), so no blank "any" option —
+      # an empty selection already means "any". A single select keeps its prompt.
+      options[:include_blank] ||= info.prompt unless multiple
+
+      html = searchable_select(info)
+      html[:multiple] = true if multiple
 
       collection_select(info.input_key, collection, :id,
-                        -> { @template.present(_1).title }, options, searchable_select(info))
+                        -> { @template.present(_1).title }, options, html)
     end
 
     # HTML options that flag an association <select> for Tom Select enhancement

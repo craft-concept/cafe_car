@@ -100,8 +100,6 @@ class BulkActionsTest < ActionDispatch::IntegrationTest
     assert_select ".BulkActions[hidden]", 1
     # The button submits the table's BulkForm from outside it, via the `form` attribute.
     assert_select ".BulkActions button[form=BulkForm][value=destroy]", 1
-    # The bar shares the toolbar row with the search box.
-    assert_select ".IndexToolbar form.search", 1
   end
 
   private

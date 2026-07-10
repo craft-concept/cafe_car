@@ -22,20 +22,25 @@ class KeywordSearchTest < ActionDispatch::IntegrationTest
 
     get "/admin/clients", params: { q: "zephyr" }
 
-    assert_select "form.search input[name=q][value=zephyr]"
+    # Search lives in the filters card now — a visible field in that one form.
+    assert_select ".Page_Aside form input[type=search][name=q][value=zephyr]"
   end
 
-  test "search preserves filters and sort" do
+  test "search composes with an active filter and sort in one form" do
     owner = create(:user)
     create(:client, name: "Zephyr Corp", owner:)
 
-    get "/admin/clients", params: { q: "zephyr", sort: "name", "name" => "Zephyr Corp" }
+    get "/admin/clients", params: { q: "zephyr", sort: "name", "name~" => "Zephyr" }
 
     assert_response :success
     assert_includes response.body, "Zephyr Corp"
-    # the search form carries the active filter + sort so resubmitting keeps them
-    assert_select %(form.search input[type=hidden][name="name"][value="Zephyr Corp"])
-    assert_select "form.search input[type=hidden][name=sort][value=name]"
+    # The filters card is the single form: it carries the search term, the active
+    # filter control, and sort together, so resubmitting keeps them composed.
+    assert_select ".Page_Aside form" do
+      assert_select "input[type=search][name=q][value=zephyr]"
+      assert_select "input[name='name~'][value=Zephyr]"
+      assert_select "input[type=hidden][name=sort][value=name]"
+    end
   end
 
   test "a custom scope :search still drives the box" do

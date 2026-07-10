@@ -26,6 +26,7 @@ en:
     # Filter::FieldInfo#i18n) and scope toggles under scopes.<model>.<scope>.
     filter:
       title: Filters
+      search: Search
       submit: Filter
       any: Any
       contains: Contains
