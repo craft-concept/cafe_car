@@ -4,7 +4,7 @@
 -# tooltip when its `name?` predicate denies. `yield :actions` keeps a host's
 -# `content_for :actions` additions; override this partial for a bespoke card.
 - card = local_assigns[:card]
-- policy(object).permitted_member_actions.each do |name|
+- policy(object).attributes.actions.member.each do |name|
   - button = link(object).action(name, class: ui.Button(*action_style(name)).class_name)
   = card ? card.Section(button) : button
 = yield :actions

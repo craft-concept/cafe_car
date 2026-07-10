@@ -5,6 +5,14 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-10 — Pass 120: Attributes refactor — fold the policy `*_attributes` sprawl into `policy.attributes.*` (P1)
+
+GREEN pass. Executed the owner-greenlit P1 refactor (`refactor-fold-policy-attributes-permitted-into-a-nested-attr`, DECISIONS.md 2026-07-09). Pure internal refactor, ZERO behavior change.
+
+- **coder** — folded the scattered policy attribute-set methods into the nested `CafeCar::Attributes` class (mirrors `Scope`). `policy.attributes` now exposes `.listable`, `.displayable`, `.editable`, `.filterable`, and `.actions.{member,collection,bulk}`. The three set methods (`listable_attributes`/`displayable_attributes`/`editable_attributes`) moved OFF `CafeCar::Policy` into `Attributes` (it delegates primitives — `model`, `permitted_attribute_keys`, `permitted_fields`, `association_for_attribute`, `filtered_attribute?` — back to the policy). Every `permitted_*` method stays a public, host-overridable method on the policy; `Attributes` READS THROUGH them (`filterable`→`permitted_filters`, `actions.bulk`→`permitted_bulk_actions`, etc.), so a host override flows through unchanged — proven by a new back-compat test (`test/cafe_car/policy_attributes_test.rb`). Migrated all internal call sites (presenter, form_builder, filter/form_builder, table/builder, controller, chart_builder, engine, helpers, `_actions`/`_controls`/`index` views) to `policy.attributes.*`. Docs updated to the new surface (README + `skills/` references; `docs/guide/` is generated/ignored). **Assumption recorded:** `permitted_metrics`/`permitted_scopes` were NOT folded — they're cleanly named already and aren't "attributes"; folding them adds churn without benefit. `bundle exec rake` fully green (280 runs / 834 assertions, rubocop clean, brakeman 0). No behavior-fitting test edits (274 pre-existing runs untouched; +6 new). No version bump (release already cut).
+
+---
+
 ## 2026-07-10 — Pass 119: collection actions run over the VIEWED scope (owner-greenlit correctness fix)
 
 GREEN pass off `bin/operate tokens --pace`. Started a `/loop 8h` operating cadence (session cron

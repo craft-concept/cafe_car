@@ -35,7 +35,7 @@ module CafeCar::Table
 
     def timestamp_attribute = %w[updated_at created_at].find { has? _1 }
 
-    def remaining_attributes = policy.listable_attributes - @shown_attributes.keys
+    def remaining_attributes = policy.attributes.listable - @shown_attributes.keys
 
     def remaining(except: [])
       capture do

@@ -71,10 +71,10 @@ end
 
 ## Displayed fields (derived — usually leave alone)
 
-- `displayable_attributes` — what show pages/tables/JSON/CSV display: permitted
+- `attributes.displayable` — what show pages/tables/JSON/CSV display: permitted
   keys ∪ columns, with foreign keys folded into their associations and
   Rails-parameter-filtered columns (passwords, tokens) removed.
-- `editable_attributes` — what the form renders, derived from `permitted_attributes`.
+- `attributes.editable` — what the form renders, derived from `permitted_attributes`.
 - `title_attribute` — the record's display name; defaults to the first displayable
   attribute. Override when wrong: `def title_attribute = :number`.
 - `logo_attribute` — the attachment used as avatar/card image; defaults to the

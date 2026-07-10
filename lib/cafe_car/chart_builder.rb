@@ -49,7 +49,7 @@ module CafeCar
     # the query through this allowlist — a `?chart_x=` param outside it is dropped
     # by #pick_column, so a raw param can never be interpolated as a column name.
     def columns
-      @columns ||= policy.displayable_attributes
+      @columns ||= policy.attributes.displayable
                          .map    { info(_1) }
                          .select { _1.type.in?(%i[date datetime]) }
                          .map    { _1.method.to_s }
@@ -60,7 +60,7 @@ module CafeCar
     # type is numeric. A `chart_y=sum:<col>` param's column is validated against
     # this list by #pick_metric, so a raw param never becomes a column reference.
     def value_columns
-      @value_columns ||= policy.displayable_attributes
+      @value_columns ||= policy.attributes.displayable
                                .map    { info(_1) }
                                .select { _1.type.in?(NUMERIC_TYPES) }
                                .map    { _1.method.to_s }

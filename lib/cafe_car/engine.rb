@@ -83,12 +83,12 @@ module CafeCar
       require "csv"
 
       # CSV export of an index's filtered+sorted collection. Columns mirror the
-      # JSON renderer's policy-respecting basis (`[:id] | displayable_attributes`)
+      # JSON renderer's policy-respecting basis (`[:id] | attributes.displayable`)
       # so exports never leak attributes the policy hides, narrowed to scalar DB
       # columns. Associations are out of scope for v1 (only scalar values).
       ActionController::Renderers.add :csv do |collection, options|
         klass   = collection.respond_to?(:klass) ? collection.klass : collection.class
-        basis   = options[:only] || [ :id ] | policy(klass.new).displayable_attributes
+        basis   = options[:only] || [ :id ] | policy(klass.new).attributes.displayable
         columns = basis & klass.column_names.map(&:to_sym)
         text    = columns.select { klass.columns_hash[_1.to_s]&.type.in?(%i[string text]) }
 

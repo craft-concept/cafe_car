@@ -23,7 +23,7 @@ view changes.
 - `f.input(method, as: nil, **opts)` — just the input; `as:` forces a helper
   (`as: :hidden_field`, `as: :text_area`, …).
 - `f.association(method)` — a select for a `belongs_to`/`has_many`.
-- `f.remaining_fields` — `policy.editable_attributes` minus fields already built;
+- `f.remaining_fields` — `policy.attributes.editable` minus fields already built;
   keeps custom forms policy-driven instead of hand-listing everything.
 - `f.hidden(:a, :b)`, `f.label`, `f.hint`, `f.error` as expected. Labels append `*`
   for presence-validated fields; label/hint/placeholder text comes from the locale

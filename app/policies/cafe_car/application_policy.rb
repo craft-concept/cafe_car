@@ -19,7 +19,7 @@ class CafeCar::ApplicationPolicy
   def destroy? = false
 
   def attributes
-    @attributes ||= Attributes.new(@user, @object, permitted_attributes)
+    @attributes ||= Attributes.new(self)
   end
 
   class Scope

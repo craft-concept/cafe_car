@@ -13,7 +13,7 @@ module CafeCar::Policy
   end
 
   def title_attribute
-    @title_attribute ||= displayable_attributes.first
+    @title_attribute ||= attributes.displayable.first
   end
 
   # The bulk actions offered on this model's index table — the policy is the source
@@ -45,9 +45,9 @@ module CafeCar::Policy
   # The attributes (columns and associations) a user may filter an index by —
   # the same policy-is-source-of-truth pattern: the filter UI enumerates this
   # list, and Controller::Filtering drops URL filter keys that aren't on it.
-  # Defaults to #displayable_attributes (Rails' parameter filter already strips
+  # Defaults to `attributes.displayable` (Rails' parameter filter already strips
   # password/token columns); a host overrides this to narrow or widen the list.
-  def permitted_filters = displayable_attributes
+  def permitted_filters = attributes.displayable
 
   # The named model scopes invokable as URL filter params — `?published=true`
   # calls the `published` scope. Empty by default (opt in per model): a scope
@@ -57,7 +57,7 @@ module CafeCar::Policy
 
   # Is `attribute` filterable? Checks #permitted_filters on the base name — a
   # foreign key resolves to its association (`client_id` → `:client`), matching
-  # how #displayable_attributes lists it.
+  # how `attributes.displayable` lists it.
   def permitted_filter?(attribute)
     attribute = attribute.to_sym
     permitted_filters.include?(association_for_attribute(attribute) || attribute)
@@ -69,23 +69,8 @@ module CafeCar::Policy
     model.info.fields.listable.attachments.first&.method
   end
 
-  def listable_attributes
-    model.info.fields.listable.map(&:method)
-  end
-
-  def displayable_attributes
-    permitted_attribute_keys
-      .union(model.columns.map(&:name).map(&:to_sym))
-      .map    { association_for_attribute(_1) || _1 }
-      .reject { filtered_attribute? _1 } - %i[id]
-  end
-
   def permitted_fields
     @permitted_fields ||= permitted_attribute_keys.map { info _1 }
-  end
-
-  def editable_attributes
-    permitted_fields.map(&:input_key) - permitted_fields.flat_map(&:abrogated_keys)
   end
 
   def displayable_associations
@@ -117,7 +102,7 @@ module CafeCar::Policy
   end
 
   def displayable_attribute?(attribute)
-    displayable_attributes.include?(attribute.to_sym)
+    attributes.displayable.include?(attribute.to_sym)
   end
 
   def association_for_attribute(attribute)

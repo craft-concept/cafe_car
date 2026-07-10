@@ -73,7 +73,7 @@ module CafeCar
     end
 
     def attributes(*methods, except: nil, **options, &block)
-      methods  = policy.displayable_attributes if methods.empty?
+      methods  = policy.attributes.displayable if methods.empty?
       methods  = methods.flatten.compact
       methods -= [ *except ]
       capture do
@@ -124,7 +124,7 @@ module CafeCar
     end
 
     def remaining_attributes(count = nil, **options, &block)
-      attrs = policy.displayable_attributes - @shown_attributes.keys
+      attrs = policy.attributes.displayable - @shown_attributes.keys
       attrs = attrs.take(count) if count
       attributes(*attrs, **options, &block)
     end

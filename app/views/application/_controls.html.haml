@@ -6,7 +6,7 @@
 -# the index; the show page lists them in its Actions card instead. Pass
 -# `actions: false` (or an explicit list of names) to override.
 - actions = options.delete(:actions) { action.index? }
-- actions = policy(object).permitted_member_actions if actions == true
+- actions = policy(object).attributes.actions.member if actions == true
 - actions = Array(actions.presence)
 - links   = link(object)
 

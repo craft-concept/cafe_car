@@ -100,7 +100,7 @@ Host routes drawn with `resources` automatically gain two collection routes
 
 Success responds per format: HTML redirects with a locale-driven flash
 (`flashes.create_html` etc.), turbo_stream emits a page refresh (morph — see
-[turbo.md](turbo.md)), JSON serializes `[:id] + displayable_attributes` per the
+[turbo.md](turbo.md)), JSON serializes `[:id] + attributes.displayable` per the
 policy. Validation failure re-renders `new`/`edit` with `422`. Authorization failure
 returns 403 — or redirects to login when the opt-in sessions are installed
 (`bin/rails g cafe_car:sessions`).

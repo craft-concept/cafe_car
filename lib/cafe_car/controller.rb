@@ -150,7 +150,7 @@ module CafeCar
     # authorization and owns the response.
     def member_action
       skip_authorization # authorized via the action's own predicate below
-      name = permitted_custom_action(params[:member_action], policy(object).permitted_member_actions)
+      name = permitted_custom_action(params[:member_action], policy(object).attributes.actions.member)
       return head(:not_found) unless name
 
       authorize_action! object, name
@@ -171,7 +171,7 @@ module CafeCar
     # of the action's name) scopes its own query.
     def collection_action
       skip_authorization # authorized via the action's own predicate below
-      name = permitted_custom_action(params[:collection_action], policy(model.new).permitted_collection_actions)
+      name = permitted_custom_action(params[:collection_action], policy(model.new).attributes.actions.collection)
       unless name
         skip_policy_scope # no query on the reject path
         return head(:not_found)
@@ -214,7 +214,7 @@ module CafeCar
     end
 
     def permitted_bulk_action(param)
-      permitted_custom_action(param, policy(model.new).permitted_bulk_actions)
+      permitted_custom_action(param, policy(model.new).attributes.actions.bulk)
     end
 
     # The whitelisted action name matching `param` — a symbol drawn from the
@@ -341,7 +341,7 @@ module CafeCar
     # excludes them.
     def eager_loaded_associations
       policy = policy(model.new)
-      (policy.displayable_attributes & policy.displayable_associations).map { with_preview(_1) }
+      (policy.attributes.displayable & policy.displayable_associations).map { with_preview(_1) }
     end
 
     # `name`, or `{ name => { logo_attachment: :blob } }` when the associated
@@ -410,7 +410,7 @@ module CafeCar
       # permitted_attributes is record-oriented, so ask a record for the column
       # list even when serializing a collection.
       record = obj.is_a?(CafeCar::Model) ? obj : obj.klass.new
-      options[:only] ||= [ :id ] | policy(record).displayable_attributes
+      options[:only] ||= [ :id ] | policy(record).attributes.displayable
 
       if obj.is_a?(CafeCar::Model)
         options[:include] ||= policy(obj).displayable_associations

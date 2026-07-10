@@ -42,7 +42,7 @@ module CafeCar::Filter
     # The policy's permitted_filters — the panel's enumeration source — minus
     # what the view already rendered and the types no control can express.
     def remaining_attributes
-      policy.permitted_filters.reject { info(_1).unfilterable? } - @fields.keys
+      policy.attributes.filterable.reject { info(_1).unfilterable? } - @fields.keys
     end
 
     def scopes = policy.permitted_scopes

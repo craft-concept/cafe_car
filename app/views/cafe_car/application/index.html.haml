@@ -1,7 +1,7 @@
 - title = title model_name.human(count: :all)
 - actions = render "index_actions"
 - body = render("index")
-- filterable = policy(model.new).then { _1.permitted_filters.any? or _1.permitted_scopes.any? }
+- filterable = policy(model.new).then { _1.attributes.filterable.any? or _1.permitted_scopes.any? }
 
 = Page title:, actions: do |page|
   - if filterable

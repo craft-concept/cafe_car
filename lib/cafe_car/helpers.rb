@@ -161,7 +161,7 @@ module CafeCar
     # buttons show; each selected row is still authorized one-by-one in the
     # controller, so a shown action never bulk-bypasses a per-record denial.
     def bulk_actions(klass = model)
-      policy(klass.new).permitted_bulk_actions
+      policy(klass.new).attributes.actions.bulk
     end
 
     def bulk_actions? = bulk_actions.any?
@@ -190,7 +190,7 @@ module CafeCar
     # like #bulk_actions. This only decides which buttons show; the controller
     # re-authorizes the POST (see Controller#collection_action).
     def collection_actions(klass = model)
-      policy(klass.new).permitted_collection_actions
+      policy(klass.new).attributes.actions.collection
     end
 
     # A collection-action button for the index toolbar: POSTs the named action

@@ -346,7 +346,7 @@ end
 **Key methods:**
 
 - `permitted_attributes` - Attributes that can be edited via forms
-- `displayable_attributes` - Attributes shown in views (auto-detected from
+- `attributes.displayable` - Attributes shown in views (auto-detected from
   columns + associations)
 - `displayable_associations` - Associations that can be displayed
 - `filtered_attribute?(attr)` - Check if attribute should be hidden (uses Rails

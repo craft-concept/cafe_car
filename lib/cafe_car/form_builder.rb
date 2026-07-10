@@ -149,7 +149,7 @@ module CafeCar
       end
     end
 
-    def remaining_attributes = policy.editable_attributes - @fields.keys
+    def remaining_attributes = policy.attributes.editable - @fields.keys
 
     def remaining_fields(**, &block)
       block  ||= proc { field(_1, **) }
