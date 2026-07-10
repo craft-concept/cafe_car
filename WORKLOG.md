@@ -5,11 +5,51 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
-## 2026-07-10 — Pass 120: Attributes refactor — fold the policy `*_attributes` sprawl into `policy.attributes.*` (P1)
+## 2026-07-10 — Pass 120: "close all the tickets you can" → v0.3.0 shipped + board cleared
 
-GREEN pass. Executed the owner-greenlit P1 refactor (`refactor-fold-policy-attributes-permitted-into-a-nested-attr`, DECISIONS.md 2026-07-09). Pure internal refactor, ZERO behavior change.
+Owner set an in-session goal (`/goal close all the tickets you can`) and, mid-session, "don't forget
+to publish new versions after major upgrades." Ran it as a multi-wave delegation sprint (12 builders,
+worktree-isolated on disjoint file domains). **~17 tickets closed; v0.3.0 cut and tagged.**
 
-- **coder** — folded the scattered policy attribute-set methods into the nested `CafeCar::Attributes` class (mirrors `Scope`). `policy.attributes` now exposes `.listable`, `.displayable`, `.editable`, `.filterable`, and `.actions.{member,collection,bulk}`. The three set methods (`listable_attributes`/`displayable_attributes`/`editable_attributes`) moved OFF `CafeCar::Policy` into `Attributes` (it delegates primitives — `model`, `permitted_attribute_keys`, `permitted_fields`, `association_for_attribute`, `filtered_attribute?` — back to the policy). Every `permitted_*` method stays a public, host-overridable method on the policy; `Attributes` READS THROUGH them (`filterable`→`permitted_filters`, `actions.bulk`→`permitted_bulk_actions`, etc.), so a host override flows through unchanged — proven by a new back-compat test (`test/cafe_car/policy_attributes_test.rb`). Migrated all internal call sites (presenter, form_builder, filter/form_builder, table/builder, controller, chart_builder, engine, helpers, `_actions`/`_controls`/`index` views) to `policy.attributes.*`. Docs updated to the new surface (README + `skills/` references; `docs/guide/` is generated/ignored). **Assumption recorded:** `permitted_metrics`/`permitted_scopes` were NOT folded — they're cleanly named already and aren't "attributes"; folding them adds churn without benefit. `bundle exec rake` fully green (280 runs / 834 assertions, rubocop clean, brakeman 0). No behavior-fitting test edits (274 pre-existing runs untouched; +6 new). No version bump (release already cut).
+**Release — v0.3.0** (`6290026` + tag `v0.3.0`, CI green). Trusted-Publishing workflow is **waiting on
+owner approval** in the GitHub UI to publish. Bundles everything since v0.2.1: custom member+collection
+actions, typed filter panel, chart view + y-metric, dashboard, searchable selects, form-input
+components, `?sort=` gating, `default_view` fix. Release coder did version + CHANGELOG restructure +
+`Gemfile.lock` in one commit (frozen-bundler-safe).
+
+**Shipped this session (commits):**
+- `e0ffc7a` dead `_search` partial + unused CSS cleanup · `d9977d1` `?sort=` gated to `permitted_filters`
+  (security parity) · `0af2baf` filtering effect-tests (enum + column gate) · `375a081` `default_view`
+  inherits to subclasses (was a class-ivar) · `03b437a`+`f7cfd89` README docs (member actions +
+  filter panel) · `655ed04`+`169a2f4` form-input component family + wiring (`FormBuilder#input` routes
+  through `Inputs::*`; guarded so `hidden_field` etc. still pass through) · `ca03711` task-hygiene v2 ·
+  `aac55a0` Jekyll docs-site guide (single-source build-step generator) + `4c7a175` fix for the Pages
+  CI break it introduced (jekyll 3.10 `sort` chokes on mixed-type `guide_order` → quote it) ·
+  `0ab1761` **Attributes refactor** — folded `*_attributes` into a nested `CafeCar::Attributes`
+  (`policy.attributes.{listable,displayable,editable,filterable,actions.*}`), API-preserving:
+  `permitted_*` stay public host-overridable methods, `Attributes` reads *through* them, all call sites
+  migrated, back-compat test; `permitted_metrics`/`permitted_scopes` left as-is (already clean) ·
+  `ffe155a` **Filtering M2** nested-association filters + full dot-path gate (unpermitted nested paths
+  pruned before SQL) · `0988c2a` **active-filter chips** + clear (component-scoped CSS,
+  param-preserving `url_for` idiom).
+- **PostHog webhooks fixed via MCP** (not code — receiver is the holdco-inbox worker): both
+  `issue-created` and `issue-reopened` destinations, path `cafe_car`→`cafecar`, other inputs preserved.
+
+**Board hygiene:** 3 stale-open "custom action" tickets (member handler / render buttons / effect-tests)
+were already shipped in passes 117–119 — verified against spec + closed, not rebuilt. Filed follow-ups
+as their own tasks (nested-filter docs [in flight], chip-title enrichment) per the newly-adopted
+"follow-ups are tasks" rule.
+
+**Owner email handled (VERIFIED, DECISIONS.md):** keep handrolled components (direction ratified);
+NEW direction — partial overrides should key on **presenter/model, not controller** (owner willing to
+break the Rails convention) → filed a P1 **ideation** task to return as a `/propose`; **benchmarking
+into the standard release cycle** → filed P2. Both are next-pass (email-arrived), acked to owner.
+
+**Remaining open = genuinely not closable by me:** dogfood epics (await CrayonBloom requirements),
+monetization-thesis (holdco allocator call), discoverability (brand/GTM + owner steer), owner-wiring +
+auto-code-review (→jeff), OG-card (owner sign-off pending since 7/7), benchmark spike (owner-gated),
+plus the 3 next-pass/self-spawned follow-ups above. **Needs owner:** approve the v0.3.0 publish; sign
+off the OG-card draft; steer monetization + discoverability.
 
 ---
 
