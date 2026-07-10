@@ -607,6 +607,30 @@ dropped before it reaches the query. Control labels read from your locale
 (`helpers.filter`, plus each model's attribute names), and you replace any
 control by dropping a `_<type>_filter.html.haml` partial in the view directory.
 
+**Filter through an association:**
+
+Add a dot-path to `permitted_filters` and the panel filters by the far model's
+attribute:
+
+```ruby
+class InvoicePolicy < ApplicationPolicy
+  # own columns, plus a client's status and its owner
+  def permitted_filters = %i[status client.status client.owner_id]
+end
+```
+
+Each hop is the association name; the terminal is the far column, its enum, or a
+belongs_to — `client.owner_id` and `client.owner` mean the same thing. The
+control is typed by that terminal, so a nested belongs_to renders the same
+searchable multi-select and a nested enum the same enum select as a top-level
+one, and it composes with the other filters, search, and sort, round-tripping
+into the URL like any other.
+
+That one list is both the panel's source and the query whitelist: an undeclared
+path is dropped before any join, even when it names a real column further out.
+`?client.owner.email=` filters nothing unless `client.owner.email` is on
+`permitted_filters` — the same gate as an unpermitted top-level column.
+
 **Sorting:**
 
 ```

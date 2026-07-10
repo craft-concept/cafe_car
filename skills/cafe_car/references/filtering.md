@@ -84,6 +84,19 @@ Buckets `day`/`week`/`month`; columns are validated against the policy's
 displayable date/numeric attributes. The chart aggregates the same filtered,
 policy-scoped collection the table shows, as dependency-free inline SVG.
 
-Note: a policy-driven filter *UI* (enumerated filter controls on the index) is in
-progress; today the grammar above is the shipped surface — the `_filters` form
-partial exists in the gem but is not wired into the default index.
+## Filter panel
+
+The grammar above also drives a rendered panel: the model policy's
+`permitted_filters` enumerates the controls (one typed per attribute), and the
+same list is the query whitelist. List a dot-path to filter through an
+association:
+
+```ruby
+def permitted_filters = %i[status client.status client.owner_id]
+```
+
+Each hop is the association name; the terminal may be the far column, its enum,
+or a belongs_to (`client.owner_id` ≡ `client.owner`). The control is typed by
+that terminal. An undeclared path — even one naming a real far column
+(`?client.owner.email=`) — is pruned before any join, exactly like an
+unpermitted top-level column.
