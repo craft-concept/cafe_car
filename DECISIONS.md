@@ -5,6 +5,33 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-10 — OG social card approved ("ship it"); NEW v2 logo brief (VERIFIED email, jeff@yak.sh)
+
+Verbatim owner reply to the 7/10 digest:
+
+> social card is good. ship it. and then for a v2: let's imagegen a logo.
+>
+> different sizes of it should have different complexities. it should have OSX circa '10
+> aesthetics: think Coda, Transit, or other Panic logos. It should probably be a train's cafe
+> car with coffee or something.
+>
+> come up with a handful and then send me a demo page
+
+**What this decides / where applied:**
+- **OG social card: APPROVED for the live swap.** The draft (`~/shared/cafe_car/og-card-draft-v1.png`,
+  regenerable HTML/CSS + Playwright render at `docs/og/`, commit b96f320) is signed off. Unblocks
+  `regenerate-og-social-card-png`: render the final PNG, place at `docs/images/og-card.png`, reconcile
+  `_config.yml` og:image dims (declared 1731x909 → actual render 2400x1260), commit. Execute on the
+  next proactive pass (email = inbox, not an on-the-spot trigger).
+- **NEW v2 — imagegen a CafeCar logo (filed as its own task).** Brief: **Panic-style OSX-circa-'10
+  aesthetic** (reference Coda, Transit, other Panic app icons); subject is **a train's cafe car with
+  coffee**; **complexity scales with size** (a detailed large mark, simplified small/favicon variants).
+  Deliverable: **generate a HANDFUL of options and send the owner a demo page** (drafts are the
+  reversible side — iterate freely and share; do NOT bake any into canonical brand assets until the
+  owner picks + signs off). Discretionary creative work → GREEN, next proactive pass.
+
+---
+
 ## 2026-07-10 — Keep handrolled components; presenter/model-based partial overrides; benchmarks in the release cycle (VERIFIED email, jeff@yak.sh)
 
 Verbatim owner reply to the component-primitive research digest:
