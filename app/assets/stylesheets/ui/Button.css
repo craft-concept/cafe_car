@@ -18,17 +18,19 @@
 .Button:where(:not(.Button-current)):hover {
   cursor: pointer;
   text-decoration: none;
-  box-shadow: inset var(--darken) 0 -2px 0 1px;
-  filter: brightness(1.05);
+  /* A translucent lighten overlay stands in for filter: brightness(1.05).
+     A `filter` would make this a containing block for the fixed tooltip
+     pseudo, trapping it over the trigger — box-shadow does not. */
+  box-shadow: inset var(--darken) 0 -2px 0 1px, inset var(--lighten) 0 0 0 100vmax;
   z-index: 1;
 }
 
 .Button:active,
 .Button-current {
   text-decoration: none;
-  filter: brightness(0.95);
+  /* Darken overlay in place of filter: brightness(0.95) — see hover note. */
   border-bottom-width: 1px;
-  box-shadow: inset var(--darken) 0 1px;
+  box-shadow: inset var(--darken) 0 1px, inset var(--darken) 0 0 0 100vmax;
 }
 
 .Button-primary {

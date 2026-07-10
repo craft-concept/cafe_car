@@ -35,13 +35,16 @@ a {
   color: var(--link);
   text-decoration: none;
 
+  /* No `filter` here: it would make the link a containing block for the
+     fixed tooltip pseudo, trapping it over the trigger. A slight color
+     shift gives equivalent hover/active feedback without one. */
   &:hover {
     text-decoration: underline;
-    filter: brightness(1.05);
+    color: color-mix(in oklab, var(--link), white 12%);
   }
 
   &:active {
-    filter: brightness(0.95);
+    color: color-mix(in oklab, var(--link), black 12%);
   }
 }
 

@@ -5,7 +5,7 @@
     display: block;
 
     position-anchor: auto;
-    position-area: top;
+    position-area: bottom;
     position-try-fallbacks: flip-block;
 
     z-index: 99;
