@@ -777,6 +777,44 @@ its view directory.
 
 [See it live →](https://cafe-car-demo.up.railway.app/admin/users) — select rows and delete the selection.
 
+### Member Actions
+
+A **member action** runs one custom operation on a single record — a button on
+the show page and on each index row, no row selection. It's the same three
+conventional pieces as a bulk action, declared with `permitted_member_actions`:
+
+```ruby
+class ArticlePolicy < ApplicationPolicy
+  def permitted_member_actions = %i[publish]
+
+  def publish? = !object.published?   # authorizes the record, and shows/hides the button
+end
+
+class Article < ApplicationRecord
+  def publish! = update!(published_at: Time.current)
+end
+```
+
+The name resolves by convention — no registration: `publish?` authorizes and
+`Article#publish!` runs. CafeCar renders a **Publish** button on the show page's
+Actions card and on the record's index row, each a POST to
+`/articles/:id/actions/publish`. A record whose `publish?` answers false renders
+disabled with a tooltip instead of a link, so the one predicate gates both the
+display and the request — a forged POST is re-authorized and refused, and the
+bang method never runs.
+
+The action replies with a redirect that Turbo morphs in place, so the row
+reflows without a full page reload. The button's label and style come from your
+locale (`en.publish`; `actions.styles.publish: primary`), never a hardcoded
+string.
+
+Override the forwarding by defining a `publish` controller method — it takes
+over after authorization and owns the response. Override the buttons by dropping
+an `_actions.html.haml` (show) or `_controls.html.haml` (index) partial in the
+resource's view directory.
+
+[See it live →](https://cafe-car-demo.up.railway.app/admin/articles) — publish an article from its show page or index row.
+
 ### Collection Actions
 
 A **collection action** runs one action over a whole set at once, from a single
