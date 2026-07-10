@@ -5,6 +5,51 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-09 — Pass 117: custom actions feature SHIPPED + filter polish + tooltip root-caused
+
+Owner in-session directive (DECISIONS.md 2026-07-09 "In-session directive"): build actions + demo
+Publish · filter polish (assoc multi-select, dark-mode, search into card, drop "Filters" title) ·
+README short demo URL · figure out the index tooltip bug. Delegated to 3 builders (disjoint files;
+actions-then-filter serial to avoid an `_index.html.haml` collision, tooltip+README parallel). All
+`rake` green, pushed.
+
+- **`3f7965d`** (Fable coder) — **custom actions (D)**: policy-declared `permitted_member_actions` /
+  `permitted_collection_actions` (both `[]` default, mirror `permitted_bulk_actions`); each name →
+  `name?` predicate + `name!` bang method, no registration. **Routing convention:** auto-added
+  `:actionable` concern — `POST /<res>/:id/actions/:member_action` + `POST /<res>/actions/:collection_action`
+  (action name is a URL param, so hosts never enumerate names). 404 unlisted, `name?` gates (missing
+  = deny), host method of the name overrides. Demo: **Publish** on article rows + show card (disabled+
+  tooltip when unpermitted) + a **Publish all** collection button. 9 effect tests (asserts persisted
+  `published_at`, refusal-untouched, 404, override, placement). Touched (flagged) `helpers.rb`,
+  `link_builder.rb` as the DRY homes.
+- **`6a5a39e`** (coder) — **filter polish**: association filter **multi-select** (belongs_to AND
+  has_many), root-caused in `form_builder`/`filter/form_builder` (the `multiple:` flag + `[]` name
+  suffix; query layer already produced `IN` — verified `... author_id IN (3,5)`, not assumed);
+  **tom-select dark-mode** via theme vars (`--input`/`--card`/`--selection`/`--accent` chips);
+  **search moved into the filters card** (visible field replacing the hidden `q`; inherits `Input.css`
+  styling) + **"Filters" title removed**; composition (search+filter+sort) effect-tested. Dark-mode
+  screenshot verified: `~/shared/cafe_car/filter-polish.png`.
+- **`d673245`** (designer) — **tooltip fix**: root cause proven in headless Chrome 149 — `filter:
+  brightness()` on `.Button:hover`/`a:hover` makes the trigger a containing block for its
+  `position:fixed ::before`, trapping the tooltip on top (so `top`→`bottom` alone never worked; not
+  a browser/anchor-API bug). Swapped filter → box-shadow overlay (buttons) / `color-mix` (links) +
+  `position-area: bottom`. Emailed owner the 4-panel proof (`~/shared/cafe_car/tooltip-diagnosis.png`).
+- **`8d15c1a`** (designer) — README → shorter `cafe-car-demo.up.railway.app` (9 hosts).
+
+**Decisions/assumptions:** collection actions run over the whole policy scope, not the active filter
+view (documented) — filed a P3 owner-decision task. Denied member actions render disabled+tooltip
+(matches destroy convention). `_search.html.haml` now dead (left in place) — filed cleanup.
+
+**Follow-ups filed:** custom-actions README/docs (P2) · filter-panel README docs voice-gate (P3) ·
+collection-action filtered-scope decision (P3) · delete dead `_search.html.haml` + `Table.css`
+`form.search` rules (P3).
+
+**Next:** the Attributes refactor (E — `policy.attributes.listable`) folds these in per owner
+sequencing; docs passes for actions + filters before the next `v*` tag. Clean checkpoint, nothing in
+flight.
+
+---
+
 ## 2026-07-09 — Pass 116: filtering M1 COMPLETE + correct — enum-key `to_i` bug fixed
 
 **`af5d589`** (Fable) — fixed the correctness bug B3 found + worked around: `QueryBuilder#parse_value`
