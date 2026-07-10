@@ -1,0 +1,15 @@
+-# The active-filter chips: one removable chip per gated filter param, plus a
+-# clear-all. Removing a chip (or clearing) drops just those filter keys and
+-# preserves the rest of the query — search, sort, view, and the other filters —
+-# so the chips compose with the search box and the CSV/chart export links.
+-# Host-overridable: drop your own app/views/.../_active_filters.html.haml.
+- filters = active_filters
+- if filters.any?
+  %nav.ActiveFilters{ "aria-label": t(:active, scope: %i[helpers filter]) }
+    - filters.each do |filter|
+      %span.ActiveFilters-chip
+        %span.ActiveFilters-label= filter[:label]
+        %span.ActiveFilters-value= filter[:value]
+        = link_to filter[:remove_url], class: "ActiveFilters-remove", "aria-label": t(:remove, scope: %i[helpers filter], filter: filter[:label]), title: t(:remove, scope: %i[helpers filter], filter: filter[:label]) do
+          = icon :xmark
+    = link_to t(:clear, scope: %i[helpers filter]), clear_filters_url, class: "ActiveFilters-clear"

@@ -12,7 +12,8 @@ module CafeCar::Controller::Filtering
   ].freeze
 
   included do
-    helper_method :parsed_params, :filter_params, :filtered?, :search_term, :filtered_scope
+    helper_method :parsed_params, :filter_params, :permitted_filter_params,
+                  :filtered?, :search_term, :filtered_scope
   end
 
   private

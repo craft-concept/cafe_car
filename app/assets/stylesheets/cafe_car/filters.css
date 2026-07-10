@@ -1,0 +1,50 @@
+@layer component {
+  /* The active-filter chip row (_active_filters). Scoped entirely under
+     .ActiveFilters — no bare element selectors — so it never restyles chips,
+     links, or buttons reused elsewhere. */
+  .ActiveFilters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--half-gap);
+    margin-block-end: var(--gap);
+  }
+
+  .ActiveFilters-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.15em 0.5em;
+    border: 1px solid var(--border);
+    border-radius: var(--control-radius);
+    background: var(--card);
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .ActiveFilters-label {
+    color: var(--dim);
+  }
+
+  .ActiveFilters-label::after {
+    content: ":";
+  }
+
+  .ActiveFilters-value {
+    font-weight: 600;
+  }
+
+  .ActiveFilters-remove {
+    display: inline-flex;
+    color: var(--dim);
+  }
+
+  .ActiveFilters-remove:hover {
+    color: var(--color);
+    text-decoration: none;
+  }
+
+  .ActiveFilters-clear {
+    font-size: 0.9rem;
+  }
+}

@@ -41,6 +41,11 @@ en:
       contains: Contains
       min: Min
       max: Max
+      # The active-filter chips (_active_filters): the row's accessible name, the
+      # per-chip remove control's label, and the clear-all link.
+      active: Active filters
+      remove: "Remove %{filter} filter"
+      clear: Clear all
 
   # Button style (a Button component flag) per bulk action — a shipped default a
   # host can extend/override. Unlisted actions fall back to the neutral style.

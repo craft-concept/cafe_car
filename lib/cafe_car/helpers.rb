@@ -89,6 +89,57 @@ module CafeCar
     # the export matches the view. Pagination is dropped (CSV exports the full set).
     def csv_url = url_for(request.params.except("page", "per").merge(format: :csv))
 
+    # The active-filter chips above the index: one per leaf in the policy-gated
+    # filter set (permitted_filter_params), each carrying its human label, display
+    # value, and the URL that removes just that one filter — the current params
+    # minus its single key, so every OTHER filter plus q/sort/view survive.
+    # Reflecting the gated set (not raw request params) means a stray or
+    # non-permitted param never grows a chip.
+    def active_filters(klass = model)
+      flatten_filters(permitted_filter_params).map do |key, value|
+        { key:, label: filter_label(klass, key), value: filter_value(value),
+          remove_url: url_for(request.params.except(key, "page")) }
+      end
+    end
+
+    # "Clear all" target: the current params minus every active filter key (and
+    # the now-stale page), keeping the control params — q, sort, view, per.
+    def clear_filters_url
+      url_for(request.params.except(*flatten_filters(permitted_filter_params).keys, "page"))
+    end
+
+    # Flattens the nested gated filter params back to the flat dot-keyed params
+    # request.params carries: every nested hash — an operator group (`{min:}`) or
+    # an association hop (`{client: {status:}}`) — recurses, joining segments with
+    # ".", so a leaf's key is exactly the one url_for drops to remove it. Non-hash
+    # leaves (a scalar, an id set, a parsed Range) end the walk.
+    def flatten_filters(params, prefix = "")
+      params.each_with_object({}) do |(key, value), flat|
+        path = "#{prefix}#{key}"
+        value.is_a?(Hash) ? flat.merge!(flatten_filters(value, "#{path}.")) : flat[path] = value
+      end
+    end
+
+    # The human label for a filter key, from the same Filter::FieldInfo the panel
+    # controls read (policy/locale-driven, with a humanized-attribute fallback) —
+    # never the raw column/operator key.
+    def filter_label(klass, key)
+      CafeCar["Filter::FieldInfo"].new(model: klass, method: filter_method(key)).label
+    end
+
+    # A filter key reduced to the attribute path its label reads: the trailing
+    # operator char (`name~`) and a trailing word-operator segment (`price.min`)
+    # drop off; a nested association path (`client.status`) keeps its dots.
+    def filter_method(key)
+      segments = key.to_s.sub(/\W+$/, "").split(".")
+      segments.pop if segments.size > 1 && CafeCar::QueryBuilder::OPS.key?(segments.last)
+      segments.join(".")
+    end
+
+    # A filter value as chip text: an id/enum set joins on commas, a Range or
+    # scalar prints as-is.
+    def filter_value(value) = Array.wrap(value).join(", ")
+
     def context(name = nil, &)
       @context ||= []
 
