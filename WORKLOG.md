@@ -5,6 +5,30 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-09 — Pass 116: filtering M1 COMPLETE + correct — enum-key `to_i` bug fixed
+
+**`af5d589`** (Fable) — fixed the correctness bug B3 found + worked around: `QueryBuilder#parse_value`
+was `to_i`-ing integer-backed enum **keys** (`?status=archived` → `where(status: 0)` = wrong bucket).
+Now enum key strings pass through untouched (AR's `EnumType` casts natively); reused `FieldInfo#enum?`
+via the `ModelInfo` registry (didn't edit `field_info`); flipped `Filter::FieldInfo#choices` back to
+keys so the select submits the readable `?status=archived`. Pre-fix failure confirmed; edge cases
+smoke-tested (legacy numeric `?status=1` still lands right via the integer fall-through, `status!=`
+negation, string-backed enums unaffected). Suite 237 green. Board bug done.
+
+Conductor cleanup (this pass): corrected the now-stale `_enum_filter.html.haml` comment (was
+documenting the old db-value workaround).
+
+**Net: filtering M1 is done and correct end to end** — policy-driven, typed, security-gated, enum-
+correct. Remaining filtering polish/enhancements: B4 (active-filter chips + clear), B5 (deeper effect
+tests), C (nested-assoc UI), and the filed design/UX + README-voice-gate polish.
+
+**Session tally (2026-07-09):** M1a agent docs+installer (831d2f3, f15ed85) · filtering M1
+(efc0bc7, 4dc1755, 9b21229, af5d589) — 8 Fable builders, all `rake` green. **Next tracks:** custom
+actions (D — note D3 routing convention is a public-API design choice worth an owner beat), then the
+Attributes refactor (E). Clean checkpoint, nothing in flight.
+
+---
+
 ## 2026-07-09 — Pass 115: filtering M1 core SHIPPED — policy-driven typed filter UI (B1+B2+B3)
 
 The visible payoff: every index now auto-renders clickable, policy-enumerated filters that write
