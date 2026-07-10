@@ -10,12 +10,12 @@
 [![Gem Version](https://img.shields.io/gem/v/cafe_car)](https://rubygems.org/gems/cafe_car)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
-> 🚀 **[Live demo →](https://cafe-car-demo-production.up.railway.app)** — click straight
+> 🚀 **[Live demo →](https://cafe-car-demo.up.railway.app)** — click straight
 > into a real admin, rendered from plain models (clients, invoices, articles, users, notes).
 > No signup; the data resets periodically.
 
 <p align="center">
-  <a href="https://cafe-car-demo-production.up.railway.app/admin/invoices">
+  <a href="https://cafe-car-demo.up.railway.app/admin/invoices">
     <img src="https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/admin-invoices-index.png"
          alt="A CafeCar admin rendered straight from the model: an invoices index with sortable columns, currency formatting, association links, sender avatars, and pagination — no view code."
          width="900">
@@ -24,7 +24,7 @@
 <p align="center">
   <em>A complete admin index — sortable columns, formatted values, association links, and
   pagination — rendered from a model with one line of controller code.
-  <a href="https://cafe-car-demo-production.up.railway.app">Try the live demo →</a></em>
+  <a href="https://cafe-car-demo.up.railway.app">Try the live demo →</a></em>
 </p>
 
 Your model already knows its columns, types, and associations — a full
@@ -287,7 +287,7 @@ end
 - **Callbacks**: Lifecycle hooks for `render`, `update`, `create`, `destroy`
 - **Responders**: JSON, HTML, and Turbo Stream responses
 
-[See it live →](https://cafe-car-demo-production.up.railway.app/admin/clients) — the clients index from that one line.
+[See it live →](https://cafe-car-demo.up.railway.app/admin/clients) — the clients index from that one line.
 
 **Limiting actions:**
 
@@ -485,7 +485,7 @@ end
 CafeCar provides an enhanced form builder with smart field detection.
 
 <p align="center">
-  <a href="https://cafe-car-demo-production.up.railway.app/admin/invoices/new">
+  <a href="https://cafe-car-demo.up.railway.app/admin/invoices/new">
     <img src="https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/admin-invoice-form.png"
          alt="A CafeCar new-invoice form rendered from the model, with a client association select, typed inputs, and nested has_many line items (add/remove rows)."
          width="760">
@@ -536,7 +536,7 @@ The form builder automatically detects field types:
 <%= f.association :category %>
 ```
 
-[See it live →](https://cafe-car-demo-production.up.railway.app/admin/invoices/new) — add and remove nested line items on a new invoice.
+[See it live →](https://cafe-car-demo.up.railway.app/admin/invoices/new) — add and remove nested line items on a new invoice.
 
 Creates a select dropdown for the association. The select is **searchable**: it's
 enhanced with [Tom Select](https://tom-select.js.org) (vendored — no CDN, no
@@ -569,7 +569,7 @@ suffix compares it:
 
 Combine them freely — `?price.min=10&price.max=50` reads as `price BETWEEN 10 AND 50`.
 
-[See it live →](https://cafe-car-demo-production.up.railway.app/admin/users) — sort, filter, and search a real index.
+[See it live →](https://cafe-car-demo.up.railway.app/admin/users) — sort, filter, and search a real index.
 
 **Sorting:**
 
@@ -775,7 +775,7 @@ policy answers `publish?` for. Button labels and styles come from your locale
 the whole bar for a resource by dropping an `_bulk_actions.html.haml` partial in
 its view directory.
 
-[See it live →](https://cafe-car-demo-production.up.railway.app/admin/users) — select rows and delete the selection.
+[See it live →](https://cafe-car-demo.up.railway.app/admin/users) — select rows and delete the selection.
 
 ### Dashboard
 
@@ -823,7 +823,7 @@ Because the dashboard is a plain view, you can drop in headings, your own
 partials, or any markup between tiles. Once the template exists, a **Dashboard**
 link appears at the top of the sidebar nav — no template, no link.
 
-[See it live →](https://cafe-car-demo-production.up.railway.app/admin/dashboard) — metric tiles and a chart on one page.
+[See it live →](https://cafe-car-demo.up.railway.app/admin/dashboard) — metric tiles and a chart on one page.
 
 ### Current Context
 
