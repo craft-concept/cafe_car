@@ -103,7 +103,12 @@ module CafeCar
       options[:autocomplete] = info.autocomplete unless options.key?(:autocomplete)
       options[:multiple]     = true if as == :file_field && info.multiple? && !options.key?(:multiple)
 
-      public_send(as, method, *args, **options)
+      # Field-typed inputs render through their component object; explicit `as:`
+      # overrides the family doesn't own (e.g. `hidden_field`) fall through to the
+      # helper directly, preserving `#input`'s "render via any form helper" contract.
+      return public_send(as, method, *args, **options) unless Inputs::BaseInput.classes.key?(as)
+
+      Inputs::BaseInput.build(as, form: self, method:, template: @template, args:, **options).to_html
     end
 
     def hint(method, text = info(method).hint, **)
