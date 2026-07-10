@@ -105,31 +105,14 @@
   }
 }
 
-/* Index toolbar: the search box and the bulk-action bar share one row. Search
-   takes the free space; the bar sits at the trailing edge. Wraps on narrow
-   screens so neither control gets crushed. */
+/* Index toolbar: the row above the table holding the bulk-action bar. Wraps
+   on narrow screens so the controls don't get crushed. */
 .IndexToolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--half-gap) var(--gap);
   margin-bottom: var(--gap);
-}
-
-.IndexToolbar > form.search {
-  flex: 0 1 24em;
-  display: flex;
-  min-width: 0;
-}
-
-.IndexToolbar > form.search > .Group {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.IndexToolbar > form.search [type="search"] {
-  flex: 1 1 auto;
-  min-width: 0;
 }
 
 .BulkActions {
