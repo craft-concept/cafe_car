@@ -58,6 +58,20 @@ class FilteringTest < ActionDispatch::IntegrationTest
     assert_equal %w[Alpha Gamma], response.parsed_body.map { _1["name"] }.compact.sort
   end
 
+  test "an enum select filters by the enum's stored value" do
+    owner = create(:user)
+    create(:client, name: "Working", status: :active,   owner:)
+    create(:client, name: "Retired", status: :archived, owner:)
+
+    get "/admin/clients.json", params: { "status" => "archived" }
+
+    assert_response :success
+    # Only the archived client survives — the active ones (including the setup
+    # client, which defaults to active) are excluded. Proves the enum key reached
+    # WHERE status = <stored value>, not just a 200.
+    assert_equal [ "Retired" ], response.parsed_body.map { _1["name"] }.compact
+  end
+
   test "control params (sort, page, q) are never treated as filters" do
     # A model without a `sort`/`page` column must not raise when these arrive.
     get "/admin/invoices.json", params: { sort: "number", page: 1 }
@@ -85,6 +99,16 @@ class FilteringTest < ActionDispatch::IntegrationTest
 
   test "an unknown filter key is ignored, not an error" do
     assert_equal [ 5, 15, 25 ], numbers("bogus" => "1")
+  end
+
+  test "a column a policy leaves off permitted_filters is ignored, not filtered" do
+    # UserPolicy narrows permitted_filters to name/created_at — email is off it.
+    # A filter naming email must not narrow the set: were it honored, this
+    # no-match value would filter down to zero rows.
+    create_list(:user, 2)
+    get "/admin/users.json", params: { "email" => "nobody@example.com" }
+    assert_response :success
+    assert_equal User.count, response.parsed_body.size
   end
 
   test "an association multi-select filters by any of the given ids (IN)" do
