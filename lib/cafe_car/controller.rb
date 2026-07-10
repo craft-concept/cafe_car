@@ -12,8 +12,14 @@ module CafeCar
         define_method(:model) { @model ||= model }
       end
 
-      def default_view(v = @default_view || "table")
-        @default_view = v.to_s
+      # The index view (`table`/`grid`/`chart`) shown when no `?view=` is given.
+      # `default_view :grid` sets it; a bare call reads the current value. Backed
+      # by an inheritable class_attribute (`_default_view`) so a subclass keeps
+      # its parent's setting — a bare class ivar would not carry across
+      # subclassing.
+      def default_view(view = nil)
+        self._default_view = view.to_s if view
+        _default_view
       end
 
       def cafe_car(only: nil, except: nil, model: nil)
@@ -75,6 +81,11 @@ module CafeCar
     included do
       self.responder = CafeCar[:ApplicationResponder]
       default_form_builder CafeCar[:FormBuilder]
+
+      # Inheritable backing for `default_view` (see the class method) — a
+      # class_attribute carries the setting to subclasses; a bare class ivar
+      # would not.
+      class_attribute :_default_view, default: "table", instance_accessor: false
 
       define_callbacks_with_helpers :render, :update, :create, :destroy
       add_flash_types :success, :warning, :error
