@@ -12,6 +12,25 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [0.3.0] - 2026-07-10
+
+### Added
+
+- Policy-declared custom actions. A policy can now declare **member** and
+  **collection** actions — `permitted_actions` (both), `permitted_member_actions`,
+  and `permitted_collection_actions` — and CafeCar wires each one up with no
+  registration: the action name (`publish`) forwards to the model bang method
+  (`publish!`), authorized by the matching policy predicate (`publish?`). Actions
+  render as policy-gated buttons on the show page and on each index/grid card, and
+  the response is a Turbo morph refresh so the page updates in place. A collection
+  action runs over the **currently-viewed (filtered) scope**, not the whole policy
+  scope, so it acts on exactly what's on screen; its button carries a localized
+  count hint (e.g. `Publish all 21`, `en.cafe_car.actions.all`). Every label and
+  style comes from the locale.
 - Typed, policy-driven filter panel on every index. The index aside now renders a
   filter control per attribute in the model policy's **`permitted_filters`** (the
   same source of truth the URL-filter gate enforces), each typed by reflection:
@@ -87,8 +106,24 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
   `bulk_actions.styles.destroy: danger`). Candidates load and authorize in a single
   query regardless of batch size.
 
+### Changed
+
+- Form inputs now render through Ruby component objects (`CafeCar::Inputs::*`,
+  wired into `FormBuilder#input`) — each field type resolves to its own component
+  rather than an inline builder branch. Rendered output and form behavior are
+  unchanged; the payoff is a per-type override seam and a single place to extend
+  input rendering.
+
 ### Fixed
 
+- `?sort=` keys are now gated to the policy's `permitted_filters`, the same
+  allowlist the URL-filter gate enforces. A sort key outside that list is ignored
+  instead of ordering by an arbitrary column, closing the parity gap where filtering
+  was gated but sorting was not.
+- `default_view` now inherits to controller subclasses. It was stored in a class
+  instance variable that silently reset to the default in any subclass, so a base
+  controller setting a non-default view didn't carry down; it now resolves through
+  inheritance.
 - The documented URL filter syntax now works. Filtering is a headline feature,
   but bare filter keys were silently dropped: `?price.min=10` or `?name=Widget`
   returned the full, unfiltered result set with no error, so a developer who
@@ -284,7 +319,8 @@ defaults for admin panels, internal tools, and rapid prototyping.
 
 - Adopted the `responders` gem for response handling.
 
-[Unreleased]: https://github.com/craft-concept/cafe_car/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/craft-concept/cafe_car/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/craft-concept/cafe_car/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/craft-concept/cafe_car/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/craft-concept/cafe_car/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/craft-concept/cafe_car/compare/v0.1.1...v0.1.2
