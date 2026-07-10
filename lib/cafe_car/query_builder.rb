@@ -75,6 +75,11 @@ module CafeCar
         parse_range(key, value)
       in Array | Op
         value.map { parse_value(key, _1) }
+      # An enum key ("archived") passes through untouched — ActiveRecord casts it
+      # to the stored value itself; coercing by column type would `to_i` an
+      # integer-backed enum's key to 0, the wrong bucket.
+      in String if enum?(key)
+        value
       in "true" then true
       in "false" then false
       in String
@@ -103,6 +108,8 @@ module CafeCar
 
     def column(name)       = @scope.columns_hash[name.to_s]
     def reflection(name)   = @scope.reflect_on_association(name)
+    def info(name)         = CafeCar[:ModelInfo].find(@scope.model).field(chomp(name))
+    def enum?(name)        = info(name).enum?
     def association?(name) = reflection(name).present?
     def attribute?(name)   = column(name).present?
     def scope?(name)       = name.intern.in? @scope.local_methods

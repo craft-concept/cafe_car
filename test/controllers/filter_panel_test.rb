@@ -22,9 +22,9 @@ class FilterPanelTest < ActionDispatch::IntegrationTest
 
     panel "/admin/clients" do
       assert_select "input[name='name~']",         1 # string -> contains
-      assert_select "select[name=status]", 1 do      # enum -> select of values
-        assert_select "option[value=?]", Client.statuses["active"].to_s,   text: "active"
-        assert_select "option[value=?]", Client.statuses["archived"].to_s, text: "archived"
+      assert_select "select[name=status]", 1 do      # enum -> select of keys
+        assert_select "option[value=active]",   text: "active"
+        assert_select "option[value=archived]", text: "archived"
       end
       # belongs_to -> Tom Select typeahead on the foreign key
       assert_select "select[name=owner_id][data-searchable-select]", 1
@@ -86,11 +86,12 @@ class FilterPanelTest < ActionDispatch::IntegrationTest
     response.parsed_body.map { _1["name"] }.sort
   end
 
-  test "the enum select's param filters by enum value" do
+  test "the enum select's param filters by enum key" do
     create(:client, name: "Live", status: :active,   owner: @me)
     create(:client, name: "Old",  status: :archived, owner: @me)
 
-    assert_equal [ "Old" ], client_names("status" => Client.statuses["archived"].to_s)
+    assert_equal [ "Old" ],  client_names("status" => "archived")
+    assert_equal [ "Live" ], client_names("status" => "active")
   end
 
   test "the association select's param filters by foreign key" do
@@ -132,10 +133,9 @@ class FilterPanelTest < ActionDispatch::IntegrationTest
 
   test "active filter values round-trip into the controls" do
     create(:client, owner: @me, status: :archived)
-    archived = Client.statuses["archived"].to_s
 
-    panel "/admin/clients", "status" => archived, "name~" => "acme" do
-      assert_select "select[name=status] option[selected][value=?]", archived, 1
+    panel "/admin/clients", "status" => "archived", "name~" => "acme" do
+      assert_select "select[name=status] option[selected][value=archived]", 1
       assert_select "input[name='name~'][value=acme]", 1
     end
   end

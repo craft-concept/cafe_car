@@ -34,6 +34,22 @@ module CafeCar
     #   assert_empty User.query("created_at >": "today")
     # end
 
+    test "enum keys filter integer-backed enums to the right bucket" do
+      live = create(:client, status: :active)
+      old  = create(:client, status: :archived)
+
+      assert_equal [ old ],  Client.query(status: "archived").to_a
+      assert_equal [ live ], Client.query(status: "active").to_a
+      assert_includes Client.query(status: "archived").to_sql, %("status" = 1)
+    end
+
+    test "non-enum integer columns still coerce string params" do
+      invoice = create(:invoice)
+
+      assert_equal [ invoice ], Invoice.query(number: invoice.number.to_s).to_a
+      assert_includes Invoice.query(number: "42").to_sql, %("number" = 42)
+    end
+
     test "default search matches string/text columns case-insensitively" do
       owner = create(:user)
       alpha = create(:client, name: "Alpha Corp", owner:)

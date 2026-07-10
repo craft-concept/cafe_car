@@ -8,11 +8,10 @@ class CafeCar::Filter::FieldInfo < CafeCar[:FieldInfo]
   # filter by — the :nested type only matters to edit forms (fields_for).
   def nested_attributes_type = nil
 
-  # Enum choices as [key, db-value] pairs. The URL carries the underlying
-  # value because QueryBuilder#parse_value casts by column type — an
-  # integer-backed enum's key string would be `to_i`'d to 0 (the wrong
-  # bucket). Once the query DSL maps enum keys itself, this can return keys.
-  def choices = model.defined_enums[@method.to_s].map { |key, value| [ key, value.to_s ] }
+  # Enum choices are the enum keys — the URL carries the readable key
+  # (`?status=archived`); QueryBuilder#parse_value passes enum keys through
+  # untouched and ActiveRecord casts them to the stored value.
+  def choices = values
 
   # Types filtered by a min/max control pair (see _range_filter).
   def range? = type.in?(%i[integer decimal float date datetime])
