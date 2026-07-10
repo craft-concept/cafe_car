@@ -5,6 +5,25 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-10 — Publish new gem versions after major upgrades (VERIFIED in-session, jeff@yak.sh)
+
+Verbatim owner message (mid-turn, during the "close all the tickets you can" batch):
+
+> (don't forget to publish new versions of the gem after major upgrades)
+
+**What this decides / where applied:**
+- **A meaningful batch of feature work warrants a version release, not just an unbounded
+  `[Unreleased]` CHANGELOG.** After a major upgrade lands green on main, cut the release: bump
+  `lib/cafe_car/version.rb` (semver — new features = minor bump), move the `[Unreleased]` CHANGELOG
+  entries under the new version heading, commit the regenerated `Gemfile.lock` in the SAME commit
+  (frozen bundler in CI/release aborts on a stale lock — see memory), and push a `v<version>` tag.
+- **The tag triggers the Trusted-Publishing release workflow** (`.github/workflows/release.yml`,
+  OIDC); the owner approves the publish in the GitHub UI. No manual `gem push`, no long-lived key.
+- **Applied this pass:** the custom-actions completion + form-input components + filtering
+  hardening batch is such an upgrade → cut **v0.3.0** once all four builders land green.
+
+---
+
 ## 2026-07-09 — Follow-ups on actions/docs/refactor + "always localize" (VERIFIED email, jeff@yak.sh)
 
 Verbatim owner reply to the "[CafeCar] shipped" digest:
