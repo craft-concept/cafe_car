@@ -75,6 +75,48 @@ class ActiveFiltersTest < ActionDispatch::IntegrationTest
     assert_equal "grid",  params["view"]
   end
 
+  test "a belongs_to chip shows the associated record's title, not its raw id" do
+    client = create(:client, name: "Acme Corp")
+    create(:invoice, client:)
+
+    chips "/admin/invoices", "client_id" => [ client.id ] do
+      # The chip reads "Client: Acme Corp", never "Client: 42".
+      assert_select ".ActiveFilters-chip", text: /Acme Corp/
+      assert_select ".ActiveFilters-chip", text: /#{client.id}/, count: 0
+    end
+  end
+
+  test "a nested belongs_to chip (client.owner) shows the owner's title" do
+    owner = create(:user, name: "Jane Doe")
+    client = create(:client, owner:)
+    create(:invoice, client:)
+
+    chips "/admin/invoices", "client.owner_id" => [ owner.id ] do
+      assert_select ".ActiveFilters-chip", text: /Jane Doe/
+    end
+  end
+
+  test "a has_many set chip shows every chosen record's title, resolved in one query" do
+    invoice = create(:invoice, line_items: build_list(:line_item, 2))
+    a, b = invoice.line_items.map(&:reload)
+    # Line items title on their (currency-presented) amount — the same title the
+    # membership select lists — for every id in the set, from one batched lookup.
+    money = ->(n) { ActionController::Base.helpers.number_to_currency(n) }
+
+    chips "/admin/invoices", "line_items.id" => [ a.id, b.id ] do
+      assert_select ".ActiveFilters-chip", text: /#{Regexp.escape(money[a.amount])}/
+      assert_select ".ActiveFilters-chip", text: /#{Regexp.escape(money[b.amount])}/
+    end
+  end
+
+  test "an unresolvable (stale) association id falls back to the raw id" do
+    create(:invoice)
+
+    chips "/admin/invoices", "client_id" => [ "999999" ] do
+      assert_select ".ActiveFilters-chip", text: /999999/
+    end
+  end
+
   test "a nested M2 filter (client.status) gets a chip whose remove link drops that path" do
     create(:invoice)
 

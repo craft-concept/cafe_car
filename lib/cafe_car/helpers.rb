@@ -97,7 +97,7 @@ module CafeCar
     # non-permitted param never grows a chip.
     def active_filters(klass = model)
       flatten_filters(permitted_filter_params).map do |key, value|
-        { key:, label: filter_label(klass, key), value: filter_value(value),
+        { key:, label: filter_label(klass, key), value: filter_value(klass, key, value),
           remove_url: url_for(request.params.except(key, "page")) }
       end
     end
@@ -136,9 +136,33 @@ module CafeCar
       segments.join(".")
     end
 
-    # A filter value as chip text: an id/enum set joins on commas, a Range or
-    # scalar prints as-is.
-    def filter_value(value) = Array.wrap(value).join(", ")
+    # A filter value as chip text. An association filter — a belongs_to foreign-key
+    # set (`owner_id[]`) or a has_many/has_one membership set (`line_items.id[]`) —
+    # shows each referenced record's TITLE (the same title the filter's typeahead
+    # lists), so a chip reads "Owner: Jane Doe" not "Owner: 42". The whole set is
+    # resolved in ONE query, and an id that no longer resolves falls back to its raw
+    # value. Every other filter (enum/string/range/boolean) prints its value(s) as-is.
+    def filter_value(klass, key, value)
+      ids   = Array.wrap(value)
+      assoc = filter_association(klass, key)
+      return ids.join(", ") unless assoc
+
+      titles = assoc.where(id: ids).index_by { _1.id.to_s }
+      ids.map { |id| titles[id.to_s]&.then { present(_1).title } || id }.join(", ")
+    end
+
+    # The model whose records an association filter's values are ids of, or nil for
+    # a non-association filter. A foreign-key set resolves through the terminal
+    # belongs_to; a membership set (`<assoc>.id[]`) through the association named
+    # just before the `.id`. Reflects through the same Filter::FieldInfo the panel
+    # controls read, so titling never diverges from what the control's select shows.
+    def filter_association(klass, key)
+      method          = filter_method(key)
+      parent, _, leaf = method.rpartition(".")
+      method          = parent if leaf == "id" && parent.present?
+      field           = CafeCar["Filter::FieldInfo"].new(model: klass, method:)
+      field.reflection&.klass if field.type.in?(%i[belongs_to has_many has_one])
+    end
 
     def context(name = nil, &)
       @context ||= []
