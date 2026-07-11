@@ -5,6 +5,32 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-11 — Pass 121: v0.3.0 release publish failed → root-caused + re-triggered
+
+Owner flagged in-session: "0.3.0 is not waiting on me — the publish deploy failed; investigate."
+
+**Root cause.** Release run [29121504916](https://github.com/craft-concept/cafe_car/actions/runs/29121504916)
+died at `rubygems/release-gem@v1`: building the gem loads the Rakefile → `load "rails/tasks/engine.rake"`
+→ boots the dummy app (`Bundler.require`) → pulls `ruby-vips`, whose FFI layer `dlopen`s the system
+lib `libvips.so.42`. **CI's `test` job installs libvips via apt; `release.yml` never did** — so CI was
+green and the release red on identical code. v0.3.0 never published (RubyGems tops at 0.2.1, no GH
+release), so it died before any irreversible push — safe to re-release.
+
+**Fix** (`eefa1ee`, coder-built, `bundle exec rake` green, CI green): added a `libvips`-only apt install
+step to `release.yml`'s `release` job (mirrors CI, scoped down — the release runner doesn't run
+tests/screenshots); also documented the two post-tag features (nested-association dot-path filters,
+active-filter chips) under `[0.3.0]` in CHANGELOG.
+
+**Re-trigger.** Since 0.3.0 was never public, I define it as current main: moved tag `v0.3.0`
+`6290026`→`eefa1ee` and re-pushed. Release run
+[29144243258](https://github.com/craft-concept/cafe_car/actions/runs/29144243258) is now **`waiting`
+on the owner approval gate**.
+
+**Next:** owner approves the run in the GitHub "release" environment → gem publishes to RubyGems +
+GH release created. Then verify 0.3.0 is live on rubygems.org.
+
+---
+
 ## 2026-07-10 — Pass 120: "close all the tickets you can" → v0.3.0 shipped + board cleared
 
 Owner set an in-session goal (`/goal close all the tickets you can`) and, mid-session, "don't forget
