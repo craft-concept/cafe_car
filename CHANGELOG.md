@@ -44,6 +44,28 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
   round-trip back into the controls. Every per-type control is a host-overridable
   partial (`_string_filter`, `_enum_filter`, `_range_filter`, …) — views, not a config
   DSL — and all copy lives in locales.
+- Nested-association (dot-path) filters. A policy may declare a filter that reaches
+  across an association as a dot-path in **`permitted_filters`** (e.g. `client.status`,
+  `client.owner`); the panel renders a typed control for it — the terminal attribute on
+  the far model picks the type (nested enum → enum select, nested `belongs_to` →
+  association multi-select) — and the query DSL composes the join. The allowlist gate now
+  validates the **full** nested path: filter params are descended recursively into the far
+  model and a leaf is kept only when its whole dot-path is permitted, so a crafted
+  `?client.owner.secret=` — an undeclared path even when it names a real far column — is
+  dropped before any join is built, exactly like an unpermitted top-level column. (A
+  permitted association's `.id` set-membership control, `?line_items.id[]=`, stays the one
+  implicit allowance, as before.) Copy lives in locales.
+- Active-filter chips on the index. The applied (policy-gated) filters now render above the
+  results as removable chips with a **Clear all** — removing a chip drops only that one
+  filter key and clear-all drops them all, both preserving the rest of the query (search
+  `q`, sort, view, and the other filters) so chips compose with the search box and the
+  CSV/chart export links. Chip labels come from the same policy/locale-driven source the
+  panel controls read (a nested `client.status` chip labels off its terminal attribute), and
+  an association filter resolves to the referenced record's **title** — the same presenter
+  title the filter's typeahead lists — so a chip reads `Client: Acme Corp`, not the raw id
+  (`Client: 42`), falling back to the id only for a stale/unresolvable one. Rendered through
+  a host-overridable `_active_filters` partial; styling is component-scoped and all copy
+  lives in locales.
 - Selectable chart y-metric. The index Chart view can now plot the **sum or average
   of a numeric column** on the y-axis, not just a record count. A `chart_y` select
   offers `count` (the default — nothing regresses) plus a sum and average per
