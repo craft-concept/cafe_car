@@ -5,6 +5,19 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-11 — Pass 122: v0.3.0 publish CONFIRMED live (closure)
+
+Budget **YELLOW** (allowance spent, `left=-5 used=69 alloc=64`) — no discretionary work, one cheap
+closure check only. Verified the Pass-121 re-trigger landed: release run
+[29144243258](https://github.com/craft-concept/cafe_car/actions/runs/29144243258) **completed
+success** (14m33s) and `gem list -r cafe_car` reports **0.3.0 live on RubyGems**. The libvips fix
+(`eefa1ee`) held; owner approved the gate. In-flight item from Pass 121 is closed — nothing urgent
+open. Resting long per YELLOW.
+
+**Next (GREEN):** work the board — P1 dogfood/monetization, P2 discoverability/logo-v2, OG card wip.
+
+---
+
 ## 2026-07-11 — Pass 121: v0.3.0 release publish failed → root-caused + re-triggered
 
 Owner flagged in-session: "0.3.0 is not waiting on me — the publish deploy failed; investigate."
