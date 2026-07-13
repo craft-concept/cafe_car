@@ -40,6 +40,12 @@ container. Expanded CI run `29278655790` passed every job; Pages run `2927847815
 Eleven audit tickets were closed with the commits and CI evidence. Only the live-demo rotation
 ticket remains open, with a status comment recording that homelab confirmation is pending.
 
+CI itself earned two follow-through fixes: `1d2c1cd` corrected the matrix's display-name/gemfile
+mapping and made the audit/package/system jobs self-contained on clean runners. A later rerun exposed
+physical-click nondeterminism in the new browser test; `4ffe2ce` switched those assertions to direct
+DOM events and made the remote option fixture unambiguous. The browser suite passed ten consecutive
+local seeds, then final head CI run `29279207172` passed all eleven jobs.
+
 **Next:** receive/verify the live-demo deployment and rotation confirmation, close the P0, and
 email the owner a short final digest/report link now.
 
