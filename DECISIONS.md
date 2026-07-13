@@ -5,6 +5,27 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-13 — Fix audit P0/P1 findings, release v0.3.1, then continue down the audit (VERIFIED in-session, jeff@yak.sh)
+
+Verbatim owner direction after reviewing the private project audit:
+
+> fix the P0s and P1s and push a v0.3.1  then work down the other issues. everything looks good
+
+**What this decides / where applied:**
+- **Security work preempts feature work.** Fix every P0/P1 from the 2026-07-13 private audit:
+  production debug disclosure, unrestricted association JSON, unchecked index-view lookup,
+  association policy-scope enforcement (read and write), dashboard authorization/scoping, and
+  release-tag verification.
+- **Release the fixes as v0.3.1.** Add exploit regression tests, run the full check suite, update
+  CHANGELOG/version/lockfile together, push main, then push `v0.3.1` through the existing
+  approval-gated Trusted Publishing workflow.
+- **Continue through the remaining audit findings after the security release**, in severity order,
+  with focused verified commits. The private audit remains off the public repository until the
+  vulnerabilities are patched; public release notes should describe impact without publishing a
+  weaponized recipe.
+
+---
+
 ## 2026-07-10 — OG social card approved ("ship it"); NEW v2 logo brief (VERIFIED email, jeff@yak.sh)
 
 Verbatim owner reply to the 7/10 digest:
