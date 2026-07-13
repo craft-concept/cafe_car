@@ -5,6 +5,43 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-13 — Pass 124: v0.3.1 live; P2/P3 audit backlog implemented
+
+The security release is public: tag `v0.3.1`, GitHub release
+`https://github.com/craft-concept/cafe_car/releases/tag/v0.3.1`, successful Trusted-Publishing run
+`29275603920`, and RubyGems reports `cafe_car (0.3.1)`. Homelab has the follow-through request to
+deploy 0.3.1, rotate the demo's `secret_key_base`, and clear all CafeCar sessions; confirmation is
+still pending and tracked as `rotate-the-live-demo-secret-and-revoke-sessions` (P0/WIP).
+
+Worked down every remaining code/documentation finding from the private project audit:
+
+- **`3e246cd` — request/session reliability:** removed URL-driven JSON/constant interpretation,
+  escaped contains filters as literal regexes, strictly parsed/capped `per`, fixed CSV's exact-cap
+  truncation header, and added browser-cookie + 30-day absolute/two-hour idle session lifetimes,
+  stale-cookie cleanup, secure-cookie behavior, and login rotation. The optional sessions generator
+  now owns bcrypt and emits the host Rails migration version.
+- **`0adc519` — UI/public contracts:** localized the remaining shipped interface copy with a guard,
+  restored policy-level `listable_attributes`/`displayable_attributes` overrides, made the core
+  installer dependency-neutral, and repaired README, skill, generator, contribution, security,
+  changelog, historical-audit, override-path, responder, action-route, and demo-URL drift.
+- **`ede4373` — package/compatibility/browser gates:** added Ruby 3.3/4.0 × Rails 8.0/8.1 CI,
+  exact-floor resolution, bounded runtime dependencies, JavaScript advisory checks, and exact-gem
+  build/install/minimal-host boot. Gem building no longer boots the dummy app. Added repeatable
+  headless-Chrome coverage for nested rows, bulk selection, and remote Tom Select; recorded the
+  vendored version/license/source; removed the unused slugs migration and moved password-reset views
+  into the dummy app. A Rails 8.0 Arel grouping incompatibility was fixed at the source.
+
+Final local evidence: default Rails 8.1 suite `330 tests / 1,053 assertions`, Rails 8.0 clean-schema
+suite `330 / 1,053`, browser suite `3 / 23` across multiple seeds, RuboCop `254 files / 0 offenses`,
+Brakeman `0 warnings`, Ruby and importmap dependency audits clean, 10 guide pages rebuilt, workflow
+YAML parsed, and the 278-file gem package inspected and booted from outside the repository. Ruby
+4.0.5 resolved/loaded Rails 8.0, Rails 8.1, and the exact declared dependency floors in an isolated
+container. Eleven completed audit tickets are ready to close after the push/CI; only the live-demo
+rotation ticket remains open.
+
+**Next:** push the three implementation commits plus this log, verify the expanded GitHub matrix,
+close the evidenced board tasks, and email the owner a short final digest/report link.
+
 ## 2026-07-13 — Pass 123: security audit remediated; v0.3.1 release candidate cleared
 
 Owner requested a project audit, approved its recommendations, and directed: “fix the P0s and P1s
