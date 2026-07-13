@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_09_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_09_120000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -123,17 +123,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_120000) do
     t.string "user_agent"
     t.integer "user_id", null: false
     t.index [ "user_id" ], name: "index_sessions_on_user_id"
-  end
-
-  create_table "slugs", force: :cascade do |t|
-    t.datetime "created_at"
-    t.string "scope"
-    t.string "slug", null: false
-    t.integer "sluggable_id"
-    t.string "sluggable_type"
-    t.index [ "slug", "sluggable_type", "scope" ], name: "index_slugs_on_slug_and_sluggable_type_and_scope", unique: true
-    t.index [ "slug", "sluggable_type" ], name: "index_slugs_on_slug_and_sluggable_type"
-    t.index [ "sluggable_type", "sluggable_id" ], name: "index_slugs_on_sluggable"
   end
 
   create_table "users", force: :cascade do |t|

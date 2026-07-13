@@ -99,7 +99,7 @@ module CafeCar
 
     def aggregate
       return {} unless @column
-      base.group(bucket_node).public_send(operation, *value_column)
+      base.group(bucket_sql).public_send(operation, *value_column)
           .reject  { |bucket, _| bucket.nil? } # rows with a NULL x-axis value
           .transform_keys   { label_for _1 }
           .transform_values { value_for _1 }
@@ -152,6 +152,12 @@ module CafeCar
         Arel::Nodes::NamedFunction.new("strftime", [ Arel::Nodes.build_quoted(FORMATS[@bucket]), col ])
       end
     end
+
+    # Compile the fully allowlisted Arel expression before passing it to GROUP BY.
+    # Rails 8.0 mutates an Arel group node while adding its SELECT alias, which
+    # produces invalid `GROUP BY expression AS alias` SQL. A compiled String takes
+    # the non-mutating calculation path; no request text is interpolated here.
+    def bucket_sql = @objects.connection.visitor.compile(bucket_node)
 
     # SQLite's strftime already returns the formatted String; Postgres' date_trunc
     # returns a Time we format the same way, so both adapters key by the same label.

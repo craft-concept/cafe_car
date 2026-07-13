@@ -21,6 +21,11 @@ gem "factory_bot_rails"
 gem "faker"
 gem "rouge"
 
+group :test do
+  gem "capybara"
+  gem "selenium-webdriver"
+end
+
 # PostHog instruments the live demo (test/dummy) only — product analytics,
 # exception tracking, and Rails log forwarding. All PostHog code is confined to
 # test/dummy and gated by test_mode (reports only in production); nothing ships

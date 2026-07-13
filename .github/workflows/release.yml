@@ -30,10 +30,8 @@ jobs:
       id-token: write   # OIDC token for RubyGems trusted publishing
       contents: write   # create the GitHub release
     steps:
-      # rubygems/release-gem builds the gem, which loads the Rakefile; that boots
-      # the dummy app (Bundler.require) and pulls in ruby-vips, whose FFI layer
-      # dlopens the system libvips.so — absent on the runner, the build aborts.
-      # Install it first (mirrors CI's test job), independent of the checkout.
+      # The full check suite boots the dummy app and exercises its image stack;
+      # ruby-vips needs the system libvips library just as it does in CI's test job.
       - name: Install packages
         run:
           sudo apt-get update && sudo apt-get install --no-install-recommends -y

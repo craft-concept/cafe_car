@@ -17,7 +17,6 @@ jobs:
         run: bin/brakeman --no-pager
 
   js_audit:
-    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -25,6 +24,20 @@ jobs:
         with: {bundler-cache: true}
       - name: Scan for security vulnerabilities in JavaScript dependencies
         run: bin/importmap audit
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with: {bundler-cache: true}
+      - name: Build the gem without booting the dummy app
+        run: bundle exec rake build
+      - name: Install and load the built gem
+        run: |
+          gem install --local pkg/cafe_car-*.gem --no-document
+          cd "$(mktemp -d)"
+          DATABASE_URL=sqlite3::memory: ruby -e 'require "rails/all"; require "cafe_car"; class PackageHost < Rails::Application; config.eager_load = false; config.secret_key_base = "x" * 64; end; PackageHost.initialize!; puts "booted cafe_car #{CafeCar::VERSION}"'
 
   rubocop:
     runs-on: ubuntu-latest
@@ -36,8 +49,30 @@ jobs:
       # enforced locally via `rake`; CI should report lint honestly, not silently fix it.
       - run: bin/rubocop -f github
 
-  test:
+  minimum_dependencies:
     runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: gemfiles/minimum.gemfile
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "4.0"
+          bundler-cache: true
+      - name: Verify the dependency floors
+        run: |
+          bundle exec ruby -e 'require "rails"; require "potter"; puts "Rails #{Rails.version}, Potter #{Gem.loaded_specs.fetch("potter").version}"'
+
+  test:
+    name: Test (Ruby ${{ matrix.ruby }}, Rails ${{ matrix.rails }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.3", "4.0"]
+        rails: ["8.0", "8.1"]
+    env:
+      BUNDLE_GEMFILE: gemfiles/rails_${{ matrix.rails }}.gemfile
     steps:
       - name: Install packages
         run:
@@ -45,9 +80,39 @@ jobs:
           google-chrome-stable curl libjemalloc2 libvips sqlite3
       - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
-        with: {bundler-cache: true}
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Prepare the database
+        run: |
+          rm -f test/dummy/storage/test*.sqlite3
+          bundle exec rake app:db:schema:load
+        env:
+          RAILS_ENV: test
       - name: Run tests
-        run: bin/rails test
+        run: bundle exec rake test
+        env:
+          RAILS_ENV: test
+
+  system_test:
+    name: System test (current stack)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y google-chrome-stable
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with: {bundler-cache: true}
+      - name: Prepare the database
+        run: |
+          rm -f test/dummy/storage/test*.sqlite3
+          bundle exec rake app:db:schema:load
+        env:
+          RAILS_ENV: test
+      - name: Exercise browser behavior
+        run: bundle exec rails test:system
         env:
           RAILS_ENV: test
 

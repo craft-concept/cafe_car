@@ -27,21 +27,23 @@ Gem::Specification.new do |spec|
   spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    Dir["{app,config,db,lib,skills}/**/*", ".claude-plugin/**/*", "llms.txt", "MIT-LICENSE", "Rakefile", "README.md"]
+    Dir["{app,config,db,lib,skills}/**/*", ".claude-plugin/**/*", "llms.txt", "CHANGELOG.md",
+        "CODE_OF_CONDUCT.md", "CONTRIBUTING.md", "MIT-LICENSE", "README.md", "SECURITY.md"]
+      .reject { _1 == "config/brakeman.ignore" }
   end
 
-  spec.add_dependency "rails", ">= 8.0"
-  spec.add_dependency "responders", ">= 3.0"
-  spec.add_dependency "activerecord_where_assoc", ">= 1.3"
-  spec.add_dependency "propshaft", ">= 1.0"
-  spec.add_dependency "haml-rails", ">= 3.0"
-  spec.add_dependency "image_processing", ">= 1.13"
-  spec.add_dependency "importmap-rails", ">= 2.0"
-  spec.add_dependency "turbo-rails", ">= 2.0"
-  spec.add_dependency "kaminari", ">= 1.2"
-  spec.add_dependency "potter"
-  spec.add_dependency "pundit", ">= 2.0"
-  spec.add_dependency "chronic", ">= 0.10"
+  spec.add_dependency "rails", ">= 8.0", "< 9"
+  spec.add_dependency "responders", ">= 3.0", "< 4"
+  spec.add_dependency "activerecord_where_assoc", ">= 1.3", "< 2"
+  spec.add_dependency "propshaft", ">= 1.0", "< 2"
+  spec.add_dependency "haml-rails", ">= 3.0", "< 4"
+  spec.add_dependency "image_processing", ">= 1.13", "< 3"
+  spec.add_dependency "importmap-rails", ">= 2.0", "< 3"
+  spec.add_dependency "turbo-rails", ">= 2.0", "< 3"
+  spec.add_dependency "kaminari", ">= 1.2", "< 2"
+  spec.add_dependency "potter", ">= 0.1.1", "< 0.2"
+  spec.add_dependency "pundit", ">= 2.0", "< 3"
+  spec.add_dependency "chronic", ">= 0.10", "< 1"
 
-  spec.add_dependency "rouge", ">= 4.0"
+  spec.add_dependency "rouge", ">= 4.0", "< 6"
 end

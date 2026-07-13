@@ -19,13 +19,10 @@ class DashboardTest < ActionDispatch::IntegrationTest
   end
 
   test "a missing dashboard policy is denied instead of raising" do
-    policy = Object.send(:remove_const, :DashboardPolicy)
-
-    get "/admin/dashboard"
+    missing = ->(*) { raise Pundit::NotDefinedError, "missing DashboardPolicy" }
+    DashboardPolicy.stub(:new, missing) { get "/admin/dashboard" }
 
     assert_response :redirect
-  ensure
-    Object.const_set(:DashboardPolicy, policy) if policy
   end
 
   test "policy-driven metric tiles render their counts" do
