@@ -28,7 +28,6 @@ class CafeCar::ParamParser
     when Hash       then params(v).tap { _1.merge!(_1.delete("")) if _1[""] }
     when '""', "''" then ""
     when "nil", ""  then nil
-    when /[{}\[\]]/ then value(JSON.parse(v))
     when /,/        then value(v.split(","))
     when /^(.*?)\.\.(\.?)(.*)$/
       begin
@@ -36,9 +35,6 @@ class CafeCar::ParamParser
       rescue ArgumentError
         v
       end
-    when /^\$(\w+)\.(\w+)$/
-      # TODO: make less scary
-      $1.constantize.arel_table[$2]
     else v
     end
   end

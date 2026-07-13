@@ -3,6 +3,11 @@ class CafeCar::SessionsGenerator < Rails::Generators::Base
 
   source_root File.expand_path("templates", __dir__)
 
+  def install_bcrypt
+    gem "bcrypt"
+    bundle_command "install"
+  end
+
   def create_sessions
     migration "create_sessions"
   end
@@ -13,7 +18,7 @@ class CafeCar::SessionsGenerator < Rails::Generators::Base
     say <<~MSG
 
       CafeCar sessions are enabled. The Session model and SessionPolicy ship
-      with the engine, so all this added is the `sessions` table.
+      with the engine, so this adds bcrypt and the `sessions` table.
 
       Next:
         - Run `bin/rails db:migrate`.

@@ -256,7 +256,8 @@ module CafeCar
 
     def batch_notice(action, count)
       label = I18n.t(action, default: action.to_s.humanize)
-      "#{label} #{count} #{model_name.human(count:).downcase}"
+      I18n.t(:batch_action, scope: :flashes, count:, action: label,
+        models: model_name.human(count:).downcase)
     end
 
     # Plain-text label for a typeahead option — the record's policy title attribute
@@ -276,11 +277,14 @@ module CafeCar
       scope.page(page).per(capped_per(per))
     end
 
-    # Clamp `?per=` to `CafeCar.max_per_page` so an oversized request can't load an
-    # unbounded table into memory. A blank `per` falls through to Kaminari's default.
+    # Parse and clamp `?per=` so malformed, non-positive, and oversized values
+    # cannot break pagination or load an unbounded table into memory. Invalid
+    # values fall through to Kaminari's configured default.
     def capped_per(per)
-      return per if per.blank?
-      [ per.to_i, CafeCar.max_per_page ].min
+      value = Integer(per, exception: false)
+      return unless value&.positive?
+
+      [ value, CafeCar.max_per_page ].min
     end
 
     def build_object

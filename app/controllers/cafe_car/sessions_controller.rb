@@ -11,7 +11,10 @@ module CafeCar
 
     def create
       run_callbacks(:create) { object.save! }
-      respond_with object, location: after_authentication_url
+      @previous_session&.destroy!
+      destination = after_authentication_url
+      reset_session
+      respond_with object, location: destination
     end
 
     def destroy
@@ -25,6 +28,11 @@ module CafeCar
       self.object = current_session
     end
 
-    def build_object = find_object
+    def build_object
+      return find_object unless action_name == "create"
+
+      @previous_session = find_session_by_cookie(touch: false)
+      CafeCar[:Current].session = self.object = build_session
+    end
   end
 end

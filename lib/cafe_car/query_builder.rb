@@ -121,7 +121,7 @@ module CafeCar
       when /^(.*?)\s*!$/
         not! { param!($1, value) }
       when /^(.*?)\s*~$/
-        param!($1, Regexp.new(value, Regexp::IGNORECASE))
+        param!($1, regexp(value))
       when /^(.*?)\s*([<>]=?)$/
         param!($1, Op.new($2, value))
       when method(:association?)
@@ -133,6 +133,10 @@ module CafeCar
       else
         raise MissingAttributeError, "can't find #{key.inspect} on #{@scope.model_name}"
       end
+    end
+
+    def regexp(value)
+      Regexp.new(Regexp.escape(value.to_s), Regexp::IGNORECASE)
     end
 
     def attribute!(key, value)

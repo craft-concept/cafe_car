@@ -43,17 +43,47 @@ module CafeCar
     end
 
     def terminate_session
-      CafeCar[:Current].session.destroy!
+      CafeCar[:Current].session&.destroy! if CafeCar[:Current].session&.persisted?
       CafeCar[:Current].session = nil
-      cookies.delete(:session_id)
+      clear_session_cookie
     end
 
     def persist_session
-      cookies.signed.permanent[:session_id] = { value: current_session.id, httponly: true, same_site: :lax }
+      cookies.signed[:session_id] = {
+        value: current_session.id,
+        httponly: true,
+        same_site: :lax,
+        secure: secure_session_cookie?
+      }
     end
 
-    def find_session_by_cookie
-      cookies.signed[:session_id].try { Session.find(_1) }
+    def find_session_by_cookie(touch: true)
+      id = cookies.signed[:session_id]
+      return unless id
+
+      record = CafeCar[:Session].find_by(id:)
+      unless record
+        clear_session_cookie
+        return
+      end
+
+      if record.expired?
+        record.destroy!
+        clear_session_cookie
+        return
+      end
+
+      record.touch if touch
+      record
+    end
+
+    def clear_session_cookie
+      cookies.delete(:session_id, secure: secure_session_cookie?, same_site: :lax)
+      nil
+    end
+
+    def secure_session_cookie?
+      Rails.env.production? || request.ssl?
     end
 
     def request_authentication

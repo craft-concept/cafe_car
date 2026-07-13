@@ -8,6 +8,8 @@ en:
   auth_required: Please %{new_session} first.
 
   navigation:
+    dashboard: Dashboard
+    sign_in: Sign In
     icon:
       new_session: log-in
       dashboard: dashboard
@@ -19,6 +21,8 @@ en:
 
   helpers:
     bulk_confirm: "Apply “%{action}” to the selected rows?"
+    saving: Saving...
+    empty: "No %{models} yet."
     # A collection-action button's label — the action plus its reach (how many
     # records the current filtered view holds), e.g. "Publish all 21". A
     # count-keyed one/other hash so a host can reword either form; both default
@@ -46,6 +50,34 @@ en:
       active: Active filters
       remove: "Remove %{filter} filter"
       clear: Clear all
+      matching: matching your filters.
+      view_all: View all
+
+    view:
+      grid: Grid View
+      table: Table View
+      chart: Chart View
+      download_csv: Download CSV
+
+    card:
+      actions: Actions
+      notes: Notes
+
+    nested:
+      add: "+ %{field}"
+      remove: Remove
+
+    errors:
+      correct_above: Correct the errors above.
+
+    title:
+      new: "New %{model}"
+      edit: "Edit %{model}"
+
+    debug:
+      title: Debug
+      params: Params
+      query: Query
 
   # Button style (a Button component flag) per bulk action — a shipped default a
   # host can extend/override. Unlisted actions fall back to the neutral style.
@@ -111,6 +143,13 @@ en:
     # e.g. "Publish article" / "Publish all articles".
     member_action: "%{action} %{model}"
     collection_action: "%{action} %{models}"
+    batch_action:
+      one: "%{action} %{count} %{models}"
+      other: "%{action} %{count} %{models}"
+
+  table:
+    created: "Created: %{time}"
+    select_row: Select this row
 
   activerecord:
     models:

@@ -58,6 +58,19 @@ class FilteringTest < ActionDispatch::IntegrationTest
     assert_equal %w[Alpha Gamma], response.parsed_body.map { _1["name"] }.compact.sort
   end
 
+  test "malformed structured, regex, and column-reference values stay safe" do
+    owner = create(:user)
+    [ "[", ".", "$Missing.name", "$User.name" ].each { create(:client, name: _1, owner:) }
+
+    [ [ "name", "[" ], [ "name~", "[" ], [ "name~", "." ],
+      [ "name", "$Missing.name" ], [ "name", "$User.name" ] ].each do |key, value|
+      get "/admin/clients.json", params: { key => value }
+
+      assert_response :success
+      assert_includes response.parsed_body.pluck("name"), value
+    end
+  end
+
   test "an enum select filters by the enum's stored value" do
     owner = create(:user)
     create(:client, name: "Working", status: :active,   owner:)

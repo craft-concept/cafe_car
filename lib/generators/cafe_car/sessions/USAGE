@@ -1,15 +1,17 @@
 Description:
-    Enables CafeCar's opt-in login/logout by creating the `sessions` table.
+    Enables CafeCar's opt-in login/logout by adding bcrypt and creating the
+    `sessions` table.
 
     The Session model (CafeCar::Session) and SessionPolicy ship with the
-    engine, so this generator does NOT create a model or policy -- it only
-    adds the migration for the table they need.
+    engine, so this generator does NOT create a model or policy.
 
 Example:
     bin/rails generate cafe_car:sessions
 
     This creates:
         db/migrate/XXXXXXXX_create_sessions.rb   (user, ip_address, user_agent)
+
+    It also adds bcrypt to the Gemfile and runs Bundler.
 
     After running, migrate and expose the session routes (mounting the engine
     does this automatically, or add `resource :session, only: %i[new create

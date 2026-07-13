@@ -71,6 +71,16 @@ class CsvExportTest < ActionDispatch::IntegrationTest
     assert_nil response.headers["X-CafeCar-Truncated"]
   end
 
+  test "export exactly at the row cap is complete and has no truncation signal" do
+    owner = create(:user)
+    3.times { |i| create(:client, name: "C%02d" % i, owner:) }
+
+    with_csv_cap(3) { get "/admin/clients.csv", params: { sort: "name" } }
+
+    assert_equal %w[C00 C01 C02], names
+    assert_nil response.headers["X-CafeCar-Truncated"]
+  end
+
   test "export over the row cap is truncated to exactly the cap and signals it" do
     owner = create(:user)
     5.times { |i| create(:client, name: "C%02d" % i, owner:) }

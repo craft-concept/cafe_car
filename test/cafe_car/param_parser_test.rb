@@ -14,5 +14,13 @@ module CafeCar
       assert_equal "1".."2", parser.parsed[:a]
       assert_equal "3"..."5", parser.parsed[:b]
     end
+
+    test "leaves structured-looking request values as literals" do
+      parser = ParamParser.new({ "a" => "{broken", "b" => '["x"]', "c" => "$User.name" })
+
+      assert_equal "{broken", parser.parsed[:a]
+      assert_equal '["x"]', parser.parsed[:b]
+      assert_equal "$User.name", parser.parsed[:c]
+    end
   end
 end

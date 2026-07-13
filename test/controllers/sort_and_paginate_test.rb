@@ -108,6 +108,18 @@ class SortAndPaginateTest < ActionDispatch::IntegrationTest
     assert_equal %w[C00 C01 C02], names
   end
 
+  test "invalid and non-positive `per` values use the default page size" do
+    owner = create(:user)
+    2.times { |i| create(:client, name: "C%02d" % i, owner:) }
+
+    [ "nope", 0, -1 ].each do |per|
+      get "/admin/clients", params: { sort: "name", per: }, as: :json
+
+      assert_response :success
+      assert_equal %w[C00 C01], names
+    end
+  end
+
   private
 
   def names = response.parsed_body.map { _1["name"] }
