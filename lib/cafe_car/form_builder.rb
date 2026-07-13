@@ -18,8 +18,9 @@ module CafeCar
 
       return show(info.input_key) if info.polymorphic? and object.persisted?
       return hidden(*info.polymorphic_methods) if info.polymorphic?
+      return preserved_association(info) unless association_accessible?(info)
 
-      collection ||= with_selected(info)
+      collection ||= with_selected(info, association_collection(info))
       # A multi-select filters by a set (`author_id[]`), so no blank "any" option —
       # an empty selection already means "any". A single select keeps its prompt.
       options[:include_blank] ||= info.prompt unless multiple
@@ -29,6 +30,20 @@ module CafeCar
 
       collection_select(info.input_key, collection, :id,
                         -> { @template.present(_1).title }, options, html)
+    end
+
+    # Association choices obey the associated model's Pundit scope. The remote
+    # typeahead endpoint already applies this boundary; using the same boundary
+    # for the initial HTML options keeps the progressive-enhancement path from
+    # leaking rows the user cannot reach through that endpoint.
+    def association_collection(info)
+      klass = info.reflection.klass
+      scope = association_accessible?(info) ? @template.policy_scope(klass) : klass.none
+      info.collection(scope)
+    end
+
+    def association_accessible?(info)
+      @template.policy(info.reflection.klass).index?
     end
 
     # HTML options that flag an association <select> for Tom Select enhancement
@@ -53,15 +68,30 @@ module CafeCar
     # The capped option collection, guaranteeing the currently-associated record is
     # among the options even when it sorts past the cap — otherwise editing a record
     # whose association is beyond `max_collection_options` would silently drop the value.
-    def with_selected(info)
-      collection = info.collection
+    def with_selected(info, collection)
       return collection unless info.reflection&.belongs_to?
+      return collection unless association_accessible?(info)
 
       selected = object.try(info.reflection.name)
       return collection unless selected
 
       records = collection.to_a
-      records.include?(selected) ? records : [ selected, *records ]
+      return records if records.include?(selected)
+
+      scope = @template.policy_scope(info.reflection.klass)
+      scope.where(id: selected.id).exists? ? [ selected, *records ] : records
+    end
+
+    # A persisted association can sit outside the viewer's current list boundary
+    # (or listing can be denied wholesale). Keep that foreign key through an
+    # unrelated edit without exposing the associated record as a labelled option.
+    # The controller accepts only this unchanged value; any reassignment still
+    # requires `index?` and membership in the associated policy scope.
+    def preserved_association(info)
+      return @template.safe_join([]) unless object.respond_to?(:persisted?) && object.persisted?
+      return @template.safe_join([]) unless info.reflection.belongs_to?
+
+      hidden(info.input_key)
     end
 
     # An ActiveRecord enum renders as a plain <select> of its declared values,

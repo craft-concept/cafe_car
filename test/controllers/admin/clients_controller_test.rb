@@ -21,7 +21,8 @@ class Admin::ClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "clients create" do
-    post "/admin/clients", params: { client: { name: "Bob", owner_id: create(:user).id } }
+    owner = sign_in
+    post "/admin/clients", params: { client: { name: "Bob", owner_id: owner.id } }
     follow_redirect!
 
     assert_select ".Page_Title", 1

@@ -63,6 +63,54 @@ class SearchableAssociationOptionsTest < ActionDispatch::IntegrationTest
                   1, "the association select is flagged for enhancement and points at its feed"
   end
 
+  test "the initial association select is policy-scoped like its typeahead feed" do
+    hidden = create(:user, name: "Hidden Hank", email: "hank@example.com")
+    client = create(:client, owner: @me)
+
+    non_super do
+      get url_for([ :edit, :admin, client ])
+
+      assert_response :success
+      assert_select "select[name='client[owner_id]'] option[value=?]", @me.id.to_s, 1
+      assert_select "select[name='client[owner_id]'] option[value=?]", hidden.id.to_s, 0
+    end
+  end
+
+  test "an association id outside its policy scope cannot be assigned" do
+    hidden = create(:user, name: "Hidden Hank", email: "hank@example.com")
+    client = create(:client, owner: @me)
+
+    non_super do
+      patch url_for([ :admin, client ]), params: { client: { name: client.name, owner_id: hidden.id } }
+
+      assert_response :redirect
+      assert_equal @me, client.reload.owner
+    end
+  end
+
+  test "denied list access preserves but does not expose or reassign an existing association" do
+    hidden  = create(:user, name: "Hidden Hank", email: "hank@example.com")
+    client  = create(:client, name: "Before", owner: @me)
+
+    with_user_index(false) do
+      get url_for([ :edit, :admin, client ])
+
+      assert_response :success
+      assert_select "select[name='client[owner_id]']", 0
+      assert_select "input[type=hidden][name='client[owner_id]'][value=?]", @me.id.to_s, 1
+
+      patch url_for([ :admin, client ]), params: {
+        client: { name: "After", owner_id: @me.id }
+      }
+      assert_equal [ "After", @me.id ], client.reload.values_at(:name, :owner_id)
+
+      patch url_for([ :admin, client ]), params: {
+        client: { name: "Reassigned", owner_id: hidden.id }
+      }
+      assert_equal [ "After", @me.id ], client.reload.values_at(:name, :owner_id)
+    end
+  end
+
   private
 
   def values = response.parsed_body.map { _1["value"] }
@@ -82,5 +130,14 @@ class SearchableAssociationOptionsTest < ActionDispatch::IntegrationTest
     yield
   ensure
     User.class_eval { def super? = true }
+  end
+
+
+  def with_user_index(value)
+    original = UserPolicy.instance_method(:index?)
+    UserPolicy.define_method(:index?) { value }
+    yield
+  ensure
+    UserPolicy.define_method(:index?, original)
   end
 end

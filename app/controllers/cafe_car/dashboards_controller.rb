@@ -3,17 +3,25 @@ module CafeCar
   # template — `app/views/cafe_car/dashboard/show.html.haml` — that composes the
   # `metric`/`chart` helpers (and the policy-driven `metrics` helper). Its existence
   # IS the opt-in: the route always mounts, but with no host template this 404s, so
-  # a CRUD-only host never inherits a blank page. It has no model of its own, so it
-  # skips the CRUD policy/authorization pipeline like the components gallery does.
+  # a CRUD-only host never inherits a blank page. An opted-in dashboard authorizes
+  # the conventional `DashboardPolicy#show?`; its model helpers apply each model's
+  # policy scope independently.
   class DashboardsController < const(:ApplicationController)
     include Controller
     helper CafeCar::Helpers
 
+    rescue_from ::Pundit::NotAuthorizedError, ::Pundit::NotDefinedError, with: :render_unauthorized
+
     before_action :skip_policy_scope
-    before_action :skip_authorization
+    after_action :verify_authorized
 
     def show
-      return head(:not_found) unless dashboard_template?
+      unless dashboard_template?
+        skip_authorization
+        return head(:not_found)
+      end
+
+      authorize :dashboard, :show?
       render "cafe_car/dashboard/show"
     end
 

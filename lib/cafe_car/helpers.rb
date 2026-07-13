@@ -146,8 +146,9 @@ module CafeCar
       ids   = Array.wrap(value)
       assoc = filter_association(klass, key)
       return ids.join(", ") unless assoc
+      return ids.join(", ") unless policy(assoc).index?
 
-      titles = assoc.where(id: ids).index_by { _1.id.to_s }
+      titles = policy_scope(assoc).where(id: ids).index_by { _1.id.to_s }
       ids.map { |id| titles[id.to_s]&.then { present(_1).title } || id }.join(", ")
     end
 
@@ -299,9 +300,10 @@ module CafeCar
     # A dashboard chart tile: a title over the dependency-free inline-SVG bar chart,
     # built from `model`'s records bucketed over the `x` date column at `by`
     # granularity. `x` runs through ChartBuilder's date-column allowlist unchanged,
-    # so a column name can never reach SQL raw.
+    # so a column name can never reach SQL raw. The model's policy scope is the
+    # chart's row boundary.
     def chart(title, model:, x:, by: nil)
-      render "cafe_car/dashboard/chart", title:, objects: model.all, x:, by:
+      render "cafe_car/dashboard/chart", title:, objects: policy_scope(model), x:, by:
     end
 
     # The policy-driven metric tiles for `model`: one count tile per name in the
@@ -314,7 +316,8 @@ module CafeCar
     end
 
     def metric_for(model, name)
-      scope = name.to_sym == :all ? model.all : model.public_send(name)
+      scope = policy_scope(model)
+      scope = scope.public_send(name) unless name.to_sym == :all
       metric(metric_label(model, name)) { scope.count }
     end
 
@@ -339,7 +342,7 @@ module CafeCar
       end
     end
 
-    def debug?   = params.key?(:debug)
+    def debug?   = Rails.env.development? && request.local? && params.key?(:debug)
     def console? = params.key?(:console)
 
     def comment(text)

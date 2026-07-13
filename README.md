@@ -913,6 +913,14 @@ you write one view.** Its existence turns the dashboard on; delete it and there'
 no dashboard at all (a direct hit 404s, no nav link), so a CRUD-only app never
 inherits a blank page.
 
+Authorize the page with an ordinary Pundit policy:
+
+```ruby
+class DashboardPolicy < ApplicationPolicy
+  def show? = user.present?
+end
+```
+
 Write `app/views/cafe_car/dashboard/show.html.haml`:
 
 ```haml
@@ -932,13 +940,14 @@ Three helpers compose the page:
   returns.
 - **`metrics(Model)`** — the tiles a **policy** declares. `Model`'s policy lists
   the scopes to surface in `permitted_metrics` (`:all` = the whole relation), and
-  CafeCar renders a count tile for each — the same policy-is-source-of-truth rule
-  as bulk actions.
+  CafeCar renders a count tile for each over `policy_scope(Model)` — the same
+  policy-is-source-of-truth rule as bulk actions.
 - **`chart "Title", model:, x:, by:`** — the same dependency-free inline-SVG bar
   chart as the index [Chart view](#advanced-usage), bucketing `model`'s records
   over the `x` date column at `by` granularity (`:day`/`:week`/`:month`, default
-  `:month`). The `x` column is validated against the model's date-column allowlist
-  and truncated with portable Arel, so it's never interpolated as raw SQL.
+  `:month`). It reads from `policy_scope(model)`; the `x` column is validated
+  against the model's date-column allowlist and truncated with portable Arel, so
+  it's never interpolated as raw SQL.
 
 ```ruby
 class UserPolicy < ApplicationPolicy

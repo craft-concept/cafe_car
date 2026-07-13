@@ -29,8 +29,10 @@ class JsonResponsesTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "show renders a single record's displayable attributes" do
-    client = create(:client, name: "Gamma")
+  test "show renders scalar displayable attributes without associations" do
+    owner  = create(:user, password: "secret", password_confirmation: "secret")
+    client = create(:client, name: "Gamma", owner:)
+    create(:invoice, client:, sender: owner)
 
     get "/admin/clients/#{client.id}", as: :json
 
@@ -40,6 +42,11 @@ class JsonResponsesTest < ActionDispatch::IntegrationTest
     body = response.parsed_body
     assert_equal client.id, body["id"]
     assert_equal "Gamma", body["name"]
+    assert_equal %w[created_at id name status updated_at], body.keys.sort,
+                 "only scalar displayable attributes are serialized"
     refute body.key?("owner_id"), "non-displayable foreign key must not leak"
+    refute body.key?("owner"), "belongs_to association must not be serialized by default"
+    refute body.key?("invoices"), "has_many association must not be serialized by default"
+    refute_includes response.body, "password_digest"
   end
 end

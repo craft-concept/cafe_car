@@ -5,6 +5,28 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-13 — Pass 123: security audit remediated; v0.3.1 release candidate cleared
+
+Owner requested a project audit, approved its recommendations, and directed: “fix the P0s and P1s
+and push a v0.3.1 then work down the other issues. everything looks good.” The approval is recorded
+verbatim in `DECISIONS.md` (`1b5e962`). The private audit report was shared with the owner by email;
+security specifics stayed private until fixes were ready.
+
+The v0.3.1 release candidate closes every P0/P1: debug output is local-development-only and no
+longer prints session/cookie internals; JSON defaults to policy-displayable scalar columns; index
+partials resolve through a fixed view allowlist; dashboard access requires `DashboardPolicy#show?`
+and model aggregations use policy scopes; association choices and submitted IDs require associated
+`index?` plus policy-scope membership, recursively covering ordinary, polymorphic, and nested
+associations. Existing restricted foreign keys can round-trip unchanged without exposing a label,
+while reassignment remains denied. The release workflow now verifies tags belong to `main` and runs
+the full suite before Trusted Publishing.
+
+Independent security review cleared the release after two caught-and-fixed edge cases. Final local
+gate: 308 tests / 929 assertions, zero failures; 245 Ruby files with zero RuboCop offenses; zero
+active Brakeman warnings; `bundle-audit` and importmap audit found no vulnerable dependencies; the
+0.3.1 gem builds successfully and release YAML parses. Next: push the release commit and `v0.3.1`,
+confirm the workflow, route session/secret rotation to homelab, then work down the P2/P3 audit list.
+
 ## 2026-07-11 — Pass 122: v0.3.0 publish CONFIRMED live (closure)
 
 Budget **YELLOW** (allowance spent, `left=-5 used=69 alloc=64`) — no discretionary work, one cheap

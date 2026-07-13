@@ -43,7 +43,16 @@ Override the partials like any other ([views.md](views.md)):
 ## The dashboard — opt in by writing one view
 
 No template, no dashboard: the route always exists, but it 404s and shows no nav
-link until the host writes `app/views/cafe_car/dashboard/show.html.haml`:
+link until the host writes `app/views/cafe_car/dashboard/show.html.haml`. The page
+uses ordinary Pundit authorization:
+
+```ruby
+class DashboardPolicy < ApplicationPolicy
+  def show? = user.present?
+end
+```
+
+Then write the view:
 
 ```haml
 - title "Dashboard"
@@ -57,11 +66,13 @@ link until the host writes `app/views/cafe_car/dashboard/show.html.haml`:
 ```
 
 - `metrics(Model)` — one count tile per scope named in the model policy's
-  `permitted_metrics` (`:all` = whole relation). Policy-driven; the default choice.
+  `permitted_metrics` (`:all` = the whole policy scope). Policy-driven; the default
+  choice.
 - `metric("Label") { … }` — one tile with whatever the block returns.
 - `chart "Title", model:, x:, by:` — the inline-SVG bar chart, bucketing over the
   `x` date column at `:day`/`:week`/`:month`. Column names are validated against
-  the policy's date columns — never raw SQL.
+  the policy's date columns, and rows come from `policy_scope(model)` — never raw
+  SQL or unscoped data.
 
 It's a plain view: add headings, your own partials, anything between tiles. Once
 the file exists a Dashboard link appears at the top of the sidebar.

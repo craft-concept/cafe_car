@@ -2,6 +2,6 @@
 -# query DSL turns into a where_assoc_exists matching any of the chosen ids.
 = Field do
   = f.label info.method
-  = f.collection_select info.method, info.collection, :id, -> { present(_1).title },
+  = f.collection_select info.method, f.association_collection(info), :id, -> { present(_1).title },
     { selected: f.object.value(info.method, :id) },
     { multiple: true, name: "#{f.field_name(info.method, :id)}[]", **f.searchable_select(info) }

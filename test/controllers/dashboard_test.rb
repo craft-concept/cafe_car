@@ -1,4 +1,5 @@
 require "test_helper"
+require "minitest/mock"
 
 # The opt-in dashboard overview. A host defines it by WRITING one template —
 # `app/views/cafe_car/dashboard/show.html.haml` — that composes the metric/chart
@@ -8,6 +9,24 @@ require "test_helper"
 # un-written dashboard 404s (and drops its nav link) rather than blanking.
 class DashboardTest < ActionDispatch::IntegrationTest
   setup { sign_in }
+
+  test "the dashboard requires authorization" do
+    signed_out = open_session
+
+    signed_out.get "/admin/dashboard"
+
+    signed_out.assert_redirected_to new_session_path
+  end
+
+  test "a missing dashboard policy is denied instead of raising" do
+    policy = Object.send(:remove_const, :DashboardPolicy)
+
+    get "/admin/dashboard"
+
+    assert_response :redirect
+  ensure
+    Object.const_set(:DashboardPolicy, policy) if policy
+  end
 
   test "policy-driven metric tiles render their counts" do
     create_list(:article, 2, :draft)
@@ -31,6 +50,23 @@ class DashboardTest < ActionDispatch::IntegrationTest
     assert_select "svg.Chart"
     assert Nokogiri::HTML5(response.body).css(".Dashboard-chart g.Chart-bar").any?,
            "expected at least one chart bar"
+  end
+
+  test "policy scope limits metric and chart rows" do
+    create(:article, :published, title: "Visible", created_at: t("2026-01-10"))
+    create(:article, :published, title: "Hidden",  created_at: t("2026-02-10"))
+
+    resolved     = Struct.new(:relation) { def resolve = relation }
+    only_visible = ->(_user, scope) { resolved.new(scope.where(title: "Visible")) }
+
+    ArticlePolicy::Scope.stub(:new, only_visible) do
+      get "/admin/dashboard"
+
+      assert_response :success
+      assert_equal [ 1, 1 ], tiles
+      assert_select '.Dashboard-chart [data-bucket="2026-01"][data-value="1"]'
+      assert_select '.Dashboard-chart [data-bucket="2026-02"]', count: 0
+    end
   end
 
   test "the dashboard 404s when the host has not written the template" do

@@ -12,7 +12,11 @@ module CafeCar
   # request stack (with real policies) in `nested_fields_test.rb` and
   # `field_type_round_trip_test.rb`, which GET `new`/`edit` pages through this path.
   class FormBuilderTest < ActionView::TestCase
-    setup { view.extend CafeCar::Helpers }
+    setup do
+      view.extend CafeCar::Helpers
+      view.define_singleton_method(:policy) { Pundit.policy! nil, _1 }
+      view.define_singleton_method(:policy_scope) { _1.all }
+    end
 
     # A CafeCar form builder bound to `record` in this test's view context.
     def form(record)

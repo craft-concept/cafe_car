@@ -16,6 +16,29 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Fixed
 
+## [0.3.1] - 2026-07-13
+
+### Security
+
+- Restricted the development debug surface to local development requests and
+  removed session/cookie internals from its output.
+- Singular JSON responses now serialize policy-displayable scalar attributes
+  only; associations are no longer included without their own authorization and
+  serialization contract.
+- Association selects, filter labels, and submitted association ids now require
+  the associated model's `index?` permission and Pundit scope. Foreign keys
+  outside that boundary—including polymorphic and nested association ids—are
+  denied server-side rather than relying on the select control as the boundary.
+- The opt-in dashboard now requires `DashboardPolicy#show?`, and its built-in
+  metric/chart helpers aggregate over each model's policy scope.
+
+### Changed
+
+- Index views resolve through the shipped `table`, `grid`, and `chart` allowlist;
+  an unknown `view` parameter falls back safely instead of selecting a partial.
+- The release workflow now runs the full check suite and verifies that a tagged
+  commit belongs to `main` before publishing it to RubyGems.
+
 ## [0.3.0] - 2026-07-10
 
 ### Added

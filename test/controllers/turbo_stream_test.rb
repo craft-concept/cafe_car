@@ -8,7 +8,7 @@ class TurboStreamTest < ActionDispatch::IntegrationTest
   TURBO = { "Accept" => "text/vnd.turbo-stream.html" }.freeze
 
   test "create responds with a turbo stream" do
-    owner = create(:user)
+    owner = sign_in
 
     post "/admin/clients",
          params: { client: { name: "Turbo Inc", owner_id: owner.id } },
@@ -34,7 +34,7 @@ class TurboStreamTest < ActionDispatch::IntegrationTest
   end
 
   test "format param also negotiates turbo stream" do
-    owner = create(:user)
+    owner = sign_in
 
     post "/admin/clients",
          params: { client: { name: "Format Co", owner_id: owner.id }, format: :turbo_stream }

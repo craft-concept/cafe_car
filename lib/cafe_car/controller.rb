@@ -4,8 +4,10 @@ module CafeCar
   module Controller
     extend ActiveSupport::Concern
 
+    INDEX_VIEWS = %w[table grid chart].freeze
+
     include Pundit::Authorization
-    include Filtering, Authentication
+    include Filtering, AssociationAuthorization, Authentication
 
     class_methods do
       def model(model)
@@ -311,7 +313,9 @@ module CafeCar
       method = "permitted_attributes" unless policy.respond_to?(method)
       multi  = multiple_attachments(record)
       keys   = policy.public_send(method).map { |k| multi.include?(k) ? { k => [] } : k }
-      pundit_params_for(record).permit(*keys)
+      pundit_params_for(record).permit(*keys).tap do |attributes|
+        authorize_association_attributes!(record, policy, attributes)
+      end
     end
 
     # Names of the record's `has_many_attached` attachments — the fields whose
@@ -399,7 +403,9 @@ module CafeCar
 
     def default_view = self.class.default_view
     def view
-      params.fetch(:view) { default_view }
+      [ params[:view], default_view, "table" ].compact
+        .map(&:to_s)
+        .find { _1.in?(INDEX_VIEWS) }
     end
 
     def _render_with_renderer_json(obj, options)
@@ -410,11 +416,8 @@ module CafeCar
       # permitted_attributes is record-oriented, so ask a record for the column
       # list even when serializing a collection.
       record = obj.is_a?(CafeCar::Model) ? obj : obj.klass.new
-      options[:only] ||= [ :id ] | policy(record).attributes.displayable
-
-      if obj.is_a?(CafeCar::Model)
-        options[:include] ||= policy(obj).displayable_associations
-      end
+      displayable = [ :id ] | policy(record).attributes.displayable
+      options[:only] ||= displayable & record.attribute_names.map(&:to_sym)
 
       super obj, **options
     end

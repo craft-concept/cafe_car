@@ -8,7 +8,11 @@ module CafeCar
     # builds a real CafeCar form over a dummy-app record and inspects the HTML — an
     # effect-level assertion, not just "render didn't raise".
     class InputsTest < ActionView::TestCase
-      setup { view.extend CafeCar::Helpers }
+      setup do
+        view.extend CafeCar::Helpers
+        view.define_singleton_method(:policy) { Pundit.policy! nil, _1 }
+        view.define_singleton_method(:policy_scope) { _1.all }
+      end
 
       # A CafeCar form builder bound to `record` in this test's view context.
       def form(record)

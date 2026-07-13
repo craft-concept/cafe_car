@@ -59,6 +59,12 @@ end
 def permitted_attributes_for_create = %i[name email owner_id]  # per-action variant
 ```
 
+For associations, the parent policy decides whether the foreign key is editable,
+and the associated model's `index?` permission plus policy scope decide which
+records may be selected. CafeCar applies that boundary to the initial select, the
+remote typeahead, and submitted ids (including nested and polymorphic ids); a
+crafted id outside it is denied server-side.
+
 Nested records permit `<assoc>_attributes` the Rails way (with `:id` + `:_destroy`
 for `allow_destroy`):
 
