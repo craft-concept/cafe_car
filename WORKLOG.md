@@ -36,11 +36,12 @@ suite `330 / 1,053`, browser suite `3 / 23` across multiple seeds, RuboCop `254 
 Brakeman `0 warnings`, Ruby and importmap dependency audits clean, 10 guide pages rebuilt, workflow
 YAML parsed, and the 278-file gem package inspected and booted from outside the repository. Ruby
 4.0.5 resolved/loaded Rails 8.0, Rails 8.1, and the exact declared dependency floors in an isolated
-container. Eleven completed audit tickets are ready to close after the push/CI; only the live-demo
-rotation ticket remains open.
+container. Expanded CI run `29278655790` passed every job; Pages run `29278478158` also passed.
+Eleven audit tickets were closed with the commits and CI evidence. Only the live-demo rotation
+ticket remains open, with a status comment recording that homelab confirmation is pending.
 
-**Next:** push the three implementation commits plus this log, verify the expanded GitHub matrix,
-close the evidenced board tasks, and email the owner a short final digest/report link.
+**Next:** receive/verify the live-demo deployment and rotation confirmation, close the P0, and
+email the owner a short final digest/report link now.
 
 ## 2026-07-13 — Pass 123: security audit remediated; v0.3.1 release candidate cleared
 
