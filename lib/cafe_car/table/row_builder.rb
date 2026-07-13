@@ -24,7 +24,7 @@ module CafeCar::Table
     end
 
     def timestamps(**options)
-      tip = show(:created_at).string&.then { "Created: #{_1}" }
+      tip = show(:created_at).string&.then { I18n.t(:created, scope: :table, time: _1) }
       cell(timestamp_attribute, :shrink, tip:, **options)
     end
 
@@ -35,7 +35,8 @@ module CafeCar::Table
     def select(*args)
       return unless @template.bulk_actions?
       ui.Cell(:select, *args) do
-        @template.check_box_tag("ids[]", @object.id, false, id: nil, "aria-label": "Select this row")
+        @template.check_box_tag("ids[]", @object.id, false, id: nil,
+          "aria-label": I18n.t(:select_row, scope: :table))
       end
     end
 

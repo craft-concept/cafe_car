@@ -75,11 +75,19 @@ def permitted_attributes
 end
 ```
 
-## Displayed fields (derived — usually leave alone)
+## Displayed fields (derived, with explicit policy overrides)
 
-- `attributes.displayable` — what show pages/tables/JSON/CSV display: permitted
-  keys ∪ columns, with foreign keys folded into their associations and
-  Rails-parameter-filtered columns (passwords, tokens) removed.
+- `displayable_attributes` — override contract for what record pages and the
+  JSON/CSV bases expose. The default is permitted keys ∪ every model column,
+  with foreign keys folded into associations, then `id` and names matched by
+  Rails' parameter filter removed. For a custom sensitive name, use
+  `def displayable_attributes = super - %i[internal_note]`.
+- `listable_attributes` — override contract for the default index-table fields.
+  Its default is the model fields minus `id`, timestamps, and digest columns.
+  Narrow it separately (`super - %i[internal_note]`) to keep a field out of the
+  default table too.
+- `attributes.displayable` / `attributes.listable` — the read surfaces CafeCar
+  uses for those policy declarations.
 - `attributes.editable` — what the form renders, derived from `permitted_attributes`.
 - `title_attribute` — the record's display name; defaults to the first displayable
   attribute. Override when wrong: `def title_attribute = :number`.
@@ -105,6 +113,43 @@ The index toolbar renders a button per listed action (label from the locale key
 [locales.md](locales.md)). On submit, each selected record is checked against
 `publish?` individually — unauthorized rows are skipped, never bulk-bypassed — then
 receives `publish!`. Return `[]` to offer no bulk actions.
+
+## Member actions: `permitted_member_actions`
+
+Default `[]`. List a name to render it on the record's show page and index row:
+
+```ruby
+# app/models/article.rb
+def publish! = update!(published_at: Time.zone.now)
+
+# app/policies/article_policy.rb
+def publish? = !object.published?
+def permitted_member_actions = %i[publish]
+```
+
+CafeCar posts to `/articles/:id/actions/publish`, authorizes `publish?`, and calls
+`publish!`. The predicate gates both the rendered control and the request. Labels
+and styles come from `en.publish` and `actions.styles.publish`.
+
+## Collection actions: `permitted_collection_actions`
+
+Default `[]`. A collection action runs over the policy-scoped, filtered set shown
+by the current index:
+
+```ruby
+# app/models/article.rb
+def self.publish_all! = unpublished.update_all(published_at: Time.zone.now)
+
+# app/policies/article_policy.rb
+def publish_all? = user.editor?
+def permitted_collection_actions = %i[publish_all]
+```
+
+CafeCar posts to `/articles/actions/publish_all`, authorizes `publish_all?` against
+the model class, and calls `publish_all!` within the viewed scope. The toolbar
+button carries the active filters and shows the affected count. A public controller
+method named `publish_all` can replace that forwarding when the action needs a
+custom query or response.
 
 ## Dashboard metrics: `permitted_metrics`
 

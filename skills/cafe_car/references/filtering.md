@@ -19,7 +19,7 @@ grid, chart, CSV export, pagination) honors it.
 | `?created_at=2024-01-01..2024-12-31` | range (`...` = exclusive end) |
 | `?tags=red,blue,green` | `IN (…)` |
 | `?name!=bob` | negate any filter (`!` suffix on the key) |
-| `?name~=^wid` | regex match, case-insensitive (`~` suffix) |
+| `?name~=wid` | literal substring match, case-insensitive (`~` suffix) |
 | `?author=true` / `?author=false` | association exists / doesn't |
 | `?line_items=3`, `?line_items.min=2` | association count |
 | `?author.name~=bob` | filter through an association (nests recursively) |

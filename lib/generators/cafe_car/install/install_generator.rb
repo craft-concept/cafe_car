@@ -3,23 +3,6 @@ class CafeCar::InstallGenerator < Rails::Generators::Base
 
   source_root File.expand_path("templates", __dir__)
 
-  def install_deps
-    gem "bcrypt"
-    gem "paper_trail"
-    gem "factory_bot_rails"
-    gem "faker"
-    gem "rouge"
-
-    gem_group :development do
-      gem "hotwire-livereload"
-      gem "better_errors"
-      gem "binding_of_caller"
-      gem "chrome_devtools_rails"
-      gem "i18n-debug"
-    end
-    bundle_command "install"
-  end
-
   def routes
     route %(mount CafeCar::Engine => "/"), namespace: :admin
   end

@@ -22,4 +22,4 @@ Key conventions: the policy is the source of truth (what's visible, editable, an
 
 ## Optional
 
-- [Live demo](https://cafe-car-demo-production.up.railway.app): a clickable CafeCar app, no signup
+- [Live demo](https://cafe-car-demo.up.railway.app): a clickable CafeCar app, no signup

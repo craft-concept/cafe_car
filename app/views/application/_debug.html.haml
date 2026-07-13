@@ -1,11 +1,11 @@
 - console if Rails.env.development?
 
-= Card title: "Debug" do |card|
+= Card title: t(:title, scope: %i[helpers debug]) do |card|
   = card.Section do
-    = Field label: "Params" do
+    = Field label: t(:params, scope: %i[helpers debug]) do
       = p parsed_params
 
-    = Field label: "Query" do
+    = Field label: t(:query, scope: %i[helpers debug]) do
       = p scope.to_sql, as: :code, lang: :sql
 
   = yield :debug

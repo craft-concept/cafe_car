@@ -39,6 +39,17 @@ module CafeCar
       assert_not_includes displayable, :id
     end
 
+    test "host overrides of displayed attribute declarations flow through attributes" do
+      narrowed = Class.new(ArticlePolicy) do
+        def displayable_attributes = super - %i[summary]
+        def listable_attributes = super - %i[summary]
+      end
+      attributes = policy(Article.new, narrowed).attributes
+
+      assert_not_includes attributes.displayable, :summary
+      assert_not_includes attributes.listable, :summary
+    end
+
     test "attributes.editable lists the permitted attributes' input keys" do
       assert_includes policy(Article.new).attributes.editable, :title
     end

@@ -29,8 +29,10 @@ links, bulk actions, and CSV export — all of which the default views carry for
 The Pundit policy is the source of truth. It declares who may do what
 (`index?`, `update?`, …), which rows are visible (`Scope#resolve`), which fields are
 editable (`permitted_attributes`), which bulk actions exist
-(`permitted_bulk_actions`), and which dashboard metrics show (`permitted_metrics`).
-The default views render exactly what the policy declares.
+(`permitted_bulk_actions`), which member and collection actions exist
+(`permitted_member_actions`, `permitted_collection_actions`), and which dashboard
+metrics show (`permitted_metrics`). The default views render exactly what the
+policy declares.
 
 So the customization ladder, cheapest first:
 
@@ -48,7 +50,7 @@ templates. Styles live in component CSS, not global stylesheets.
 ```ruby
 # config/routes.rb
 namespace :admin do
-  resources :products      # also auto-adds POST batch + GET options collection routes
+  resources :products      # also adds batch, options, and generic custom-action routes
 end
 
 # app/controllers/admin/products_controller.rb
@@ -93,6 +95,8 @@ automatically — no opt-in, no include.
 | Restrict which rows a user sees | [policies](references/policies.md) — `Scope#resolve` |
 | Narrow one controller's collection (`def scope = super.published`) | [controllers](references/controllers.md) |
 | Add a bulk action (Publish button on the index) | [policies](references/policies.md) — bulk actions |
+| Add a member action (Publish one record) | [policies](references/policies.md) — member actions |
+| Add a collection action (Publish the filtered set) | [policies](references/policies.md) — collection actions |
 | Filter/sort/search an index via URL params | [filtering](references/filtering.md) |
 | Add buttons or fields to grid cards / table rows | [views](references/views.md) |
 | Override one view for one resource vs app-wide | [views](references/views.md) |
@@ -108,9 +112,9 @@ automatically — no opt-in, no include.
 ## Reference pages
 
 - [controllers.md](references/controllers.md) — the `cafe_car` macro, the scope
-  pipeline, callbacks, batch/options endpoints
+  pipeline, callbacks, and extra endpoints
 - [policies.md](references/policies.md) — the source of truth: predicates, scopes,
-  attributes, bulk actions, metrics
+  attributes, bulk/member/collection actions, metrics
 - [presenters.md](references/presenters.md) — how values render; `show` macros
 - [forms.md](references/forms.md) — the form builder, type inference, nested records
 - [filtering.md](references/filtering.md) — the dot-query URL grammar, sort, search,

@@ -19,7 +19,7 @@ list**, add **one link per PR**, and insert the line in the correct section in
 **Paste this line:**
 
 ```
-* [CafeCar](https://github.com/craft-concept/cafe_car) - Auto-generate CRUD admin UI for your Rails models, with sensible overridable defaults.
+* [CafeCar](https://github.com/craft-concept/cafe_car) - Render CRUD admin UI from your Rails models, with sensible overridable defaults.
 ```
 
 > ⚠️ **Gating risk — 30k download minimum.** Awesome Ruby's CONTRIBUTING enforces
@@ -45,7 +45,7 @@ list**, add **one link per PR**, and insert the line in the correct section in
 **Paste this line:**
 
 ```
-- [cafe_car](https://github.com/craft-concept/cafe_car) - A gem to auto-generate CRUD admin UI for your Rails models. [:red_circle:](https://rubygems.org/gems/cafe_car)
+- [cafe_car](https://github.com/craft-concept/cafe_car) - A composable view extension that renders CRUD admin UI from your Rails models. [:red_circle:](https://rubygems.org/gems/cafe_car)
 ```
 
 ---

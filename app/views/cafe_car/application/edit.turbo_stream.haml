@@ -1,6 +1,6 @@
 - if action.edit?
   = render "popup" do
-    = Card title: "Edit #{model_name.human}", actions: Close { icon(:xmark_circle_solid) } do |card|
+    = Card title: t(:edit, scope: %i[helpers title], model: model_name.human), actions: Close { icon(:xmark_circle_solid) } do |card|
       = render "form", card:
 - else
   = turbo_stream.replace(dom_id(object, :edit)) do

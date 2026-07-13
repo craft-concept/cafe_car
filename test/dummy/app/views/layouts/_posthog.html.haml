@@ -52,7 +52,7 @@
     // Attach X-POSTHOG-DISTINCT-ID / X-POSTHOG-SESSION-ID to browser requests
     // aimed at the demo backend, so posthog-rails can stitch server-side
     // exceptions to this session's replay. Hostname only (no scheme/path/port).
-    tracing_headers: ["cafe-car-demo-production.up.railway.app"],
+    tracing_headers: ["cafe-car-demo.up.railway.app"],
   });
 - if current_user
   -# Link this browser session to the logged-in user. The distinct id is the

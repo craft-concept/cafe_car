@@ -18,7 +18,7 @@ were opened, no posts submitted, no accounts created.
       anything can link to it. Publish it on your blog / Medium / dev.to. **Account: your
       blog platform.** → This URL is referenced as `BLOG_URL` everywhere below.
 - [ ] **Sanity-check the live demo** can take a traffic spike:
-      https://cafe-car-demo-production.up.railway.app (and that the periodic data reset is
+      https://cafe-car-demo.up.railway.app (and that the periodic data reset is
       fine for public eyes).
 - [ ] **Confirm RubyGems page** looks right (description, links, latest version):
       https://rubygems.org/gems/cafe_car
@@ -38,7 +38,7 @@ were opened, no posts submitted, no accounts created.
 
 - [ ] Open a PR adding CafeCar to the **Gems** section.
       - **Repo:** https://github.com/gramantin/awesome-rails (`README.md`)
-      - **Paste:** `- [cafe_car](https://github.com/craft-concept/cafe_car) - A gem to auto-generate CRUD admin UI for your Rails models. [:red_circle:](https://rubygems.org/gems/cafe_car)`
+      - **Paste:** `- [cafe_car](https://github.com/craft-concept/cafe_car) - A composable view extension that renders CRUD admin UI from your Rails models. [:red_circle:](https://rubygems.org/gems/cafe_car)`
       - **Account:** GitHub. One link per PR.
 
 ## Step 3 — Awesome Ruby PR (GATED — check downloads first)
@@ -49,7 +49,7 @@ were opened, no posts submitted, no accounts created.
 - [ ] If eligible: open a PR adding CafeCar to the **Admin Interface** section,
       alphabetically (after `Administrate`, before `RailsAdmin`).
       - **Repo:** https://github.com/markets/awesome-ruby (`README.md`)
-      - **Paste:** `* [CafeCar](https://github.com/craft-concept/cafe_car) - Auto-generate CRUD admin UI for your Rails models, with sensible overridable defaults.`
+      - **Paste:** `* [CafeCar](https://github.com/craft-concept/cafe_car) - Render CRUD admin UI from your Rails models, with sensible overridable defaults.`
       - **Account:** GitHub. One link per PR; follow their CONTRIBUTING.
 
 ## Step 4 — RubyFlow post
@@ -72,7 +72,7 @@ were opened, no posts submitted, no accounts created.
 ## Step 6 — Reddit
 
 - [ ] **r/rails** — https://www.reddit.com/r/rails/submit
-      - Title: `CafeCar: auto-generate a CRUD admin UI from your Rails models (one line, fully overridable)`
+      - Title: `CafeCar: render a CRUD admin UI from your Rails models (one line, fully overridable)`
       - Body: 2-3 sentences from the launch post + **demo link** + repo link + `BLOG_URL`.
       - **Account:** Reddit (yours). Check subreddit self-promo rules / flair.
 - [ ] **r/ruby** — https://www.reddit.com/r/ruby/submit (same content; r/ruby is stricter on

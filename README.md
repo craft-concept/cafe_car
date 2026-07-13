@@ -192,13 +192,13 @@ $ rails generate cafe_car:install
 
 This will:
 
-- Add required gems (bcrypt, paper_trail, factory_bot_rails, faker, rouge)
-  plus development tools (hotwire-livereload, better_errors, binding_of_caller,
-  chrome_devtools_rails, i18n-debug)
 - Mount the CafeCar engine at `/` under the `:admin` namespace
 - Create `app/policies/application_policy.rb`
 - Add `CafeCar::Controller` to your `ApplicationController`
 - Set up JavaScript imports for CafeCar, Trix, and ActionText
+
+The core installer does not change your Gemfile. Optional features add only the
+dependency they need; for example, `cafe_car:sessions` adds bcrypt.
 
 ## Getting Started
 
@@ -346,8 +346,16 @@ end
 **Key methods:**
 
 - `permitted_attributes` - Attributes that can be edited via forms
-- `attributes.displayable` - Attributes shown in views (auto-detected from
-  columns + associations)
+- `displayable_attributes` - Policy override for fields shown on record pages
+  and used as the JSON/CSV basis. Its default is permitted keys plus every model
+  column, with foreign keys folded into associations and `id`/Rails-filtered
+  parameter names removed. Narrow it with `super - %i[internal_note]` for custom
+  sensitive columns.
+- `listable_attributes` - Policy override for the default index-table columns.
+  Its default is model fields excluding `id`, timestamps, and digest columns.
+  Narrow it separately when a field must also stay out of index tables.
+- `attributes.displayable` / `attributes.listable` - The corresponding read
+  surfaces used by CafeCar
 - `displayable_associations` - Associations that can be displayed
 - `filtered_attribute?(attr)` - Check if attribute should be hidden (uses Rails
   parameter filters)
@@ -764,8 +772,9 @@ app/views/
     _form.html.haml    # Override form partial
 ```
 
-CafeCar's default views are in `app/views/cafe_car/application/` and serve as
-templates.
+CafeCar's shared overridable partials live in `app/views/application/`; its action
+templates and Turbo Stream responses live in `app/views/cafe_car/application/`.
+Normal Rails lookup lets a resource override either one under its own view path.
 
 ### Custom Responders
 
@@ -773,14 +782,16 @@ templates.
 class ProductsController < ApplicationController
   cafe_car
 
-  private
-
   def create
-    super
-    respond_with object, location: custom_path
+    run_callbacks(:create) { object.save! }
+    respond_with object, location: custom_path(object)
   end
 end
 ```
+
+An action override replaces CafeCar's action, so it must not call `super` before
+responding. The example keeps CafeCar's create callbacks and changes only the
+successful response location.
 
 ### Authorization Helpers
 

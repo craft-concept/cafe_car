@@ -15,15 +15,15 @@
             = render item_partial, f: f
             - if allow_destroy
               = f.hidden_field :_destroy, value: "0"
-            %button{type: "button", data: {nested_remove: ""}} Remove
+            %button{type: "button", data: {nested_remove: ""}}= t(:remove, scope: %i[helpers nested])
       %template{data: {nested_template: ""}}
         %div{data: {nested_item: ""}}
           = field.form.fields_for field.method, new_object, child_index: "CAFE_CAR_NEW_RECORD" do |f|
             = render item_partial, f: f
             - if allow_destroy
               = f.hidden_field :_destroy, value: "0"
-          %button{type: "button", data: {nested_remove: ""}} Remove
-      %button{type: "button", data: {nested_add: ""}}= "+ #{field.info.label}"
+          %button{type: "button", data: {nested_remove: ""}}= t(:remove, scope: %i[helpers nested])
+      %button{type: "button", data: {nested_add: ""}}= t(:add, scope: %i[helpers nested], field: field.info.label)
 - else
   = field.wrapper do
     = field.label

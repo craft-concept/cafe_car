@@ -18,17 +18,17 @@ front of Ruby devs who browse for gems.
 **Title:**
 
 ```
-CafeCar — auto-generate a CRUD admin UI for your Rails models
+CafeCar — render a complete Rails admin from one controller line
 ```
 
 **Body (paste as-is):**
 
 ```
-CafeCar is a Rails engine that auto-generates a CRUD admin UI straight from your
-models — one line in a controller gives you index/show/new/edit with Pundit
-authorization, filtering, sorting, and pagination, all overridable. The thesis:
+CafeCar is a composable view extension for Rails. One controller line renders
+index/show/new/edit straight from your models, with Pundit authorization,
+filtering, sorting, and pagination; every default is overridable. The thesis:
 Rails should render *something* from your models by default. Try the live demo
-(no signup): https://cafe-car-demo-production.up.railway.app — source at
+(no signup): https://cafe-car-demo.up.railway.app — source at
 https://github.com/craft-concept/cafe_car
 ```
 

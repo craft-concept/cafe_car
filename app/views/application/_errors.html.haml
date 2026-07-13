@@ -1,4 +1,4 @@
 - if errors = f.object.errors.full_messages.presence
   = Error do
-    = to_sentence(f.object.errors.messages[:base]).presence || "Correct the errors above."
+    = to_sentence(f.object.errors.messages[:base]).presence || t(:correct_above, scope: %i[helpers errors])
     %p= to_sentence(errors)

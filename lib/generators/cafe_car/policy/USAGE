@@ -2,7 +2,10 @@ Description:
     Generates a new Pundit policy for use with CafeCar.
 
 Example:
-    `bin/rails generate cafe_car:policy invoice`
+    bin/rails generate cafe_car:policy invoice number total client_id
 
-        This creates:
-            Policy: app/policies/invoice_policy.rb
+    This creates:
+        app/policies/invoice_policy.rb
+
+    Pass field names to set `permitted_attributes`. If the model already loads,
+    omitting them derives editable fields from its columns.

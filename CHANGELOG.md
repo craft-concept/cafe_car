@@ -12,9 +12,35 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Added
 
+- Browser-level coverage for nested form rows, bulk selection, and remote
+  searchable association selects.
+- CI coverage for Rails 8.0/8.1 on Ruby 3.3/4.0, exact dependency floors, the
+  JavaScript advisory audit, and build/install/boot of the packaged gem.
+- `listable_attributes` and `displayable_attributes` policy hooks for narrowing
+  the default read surfaces, including custom sensitive columns.
+
 ### Changed
 
+- Sessions now use browser cookies with 30-day absolute and two-hour idle
+  server-side lifetimes. Successful authentication rotates both the CafeCar and
+  Rails sessions; stale or expired cookies are cleared safely.
+- The core installer no longer changes the host Gemfile. The optional sessions
+  generator adds its own bcrypt dependency.
+- Runtime dependencies now carry tested lower bounds and intentional upper
+  bounds; Rails 8.0 and 8.1 have committed compatibility locks.
+
 ### Fixed
+
+- Malformed filter and pagination input can no longer invoke JSON parsing,
+  constant lookup, user-authored regular expressions, or invalid page sizes.
+- CSV exports now mark truncation only when at least one row was omitted.
+- Rails 8.0 chart grouping no longer emits an aliased expression in `GROUP BY`.
+- Shipped interface copy now comes from locales and has a regression guard.
+- Removed an unused engine migration and moved dummy-app password-reset views
+  out of the runtime package.
+- Corrected stale public API guidance for custom actions, responder overrides,
+  view override paths, generator output, supported versions, and the canonical
+  live-demo URL.
 
 ## [0.3.1] - 2026-07-13
 
@@ -44,8 +70,8 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 ### Added
 
 - Policy-declared custom actions. A policy can now declare **member** and
-  **collection** actions — `permitted_actions` (both), `permitted_member_actions`,
-  and `permitted_collection_actions` — and CafeCar wires each one up with no
+  **collection** actions through `permitted_member_actions` and
+  `permitted_collection_actions`, and CafeCar wires each one up with no
   registration: the action name (`publish`) forwards to the model bang method
   (`publish!`), authorized by the matching policy predicate (`publish?`). Actions
   render as policy-gated buttons on the show page and on each index/grid card, and
@@ -239,14 +265,14 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Added
 
-- Turnkey keyword search on every auto-generated index: a search box filters the
+- Turnkey keyword search on every rendered index: a search box filters the
   table by matching a term across the model's string/text columns, case-insensitively
   and DB-portably (Arel `#matches` emits `ILIKE` on Postgres, `LIKE` on SQLite/MySQL).
   Works out of the box with no per-model setup; columns the parameter filter hides
   (passwords, tokens, ...) are never searched, mirroring the policy's displayable
   guarantee. A host-defined `scope :search` still takes precedence. The box round-trips
   the term, preserves the active dot-filters + sort, and is cleared by "View all".
-- CSV export on every auto-generated index: a "Download CSV" action exports the
+- CSV export on every rendered index: a "Download CSV" action exports the
   filtered + sorted result set as `text/csv`. Columns reuse the JSON renderer's
   policy-respecting basis (`[:id] | displayable_attributes`), narrowed to scalar
   columns, so exports never leak attributes the policy hides. The link carries the
@@ -339,12 +365,12 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 ## [0.1.1] - 2026-02-26
 
 Initial documented release of the CafeCar Rails engine: a "view"-layer extension
-that auto-generates CRUD UI (index, show, new, edit) with sensible, overridable
+that renders CRUD UI (index, show, new, edit) with sensible, overridable
 defaults for admin panels, internal tools, and rapid prototyping.
 
 ### Added
 
-- Auto-generated CRUD interfaces via the controller macro, with RESTful actions
+- CRUD interfaces rendered through the controller macro, with RESTful actions
   and JSON/HTML/Turbo Stream responders.
 - Pundit-based authorization with attribute-level permissions and auto-detected
   displayable attributes and associations.
@@ -364,11 +390,10 @@ defaults for admin panels, internal tools, and rapid prototyping.
 
 - Adopted the `responders` gem for response handling.
 
-[Unreleased]: https://github.com/craft-concept/cafe_car/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/craft-concept/cafe_car/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/craft-concept/cafe_car/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/craft-concept/cafe_car/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/craft-concept/cafe_car/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/craft-concept/cafe_car/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/craft-concept/cafe_car/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/craft-concept/cafe_car/releases/tag/v0.1.1
-</content>
-</invoke>

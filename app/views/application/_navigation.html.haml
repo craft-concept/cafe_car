@@ -2,7 +2,7 @@
   - if href = navigation.dashboard_href
     = nav.Link(href:) do
       = Icon t(:dashboard, scope: "navigation.icon").to_sym
-      Dashboard
+      = t(:dashboard, scope: :navigation)
 
   = render "navigation_links", nav:
 
@@ -11,4 +11,4 @@
   - elsif href = try(:new_session_path)
     = nav.Link(:bottom, href:) do
       = Icon t(:new_session, scope: "navigation.icon").to_sym
-      Sign In
+      = t(:sign_in, scope: :navigation)

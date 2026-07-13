@@ -7,6 +7,7 @@
 .center
   = page_entries_info objects
   - if filtered?
-    matching your filters. #{link(model).index "View all"}
+    = t(:matching, scope: %i[helpers filter])
+    = link(model).index t(:view_all, scope: %i[helpers filter])
 
 = paginate objects

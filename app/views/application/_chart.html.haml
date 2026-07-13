@@ -1,7 +1,7 @@
 - chart = chart_for(objects)
 
 - if chart.columns.empty?
-  .center= t("chart.no_columns", default: "No date columns to chart.")
+  .center= t("chart.no_columns")
 - else
   = form_with url: "", method: :get, class: "ChartControls" do |f|
     - filter_params.each do |key, value|
@@ -13,6 +13,6 @@
     - if chart.metrics?
       = select_tag :chart_y, options_for_select(chart.metric_options, chart.metric)
     = select_tag :chart_by, options_for_select(chart.bucket_options, chart.bucket.to_s)
-    = f.button t("chart.update", default: "Update"), name: nil
+    = f.button t("chart.update"), name: nil
 
   = chart

@@ -1,8 +1,18 @@
 Description:
-    Explain the generator
+    Wires CafeCar into an existing Rails application. The installer mounts the
+    engine under the admin namespace, creates the host ApplicationPolicy, adds
+    CafeCar's controller concern, and imports the JavaScript entry points.
+
+    It does not add gems or run Bundler. Optional features install their own
+    dependencies; for example, cafe_car:sessions adds bcrypt.
 
 Example:
-    bin/rails generate install Thing
+    bin/rails generate cafe_car:install
 
     This will create:
-        what/will/it/create
+        app/policies/application_policy.rb
+
+    It also updates:
+        config/routes.rb
+        app/controllers/application_controller.rb
+        app/javascript/application.js

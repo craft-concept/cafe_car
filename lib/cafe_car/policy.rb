@@ -105,6 +105,29 @@ module CafeCar::Policy
     model.info.fields.listable.attachments.first&.method
   end
 
+  # Columns an index table shows by default. This excludes ids, timestamps, and
+  # digest columns. Override to narrow the table without relying on Rails'
+  # parameter-name filtering, for example:
+  #
+  #   def listable_attributes = super - %i[internal_note]
+  def listable_attributes
+    model.info.fields.listable.map(&:method)
+  end
+
+  # Columns and associations shown on record pages and used as the JSON/CSV
+  # export basis. The default includes permitted keys plus every model column,
+  # folds foreign keys into their associations, then excludes `id` and anything
+  # matched by Rails' parameter filter. Override for application-specific
+  # sensitive columns whose names are not covered by that heuristic:
+  #
+  #   def displayable_attributes = super - %i[internal_note]
+  def displayable_attributes
+    permitted_attribute_keys
+      .union(model.columns.map(&:name).map(&:to_sym))
+      .map    { association_for_attribute(_1) || _1 }
+      .reject { filtered_attribute? _1 } - %i[id]
+  end
+
   def permitted_fields
     @permitted_fields ||= permitted_attribute_keys.map { info _1 }
   end

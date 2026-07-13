@@ -1,4 +1,4 @@
-- title = breadcrumbs(link(object).index, link(object), title("Edit #{model_name.human}"))
+- title = breadcrumbs(link(object).index, link(object), title(t(:edit, scope: %i[helpers title], model: model_name.human)))
 
 = Page :slim, title: do |page|
   = page.Body do
@@ -14,5 +14,5 @@
         = card.Section do
           =  ui(object).attributes :updated_at, :created_at, try: true
 
-    = Card title: "Actions" do
+    = Card title: t(:actions, scope: %i[helpers card]) do
       = render('actions')

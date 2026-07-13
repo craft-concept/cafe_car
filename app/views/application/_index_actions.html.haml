@@ -1,12 +1,12 @@
 = Group do
-  = Button href: view_url(:grid), tip: "Grid View" do
+  = Button href: view_url(:grid), tip: t(:grid, scope: %i[helpers view]) do
     = icon(:view_grid)
-  = Button href: view_url(:table), tip: "Table View" do
+  = Button href: view_url(:table), tip: t(:table, scope: %i[helpers view]) do
     = icon(:table_rows)
-  = Button href: view_url(:chart), tip: "Chart View" do
+  = Button href: view_url(:chart), tip: t(:chart, scope: %i[helpers view]) do
     = icon(:stats_report)
 
-= Button href: csv_url, tip: "Download CSV" do
+= Button href: csv_url, tip: t(:download_csv, scope: %i[helpers view]) do
   = icon(:download)
 
 -# Custom collection actions (Policy#permitted_collection_actions — the policy

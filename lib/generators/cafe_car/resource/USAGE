@@ -1,13 +1,18 @@
 Description:
-    Generates everything need for a new resource with
-    CafeCar: model, routes, controller, policy, and a migration.
+    Generates a CafeCar resource: model, migration, route, controller, and
+    Pundit policy. Field arguments use the ordinary Rails model-generator
+    syntax and become permitted attributes in the generated policy.
 
 Example:
-    `bin/rails generate cafe_car:resource admin/invoices`
+    bin/rails generate cafe_car:resource admin/invoices total:decimal client:references
 
-        This creates:
-            Model:      app/models/invoice.rb
-            Migration:  db/migrations/xxx_create_invoices.rb
-            Routes:     resources :invoices, namespace: :admin
-            Controller: app/controllers/admin/invoices_controller.rb
-            Policy:     app/policies/invoice_policy.rb
+    Key application files:
+        app/models/admin/invoice.rb
+        db/migrate/XXXXXXXXXXXXXX_create_admin_invoices.rb
+        app/controllers/admin/invoices_controller.rb
+        app/policies/admin/invoice_policy.rb
+
+    It also adds `resources :invoices` inside `namespace :admin` in
+    config/routes.rb. The model step delegates to Rails' model generator, so it
+    also creates the namespace, model test, and fixture files configured by the
+    host application.

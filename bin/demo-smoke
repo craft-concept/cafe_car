@@ -3,7 +3,7 @@
 
 # Effect-level smoke check for the CafeCar live demo.
 #
-# The demo (https://cafe-car-demo-production.up.railway.app) auto-deploys from
+# The demo (https://cafe-car-demo.up.railway.app) auto-deploys from
 # main on every merge, but nothing verifies it actually WORKS — only that pages
 # render (200s). Shape-green 200s have hidden broken-but-advertised features
 # before; on our top marketing surface a prospect must never click into a
@@ -33,7 +33,7 @@ require "net/http"
 require "uri"
 require "json"
 
-BASE   = ENV.fetch("DEMO_URL", "https://cafe-car-demo-production.up.railway.app")
+BASE   = ENV.fetch("DEMO_URL", "https://cafe-car-demo.up.railway.app")
 MARKER = "smoke-check-#{Time.now.strftime('%Y%m%d%H%M%S')}"
 
 # Frictionless demo login (see test/dummy User::DEMO_*).

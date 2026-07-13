@@ -14,7 +14,8 @@ end
 ```
 
 `cafe_car` wires the full CRUD surface: `index show new edit create update destroy`,
-plus `batch` (bulk actions) and `options` (association-select typeahead JSON). It
+plus `batch` (bulk actions), `options` (association-select typeahead JSON), and the
+generic `member_action` / `collection_action` endpoints. It
 authorizes every action through Pundit (`verify_authorized` and
 `verify_policy_scoped` are enforced), responds to `:html`, `:json`, `:turbo_stream`,
 and `:csv`, rescues validation failures into a re-rendered form, and appends the
@@ -86,7 +87,7 @@ controller context around `object.save!` / `object.destroy!`.)
 
 ## Extra endpoints
 
-Host routes drawn with `resources` automatically gain two collection routes
+Host routes drawn with `resources` automatically gain four routes
 (`lib/cafe_car/routing.rb`):
 
 - `POST /products/batch` — applies a bulk action to selected ids. The action name
@@ -95,6 +96,18 @@ Host routes drawn with `resources` automatically gain two collection routes
   [policies.md](policies.md).
 - `GET /products/options?q=…` — policy-scoped `[{value, text}]` JSON feeding the
   searchable association selects. See [forms.md](forms.md).
+- `POST /products/:id/actions/:member_action` — runs a name listed by
+  `permitted_member_actions`. CafeCar authorizes `<name>?`, then calls the record's
+  `<name>!`. A public controller method named `<name>` replaces the forwarding and
+  owns the response.
+- `POST /products/actions/:collection_action` — runs a name listed by
+  `permitted_collection_actions` over the currently viewed, filtered scope. CafeCar
+  authorizes `<name>?` against the model class, then calls `<name>!` on that scope.
+  A public controller method named `<name>` may instead scope its own query and
+  respond directly.
+
+The policy lists the names; hosts do not enumerate custom actions in routes. See
+[policies.md](policies.md) for the model and policy conventions.
 
 ## Responses
 
@@ -104,3 +117,15 @@ Success responds per format: HTML redirects with a locale-driven flash
 policy. Validation failure re-renders `new`/`edit` with `422`. Authorization failure
 returns 403 — or redirects to login when the opt-in sessions are installed
 (`bin/rails g cafe_car:sessions`).
+
+To customize one response, replace the action without calling `super` first:
+
+```ruby
+def create
+  run_callbacks(:create) { object.save! }
+  respond_with object, location: product_setup_path(object)
+end
+```
+
+Calling `super` already sends CafeCar's response; responding again risks a double
+render.

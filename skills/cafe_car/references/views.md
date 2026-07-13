@@ -7,7 +7,7 @@ folders of them.
 ## The two engine view roots
 
 - `app/views/application/` (in the gem) — **shared partials**: `_table`, `_grid`,
-  `_form`, `_show`, `_search`, `_navigation`, … Resolved through normal controller
+  `_form`, `_show`, `_filters`, `_navigation`, … Resolved through normal controller
   prefix fallback (every host controller inherits `ApplicationController`).
 - `app/views/cafe_car/application/` (in the gem) — **action templates and
   turbo_stream responses**: `index.html.haml`, `show.html.haml`, `new`, `edit`,
@@ -29,14 +29,14 @@ overrides stay small.
 
 | Partial | Renders |
 |---|---|
-| `_index` | index body: toolbar (search + bulk bar), the current view, pagination |
+| `_index` | index body: bulk-action bar, the current view, result count, pagination |
 | `_table` | the table: `table_for` with select/logo/title/remaining/timestamps/controls columns |
 | `_grid` / `_grid_item` | card grid; `_grid_item` is one card |
 | `_show` | show-page body: remaining attributes + associations |
 | `_form` / `_fields` | the form card; `_fields` is just `f.remaining_fields` |
 | `_field`, `_<type>_field` | one form field (see [forms.md](forms.md)) |
 | `_controls` | the show/edit/delete link cluster on rows and cards |
-| `_search` | the index search box |
+| `_filters`, `_<type>_filter` | the index search/filter panel and its typed controls |
 | `_bulk_actions` | the bulk-action button bar (defaults to looping the policy's list) |
 | `_navigation`, `_navigation_links` | the sidebar (see [navigation.md](navigation.md)) |
 | `_index_actions` | index toolbar right side: view toggles, CSV, New button |
@@ -55,15 +55,18 @@ The gem's whole `_grid_item.html.haml`:
 
 ```haml
 -# app/views/admin/products/_grid_item.html.haml
-= Card title: object.title, image: object.logo(href: object), actions: object.controls do |card|
+= Card title: object.title, image: object.logo(href: object), actions: object.controls(actions: false) do |card|
   = card.Section object.show(:price)
   = card.Foot do
-    = button_to t(:restock), restock_admin_product_path(object.object), class: ui.Button(:primary).class_name
+    = link(object).action(:restock, class: ui.Button(:primary).class_name)
 ```
 
-(`object.object` is the record; a custom member action needs its own route +
-controller action today. The button label goes in the locale.) Drop the same file
-in `app/views/application/` to change every resource's card.
+Declare `:restock` in the policy's `permitted_member_actions`, add `restock?` to
+the policy and `restock!` to the model. Passing `actions: false` keeps the default
+control cluster from rendering the same action, so this override can move it into
+the card foot. The generic route and controller forwarding already ship; the label
+goes in the locale. Drop the same file in `app/views/application/` to change every
+resource's card.
 
 ## Worked example: a bespoke index
 

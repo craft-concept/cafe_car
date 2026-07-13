@@ -18,7 +18,7 @@ you override any part of it when the default isn't what you want. Point it at yo
 models and you get a usable admin UI (and dashboards) without writing the views.
 
 **Try it before you read another word:**
-**[the live demo](https://cafe-car-demo-production.up.railway.app)** drops you
+**[the live demo](https://cafe-car-demo.up.railway.app)** drops you
 straight into a working admin for clients, invoices, articles, and users.
 No signup. Click around, sort a column, filter a range, edit a record. Every
 screen you see was rendered straight from ordinary models — nobody wrote those
@@ -117,7 +117,7 @@ opinionated than that: your models already contain enough information to render 
 usable interface, so Rails should render one — and you should be able to change
 your mind about any of it afterward.
 
-- **Live demo:** https://cafe-car-demo-production.up.railway.app
+- **Live demo:** https://cafe-car-demo.up.railway.app
 - **Source:** https://github.com/craft-concept/cafe_car
 - **Gem:** https://rubygems.org/gems/cafe_car
 

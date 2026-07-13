@@ -6,7 +6,12 @@ Example:
     bin/rails generate cafe_car:notes
 
     This will create:
+        db/migrate/XXXXXXXXXXXXXX_create_notes.rb
         app/models/note.rb
         app/models/concerns/notable.rb
         app/policies/note_policy.rb
         app/controllers/admin/notes_controller.rb
+
+    It also adds `resources :notes` inside `namespace :admin`. Include `Notable`
+    in each model that should receive notes. The generated Note model expects a
+    host `User` model for its author association.

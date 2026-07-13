@@ -3,12 +3,13 @@
 ## Supported versions
 
 CafeCar is pre-1.0 and under active development. Security fixes are applied to the
-latest released `0.1.x` line and the upcoming release.
+latest released minor line. Upgrade to the latest patch release before reporting a
+problem that may already be fixed.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
-| < 0.1   | :x:                |
+| 0.3.x   | :white_check_mark: |
+| < 0.3   | :x:                |
 
 ## Reporting a vulnerability
 
@@ -31,5 +32,3 @@ before any public disclosure.
 CafeCar runs [Brakeman](https://brakemanscanner.org/), a static analysis security
 scanner for Rails, as part of the CI check suite (`rake`) on every push. New code
 is expected to keep the Brakeman gate green.
-</content>
-</invoke>

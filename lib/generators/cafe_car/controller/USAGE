@@ -4,8 +4,10 @@ Description:
     Pass --skip-routes to generate only the controller.
 
 Example:
-    `bin/rails generate cafe_car:controller admin/invoices`
+    bin/rails generate cafe_car:controller admin/invoices
 
-        This creates:
-            Controller: app/controllers/admin/invoices_controller.rb
-            Routes:     resources :invoices, namespace: :admin
+    This creates:
+        app/controllers/admin/invoices_controller.rb
+
+    It also adds `resources :invoices` inside `namespace :admin` in
+    config/routes.rb. Pass --skip-routes when the route already exists.

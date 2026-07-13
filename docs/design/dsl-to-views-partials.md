@@ -31,7 +31,7 @@ Three pillars, all present in the code today:
 
 **1. Defaults live in `app/views/application/`; a host overrides by dropping a template at the
 matching resource path.** The engine ships default templates under `app/views/application/`
-(`_index`, `_table`, `_show`, `_form`, `_search`, `_bulk_actions`, `_chart`, …). Because every
+(`_index`, `_table`, `_show`, `_form`, `_filters`, `_bulk_actions`, `_chart`, …). Because every
 CafeCar controller descends from `ApplicationController`, Rails view lookup falls back to
 `application/` and a host wins by placing a file in its resource's own directory. `README.md`
 (lines 653-666):

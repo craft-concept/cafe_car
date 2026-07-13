@@ -8,12 +8,12 @@ layout: default
 [![Gem Version](https://img.shields.io/gem/v/cafe_car)](https://rubygems.org/gems/cafe_car)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
-> 🚀 **[Live demo →](https://cafe-car-demo-production.up.railway.app)** — click straight
+> 🚀 **[Live demo →](https://cafe-car-demo.up.railway.app)** — click straight
 > into a real admin, rendered from plain models (clients, invoices, articles, users, notes).
 > No signup; the data resets periodically.
 
 <p align="center">
-  <a href="https://cafe-car-demo-production.up.railway.app/admin/invoices">
+  <a href="https://cafe-car-demo.up.railway.app/admin/invoices">
     <img src="images/admin-invoices-index.png"
          alt="A CafeCar admin rendered straight from the model: an invoices index with sortable columns, currency formatting, association links, sender avatars, and pagination — no view code."
          width="900">
@@ -22,7 +22,7 @@ layout: default
 <p align="center">
   <em>A complete admin index — sortable columns, formatted values, association links, and
   pagination — rendered from a model with one line of controller code.
-  <a href="https://cafe-car-demo-production.up.railway.app">Try the live demo →</a></em>
+  <a href="https://cafe-car-demo.up.railway.app">Try the live demo →</a></em>
 </p>
 
 **CafeCar is a composable view extension for Rails** — an extension of the view and

@@ -1,8 +1,9 @@
 # Contributing to CafeCar
 
-Thanks for your interest in CafeCar! It's a Rails engine that auto-generates CRUD
-UI with sensible, overridable defaults. Contributions of all kinds are welcome —
-bug reports, fixes, features, and docs.
+Thanks for your interest in CafeCar. It's a composable view extension for Rails
+that renders CRUD views from your models at runtime, with sensible, overridable
+defaults. Contributions of all kinds are welcome: bug reports, fixes, features,
+and docs.
 
 ## Development setup
 
@@ -14,9 +15,6 @@ git clone https://github.com/craft-concept/cafe_car.git
 cd cafe_car
 bundle install
 ```
-
-> Note: CafeCar currently depends on the private `cnc` gem. Resolving that
-> dependency for outside contributors is tracked in the backlog (see below).
 
 ### Running the dummy app
 
@@ -59,11 +57,9 @@ analysis). All three must be green. "Green on my files" is not the same as a gre
 
 ## The backlog
 
-CafeCar's backlog lives on the holdco-tasks board (the one task system fleet-wide).
-The operator files, lists, and closes tasks with `bin/operate tasks` (`bin/operate tasks
---help` shows the full surface). See `AGENTS.md` for the conventions.
-
-If you're picking up work, open an issue to discuss new work first.
+Public work is tracked in [GitHub Issues](https://github.com/craft-concept/cafe_car/issues).
+Open an issue before starting a substantial change so the approach and scope can
+be agreed on first.
 
 ## Pull requests
 
@@ -87,5 +83,3 @@ are expected to uphold it.
 
 Please do not file public issues for security vulnerabilities. See
 [SECURITY.md](SECURITY.md) for private disclosure instructions.
-</content>
-</invoke>

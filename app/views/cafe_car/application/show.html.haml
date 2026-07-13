@@ -27,10 +27,10 @@
       = card.Section ui(object).controls
       = card.Section summary
 
-    = Card title: "Actions" do |card|
+    = Card title: t(:actions, scope: %i[helpers card]) do |card|
       = render("actions", card:)
 
-    = Card title: "Notes" do |card|
+    = Card title: t(:notes, scope: %i[helpers card]) do |card|
       = render("notes", card:)
 
     = yield :right
