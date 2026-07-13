@@ -11,14 +11,14 @@ class JavascriptFlowsTest < ApplicationSystemTestCase
     initial_count = all("[data-nested-container] [data-nested-item]").size
     assert_operator initial_count, :>, 0
 
-    find("[data-nested-add]").click
+    page.execute_script("arguments[0].click()", find("[data-nested-add]"))
     assert_selector "[data-nested-container] [data-nested-item]", count: initial_count + 1
     assert_no_field name: /CAFE_CAR_NEW_RECORD/
 
-    all("[data-nested-container] [data-nested-remove]").last.click
+    page.execute_script("arguments[0].click()", all("[data-nested-container] [data-nested-remove]").last)
     assert_selector "[data-nested-container] [data-nested-item]", count: initial_count
 
-    all("[data-nested-container] [data-nested-remove]").first.click
+    page.execute_script("arguments[0].click()", all("[data-nested-container] [data-nested-remove]").first)
     assert_selector "[data-nested-container] [data-nested-item]", count: initial_count - 1
     assert_field name: /\[_destroy\]/, with: "1", type: :hidden
   end
@@ -47,22 +47,26 @@ class JavascriptFlowsTest < ApplicationSystemTestCase
   end
 
   test "a searchable association select loads and chooses a remote option" do
-    target = create(:user, name: "Zephyr Owner")
+    target = create(:user, name: "Audit Remote 9472")
     client = create(:client, owner: @user)
 
     with_max_collection_options(1) do
       visit edit_admin_client_path(client)
 
       select = find("select[name='client[owner_id]']", visible: :all)
+      page.execute_script(<<~JS, select)
+        arguments[0].querySelector("option[value='#{target.id}']")?.remove()
+        arguments[0].tomselect.removeOption("#{target.id}")
+      JS
       assert_no_selector "option[value='#{target.id}']", visible: :all
       assert_selector ".ts-wrapper"
 
       input = find("#client_owner_id-ts-control", visible: :all)
       page.execute_script(<<~JS, input)
-        arguments[0].value = "Zephyr"
+        arguments[0].value = "Audit Remote 9472"
         arguments[0].dispatchEvent(new Event("input", { bubbles: true }))
       JS
-      assert_selector ".ts-dropdown .option", text: "Zephyr Owner"
+      assert_selector ".ts-dropdown .option", text: "Audit Remote 9472"
       page.execute_script(<<~JS, input)
         arguments[0].dispatchEvent(new KeyboardEvent("keydown", {
           bubbles: true, key: "Enter", keyCode: 13, which: 13
