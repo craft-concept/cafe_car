@@ -5,6 +5,44 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-14 — Pass 125: P0 rotation closed; monetization thesis proposed; CrayonBloom security P0
+
+GREEN, one pass. Set up the requested 8h operating loop (cron `993b90ed`, `:11` every 8h). CI all
+green including today's scheduled demo smoke runs.
+
+**Closed the last v0.3.1 follow-through (P0).** Homelab confirmed the cafe-car-demo rotation complete
+and verified end-to-end (VERIFIED bot.yak.sh): v0.3.1 debug-disclosure fix was already live before
+rotating, `SECRET_KEY_BASE` rotated on prod (fresh 128-hex, on-box), redeployed to SUCCESS, all
+pre-rotation CookieStore sessions invalidated + ephemeral SQLite wiped/reseeded, health 200 on `/`,
+`/articles`, `/admin/articles`. Recorded the evidence and marked
+`rotate-the-live-demo-secret-and-revoke-sessions` done. The whole v0.3.1 security release + follow-
+through is now fully closed, and the demo is verified clean/live on 0.3.1.
+
+**Monetization thesis P1 — delivered as a proposal** (`b354569`, `docs/monetization-thesis.md`).
+Green-eyeshade panel-reviewed my draft and corrected it hard: direct monetization is premature
+(0★ in 2yr, 3–4 orders of magnitude below Avo/ActiveAdmin); the internal value is real but is
+**switching-cost + architectural-fit, NOT "capex avoided"** (free incumbents would wire the same 8
+CrayonBloom admin resources in a day), and it's n=1 today. Proposal: bounded OSS/infra line —
+`day_budget_pct` 15→5 (self-limit, allocator's call, not done unilaterally), numeric triggers
+(250★/10k dl → scope; 1000★/2nd adopter → Avo-style open-core paid tier), quarterly holdco-graded
+review (next 2026-10-01), and a named kill case (2 consecutive misses → maintenance-only; immediate
+re-review if CrayonBloom shutters). Delivered to owner via email + `→jeff` task
+`proposal-adopt-cafecar-bounded-budget-line...`; original P1 set `blocked` on the allocator call.
+Recorded in `IDEAS.md` (proposed).
+
+**Cross-venture security propagation.** Green-eyeshade surfaced that CrayonBloom's prod admin is
+pinned `cafe_car ~> 0.2.1` — below the 0.3.1 SECURITY release — so its live customer-facing back-
+office carries the pre-patch debug/JSON/authz exposures. Filed a **CrayonBloom P0**
+(`upgrade-cafe-car-to-v0-3-1-security...`, bumped from the P1 I first filed) to bump the pin, deploy,
+then have homelab do the Railway-side rotate/clear. Homelab acked and parked its side, waiting on
+CrayonBloom's post-deploy ping. Also corrected the stale `cafe_car-dogfood-crayonbloom` record (the
+integration shipped 2026-07-03; the 20+ "blocked, waiting on reply" WORKLOG entries were stale).
+
+**Next:** discoverability launch (Awesome Rails / RubyFlow / launch post) is now unblocked — the
+demo is verified clean on 0.3.1. Await allocator decision on the budget proposal; if the day cap
+drops to 5%, pace future passes accordingly. Owner-requested v2 logo demo page still pending
+(`~/code/holdco/bin/imagegen` is available for it).
+
 ## 2026-07-13 — Pass 124: v0.3.1 live; P2/P3 audit backlog implemented
 
 The security release is public: tag `v0.3.1`, GitHub release
