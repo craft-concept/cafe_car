@@ -22,7 +22,9 @@
 #   OP_MODEL      / run.model     model alias           (default: opus)
 #   OP_EFFORT     / run.effort    reasoning effort      (default: high)
 #   OP_MODE       / run.mode      loop cadence: long-loop | cold | cron (default: long-loop)
-#   OP_WORK                       standing-work text    (default: "Continue <name> operation.")
+#   OP_WORK       / run.work      standing-work text    (default: "Continue <name> operation.")
+#                                 Keep it PHASE-AGNOSTIC — a thin pointer to the persona, never a
+#                                 phase-specific task (e.g. "write BUSINESS-PLAN.md"), which goes stale.
 #   OP_REMOTE_NAME / run.title    --remote-control conversation name
 #   run.channels                  --channels value      (default: plugin:email@holdco-fleet)
 #   OP_REMOTE=0                   disable --remote-control
@@ -49,7 +51,7 @@ effort="${OP_EFFORT:-$(cfg run.effort)}";  effort="${effort:-high}"
 mode="${OP_MODE:-$(cfg run.mode)}";        mode="${mode:-long-loop}"
 channels="$(cfg run.channels)";            channels="${channels:-plugin:email@holdco-fleet}"
 remote_name="${OP_REMOTE_NAME:-$name Operator}"
-work="${OP_WORK:-Continue $name operation.}"
+work="${OP_WORK:-$(cfg run.work)}"; work="${work:-Continue $name operation.}"
 
 # Assemble the claude invocation. Kept byte-identical to the pre-rename
 # ventures:run path (persona, model, effort, --dangerously-skip-permissions,

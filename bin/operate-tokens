@@ -44,10 +44,18 @@
 #
 # Config (operate.json, all optional; env seams win for tests): tokens.usage_dir,
 # tokens.registry_file, tokens.tz, tokens.day_budget_pct, tokens.night_budget_pct,
-# tokens.green_sleep_s, tokens.busy_sleep_s, tokens.red_at_pct. Built-in defaults
-# match today's behavior, so a bare copy runs unchanged.
+# tokens.green_sleep_s, tokens.busy_sleep_s, tokens.red_at_pct, and tokens.codex.*
+# (codex/ChatGPT weekly usage + grant pacing — sessions_dir, weekly_reset, used_pct,
+# grants[]). Built-in defaults match today's behavior, so a bare copy runs unchanged.
 #
-# Deps: bash only (jq optional, used to read operate.json + ccusage JSON).
+# Codex (ChatGPT) usage is ADDITIVE and appears in table + tmux human modes ONLY —
+# it never touches the machine-readable --pace line (the tmux status + email hold
+# gate parse that; see "Do NOT disturb the --pace contract" below). A read-only scan
+# of ~/.codex/sessions (rate-limit snapshots codex already writes) sources it; env
+# seam CODEX_SESSIONS_DIR wins for tests. auth.json/credentials are never read.
+#
+# Deps: bash only (jq optional, used to read operate.json + ccusage JSON + the codex
+# rollout line — a bash/sed fallback covers the no-jq case).
 # Degrades to a usable view when ccusage / caches / jq are missing.
 
 set -uo pipefail
@@ -328,6 +336,85 @@ reset_in=""
 if [[ "$cur_seven_reset" =~ ^[0-9]+$ ]]; then reset_in="$(human_until $((cur_seven_reset - now)))"; fi
 cost_today="$(daily_cost || true)"
 
+# ---- codex (ChatGPT) weekly usage + grant-pacing altimeter ------------------
+# Additive, table/tmux ONLY: this whole block runs AFTER the --pace early-exit
+# above, so the machine-readable --pace contract is byte-for-byte untouched and
+# never pays the scan cost. Read-only scan of the rate-limit snapshot codex writes
+# on every model turn into ~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl
+# (payload.rate_limits.primary = {used_percent, resets_at} over a 7-day window).
+# Freshest reading = the last rate_limits line in the newest session file that
+# carries one — mirrors the Claude "freshest in the open window" rule. auth.json /
+# credentials are NEVER read; nothing is transmitted.
+CODEX_DIR="${CODEX_SESSIONS_DIR:-}"
+[ -n "$CODEX_DIR" ] || CODEX_DIR="$(untilde "$(cfg tokens.codex.sessions_dir)")"
+[ -n "$CODEX_DIR" ] || CODEX_DIR="$HOME/.codex/sessions"
+CODEX_GLIDE_TOL="$(cfg tokens.codex.glide_tol)"; [ -n "$CODEX_GLIDE_TOL" ] || CODEX_GLIDE_TOL=5
+
+codex_used="" codex_reset="" codex_age=""
+while IFS= read -r cf; do
+	[ -n "$cf" ] || continue
+	cline="$(grep 'rate_limits' "$cf" 2>/dev/null | tail -1)"
+	[ -n "$cline" ] || continue
+	if [ -n "$JQ" ]; then
+		codex_used="$(printf '%s' "$cline" | "$JQ" -r '.payload.rate_limits.primary.used_percent // empty' 2>/dev/null)"
+		codex_reset="$(printf '%s' "$cline" | "$JQ" -r '.payload.rate_limits.primary.resets_at // empty' 2>/dev/null)"
+	fi
+	# bash-only fallback (no jq, or jq missed): scope to the "primary":{...} block so
+	# the always-0/absent "secondary" reading can never be picked up.
+	if [ -z "$codex_used" ]; then
+		cprim="$(printf '%s' "$cline" | grep -o '"primary":{[^}]*}')"
+		codex_used="$(printf '%s' "$cprim" | sed -n 's/.*"used_percent":\([0-9.]*\).*/\1/p')"
+		codex_reset="$(printf '%s' "$cprim" | sed -n 's/.*"resets_at":\([0-9]*\).*/\1/p')"
+	fi
+	if [ -n "$codex_used" ]; then
+		codex_age=$((now - $(stat -c %Y "$cf" 2>/dev/null || echo "$now")))
+		break
+	fi
+done < <(ls -t "$CODEX_DIR"/*/*/*/*.jsonl 2>/dev/null | head -50)
+
+# Fall back to the manual config only when the scan found nothing (a box that hasn't
+# run codex, or no jq/sed match). A config weekly_reset may be an ISO date -> epoch.
+if [ -z "$codex_used" ]; then
+	codex_used="$(cfg tokens.codex.used_pct)"
+	codex_reset="$(cfg tokens.codex.weekly_reset)"
+fi
+if [ -n "$codex_reset" ] && ! [[ "$codex_reset" =~ ^[0-9]+$ ]]; then
+	codex_reset="$(date -d "$codex_reset" +%s 2>/dev/null || true)"
+fi
+
+# Grants are MANUAL (not machine-readable): the soonest expiry strictly in the
+# future is the pacing deadline.
+codex_grant="" codex_grant_disp=""
+while IFS= read -r g; do
+	[ -n "$g" ] || continue
+	ge="$(date -d "$g" +%s 2>/dev/null || true)"
+	[ -n "$ge" ] || continue
+	((ge <= now)) && continue
+	if [ -z "$codex_grant" ] || ((ge < codex_grant)); then codex_grant="$ge" codex_grant_disp="$g"; fi
+done < <(cfg 'tokens.codex.grants[].expires')
+
+# Altimeter — the INVERSE of the Claude signal: a grant is use-it-or-lose-it, so the
+# failure mode is UNDER-spending it before it expires. Deadline = soonest future
+# grant (else the weekly reset); anchor = the weekly-window start (reset − 7d); glide
+# target = 99·(now−anchor)/(deadline−anchor), clamped [0,99]. Biased toward SPEND:
+# ON-GLIDE only once used sits a cushion (CODEX_GLIDE_TOL) ABOVE the burn line, since
+# under-spend — not over-spend — is the risk. SPENT once used ≥ ~99%.
+codex_signal="" codex_target=""
+if [ -n "$codex_used" ]; then
+	cu="$(round "$codex_used")"
+	cdl="$codex_grant"; [ -n "$cdl" ] || cdl="$codex_reset"
+	canchor=""; [[ "$codex_reset" =~ ^[0-9]+$ ]] && canchor=$((codex_reset - SEVEN_WIN))
+	if ((cu >= 99)); then
+		codex_signal="SPENT"
+	elif [ -n "$cdl" ] && [ -n "$canchor" ] && [[ "$cdl" =~ ^[0-9]+$ ]] && ((cdl > canchor)); then
+		codex_target="$(awk -v n="$now" -v a="$canchor" -v d="$cdl" 'BEGIN{
+			t = 99*(n-a)/(d-a); if(t<0)t=0; if(t>99)t=99; printf "%d", t+0.5 }')"
+		if ((cu >= codex_target + CODEX_GLIDE_TOL)); then codex_signal="ON-GLIDE"; else codex_signal="SPEND"; fi
+	else
+		codex_signal="SPEND"
+	fi
+fi
+
 if [ "$MODE" = "tmux" ]; then
 	# Compact: "Fleet 72%wk · resets 4d · $18 today". Color by 7d threshold.
 	if [ -z "$seven_disp" ]; then
@@ -340,6 +427,8 @@ if [ "$MODE" = "tmux" ]; then
 	out="Fleet ${seven_disp}%wk"
 	[ -n "$reset_in" ] && out+=" · resets $reset_in"
 	[ -n "$cost_today" ] && out+=" · \$$cost_today today"
+	# Codex weekly % is compact + additive here (never on --pace).
+	[ -n "$codex_used" ] && out+=" · Codex $(round "$codex_used")%"
 	printf '#[fg=%s]%s#[default]' "$color" "$out"
 	exit 0
 fi
@@ -394,6 +483,36 @@ pace_line() {
 		"$lbl" "$u" "$ep" "$projstr" "$resin" "$gtag"
 }
 
+# Codex (ChatGPT) weekly-usage + grant-altimeter block (table mode). Reads the
+# codex_* globals computed in the render section; degrades to a quiet "no data" line.
+# The signal words (SPEND / ON-GLIDE / SPENT) are deliberately NOT Claude's
+# GREEN/YELLOW/RED so the two reads can never be confused.
+codex_line() {
+	if [ -z "$codex_used" ]; then
+		printf '  %s%-11s no codex data (no session reading, no tokens.codex config)%s\n' \
+			"$dim" "Codex:" "$rst"
+		return
+	fi
+	local cu sc="" wk gr
+	cu="$(round "$codex_used")"
+	case "$codex_signal" in SPEND) sc="$grn" ;; SPENT) sc="$dim" ;; esac
+	wk="${cu}% used"
+	if [[ "$codex_reset" =~ ^[0-9]+$ ]]; then
+		wk+=" · resets in $(human_until $((codex_reset - now))) ($(date -d "@$codex_reset" '+%a %b %-d' 2>/dev/null))"
+	fi
+	if [ -n "$codex_age" ]; then wk+=" · ${dim}$(human_until "$codex_age") ago${rst}"
+	else wk+=" · ${dim}(config)${rst}"; fi
+	if [ -n "$codex_grant" ]; then
+		gr="soonest expires $(date -d "@$codex_grant" '+%b %-d' 2>/dev/null) ($(human_until $((codex_grant - now))))"
+	else
+		gr="${dim}none configured${rst}"
+	fi
+	[ -n "$codex_signal" ] && gr+=" · ${sc}${bold}${codex_signal}${rst}"
+	echo "${bold}Codex (ChatGPT Pro)${rst}"
+	printf '  %-11s %s\n' "Weekly:" "$wk"
+	printf '  %-11s %s\n' "Grant:" "$gr"
+}
+
 echo "${bold}Fleet token usage${rst}"
 if [ -n "$seven_disp" ]; then
 	pace_line "7-day cap:" "$cur_seven" "$cur_seven_reset" 604800 "$pace_signal"
@@ -411,6 +530,7 @@ if [ "$pace_have" = 1 ]; then
 		"Pacing:" "$pace_used" "$pace_alloc" "$cap_note" "$dim" "$pace_days" "$pace_nights" "$rst" "$pace_left" \
 		"$gc" "$pace_signal" "$rst" "$(human_until "$pace_sleep")" "$dim" "$pace_mday" "$rst" "$burn_note"
 fi
+codex_line
 if [ -n "$cost_today" ]; then
 	# ccusage merges every agent CLI's own logs (claude + codex here — verified:
 	# .daily[].agent == "all", one entry per date, so no double-counting) and
