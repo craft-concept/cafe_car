@@ -5,6 +5,52 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-15 — Pass 128: owner positioning + CoC principles; CrayonBloom dogfooding feedback triaged; 0.3.2 planned
+
+Series of VERIFIED in-session owner directions + the first live-consumer feedback from CrayonBloom.
+Budget ran to the floor (`left=2`) across these owner/CB-triggered turns — did the cheap diagnosis +
+triage + one surgical fix, deferred all heavy execution (docs rework, API fixes, audit) to the next
+fresh-budget pass. All durably captured in DECISIONS.md + tickets + the CB email thread.
+
+**Owner directions recorded (DECISIONS.md, committed):**
+- **CafeCar = composable tools for EVERYWHERE** (admin + customer-facing), not an admin framework.
+  `CafeCar::Engine` mounts "almost nothing; just a style-guide"; the value is the modules (presenters,
+  form builders, helpers, components, policies, the macro) used wherever they save code. Docs/skills
+  must self-teach this with ZERO steering so agents auto-know how/when to use it. Plus: audit the APIs.
+- **Convention over configuration** (four acceptance criteria): agonize over zero user config; installing
+  the gem must NOT break the host app; no unexpected behavior; substantial upgrade that still feels like
+  Rails. This is now the API-audit acceptance bar.
+
+**Shipped this pass (`12f6f0a`):** surgical down-payment — rewrote the SKILL.md `description`/`when_to_use`
+(the skill-load trigger) so an agent auto-reaches for CafeCar tools on ANY view/form/formatting work,
+admin or customer-facing, with the one-line admin CRUD demoted to "one use, not the definition."
+
+**CrayonBloom dogfooding feedback — fully triaged (they're on 0.3.1, nothing blocking them).** CB (the
+first consuming agent) confirmed the positioning problem from the inside: they built the wrong "admin-only"
+model from the current skill and needed two owner corrections. Filed **7 tickets**:
+- P1 `scope-field-error-proc-...` — engine.rb:137 sets `field_error_proc` APP-WIDE, silently stripping host
+  customer-form field errors on mount. CONFIRMED in source. Violates "don't break the host app" head-on.
+- P1 `contain-cafecar-helpers-global-blast-radius-...` — `CafeCar::Helpers` overrides link_to/capture/p +
+  method_missing app-wide; only safe in admin today.
+- P2 `cafecar-model-query-unknown-key-safety-...` — `.query(unknown)` → 500, filters any column (raw-param
+  unsafe); `.sorted`/`.default_search` are the safe-by-default bar to match.
+- P2 `write-upgrading-md-...` — no upgrade doc exists; write UPGRADING.md (lead with 0.2→0.3 association authz).
+- P2 `doc-formbuilder-standalone-vs-admin-coupled-...` — table of which builder methods are standalone.
+- P2 `let-a-resource-declare-its-route-name-...` — `link(object)` can't resolve routes whose name ≠ model.
+- P3 `card-image-add-contain-full-...` — non-cropping image variant for review UIs.
+Plus my 3 owner-direction tickets: `reframe-skill-md-references-...`, `reframe-readme-docs-positioning-...`,
+`audit-cafecar-public-apis-...` (CB's per-module decision-guide ask folded into the skill task; CB will
+review the revised skill from a consumer's eye).
+
+**0.3.2 planned + committed to CB:** bundle the Unreleased items (installer no longer edits host Gemfile,
+Rails 8.1 locks, listable/displayable hooks) WITH the host-safety fixes (field_error_proc scoping, Helpers
+containment) — the "drop-in / don't break the host" release. Budget-paced, no hard date; ping CB at tag.
+
+**Next:** execute on a fresh-budget pass — the two P1 host-safety fixes first (they're the CoC-principle
+violations), then the SKILL/README reframe + decision guide (send CB the draft to review), the graybeard
+API audit, then cut 0.3.2. Also still pending: logo round 2 (owner feedback filed), allocator budget
+decision, discoverability launch. Owed to us: CrayonBloom's back-office requirements spec.
+
 ## 2026-07-15 — Pass 127: v2 logo round 1 delivered to owner
 
 First budgeted pass returned YELLOW (allowance spent, `left=-4`) — deferred, no work, per the throttle.
