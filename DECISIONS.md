@@ -5,6 +5,26 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-15 — v2 logo round 1 feedback: transparent cutouts, NOT iOS-style icons (VERIFIED email, jeff@yak.sh)
+
+Verbatim owner reply to the round-1 logo demo page:
+
+> 1 and 3 are best, do 4 more of cafe car interiors. But one problem: these are iOS icons, not OS X
+> style. They should have transparent backgrounds, no square shape. Just the cup and just the car
+> interior, no gloss and no borders. So, 4 more cafe car interior attempts; all different. And then
+> redo 1. Coffee cup without the border and gloss.
+
+**What this decides / where applied (logo task `imagegen-a-cafecar-logo-v2-...`):**
+- **Winners:** directions 1 (coffee cup) and 3 (window-seat interior) are the keepers. Directions 2
+  (rail car) and 4 (badge) are OUT.
+- **Aesthetic correction — this reinterprets "OS X / Panic style":** the round-1 marks are iOS-style
+  app icons (glossy, square, bordered). WRONG. Want **transparent backgrounds, no square shape, no
+  gloss, no borders** — just the subject as a **cutout** (the cup itself; the car interior itself),
+  not an icon-in-a-tile.
+- **Round 2 deliverable:** (a) **4 more cafe-car-interior attempts, all different**; (b) **redo
+  direction 1 (coffee cup)** without the border and gloss. All transparent cutouts. Send an updated
+  demo page.
+
 ## 2026-07-13 — Fix audit P0/P1 findings, release v0.3.1, then continue down the audit (VERIFIED in-session, jeff@yak.sh)
 
 Verbatim owner direction after reviewing the private project audit:
