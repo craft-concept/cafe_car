@@ -5,6 +5,29 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-15 — Convention over configuration: agonize over zero config, never break the host app, no unexpected behavior, still feel like Rails (VERIFIED in-session, jeff@yak.sh)
+
+Verbatim owner direction:
+
+> another goal of the project: convention over configuration. we really want to agonize over not
+> making the user edit a bunch of config. at the same time, we don't want to break their app by
+> installing the gem, and we don't want unexpected behavior. CafeCar should be a substantial upgrade,
+> but still feel like using rails.
+
+**What this decides / where applied (sharpens the existing "convention over configuration / no config
+DSLs" line in CLAUDE.md with four concrete acceptance criteria):**
+- **Agonize over zero user config.** Every feature should work from conventions by default; making the
+  user edit config is a design failure to be fought, not a shipped requirement. (Reinforces: no config
+  DSLs — configure via views/partials/policies/locales.)
+- **Installing the gem must NOT break the host app.** Adding cafe_car to a Gemfile must be safe/inert
+  by default — no route hijacking, no monkey-patch that changes existing behavior, no forced load-order
+  surprises. The engine "mounts almost nothing."
+- **No unexpected behavior.** Nothing surprising or implicit that a Rails dev wouldn't predict.
+- **Substantial upgrade, still feels like Rails.** Big capability gain, but the ergonomics stay
+  idiomatic Rails — not a second framework to learn.
+- **This is the acceptance bar for the API audit** (`audit-cafecar-public-apis-...`): flag anything
+  that forces config, could break/alter a host app on install, behaves surprisingly, or feels un-Rails.
+
 ## 2026-07-15 — CafeCar is composable tools for EVERYWHERE (admin + customer-facing), docs/skills must teach it with zero steering; audit the APIs (VERIFIED in-session, jeff@yak.sh)
 
 Context: CrayonBloom is integrating the latest CafeCar. Owner's direction to CrayonBloom (quoted to
