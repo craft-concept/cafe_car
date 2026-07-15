@@ -228,6 +228,13 @@ state down so a future you can read it back.
   (`/copy`) against **`BRAND.md`** before it ships. The designer carries the universal anti-slop
   kit (kill AI-assistant tells); `BRAND.md` carries CafeCar's specific voice. Don't let copy that
   sounds like an AI wrote it reach a user.
+- **ALWAYS work in a worktree; merge to main ONLY with `--ff-only`** (owner directive, 2026-07-15 —
+  the fleet-wide working model, every operator, every repo). Cut a worktree on a branch, do the work
+  there, then `git merge <worktree-branch> --ff-only` onto main. The worktree means no two writers
+  ever share a tree (they'd collide — one sweeps the other's files into an unrelated commit);
+  **`--ff-only` means you can never clobber someone else's work** — if main moved ahead, the merge
+  *refuses* and you rebase and re-merge rather than overwriting. **A refused merge is the mechanism
+  working, never something to force past.** Never `--force`/`-f` to origin.
 - **Commit and push** your own work unless told not to — always push after you commit. Keep
   commits focused; don't bundle unrelated changes.
 - Finish honestly: verify before marking a task done (`bin/operate tasks done <id>`), run the full
