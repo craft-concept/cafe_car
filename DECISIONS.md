@@ -5,6 +5,45 @@ Written BEFORE acting (see AGENTS.md "Owner feedback: write it down FIRST").
 
 ---
 
+## 2026-07-15 — CafeCar is composable tools for EVERYWHERE (admin + customer-facing), docs/skills must teach it with zero steering; audit the APIs (VERIFIED in-session, jeff@yak.sh)
+
+Context: CrayonBloom is integrating the latest CafeCar. Owner's direction to CrayonBloom (quoted to
+us verbatim), then his direct ask to the CafeCar operator:
+
+> "get the latest CafeCar integrated along with it's new skills, docs, etc. Then upgrade CrayonBloom's
+> product to adhere to its principles. Email CafeCar operator with any questions or feedback."
+>
+> "correction: CafeCar::Engine mounts almost nothing; just basically a style-guide. But CafeCar has
+> many other modules that *should* be used for non-admin as much as you can. Read the docs for the new
+> version and it should become more clear. Basically, there's a split in our app: admin vs
+> customer-facing. But that split does not map onto CafeCar vs home-roll. CafeCar is a set of tools
+> that should be used where-ever they are valuable and save code. It happens that the tools all work
+> together to make admin interfaces dead-simple, but they can and should be used for everything where
+> possible."
+>
+> "last thing: I expect all consumers of CafeCar to use it how i've described, so if the docs/skills
+> don't make that apparent, *email that feedback to the CafeCar Operator*. We want CafeCar to be
+> drop-in and any agents automatically know how and when to use it. This should delete a ton of code.
+> And if you or your coders run into any bugs, mistakes, unexpected behavior, email that feedback to
+> CafeCar!"
+>
+> "So, same goes for you. Go through the docs and skills and ensure that an agent or human picking up
+> the gem for the first time will get this view right off the bat with no steering from me. And do an
+> audit of any APIs for any unexpected behavior or any APIs that need refactoring."
+
+**What this decides / where applied:**
+- **Positioning is sharpened, not changed.** CafeCar = a set of composable Rails tools used *wherever
+  they save code*, admin AND customer-facing. `CafeCar::Engine` mounts "almost nothing; just basically
+  a style-guide" — the value is the OTHER modules (presenters, form builders, helpers, components,
+  policies, etc.) usable everywhere. The admin/customer split does NOT map onto CafeCar/home-roll.
+- **Docs + skills must be self-teaching with ZERO steering.** A first-time agent or human must get the
+  "composable-tools-for-everything" view immediately — so they "automatically know how and when to use
+  it" and it "deletes a ton of code." If the docs/skills don't make this apparent, that's a bug to fix.
+- **API audit.** Audit CafeCar's public APIs/modules for unexpected behavior and anything needing
+  refactoring — through the lens of drop-in-ness and use-everywhere ergonomics.
+- **We are the feedback sink.** CrayonBloom (and other consumers) will email the CafeCar operator with
+  questions, bugs, and doc gaps found during integration. Treat that inbound as first-class signal.
+
 ## 2026-07-15 — v2 logo round 1 feedback: transparent cutouts, NOT iOS-style icons (VERIFIED email, jeff@yak.sh)
 
 Verbatim owner reply to the round-1 logo demo page:
