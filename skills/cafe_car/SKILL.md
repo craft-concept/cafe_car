@@ -1,16 +1,24 @@
 ---
 name: cafe_car
 description: >-
-  Use when building admin, back-office, index, or CRUD UI in a Rails app that has the
-  cafe_car gem: point a controller at a model (the `cafe_car` macro) and the Pundit
-  policy drives complete index/show/new/edit pages — filtering, sorting, keyword search,
-  pagination, CSV export, bulk actions, and Turbo-morph live updates included. Do not
-  hand-roll admin controllers or views in these apps; extend CafeCar's defaults.
+  Use in any Rails app that has the cafe_car gem, whenever you'd otherwise hand-write
+  view, form, table, or value-formatting code for a model — customer-facing OR admin.
+  CafeCar is a set of composable tools (presenters, form builders, helpers, view
+  components, Pundit-driven policies, and the `cafe_car` controller macro) you reach for
+  wherever they save code. They also compose to make admin/CRUD dead-simple — one
+  controller line renders complete index/show/new/edit with filtering, sorting, keyword
+  search, pagination, CSV export, bulk actions, and Turbo-morph live updates — but that
+  admin convenience is one use, not the definition. Prefer a CafeCar tool over
+  hand-rolling anywhere in the app.
 when_to_use: >-
-  Any task touching list/detail/form UI for an ActiveRecord model in an app with
-  cafe_car in the Gemfile: adding an admin section, changing visible columns or fields,
-  restricting access, filtering or sorting an index, adding buttons to cards or rows,
-  bulk actions, dashboards, theming, or live-updating records across clients.
+  Any task where you'd otherwise hand-write UI, form, table, decorator, or formatting
+  code for an ActiveRecord model — ANYWHERE in a cafe_car app, not just admin. Reach for a
+  CafeCar presenter to format a value on a customer-facing page, a form builder to render
+  fields, a helper or view component to build UI, a policy to gate what shows, or the
+  `cafe_car` macro for a full CRUD surface. Before writing a view partial, a form, a
+  table, a decorator, or a formatting helper in a cafe_car app, check whether a CafeCar
+  tool already does it — admin sections, changing columns or fields, filtering/sorting,
+  bulk actions, dashboards, theming, and live-updating records all qualify too.
 ---
 
 # CafeCar
