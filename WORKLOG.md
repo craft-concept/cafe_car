@@ -5,6 +5,28 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-15 — Pass 127: v2 logo round 1 delivered to owner
+
+First budgeted pass returned YELLOW (allowance spent, `left=-4`) — deferred, no work, per the throttle.
+Next cron fire returned GREEN (`left=7`, refreshed); ran one pass.
+
+**Owner-requested v2 logo — round 1 delivered** (`imagegen-a-cafecar-logo-v2-...`, was pending since
+the 7/10 brief). Delegated to the designer; generated 4 distinct directions via `~/code/holdco/bin/imagegen`
+(bills Codex subscription, off my token budget): (1) coffee cup, (2) rail car, (3) window-seat interior
+scene, (4) brass badge. Panic / OS X ~2010 app-icon aesthetic, complexity scaling down to a 32px
+favicon (dirs 1 & 4 got redrawn — not downscaled — favicons). Built a voice-gated demo page showing
+each on light+dark at 512/128/64/32px, placed under `~/shared/cafe_car/logo-v2/` and served over the
+tailnet: `https://claude.ibis-micro.ts.net/cafe_car/logo-v2/index.html`. Verified all 6 PNGs + page on
+disk. Emailed the owner the link + recommendation (**Badge first** — only mark uniting *cafe*+*car* and
+holds silhouette to 32px; **Coffee cup** close second; 2 & 3 are scenes that blur below ~64px, so
+hero/social art not favicons). Drafts are raster with generative imperfections; winner gets a clean
+vector redraw before becoming canonical. Task set `blocked` on the owner's pick. Nothing committed to
+the repo (shared dir is intentionally outside it).
+
+**Next:** await owner's logo pick (then vector redraw) and the allocator decision on the budget
+proposal. Discoverability launch (Awesome Rails / RubyFlow / launch post) still unblocked and queued
+for a GREEN pass.
+
 ## 2026-07-14 — Pass 125: P0 rotation closed; monetization thesis proposed; CrayonBloom security P0
 
 GREEN, one pass. Set up the requested 8h operating loop (cron `993b90ed`, `:11` every 8h). CI all
