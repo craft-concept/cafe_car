@@ -1,5 +1,10 @@
 module CafeCar
   module Helpers
+    # The safe formatting subset (`present`). Everything else in this module —
+    # the link_to/capture/method_missing/`p` overrides especially — is admin-only
+    # and unsafe app-wide; a host wanting formatting uses CafeCar::Formatting.
+    include Formatting
+
     # Returns a new `Context`. Used for instantiating components: `ui.Button(:primary, "Submit")`
     def ui(*args, **, &)
       # For now, this must be defined in a helper instead of in the controller. Passing `view_context` or `helpers`
@@ -72,10 +77,8 @@ module CafeCar
       @_cafe_car_form_depth -= 1 if form
     end
 
-    def present(*args, **options)
-      @presenters                  ||= {}
-      @presenters[[ args, options ]] ||= CafeCar[:Presenter].present(self, *args, **options)
-    end
+    # `p` aliases `present` for terse view code — a deliberate shadow of Kernel#p
+    # that is admin-only (it stays out of CafeCar::Formatting).
     alias_method :p, :present
 
     def current_href?(*, check_parameters: false, **) = current_page?(href_for(*, **), check_parameters:)
