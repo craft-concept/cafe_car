@@ -59,10 +59,17 @@ module CafeCar
       capture { cat(*) }
     end
 
-    def capture(*, &)
+    def capture(*args, &)
+      # form_for/form_with/fields_for capture their block with the builder as the
+      # first arg — track that we're inside a CafeCar form so field_error_proc can
+      # drop Rails' `field_with_errors` wrapper here without touching host forms.
+      form = args.first.is_a?(CafeCar[:FormBuilder])
+      @_cafe_car_form_depth = @_cafe_car_form_depth.to_i + 1 if form
       super do
-        yield(*).then { _1.try(:html_safe?) ? _1.to_s : _1 }
+        yield(*args).then { _1.try(:html_safe?) ? _1.to_s : _1 }
       end
+    ensure
+      @_cafe_car_form_depth -= 1 if form
     end
 
     def present(*args, **options)

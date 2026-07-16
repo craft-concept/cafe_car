@@ -134,7 +134,15 @@ module CafeCar
     end
 
     initializer "cafe_car.field_with_errors" do
-      ActionView::Base.field_error_proc = proc { _1.html_safe }
+      # Rails wraps a field with errors in `<div class="field_with_errors">`.
+      # CafeCar's own forms render errors through their Field components, so they
+      # opt out of that wrapper — but ONLY inside a CafeCar form (tracked per-view
+      # by Helpers#capture). Host-app forms fall through to Rails' default proc, so
+      # mounting the engine never strips a consumer's own field-error markup.
+      default = ActionView::Base.field_error_proc
+      ActionView::Base.field_error_proc = proc do |html_tag, instance|
+        @_cafe_car_form_depth.to_i.positive? ? html_tag.html_safe : instance_exec(html_tag, instance, &default)
+      end
     end
 
     initializer "cafe_car.console" do |app|
