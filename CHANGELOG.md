@@ -31,6 +31,15 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Fixed
 
+- Mounting the engine no longer strips Rails' `field_with_errors` wrapper from a
+  host app's own forms; the wrapper is dropped only inside CafeCar's own forms.
+- The `present` formatting helper is now available on its own via
+  `CafeCar::Formatting`, so a host can format values app-wide without the
+  admin-only `link_to`/`capture`/`method_missing`/`p` overrides in
+  `CafeCar::Helpers`.
+- A policy-permitted member/collection action with no controller override and no
+  matching model method now fails closed with a clean authorization error instead
+  of a raw `NoMethodError`; the model-bang convention logs a warning when it fires.
 - Malformed filter and pagination input can no longer invoke JSON parsing,
   constant lookup, user-authored regular expressions, or invalid page sizes.
 - CSV exports now mark truncation only when at least one row was omitted.
