@@ -5,6 +5,50 @@ Running narrative of each operating pass, newest first. Each entry: what shipped
 
 ---
 
+## 2026-07-16 — Pass 129: 3 host-safety fixes shipped; graybeard API audit → 8 more tickets
+
+First real execution pass since the throttle cleared (several YELLOW skips over 7/15–16). GREEN, healthy
+budget. Ran a coder (isolated worktree, per the new --ff-only directive) + a read-only graybeard audit in
+parallel — disjoint work (coder writes, audit reads), no collision.
+
+**Shipped — 3 P1 host-safety/security fixes** (branch `fix/0.3.2-host-safety`, merged `--ff-only` to main
+`e6aa12e`, CI green; full `bundle exec rake` green — rubocop 0, 338 tests/1087 assertions, brakeman 0;
+effect-asserting tests):
+- **field_error_proc scoped to CafeCar forms** (`5e8954c`) — captures Rails' default at boot, drops the
+  field_with_errors wrapper only when `@_cafe_car_form_depth>0` (set by Helpers#capture on a CafeCar
+  FormBuilder block); host forms untouched. Fixes the silent stripping of consumers' own field errors.
+- **Helpers blast radius contained** (`d1a5427`) — extracted safe `present` into standalone
+  `CafeCar::Formatting` (host can `helper CafeCar::Formatting` app-wide with none of the
+  link_to/capture/method_missing/`p` footguns); admin keeps the full set.
+- **Dispatcher fails closed** (`4f9c94e`) — permitted-but-unhandled custom action now denies cleanly
+  (Pundit::NotAuthorizedError) instead of hitting an unguarded model bang / 500; loud warn when the
+  bang-convention fires. Closed 3 CB-sourced tickets.
+
+**Graybeard API audit (read-only) → 8 new tickets.** Surfaced host-breaking issues beyond the known four,
+several verified against the dummy app:
+- P1 blockers (0.3.2): (1) **`resources` monkey-patched GLOBALLY** — every host resource gets 4 injected
+  routes, only:/except: can't stop it, fires just from bundling (route hijacking, verified); (2) the
+  documented `cafe_car(only:)` lever **crashes 500 instead of narrowing** — a placebo, worse than nothing,
+  verified, zero coverage; (3) **haml-rails** dep silently flips the host's scaffold generators to Haml
+  (swap to bare `haml`).
+- P2/P3: routing-concern name collisions; `rails console` disabling host CSRF flag; Filtering not
+  usable standalone (use-everywhere); Authentication's current_user colliding with Devise; ParamParser
+  depth-cap spike; `.sample` name-squat + empty-table bug; Queryable scope-wrap docs.
+- Audit also flagged good patterns (Model.sorted/default_search + ChartBuilder = the raw-param-safe gold
+  standard) and that the blockers fire from Railtie initializers, NOT from mounting — "engine mounts
+  almost nothing" is true of routes but not the blast radius.
+- **Owner decision filed** (`design-explicit-dispatchable-actions-allowlist`): fully closing the dispatcher
+  fail-open needs an explicit allowlist that flips the convention (potentially breaking) — warn-only vs
+  strict default is the owner's call. Raised in the digest.
+
+**Owner digest sent** (+ a correction — a zsh backtick-substitution glitch dropped two words from the
+first send; captured the lesson: no backticks/$ in bash-invoked email bodies → memory `email-body-no-backticks`).
+
+**Next:** the 3 P1 blockers (they gate a clean 0.3.2) — the global-resources patch + `only:` crash are the
+top priority (compound into "docs make it less safe"); then the docs/skills toolkit reframe (send CB the
+draft to review); then cut 0.3.2 with the whole bundle (version bump + Gemfile.lock at tag time). Also
+pending: logo round 2, allocator budget decision, discoverability launch. Owed: CB's back-office spec.
+
 ## 2026-07-15 — Pass 128: owner positioning + CoC principles; CrayonBloom dogfooding feedback triaged; 0.3.2 planned
 
 Series of VERIFIED in-session owner directions + the first live-consumer feedback from CrayonBloom.
