@@ -21,16 +21,27 @@
 #   operate tokens          readable table (default)
 #   operate tokens --tmux    one-liner for the status bar
 #   operate tokens --pace    one machine-readable line for loops/schedulers:
-#                            "<sleep_seconds> <SIGNAL> left=<n> used=<n> alloc=<n> cap=<n>"
-#                            `cap=` is the 7-day HARD-CAP % used (0..100) — distinct
+#                            "<sleep_seconds> <SIGNAL> left=<n> used=<n> alloc=<n> cap=<n>
+#                             [MONDAY-BURN …] codex=<SIG> [claude_forced=<SIG>] ADVICE: <text>"
+#                            SIGNAL (field 2) is the CLAUDE signal — the operator's own
+#                            pace. `cap=` is the 7-day HARD-CAP % used (0..100) — distinct
 #                            from the allowance-relative used=/alloc=/left=. The email
 #                            channel reads cap= for its >95%-only hold gate (deliver
 #                            mail unless the fleet is over 95% of the 7-day cap).
+#                            The 6-field prefix through cap= is byte-stable; codex=/
+#                            ADVICE: are ADDITIVE trailing tokens (like MONDAY-BURN).
 #                            The signal folds in this venture's registry status when
 #                            tokens.registry_file (operate.json) is configured AND
 #                            present: a `hold` status pins YELLOW with the long
 #                            sleep — the owner-directed holding pattern. Absent /
 #                            missing file → the fleet signal passes through (fail open).
+#   operate tokens --set-signal <claude|codex>=<GREEN|YELLOW|RED> [--until <dur|iso>]
+#                            owner lever: force a provider's signal fleet-wide (one shared
+#                            file). --until takes a duration (2h/30m/3d) or a date -d string;
+#                            omitted = until cleared. claude forces the operator pace;
+#                            codex is advice-only (codex has NO computed signal — pure lever).
+#   operate tokens --clear-signal [claude|codex]
+#                            clear one provider's forced signal (or the whole file if omitted).
 #   operate tokens --watch [secs]
 #                            owner monitor: live-refreshing table (default 60s)
 #
@@ -48,11 +59,19 @@
 # (codex/ChatGPT weekly usage + grant pacing — sessions_dir, weekly_reset, used_pct,
 # grants[]). Built-in defaults match today's behavior, so a bare copy runs unchanged.
 #
-# Codex (ChatGPT) usage is ADDITIVE and appears in table + tmux human modes ONLY —
-# it never touches the machine-readable --pace line (the tmux status + email hold
-# gate parse that; see "Do NOT disturb the --pace contract" below). A read-only scan
-# of ~/.codex/sessions (rate-limit snapshots codex already writes) sources it; env
-# seam CODEX_SESSIONS_DIR wins for tests. auth.json/credentials are never read.
+# Two INDEPENDENT provider signals (owner refinement 2026-07-15), both in
+# GREEN/YELLOW/RED, told apart by a `claude:`/`codex:` label:
+#   * claude — the computed pace altimeter (below), overridable by the lever;
+#   * codex  — a PURE owner lever (--set-signal codex=…), NO budget computation;
+#              default `unset`. Advice-only — codex is a tool, not the loop's budget.
+# ADVICE (fused from the pair) rides the --pace tail + a table/tmux line so the
+# operator sees both providers + which-engine guidance every pass.
+# The codex weekly-usage SCAN (~/.codex/sessions rate-limit snapshots; env seam
+# CODEX_SESSIONS_DIR wins for tests) is KEPT as table-mode INFORMATIONAL display
+# only (the 07-14 SPEND/ON-GLIDE/SPENT altimeter is retired — the lever replaced
+# it). auth.json/credentials are never read.
+# The per-provider forced signals live in one shared file <usage_dir>/pace-override
+# so every operator on the box reads the same lever (works with holdco absent).
 #
 # Deps: bash only (jq optional, used to read operate.json + ccusage JSON + the codex
 # rollout line — a bash/sed fallback covers the no-jq case).
@@ -69,6 +88,10 @@ untilde() { case "$1" in "~/"*) printf '%s' "$HOME/${1#\~/}" ;; *) printf '%s' "
 CACHE_DIR="${CLAUDE_USAGE_DIR:-}"
 [ -n "$CACHE_DIR" ] || CACHE_DIR="$(untilde "$(cfg tokens.usage_dir)")"
 [ -n "$CACHE_DIR" ] || CACHE_DIR="$HOME/.cache/claude-usage"
+# One shared per-provider signal-override file (owner lever), read by every
+# operator on the box. Lives beside the account-wide usage caches so it moves
+# with the CLAUDE_USAGE_DIR test seam automatically.
+OVERRIDE_FILE="$CACHE_DIR/pace-override"
 CCUSAGE_CACHE="$CACHE_DIR/ccusage-daily"
 CCUSAGE_TTL=600 # seconds; tmux reads this cache, table mode refreshes it
 CACHE_TTL_SECONDS=300 # prompt-cache warm window (sliding, reset each turn)
@@ -79,10 +102,14 @@ now="${OPERATE_TOKENS_NOW:-$(date +%s)}"
 
 MODE="table"
 WATCH_IVAL=60
+SET_SPEC="" CLEAR_PROV="all" UNTIL_RAW=""
 while [ $# -gt 0 ]; do
 	case "$1" in
 	--tmux) MODE="tmux" ;;
 	--pace) MODE="pace" ;;
+	--set-signal) MODE="set-signal"; SET_SPEC="${2:-}"; shift ;;
+	--clear-signal) MODE="clear-signal"; case "${2:-}" in claude | codex) CLEAR_PROV="$2"; shift ;; esac ;;
+	--until) UNTIL_RAW="${2:-}"; shift ;;
 	--watch)
 		MODE="watch"
 		case "${2:-}" in [0-9]*) WATCH_IVAL="$2"; shift ;; esac
@@ -91,6 +118,77 @@ while [ $# -gt 0 ]; do
 	esac
 	shift
 done
+
+# ---- owner signal override (per-provider lever) -----------------------------
+# One account-wide budget => ONE shared file, so every operator reads the same
+# lever. Per-provider entries (CLAUDE_*/CODEX_*); an empty/absent UNTIL = no
+# expiry; an entry with UNTIL <= now is ignored (never rewritten on a read path,
+# so concurrent operators don't race). The claude lever forces the operator's own
+# pace signal; the codex lever is advice-only (codex has no computed signal).
+
+# parse_until <dur-or-iso> -> epoch (empty on failure / empty input). A bare
+# duration (12s/30m/2h/3d) is relative to `now`; anything else goes to `date -d`.
+parse_until() {
+	local raw="$1"; [ -n "$raw" ] || return
+	if [[ "$raw" =~ ^([0-9]+)([smhd])$ ]]; then
+		local n="${BASH_REMATCH[1]}" u="${BASH_REMATCH[2]}" mult=1
+		case "$u" in s) mult=1 ;; m) mult=60 ;; h) mult=3600 ;; d) mult=86400 ;; esac
+		printf '%s' $((now + n * mult)); return
+	fi
+	date -d "$raw" +%s 2>/dev/null || true
+}
+
+# ovget <KEY> — raw value of a line in the override file (no expiry filtering).
+ovget() { sed -n "s/^$1=//p" "$OVERRIDE_FILE" 2>/dev/null | head -1; }
+
+# ovwrite <CS> <CU> <XS> <XU> — rewrite the file from the four values, dropping a
+# provider whose signal is empty; remove the file entirely when both are empty.
+ovwrite() {
+	if [ -z "$1" ] && [ -z "$3" ]; then rm -f "$OVERRIDE_FILE"; return; fi
+	mkdir -p "$(dirname "$OVERRIDE_FILE")"
+	{
+		[ -n "$1" ] && printf 'CLAUDE_SIGNAL=%s\nCLAUDE_UNTIL=%s\n' "$1" "$2"
+		[ -n "$3" ] && printf 'CODEX_SIGNAL=%s\nCODEX_UNTIL=%s\n' "$3" "$4"
+	} >"$OVERRIDE_FILE"
+}
+
+if [ "$MODE" = "set-signal" ]; then
+	prov="${SET_SPEC%%=*}"; sig="${SET_SPEC##*=}"
+	case "$prov" in claude | codex) ;; *) echo "set-signal: provider must be claude or codex (got '$prov')" >&2; exit 2 ;; esac
+	case "$sig" in GREEN | YELLOW | RED) ;; *) echo "set-signal: signal must be GREEN|YELLOW|RED (got '$sig')" >&2; exit 2 ;; esac
+	until=""
+	if [ -n "$UNTIL_RAW" ]; then
+		until="$(parse_until "$UNTIL_RAW")"
+		[ -n "$until" ] || { echo "set-signal: could not parse --until '$UNTIL_RAW'" >&2; exit 2; }
+	fi
+	CS="$(ovget CLAUDE_SIGNAL)" CU="$(ovget CLAUDE_UNTIL)" XS="$(ovget CODEX_SIGNAL)" XU="$(ovget CODEX_UNTIL)"
+	case "$prov" in claude) CS="$sig" CU="$until" ;; codex) XS="$sig" XU="$until" ;; esac
+	ovwrite "$CS" "$CU" "$XS" "$XU"
+	umsg="no expiry (until cleared)"; [ -n "$until" ] && umsg="until $(date -d "@$until" '+%a %b %-d %H:%M %Z' 2>/dev/null)"
+	printf 'signal override set: %s = %s (%s)\n' "$prov" "$sig" "$umsg"
+	exit 0
+fi
+
+if [ "$MODE" = "clear-signal" ]; then
+	if [ "$CLEAR_PROV" = "all" ]; then rm -f "$OVERRIDE_FILE"; echo "signal override cleared (all providers)"; exit 0; fi
+	CS="$(ovget CLAUDE_SIGNAL)" CU="$(ovget CLAUDE_UNTIL)" XS="$(ovget CODEX_SIGNAL)" XU="$(ovget CODEX_UNTIL)"
+	case "$CLEAR_PROV" in claude) CS="" CU="" ;; codex) XS="" XU="" ;; esac
+	ovwrite "$CS" "$CU" "$XS" "$XU"
+	echo "signal override cleared: $CLEAR_PROV"
+	exit 0
+fi
+
+# Read the active levers for this pass: valid signal AND (no expiry OR future).
+CLAUDE_FORCE="" CLAUDE_FORCE_UNTIL="" CODEX_LEVER="" CODEX_LEVER_UNTIL=""
+if [ -f "$OVERRIDE_FILE" ]; then
+	cs="$(ovget CLAUDE_SIGNAL)" cu="$(ovget CLAUDE_UNTIL)" xs="$(ovget CODEX_SIGNAL)" xu="$(ovget CODEX_UNTIL)"
+	case "$cs" in GREEN | YELLOW | RED)
+		if [ -z "$cu" ] || ! [[ "$cu" =~ ^[0-9]+$ ]] || ((cu > now)); then CLAUDE_FORCE="$cs" CLAUDE_FORCE_UNTIL="$cu"; fi ;;
+	esac
+	case "$xs" in GREEN | YELLOW | RED)
+		if [ -z "$xu" ] || ! [[ "$xu" =~ ^[0-9]+$ ]] || ((xu > now)); then CODEX_LEVER="$xs" CODEX_LEVER_UNTIL="$xu"; fi ;;
+	esac
+fi
 
 # --watch: the owner monitor — re-render the table every N seconds (default 60).
 # Just a loop around the default mode; the table is the single source of truth.
@@ -269,13 +367,55 @@ if [ "$MODE" = "pace" ]; then
 	fi
 fi
 
+# ---- owner levers: claude forces our own pace; codex is the advice signal -----
+# The claude lever (if active) replaces the computed pace signal for ALL modes and
+# wins over the hold pin — it's the owner's explicit hand on the wheel. The codex
+# signal is PURELY the lever (no computation); `unset` until the owner sets it.
+claude_forced=0 claude_computed_sig="$pace_signal"
+if [ -n "$CLAUDE_FORCE" ]; then
+	claude_forced=1
+	pace_signal="$CLAUDE_FORCE"
+	case "$CLAUDE_FORCE" in GREEN) pace_sleep="$GREEN_SLEEP" ;; *) pace_sleep="$BUSY_SLEEP" ;; esac
+fi
+codex_sig="${CODEX_LEVER:-unset}"
+
+# Advice fuses the two provider signals into one which-engine sentence. No budget
+# math — just claude signal × codex lever. Directional read, never a hard gate.
+compute_advice() {
+	local cs="$pace_signal" xs="$codex_sig"
+	if [ "$pace_have" = 0 ] && [ "$claude_forced" = 0 ]; then
+		echo "no Claude budget data yet — proceed conservatively"; return
+	fi
+	case "$cs" in
+	GREEN)
+		case "$xs" in
+		GREEN) echo "both GREEN — spend freely; lean coding & research on codex/Sol" ;;
+		YELLOW | RED) echo "Claude GREEN — spend freely on the loop; go easy on codex (codex $xs)" ;;
+		*) echo "Claude GREEN — spend freely" ;;
+		esac ;;
+	YELLOW)
+		case "$xs" in
+		GREEN) echo "Claude YELLOW (allowance spent) — route coding & research to codex/Sol (codex GREEN)" ;;
+		*) echo "Claude YELLOW — defer discretionary work, sleep long" ;;
+		esac ;;
+	RED)
+		case "$xs" in
+		GREEN) echo "Claude RED (near cap) — defer discretionary Claude work; push coding & research to codex/Sol (codex GREEN)" ;;
+		*) echo "Claude RED — defer discretionary work to backlog, sleep long" ;;
+		esac ;;
+	*) echo "signal $cs — pace accordingly" ;;
+	esac
+}
+pace_advice="$(compute_advice)"
+
 # Monday burn-down hint (owner directive 2026-07-06): on a Michigan Monday, the
 # fleet's duty is to spend the remaining 7-day window budget down to ~99% by the
 # Tuesday 07:00 reset. Append a compact, machine-parseable hint AFTER alloc= while
-# there is still window budget to burn (used < 99). Field positions 1/2 and the
-# left=/used=/alloc= fields are untouched, so positional parsers are unaffected.
+# there is still window budget to burn (used < 99). Suppressed while claude is
+# FORCED (a deliberate override would contradict a burn nudge). Field positions
+# 1/2 and the left=/used=/alloc= fields are untouched.
 pace_hint=""
-if [ "$pace_have" = 1 ] && ((pace_dow == 1)) && ((pace_used < 99)); then
+if [ "$pace_have" = 1 ] && ((pace_dow == 1)) && ((pace_used < 99)) && [ "$claude_forced" = 0 ]; then
 	pace_hint=" MONDAY-BURN target~99 by Tue 07:00"
 fi
 
@@ -285,8 +425,20 @@ if [ "$MODE" = "pace" ]; then
 	# the first fields are untouched; the email channel greps cap= for its >95% hold
 	# gate. When there's no cap data (pace_have=0) cap=0 — the channel fails open
 	# (delivers) rather than holding on an unknown budget.
-	printf '%s %s left=%s used=%s alloc=%s cap=%s%s\n' \
-		"$pace_sleep" "$pace_signal" "$pace_left" "$pace_used" "$pace_alloc" "$pace_used" "$pace_hint"
+	# ADDITIVE tail (after the byte-stable 6-field prefix): codex=<lever>, an optional
+	# claude_forced=<SIG> marker, then a trailing human ADVICE: to end-of-line. No
+	# consumer reads past cap= positionally, so fields 1-2 + left/used/alloc/cap stay
+	# byte-identical whether or not a lever is set.
+	codex_tail=" codex=$codex_sig"
+	[ -n "$CODEX_LEVER" ] && [ -n "$CODEX_LEVER_UNTIL" ] && codex_tail+=" codex_until=$CODEX_LEVER_UNTIL"
+	forced_tail=""
+	if [ "$claude_forced" = 1 ]; then
+		forced_tail=" claude_forced=$pace_signal"
+		[ -n "$CLAUDE_FORCE_UNTIL" ] && forced_tail+=" claude_until=$CLAUDE_FORCE_UNTIL"
+	fi
+	printf '%s %s left=%s used=%s alloc=%s cap=%s%s%s%s ADVICE: %s\n' \
+		"$pace_sleep" "$pace_signal" "$pace_left" "$pace_used" "$pace_alloc" "$pace_used" \
+		"$pace_hint" "$codex_tail" "$forced_tail" "$pace_advice"
 	exit 0
 fi
 
@@ -336,19 +488,19 @@ reset_in=""
 if [[ "$cur_seven_reset" =~ ^[0-9]+$ ]]; then reset_in="$(human_until $((cur_seven_reset - now)))"; fi
 cost_today="$(daily_cost || true)"
 
-# ---- codex (ChatGPT) weekly usage + grant-pacing altimeter ------------------
-# Additive, table/tmux ONLY: this whole block runs AFTER the --pace early-exit
-# above, so the machine-readable --pace contract is byte-for-byte untouched and
-# never pays the scan cost. Read-only scan of the rate-limit snapshot codex writes
-# on every model turn into ~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl
+# ---- codex (ChatGPT) weekly usage — INFORMATIONAL display only --------------
+# Table/tmux ONLY (runs AFTER the --pace early-exit; --pace uses the lever, not
+# this scan). Read-only scan of the rate-limit snapshot codex writes on every
+# model turn into ~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl
 # (payload.rate_limits.primary = {used_percent, resets_at} over a 7-day window).
 # Freshest reading = the last rate_limits line in the newest session file that
-# carries one — mirrors the Claude "freshest in the open window" rule. auth.json /
-# credentials are NEVER read; nothing is transmitted.
+# carries one. This drives NOTHING — the codex SIGNAL is the owner lever (codex_sig
+# above), not computed from this usage (owner directive 2026-07-15). It's shown so
+# the owner can eyeball consumption when deciding whether to flip the lever.
+# auth.json / credentials are NEVER read; nothing is transmitted.
 CODEX_DIR="${CODEX_SESSIONS_DIR:-}"
 [ -n "$CODEX_DIR" ] || CODEX_DIR="$(untilde "$(cfg tokens.codex.sessions_dir)")"
 [ -n "$CODEX_DIR" ] || CODEX_DIR="$HOME/.codex/sessions"
-CODEX_GLIDE_TOL="$(cfg tokens.codex.glide_tol)"; [ -n "$CODEX_GLIDE_TOL" ] || CODEX_GLIDE_TOL=5
 
 codex_used="" codex_reset="" codex_age=""
 while IFS= read -r cf; do
@@ -383,52 +535,39 @@ if [ -n "$codex_reset" ] && ! [[ "$codex_reset" =~ ^[0-9]+$ ]]; then
 fi
 
 # Grants are MANUAL (not machine-readable): the soonest expiry strictly in the
-# future is the pacing deadline.
-codex_grant="" codex_grant_disp=""
+# future is shown as informational context for the owner's lever decision.
+codex_grant=""
 while IFS= read -r g; do
 	[ -n "$g" ] || continue
 	ge="$(date -d "$g" +%s 2>/dev/null || true)"
 	[ -n "$ge" ] || continue
 	((ge <= now)) && continue
-	if [ -z "$codex_grant" ] || ((ge < codex_grant)); then codex_grant="$ge" codex_grant_disp="$g"; fi
+	if [ -z "$codex_grant" ] || ((ge < codex_grant)); then codex_grant="$ge"; fi
 done < <(cfg 'tokens.codex.grants[].expires')
 
-# Altimeter — the INVERSE of the Claude signal: a grant is use-it-or-lose-it, so the
-# failure mode is UNDER-spending it before it expires. Deadline = soonest future
-# grant (else the weekly reset); anchor = the weekly-window start (reset − 7d); glide
-# target = 99·(now−anchor)/(deadline−anchor), clamped [0,99]. Biased toward SPEND:
-# ON-GLIDE only once used sits a cushion (CODEX_GLIDE_TOL) ABOVE the burn line, since
-# under-spend — not over-spend — is the risk. SPENT once used ≥ ~99%.
-codex_signal="" codex_target=""
-if [ -n "$codex_used" ]; then
-	cu="$(round "$codex_used")"
-	cdl="$codex_grant"; [ -n "$cdl" ] || cdl="$codex_reset"
-	canchor=""; [[ "$codex_reset" =~ ^[0-9]+$ ]] && canchor=$((codex_reset - SEVEN_WIN))
-	if ((cu >= 99)); then
-		codex_signal="SPENT"
-	elif [ -n "$cdl" ] && [ -n "$canchor" ] && [[ "$cdl" =~ ^[0-9]+$ ]] && ((cdl > canchor)); then
-		codex_target="$(awk -v n="$now" -v a="$canchor" -v d="$cdl" 'BEGIN{
-			t = 99*(n-a)/(d-a); if(t<0)t=0; if(t>99)t=99; printf "%d", t+0.5 }')"
-		if ((cu >= codex_target + CODEX_GLIDE_TOL)); then codex_signal="ON-GLIDE"; else codex_signal="SPEND"; fi
-	else
-		codex_signal="SPEND"
-	fi
-fi
-
 if [ "$MODE" = "tmux" ]; then
-	# Compact: "Fleet 72%wk · resets 4d · $18 today". Color by 7d threshold.
-	if [ -z "$seven_disp" ]; then
-		# No cap data yet — show cost if we have it, else stay quiet.
+	# Compact: "Fleet 72%wk · resets 4d · $18 · claude:GREEN codex:GREEN". Color by
+	# the claude signal when forced, else by the 7d threshold.
+	if [ -z "$seven_disp" ] && [ "$claude_forced" = 0 ]; then
+		# No cap data yet and no forced signal — show cost if we have it, else quiet.
 		[ -n "$cost_today" ] && printf 'Fleet $%s today' "$cost_today"
 		exit 0
 	fi
-	color="default"
-	((seven_disp >= 90)) && color="red" || { ((seven_disp >= 70)) && color="yellow"; }
-	out="Fleet ${seven_disp}%wk"
+	if [ "$claude_forced" = 1 ]; then
+		case "$pace_signal" in RED) color="red" ;; YELLOW) color="yellow" ;; *) color="default" ;; esac
+	else
+		color="default"
+		((seven_disp >= 90)) && color="red" || { ((seven_disp >= 70)) && color="yellow"; }
+	fi
+	out="Fleet"
+	[ -n "$seven_disp" ] && out+=" ${seven_disp}%wk"
 	[ -n "$reset_in" ] && out+=" · resets $reset_in"
 	[ -n "$cost_today" ] && out+=" · \$$cost_today today"
-	# Codex weekly % is compact + additive here (never on --pace).
-	[ -n "$codex_used" ] && out+=" · Codex $(round "$codex_used")%"
+	# Both provider signals (the per-pass read), with FORCED/lever markers.
+	csuf=""; ((claude_forced)) && csuf="(F)"
+	xsuf=""; [ -n "$CODEX_LEVER" ] && xsuf="(lever)"
+	out+=" · claude:${pace_signal}${csuf} codex:${codex_sig}${xsuf}"
+	[ -n "$codex_used" ] && out+=" · Codex $(round "$codex_used")% used"
 	printf '#[fg=%s]%s#[default]' "$color" "$out"
 	exit 0
 fi
@@ -483,34 +622,56 @@ pace_line() {
 		"$lbl" "$u" "$ep" "$projstr" "$resin" "$gtag"
 }
 
-# Codex (ChatGPT) weekly-usage + grant-altimeter block (table mode). Reads the
-# codex_* globals computed in the render section; degrades to a quiet "no data" line.
-# The signal words (SPEND / ON-GLIDE / SPENT) are deliberately NOT Claude's
-# GREEN/YELLOW/RED so the two reads can never be confused.
+# Codex (ChatGPT Pro) block (table mode). The header shows the SIGNAL — which is
+# the owner LEVER (codex_sig), not computed — with a forced/expiry marker. Weekly
+# usage + grant are read-only INFORMATIONAL context (drive nothing; they just help
+# the owner decide when to flip the lever). Degrades to a quiet line with no scan.
 codex_line() {
+	local sc lu="" lv="$codex_sig"
+	case "$lv" in GREEN) sc="$grn" ;; YELLOW) sc="$ylw" ;; RED) sc="$redc" ;; *) sc="$dim" ;; esac
+	if [ -n "$CODEX_LEVER" ]; then
+		if [ -n "$CODEX_LEVER_UNTIL" ]; then
+			lu=" ${dim}(owner lever, until $(date -d "@$CODEX_LEVER_UNTIL" '+%a %b %-d %H:%M' 2>/dev/null))${rst}"
+		else lu=" ${dim}(owner lever)${rst}"; fi
+	else lu=" ${dim}(no lever set — advice treats codex as neutral)${rst}"; fi
+	printf '%s%s (ChatGPT Pro)%s   signal %s%s%s%s\n' "$bold" "Codex" "$rst" "$sc" "$lv" "$rst" "$lu"
 	if [ -z "$codex_used" ]; then
-		printf '  %s%-11s no codex data (no session reading, no tokens.codex config)%s\n' \
-			"$dim" "Codex:" "$rst"
+		printf '  %s%-11s no usage reading (informational only; signal is the lever above)%s\n' "$dim" "Weekly:" "$rst"
 		return
 	fi
-	local cu sc="" wk gr
+	local cu wk
 	cu="$(round "$codex_used")"
-	case "$codex_signal" in SPEND) sc="$grn" ;; SPENT) sc="$dim" ;; esac
 	wk="${cu}% used"
 	if [[ "$codex_reset" =~ ^[0-9]+$ ]]; then
 		wk+=" · resets in $(human_until $((codex_reset - now))) ($(date -d "@$codex_reset" '+%a %b %-d' 2>/dev/null))"
 	fi
 	if [ -n "$codex_age" ]; then wk+=" · ${dim}$(human_until "$codex_age") ago${rst}"
 	else wk+=" · ${dim}(config)${rst}"; fi
+	printf '  %-11s %s %s(informational)%s\n' "Weekly:" "$wk" "$dim" "$rst"
 	if [ -n "$codex_grant" ]; then
-		gr="soonest expires $(date -d "@$codex_grant" '+%b %-d' 2>/dev/null) ($(human_until $((codex_grant - now))))"
-	else
-		gr="${dim}none configured${rst}"
+		printf '  %-11s soonest grant expires %s (%s) %s(informational)%s\n' \
+			"Grant:" "$(date -d "@$codex_grant" '+%b %-d' 2>/dev/null)" "$(human_until $((codex_grant - now)))" "$dim" "$rst"
 	fi
-	[ -n "$codex_signal" ] && gr+=" · ${sc}${bold}${codex_signal}${rst}"
-	echo "${bold}Codex (ChatGPT Pro)${rst}"
-	printf '  %-11s %s\n' "Weekly:" "$wk"
-	printf '  %-11s %s\n' "Grant:" "$gr"
+}
+
+# signals_line — both provider signals side by side + FORCED/lever markers, then
+# the fused advice. The operator's per-pass human read (the table analogue of the
+# --pace codex=/ADVICE tail).
+signals_line() {
+	local cc xc cmk="" xmk=""
+	case "$pace_signal" in GREEN) cc="$grn" ;; YELLOW) cc="$ylw" ;; RED) cc="$redc" ;; *) cc="$dim" ;; esac
+	case "$codex_sig" in GREEN) xc="$grn" ;; YELLOW) xc="$ylw" ;; RED) xc="$redc" ;; *) xc="$dim" ;; esac
+	if [ "$claude_forced" = 1 ]; then
+		cmk=" ${bold}${redc}FORCED${rst}"
+		[ -n "$CLAUDE_FORCE_UNTIL" ] && cmk+="${dim} until $(date -d "@$CLAUDE_FORCE_UNTIL" '+%b %-d %H:%M' 2>/dev/null)${rst}"
+		cmk+=" ${dim}(computed ${claude_computed_sig})${rst}"
+	fi
+	if [ -n "$CODEX_LEVER" ]; then
+		xmk=" ${dim}(lever"; [ -n "$CODEX_LEVER_UNTIL" ] && xmk+=" until $(date -d "@$CODEX_LEVER_UNTIL" '+%b %-d %H:%M' 2>/dev/null)"; xmk+=")${rst}"
+	fi
+	printf '  %-11s claude %s%s%s%s %s·%s codex %s%s%s%s\n' \
+		"Signals:" "$cc" "$pace_signal" "$rst" "$cmk" "$dim" "$rst" "$xc" "$codex_sig" "$rst" "$xmk"
+	printf '  %-11s %s\n' "Advice:" "$pace_advice"
 }
 
 echo "${bold}Fleet token usage${rst}"
@@ -530,6 +691,7 @@ if [ "$pace_have" = 1 ]; then
 		"Pacing:" "$pace_used" "$pace_alloc" "$cap_note" "$dim" "$pace_days" "$pace_nights" "$rst" "$pace_left" \
 		"$gc" "$pace_signal" "$rst" "$(human_until "$pace_sleep")" "$dim" "$pace_mday" "$rst" "$burn_note"
 fi
+signals_line
 codex_line
 if [ -n "$cost_today" ]; then
 	# ccusage merges every agent CLI's own logs (claude + codex here — verified:

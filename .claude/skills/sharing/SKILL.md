@@ -26,10 +26,26 @@ volatility: stable
 
 > **SAFETY — public means anyone with the link.** `public.yak.sh` is the open internet.
 > **Never publish secrets, credentials, `.env`, PII, or customer data.** There's no directory
-> listing, but any link you share is fully world-readable. Default to the private tailnet link;
+> listing, but any link you share is fully world-readable. The default is the private tailnet link;
 > reach for public only when an outside party must open it. When in doubt, don't publish.
 
-## Publish / unpublish
+## `share` — the front-door command (private by default)
+
+```bash
+share <file>              # PRIVATE (default) → https://shared.yak.sh/<file>  (tailnet only)
+share -p  <file>          # PUBLIC (opt-in)   → https://public.yak.sh/<file>  (open internet)
+share --public <file>     # same as -p
+share -f  <file>          # skip the secret-name safety check (.env, *.key, …)
+```
+
+`share` copies the file into `~/shared` and prints its link. **Private is the default** — nothing
+reaches the open internet without `-p`/`--public`. Re-running `share <file>` with **no** `-p`
+also **unpublishes** a previously-public file (it clears the sticky bit). `publish` still works as a
+**deprecated alias** for `share --public` (prints a rename notice), so old muscle-memory doesn't break.
+
+## Under the hood — the sticky-bit switch
+
+`share` just wraps a copy plus this toggle; you can drive it by hand for files already in `~/shared`:
 
 ```bash
 chmod +t ~/shared/<venture>/<file>    # publish → https://public.yak.sh/<venture>/<file>

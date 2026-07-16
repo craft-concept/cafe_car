@@ -4,7 +4,7 @@
 #
 # The single canonical launcher for the operator. BOTH `bin/operate run` (manual,
 # from the repo) and holdco's `bin/holdco run <id>` (which wraps this in a named
-# tmux window via lib/tasks/ventures.rake) use THIS script to construct and exec
+# tmux window via the fleet Deno supervisor) use THIS script to construct and exec
 # the `claude` invocation: persona, model, effort, remote-control, email channel,
 # and the /loop standing-work prompt. It replaces the old bespoke root launchers
 # (./bindery, ./conductor, ./cbloom, ./homelab, ./trader).
