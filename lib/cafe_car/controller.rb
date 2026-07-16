@@ -158,7 +158,7 @@ module CafeCar
       authorize_action! object, name
       return public_send(name) if respond_to?(name)
 
-      object.public_send("#{name}!")
+      dispatch_custom_action!(name, object, object)
       redirect_back_or_to href_for(object), success: action_notice(:member_action, name)
     end
 
@@ -182,7 +182,7 @@ module CafeCar
       authorize_action! model, name
       return public_send(name) if respond_to?(name)
 
-      filtered_scope.public_send("#{name}!")
+      dispatch_custom_action!(name, filtered_scope, model)
       redirect_to url_for(action: :index), success: action_notice(:collection_action, name)
     end
 
@@ -243,6 +243,27 @@ module CafeCar
     def authorize_action!(subject, action)
       return if action_allowed?(subject, action)
       raise Pundit::NotAuthorizedError.new(query: "#{action}?", record: subject, policy: policy(subject))
+    end
+
+    # A permitted custom action with no controller override falls back to the
+    # model bang convention — `object.name!` for a member action,
+    # `filtered_scope.name!` (a class bang, run within the scope) for a
+    # collection action. The bang is reached only when the `receiver` responds
+    # to it; otherwise the action fails CLOSED with a clean deny (not a raw
+    # NoMethodError 500), so a renamed, typo'd, or unimplemented handler can't
+    # slip through to an unguarded mutation. The convention path logs loudly —
+    # a silent model bang bypasses any controller-level guard the developer
+    # meant to attach by defining `#name`.
+    def dispatch_custom_action!(name, receiver, subject)
+      bang = "#{name}!"
+      unless receiver.respond_to?(bang)
+        raise Pundit::NotAuthorizedError.new(query: bang, record: subject, policy: policy(subject))
+      end
+
+      Rails.logger.warn(
+        "[CafeCar] custom action #{name.inspect} has no #{controller_name}##{name} handler; " \
+        "dispatching to #{model}##{bang} by convention — define ##{name} to add controller-level guards")
+      receiver.public_send(bang)
     end
 
     # Success flash for a custom action, from the locale —

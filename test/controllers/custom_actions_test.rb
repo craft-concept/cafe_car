@@ -96,6 +96,39 @@ class CustomActionsTest < ActionDispatch::IntegrationTest
     Admin::ArticlesController.remove_method(:publish)
   end
 
+  test "a permitted member action with no handler and no model method fails closed" do
+    article = create(:article)
+
+    # `frobnicate` is policy-permitted but has neither a controller override nor
+    # an Article#frobnicate! — the old code called a missing bang (raw 500). It
+    # must now deny cleanly, and touch nothing.
+    with_permitted_action(:permitted_member_actions, :frobnicate) do
+      post "/admin/articles/#{article.id}/actions/frobnicate"
+    end
+
+    assert_response :redirect # render_unauthorized bounces — a deny, not a 500
+    assert_equal article.attributes, article.reload.attributes
+  end
+
+  test "a permitted collection action with no handler and no model method fails closed" do
+    create(:article)
+
+    with_permitted_action(:permitted_collection_actions, :frobnicate_all) do
+      post "/admin/articles/actions/frobnicate_all"
+    end
+
+    assert_response :redirect # a clean deny, not a NoMethodError 500
+  end
+
+  test "the model-bang fallback logs a loud, actionable warning" do
+    article = create(:article)
+
+    logs = capture_log { post "/admin/articles/#{article.id}/actions/publish" }
+
+    assert article.reload.published?, "the convention still runs the model bang"
+    assert_match %r{\[CafeCar\].*publish.*no.*handler}i, logs
+  end
+
   test "the show page's Actions card offers member actions as POST links" do
     article = create(:article)
 
@@ -126,5 +159,30 @@ class CustomActionsTest < ActionDispatch::IntegrationTest
       "/admin/articles/#{article.id}/actions/publish", text: "Publish", count: 1
     assert_select "form[action=?] button", "/admin/articles/actions/publish_all",
       text: "Publish all 1", count: 1
+  end
+
+  private
+
+  # Temporarily permit `name` in the given policy list (with a permissive
+  # predicate) so a dispatch path can be exercised for an action the dummy has
+  # no handler for, restoring the original list after.
+  def with_permitted_action(list, name)
+    original = ArticlePolicy.instance_method(list)
+    ArticlePolicy.define_method(list) { [ name ] }
+    ArticlePolicy.define_method("#{name}?") { true }
+    yield
+  ensure
+    ArticlePolicy.define_method(list, original)
+    ArticlePolicy.remove_method("#{name}?")
+  end
+
+  def capture_log
+    io  = StringIO.new
+    old = Rails.logger
+    Rails.logger = ActiveSupport::Logger.new(io)
+    yield
+    io.string
+  ensure
+    Rails.logger = old
   end
 end
