@@ -3,9 +3,11 @@ class CafeCar::AgentsGenerator < Rails::Generators::Base
 
   BLOCK = <<~MD.freeze
     <!-- cafe_car:start -->
-    This app uses the **cafe_car** gem. Before hand-rolling any admin / back-office / index / CRUD
-    UI, read `.claude/skills/cafe_car/SKILL.md` — point a controller at a model and the Pundit policy
-    drives the whole UI (filtering, sorting, turbo-streams, CSV) for free.
+    This app uses the **cafe_car** gem. Before hand-writing any view, form, table, or
+    value-formatting code for a model — customer-facing or admin — read
+    `.claude/skills/cafe_car/SKILL.md`. CafeCar's pieces (presenters, form builder, components,
+    policy-driven rendering) work on any page, and pointing a controller at a model renders a
+    whole CRUD surface from the Pundit policy (filtering, sorting, turbo-streams, CSV) for free.
     <!-- cafe_car:end -->
   MD
 

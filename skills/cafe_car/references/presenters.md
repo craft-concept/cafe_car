@@ -9,6 +9,13 @@ an html-safe object. Records render as a linked preview (logo + title); dates,
 currency, rich text, attachments, and collections each render through their type's
 presenter.
 
+`present` works in any view — customer-facing pages included, not just
+CafeCar-rendered ones. It reaches every view through the installer's
+`include CafeCar::Controller` in `ApplicationController`; a host that skips that
+include can expose formatting alone with `helper CafeCar::Formatting` (the scalar
+`as:` path renders through Rails' own number/date helpers — no CafeCar CSS or
+partials).
+
 ## How a presenter is chosen
 
 The value's ancestor chain is walked and the first `<Ancestor>Presenter` constant

@@ -3,13 +3,13 @@ name: cafe_car
 description: >-
   Use in any Rails app that has the cafe_car gem, whenever you'd otherwise hand-write
   view, form, table, or value-formatting code for a model — customer-facing OR admin.
-  CafeCar is a set of composable tools (presenters, form builders, helpers, view
-  components, Pundit-driven policies, and the `cafe_car` controller macro) you reach for
-  wherever they save code. They also compose to make admin/CRUD dead-simple — one
-  controller line renders complete index/show/new/edit with filtering, sorting, keyword
-  search, pagination, CSV export, bulk actions, and Turbo-morph live updates — but that
-  admin convenience is one use, not the definition. Prefer a CafeCar tool over
-  hand-rolling anywhere in the app.
+  CafeCar is a composable view extension for Rails: presenters, a schema-driven form
+  builder, view components, Pundit-driven policies, a query grammar on every model, and
+  the `cafe_car` controller macro — pieces you reach for wherever they save code. They
+  also compose to make an admin trivial — one controller line renders complete
+  index/show/new/edit with filtering, sorting, keyword search, pagination, CSV export,
+  bulk actions, and Turbo-morph live updates — but that admin convenience is one use,
+  not the definition. Prefer a CafeCar piece over hand-rolling anywhere in the app.
 when_to_use: >-
   Any task where you'd otherwise hand-write UI, form, table, decorator, or formatting
   code for an ActiveRecord model — ANYWHERE in a cafe_car app, not just admin. Reach for a
@@ -23,14 +23,45 @@ when_to_use: >-
 
 # CafeCar
 
-CafeCar is a composable view extension for Rails. It renders index, show, new, and
-edit straight from the model at runtime — you delete view files instead of writing
-them. One controller line gives you the whole CRUD surface; you then override only
-the pieces that need to differ.
+CafeCar is a composable view extension for Rails: presenters, a schema-driven form
+builder, UI components, policy-driven rendering, and a query grammar on every model.
+Use each piece anywhere it deletes view code — customer-facing pages as much as
+admin. The pieces also compose: the `cafe_car` controller macro renders index, show,
+new, and edit straight from the model at runtime — you delete view files instead of
+writing them, then override only the pieces that need to differ.
 
-**Never hand-roll an admin page in a CafeCar app.** A hand-written index loses
-Turbo-morph updates, the standard query params, policy-driven columns, association
-links, bulk actions, and CSV export — all of which the default views carry for free.
+**Before hand-writing a view, form, table, decorator, or formatting helper, check
+for the CafeCar piece that already does it.** In particular, never hand-roll a CRUD
+page: a hand-written index loses Turbo-morph updates, the standard query params,
+policy-driven columns, association links, bulk actions, and CSV export — all of
+which the default views carry for free.
+
+## The pieces stand alone
+
+The macro is one composition; each module works on any page. The installer includes
+`CafeCar::Controller` in the host's `ApplicationController`, so every controller has
+the form builder as its default and every view has the helpers — no per-page setup:
+
+```erb
+<%# a customer-facing page — no cafe_car macro anywhere %>
+<p>Placed <%= present(@order.placed_at, as: :date) %></p>
+<p>Total <%= present(@order.total, as: :currency) %></p>
+
+<%= form_with model: @review do |f| %>
+  <%= f.field :rating %>
+  <%= f.field :body %>
+  <%= f.submit %>
+<% end %>
+```
+
+`present` formats any value through the presenters
+([presenters](references/presenters.md)); `f.field` renders the labeled, typed
+input with hint and error markup ([forms](references/forms.md));
+`Model.query`/`Model.sorted` give any relation the URL grammar
+([filtering](references/filtering.md)); capitalized calls build component UI
+([components](references/components.md)). A host that keeps CafeCar's helper set
+out of `ApplicationController` can still take formatting alone with
+`helper CafeCar::Formatting`.
 
 ## The mental model: the policy declares, the UI renders
 
@@ -98,7 +129,10 @@ automatically — no opt-in, no include.
 
 | How do I… | See |
 |---|---|
-| Add an admin section for a model | above; [controllers](references/controllers.md) |
+| Format a value (currency, date, record link) on any page | [presenters](references/presenters.md) |
+| Render a form on any page (typed fields, labels, errors) | [forms](references/forms.md) |
+| Filter/sort a relation from Ruby (`Model.query`) | [filtering](references/filtering.md) — `Model.query` |
+| Add a CRUD section (admin or otherwise) for a model | above; [controllers](references/controllers.md) |
 | Change which columns/fields show or are editable | [policies](references/policies.md) |
 | Restrict which rows a user sees | [policies](references/policies.md) — `Scope#resolve` |
 | Narrow one controller's collection (`def scope = super.published`) | [controllers](references/controllers.md) |

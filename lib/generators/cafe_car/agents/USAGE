@@ -1,6 +1,6 @@
 Description:
     Installs CafeCar's agent docs into the host app so coding agents reach for
-    CafeCar instead of hand-rolling admin UI.
+    CafeCar instead of hand-rolling views, forms, or admin UI.
 
     Copies the CafeCar Agent Skill to .claude/skills/cafe_car/ (Claude Code)
     and .agents/skills/cafe_car/ (Codex, Copilot, and other agents), and adds

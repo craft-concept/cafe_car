@@ -1,8 +1,10 @@
 # Forms
 
 Source: `lib/cafe_car/form_builder.rb`, `lib/cafe_car/field_builder.rb`,
-`lib/cafe_car/field_info.rb`. CafeCar controllers set `CafeCar::FormBuilder` as the
-default form builder, so plain `form_for`/`form_with` get all of this.
+`lib/cafe_car/field_info.rb`. `CafeCar::Controller` sets `CafeCar::FormBuilder` as
+the default form builder — and the installer includes that concern in
+`ApplicationController` — so plain `form_for`/`form_with` gets all of this on every
+page, customer-facing forms included, with no `cafe_car` macro involved.
 
 The default `_form` partial renders every field the policy permits — most form
 changes are `permitted_attributes` changes (see [policies.md](policies.md)), not

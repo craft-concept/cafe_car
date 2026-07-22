@@ -3,8 +3,8 @@
 Source: `app/views/cafe_car/application/*.turbo_stream.haml` and
 `app/views/application/_head.html.haml` (in the gem).
 
-This is a big reason not to hand-roll admin pages: the defaults carry Turbo 8
-morph behavior you'd otherwise rebuild.
+This is a big reason to keep the default CRUD views instead of hand-rolling them:
+they carry Turbo 8 morph behavior you'd otherwise rebuild.
 
 ## What ships by default
 
@@ -50,4 +50,4 @@ streams.
 
 When writing custom views for a CafeCar resource, keep `turbo_stream_from(object)`
 on detail pages and don't strip the `_head` meta tags — hand-rolled pages that drop
-these are how admins lose live updates.
+these are how pages lose live updates.

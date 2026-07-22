@@ -6,8 +6,10 @@ Source: `lib/cafe_car/param_parser.rb`, `lib/cafe_car/query_builder.rb`,
 
 On an index request, every query param that isn't a control param
 (`sort page per view tab q chart_* …`) is a filter. **Never invent bespoke filter
-params for an admin screen — link with this grammar** and the whole pipeline (table,
-grid, chart, CSV export, pagination) honors it.
+params for an index screen — link with this grammar** and the whole pipeline (table,
+grid, chart, CSV export, pagination) honors it. The same grammar is a plain Ruby
+API on every model (`Model.query`, below) — use it for any filtered query, not
+only CafeCar-rendered pages.
 
 ## The dot-query URL grammar
 
