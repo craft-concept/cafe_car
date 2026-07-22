@@ -14,6 +14,19 @@
 > rendered from plain models (clients, invoices, articles, users, notes).
 > No signup; the data resets periodically.
 
+Your model already knows its columns, types, and associations — a full
+description of a resource. CafeCar is a composable view extension for Rails
+that puts that description to work across the view layer: presenters that
+format any value, a form builder that renders typed fields from the schema, UI
+components, Pundit policies that drive what renders, and a query grammar on
+every model. Use each piece wherever it deletes view code — customer-facing
+pages as much as the back office.
+
+The pieces also compose all the way up. Point the `cafe_car` controller macro
+at a model and it renders index, show, new, and edit straight from the model,
+with authorization, filtering, and Hotwire — a complete admin from one line of
+controller code. That's one payoff of the composition, not the whole gem:
+
 <p align="center">
   <a href="https://cafe-car-demo.up.railway.app/admin/invoices">
     <img src="https://raw.githubusercontent.com/craft-concept/cafe_car/main/docs/images/admin-invoices-index.png"
@@ -27,19 +40,6 @@
   <a href="https://cafe-car-demo.up.railway.app">Try the live demo →</a></em>
 </p>
 
-Your model already knows its columns, types, and associations — a full
-description of a resource. CafeCar is a composable view extension for Rails
-that puts that description to work across the view layer: presenters that
-format any value, a form builder that renders typed fields from the schema, UI
-components, Pundit policies that drive what renders, and a query grammar on
-every model. Use each piece wherever it deletes view code — customer-facing
-pages as much as the back office.
-
-The pieces also compose all the way up. Point the `cafe_car` controller macro
-at a model and it renders index, show, new, and edit straight from the model,
-with authorization, filtering, and Hotwire — a complete admin from one line of
-controller code. That's one payoff of the composition, not the whole gem.
-
 It's how Rails ought to work out of the box: render something for your models
 by default, then get out of the way. Every default is a starting point —
 override any view, presenter, or policy with ordinary Rails when the default
@@ -48,7 +48,55 @@ is wrong.
 **Reach for it when**: you're about to hand-write a form, a table, a
 formatting helper, or an admin — CafeCar probably already renders it.
 
+## Use the pieces anywhere
+
+The `cafe_car` macro is one composition of the modules; each works alone, on
+any page. The installer (`bundle add cafe_car && bin/rails generate
+cafe_car:install`) includes `CafeCar::Controller` in your
+`ApplicationController`, so every controller gets the form builder as its
+default and every view gets the helpers — no per-page setup.
+
+Format values on a customer-facing page with the presenters — the view code
+you delete, then what's left:
+
+```erb
+<%# app/views/orders/show.html.erb — a public page, no cafe_car macro %>
+
+<%# before: hand-picked formats %>
+<p>Placed <%= @order.placed_at.strftime("%B %-d, %Y") %></p>
+<p>Total <%= number_to_currency(@order.total) %></p>
+
+<%# after: the presenter picks the format from the type %>
+<p>Placed <%= present(@order.placed_at, as: :date) %></p>
+<p>Total <%= present(@order.total, as: :currency) %></p>
+```
+
+Render a public form from the schema — each `f.field` is the labeled, typed
+input with hint and error markup you'd otherwise hand-write:
+
+```erb
+<%= form_with model: @review do |f| %>
+  <%= f.field :rating %>
+  <%= f.field :body %>
+  <%= f.submit %>
+<% end %>
+```
+
+Query any model with the same grammar the index URLs use
+([Filtering & Sorting](#filtering--sorting)) — it returns a relation:
+
+```ruby
+@articles = Article.query("published" => true, "title~" => params[:q])
+```
+
+None of this needs an admin namespace or the `cafe_car` macro — the modules
+stand alone, and the macro is what you add when a resource deserves the full
+CRUD surface.
+
 ## Try it in 60 seconds
+
+When a resource does deserve that full surface, compose the pieces with the
+macro:
 
 ```bash
 # 1. Install the gem and run the installer
@@ -77,46 +125,10 @@ Visit `/products`: index, show, new, and edit, all rendered from the model.
 When a default is wrong, override that one piece — see
 [Getting Started](#getting-started).
 
-## Use the pieces anywhere
-
-The `cafe_car` macro is one composition of the modules; each works alone, on
-any page. The installer includes `CafeCar::Controller` in your
-`ApplicationController`, so every controller gets the form builder as its
-default and every view gets the helpers — no per-page setup.
-
-Format values on a customer-facing page with the presenters:
-
-```erb
-<%# app/views/orders/show.html.erb — a public page, no cafe_car macro %>
-<p>Placed <%= present(@order.placed_at, as: :date) %></p>
-<p>Total <%= present(@order.total, as: :currency) %></p>
-```
-
-Render a public form from the schema — each `f.field` is the labeled, typed
-input with hint and error markup you'd otherwise hand-write:
-
-```erb
-<%= form_with model: @review do |f| %>
-  <%= f.field :rating %>
-  <%= f.field :body %>
-  <%= f.submit %>
-<% end %>
-```
-
-Query any model with the same grammar the index URLs use
-([Filtering & Sorting](#filtering--sorting)) — it returns a relation:
-
-```ruby
-@articles = Article.query("published" => true, "title~" => params[:q])
-```
-
-None of this needs an admin namespace or the `cafe_car` macro — the modules
-stand alone, and the macro is what you add when a resource deserves the full
-CRUD surface.
-
 ## Table of Contents
 
 - [Use the pieces anywhere](#use-the-pieces-anywhere)
+- [Try it in 60 seconds](#try-it-in-60-seconds)
 - [How CafeCar compares](#how-cafecar-compares)
 - [How CafeCar relates to ViewComponent & Phlex](#how-cafecar-relates-to-viewcomponent--phlex)
 - [Features](#features)
@@ -186,6 +198,10 @@ write only the ones that earn their keep.
 
 ## Features
 
+- 🧩 **Presenters on any page** - Format any value — currency, dates, records,
+  attachments — with `present`, no admin namespace required
+- ✏️ **Form builder on any page** - Plain `form_with` renders typed, labeled
+  fields with hints and errors from the schema
 - 🚀 **Index, show, new, edit from the model** - One line of controller code
   renders all four, straight from your model
 - 🎨 **Component-based UI system** - Flexible, composable components for

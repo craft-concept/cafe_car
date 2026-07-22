@@ -1,5 +1,5 @@
 title: CafeCar
-description: A composable view extension for Rails — render index, show, new, and edit straight from your models, with sensible overridable defaults.
+description: "A composable view extension for Rails: presenters, forms, and components you use on any page — or point at a model for a full admin."
 theme: jekyll-theme-cayman
 show_downloads: false
 

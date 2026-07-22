@@ -12,6 +12,17 @@ layout: default
 > rendered from plain models (clients, invoices, articles, users, notes).
 > No signup; the data resets periodically.
 
+**CafeCar is a composable view extension for Rails** — presenters that format any
+value, a form builder that renders typed fields from the schema, UI components,
+Pundit policies that drive what renders, and a query grammar on every model. Use
+each piece wherever it deletes view code, customer-facing pages as much as the
+back office.
+
+The pieces also compose all the way up: one line of controller code renders index,
+show, new, and edit straight from the model, with authorization, filtering, keyword
+search, sorting, pagination, CSV export, and Hotwire-ready forms. Every default can
+be overridden application-wide or per model.
+
 <p align="center">
   <a href="https://cafe-car-demo.up.railway.app/admin/invoices">
     <img src="images/admin-invoices-index.png"
@@ -24,17 +35,6 @@ layout: default
   pagination — rendered from a model with one line of controller code.
   <a href="https://cafe-car-demo.up.railway.app">Try the live demo →</a></em>
 </p>
-
-**CafeCar is a composable view extension for Rails** — presenters that format any
-value, a form builder that renders typed fields from the schema, UI components,
-Pundit policies that drive what renders, and a query grammar on every model. Use
-each piece wherever it deletes view code, customer-facing pages as much as the
-back office.
-
-The pieces also compose all the way up: one line of controller code renders index,
-show, new, and edit straight from the model, with authorization, filtering, keyword
-search, sorting, pagination, CSV export, and Hotwire-ready forms. Every default can
-be overridden application-wide or per model.
 
 **Using ViewComponent or Phlex?** They pick the unit of reuse for the UI you
 write; CafeCar renders the CRUD boilerplate you'd otherwise hand-write. They
@@ -59,7 +59,8 @@ The installer includes `CafeCar::Controller` in `ApplicationController`, so the
 presenters and form builder work in every view — no `cafe_car` macro required:
 
 ```erb
-<%# a customer-facing page %>
+<%# a customer-facing page — before, and after %>
+<p>Total <%= number_to_currency(@order.total) %></p>
 <p>Total <%= present(@order.total, as: :currency) %></p>
 
 <%= form_with model: @review do |f| %>

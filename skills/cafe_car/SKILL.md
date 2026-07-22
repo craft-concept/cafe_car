@@ -2,7 +2,7 @@
 name: cafe_car
 description: >-
   Use in any Rails app that has the cafe_car gem, whenever you'd otherwise hand-write
-  view, form, table, or value-formatting code for a model — customer-facing OR admin.
+  view, form, table, or value-formatting code for a model — customer-facing or admin.
   CafeCar is a composable view extension for Rails: presenters, a schema-driven form
   builder, view components, Pundit-driven policies, a query grammar on every model, and
   the `cafe_car` controller macro — pieces you reach for wherever they save code. They
@@ -12,7 +12,7 @@ description: >-
   not the definition. Prefer a CafeCar piece over hand-rolling anywhere in the app.
 when_to_use: >-
   Any task where you'd otherwise hand-write UI, form, table, decorator, or formatting
-  code for an ActiveRecord model — ANYWHERE in a cafe_car app, not just admin. Reach for a
+  code for an ActiveRecord model — anywhere in a cafe_car app, not just admin. Reach for a
   CafeCar presenter to format a value on a customer-facing page, a form builder to render
   fields, a helper or view component to build UI, a policy to gate what shows, or the
   `cafe_car` macro for a full CRUD surface. Before writing a view partial, a form, a
@@ -44,6 +44,12 @@ the form builder as its default and every view has the helpers — no per-page s
 
 ```erb
 <%# a customer-facing page — no cafe_car macro anywhere %>
+
+<%# before: hand-picked formats %>
+<p>Placed <%= @order.placed_at.strftime("%B %-d, %Y") %></p>
+<p>Total <%= number_to_currency(@order.total) %></p>
+
+<%# after: the presenter picks the format from the type %>
 <p>Placed <%= present(@order.placed_at, as: :date) %></p>
 <p>Total <%= present(@order.total, as: :currency) %></p>
 
