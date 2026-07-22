@@ -37,6 +37,9 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Fixed
 
+- `cafe_car only:/except:` now gates every action, the `batch`/`options`/custom-
+  action endpoints included: an excluded action responds 404 instead of crashing
+  with an unhandled "nothing to authorize!" error (a raw 500).
 - Mounting the engine no longer strips Rails' `field_with_errors` wrapper from a
   host app's own forms; the wrapper is dropped only inside CafeCar's own forms.
 - The `present` formatting helper is now available on its own via

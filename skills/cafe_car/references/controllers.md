@@ -25,7 +25,7 @@ The model is inferred from the controller name (`Admin::ProductsController` →
 `Product`). Variants:
 
 ```ruby
-cafe_car only: %i[index show]          # limit actions
+cafe_car only: %i[index show]          # limit actions — excluded ones respond 404
 cafe_car except: %i[destroy]
 cafe_car model: Company                # or the standalone `model Company` macro
 
@@ -35,6 +35,11 @@ class AttachmentsController < ApplicationController
   default_view :grid                   # index defaults to grid instead of table
 end
 ```
+
+`only:`/`except:` gate the whole surface — the RESTful seven plus `batch`,
+`options`, `member_action`, and `collection_action`. Excluded actions respond
+404, exactly as if their routes weren't drawn; mirror the narrowing in the
+routes (`cafe_car :products, only: %i[index show]`) so they aren't.
 
 ## The scope pipeline
 

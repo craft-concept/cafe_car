@@ -21,6 +21,10 @@ Rails.application.routes.draw do
 
     cafe_car :attachments
 
+    # Exercises `cafe_car only:` narrowing (see narrowing_test.rb): the routes
+    # are drawn in full so the CONTROLLER's own gate is what the tests hit.
+    cafe_car :readonly_articles
+
     namespace :paper_trail do
       cafe_car :versions
     end

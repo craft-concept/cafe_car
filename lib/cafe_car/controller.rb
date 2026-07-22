@@ -6,6 +6,11 @@ module CafeCar
 
     INDEX_VIEWS = %w[table grid chart].freeze
 
+    # Everything the `cafe_car` macro wires — the RESTful seven plus CafeCar's
+    # endpoints. `only:`/`except:` narrow this whole surface (see the macro).
+    ACTIONS = %i[index show new edit create update destroy
+                 batch options member_action collection_action].freeze
+
     include Pundit::Authorization
     include Filtering, AssociationAuthorization, Authentication
 
@@ -41,6 +46,13 @@ module CafeCar
         append_cafe_car_views
 
         respond_to :json, :html, :turbo_stream, :csv
+
+        # `only:`/`except:` gate the WHOLE surface, CafeCar endpoints included:
+        # an excluded action 404s up front — mirroring the `cafe_car` routing
+        # macro, which doesn't draw excluded routes — rather than falling
+        # through to `authorize!` with nothing loaded (formerly a raw 500).
+        excluded = ACTIONS - _only.(ACTIONS)
+        before_action(only: excluded) { head :not_found } if excluded.any?
 
         before_action :set_current_attributes
 
