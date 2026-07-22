@@ -91,6 +91,23 @@ en:
     styles:
       destroy: danger
 
+  # Badge style (a Badge component flag) per status value — a shipped default a
+  # host can extend/override, the same convention as bulk_actions.styles.
+  # Unlisted values render the neutral badge.
+  badge:
+    styles:
+      active: success
+      published: success
+      approved: success
+      completed: success
+      paid: success
+      pending: warning
+      archived: danger
+      cancelled: danger
+      failed: danger
+      rejected: danger
+      suspended: danger
+
   dashboard:
     no_date_column: No date column to chart.
 

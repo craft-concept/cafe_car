@@ -76,7 +76,7 @@ module CafeCar
     end
 
     test "searchable columns exclude parameter-filtered columns (policy-respected)" do
-      assert_equal %w[email name], User.searchable_columns.sort
+      assert_equal %w[email name status], User.searchable_columns.sort
       refute_includes User.searchable_columns, "password_digest"
     end
   end

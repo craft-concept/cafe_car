@@ -27,6 +27,12 @@ present(@invoice)                    # InvoicePresenter, else RecordPresenter
 present(record.total, as: :currency) # CurrencyPresenter
 ```
 
+Status-ish attributes are the one convention on top: an ActiveRecord enum, or a
+string column named `status`/`state`, renders through `BadgePresenter` as a
+colored `Badge` pill wherever the attribute appears — tables, show pages, cards.
+`as: :badge` forces it for anything else; per-value styles live in the locale
+under `badge.styles` (unlisted values render the neutral badge).
+
 Note: constants the gem defines under `CafeCar::` (e.g. `CafeCar::StringPresenter`)
 resolve engine-first — a same-named top-level constant does *not* shadow them.
 Override per model (`ProductPresenter`) or per ancestor the gem doesn't claim.

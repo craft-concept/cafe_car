@@ -12,6 +12,12 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Added
 
+- Status badges: an ActiveRecord enum, or a string column named `status` or
+  `state`, now renders as a colored `Badge` pill by default — in index tables,
+  show pages, and anywhere else the attribute is presented. Per-value colors
+  ship in the locale under `badge.styles` (the same convention as
+  `bulk_actions.styles`); unlisted values render the neutral badge, and
+  `as: :badge` presents any other value the same way.
 - Browser-level coverage for nested form rows, bulk selection, and remote
   searchable association selects.
 - CI coverage for Rails 8.0/8.1 on Ruby 3.3/4.0, exact dependency floors, the

@@ -1,0 +1,27 @@
+.Badge {
+  --color: currentcolor;
+  --background: color-mix(in lab, var(--color) 15%, transparent);
+  color: var(--color);
+  background: var(--background);
+  display: inline-block;
+  padding: 0.1em 0.6em;
+  border-radius: 1em;
+  font-size: 0.875em;
+  white-space: nowrap;
+}
+
+.Badge-success {
+  --color: var(--success);
+}
+
+.Badge-warning {
+  --color: var(--warning);
+}
+
+.Badge-danger {
+  --color: var(--danger);
+}
+
+.Badge-info {
+  --color: var(--info);
+}

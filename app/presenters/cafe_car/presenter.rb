@@ -120,7 +120,9 @@ module CafeCar
     def show(method, **options, &)
       return if method.nil?
       @shown_attributes[method] = true
-      present(value(method), **show_defaults[method], **options, &)
+      defaults = show_defaults[method]
+      defaults = { as: :badge, **defaults } if info(method).badge?
+      present(value(method), **defaults, **options, &)
     end
 
     def remaining_attributes(count = nil, **options, &block)

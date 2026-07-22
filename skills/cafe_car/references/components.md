@@ -26,21 +26,25 @@ component.
 - A component that captures blank content renders nothing — no empty wrappers.
 
 Shipped components include `Page`, `Card`, `Grid`, `Row`, `Group`, `Button`,
-`Field`, `Table`, `Alert`, `Menu`, `Navigation`, `Modal`, `Icon`, `Controls`.
-Declarations live in the gem's `app/ui/cafe_car/ui/` (e.g. `Card` declares its
-flags, options, and named children there).
+`Badge`, `Field`, `Table`, `Alert`, `Menu`, `Navigation`, `Modal`, `Icon`,
+`Controls`. Declarations live in the gem's `app/ui/cafe_car/ui/` (e.g. `Card`
+declares its flags, options, and named children there).
+
+`Badge` is the status pill: enum and string `status`/`state` attributes render
+through it by default (see the presenters reference), with per-value styles from
+the locale's `badge.styles` map.
 
 ## Custom components — drop a partial
 
-No registration. Calling `ui.Badge` (or `= Badge` in a view) looks for a partial at
-`ui/badge`; give it one:
+No registration. Calling `ui.Ribbon` (or `= Ribbon` in a view) looks for a partial
+at `ui/ribbon`; give it one:
 
 ```haml
--# app/views/cafe_car/ui/_badge.html.haml
-%span{ class: badge.class_name }= yield
+-# app/views/cafe_car/ui/_ribbon.html.haml
+%span{ class: ribbon.class_name }= yield
 ```
 
-Locals: the component instance under its name (`badge`), plus `options` and
+Locals: the component instance under its name (`ribbon`), plus `options` and
 `flags`. The same mechanism overrides the markup of a *shipped* component — a host
 `app/views/cafe_car/ui/_card.html.haml` replaces Card's markup app-wide while
 keeping its Ruby API.
@@ -48,11 +52,11 @@ keeping its Ruby API.
 For behavior-bearing components, declare a class the way the gem does:
 
 ```ruby
-# app/ui/cafe_car/ui/badge.rb (host)
+# app/ui/cafe_car/ui/ribbon.rb (host)
 module CafeCar
   module UI
-    component :Badge do
-      flag :success
+    component :Ribbon do
+      flag :featured
     end
   end
 end

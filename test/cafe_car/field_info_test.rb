@@ -56,6 +56,19 @@ module CafeCar
       assert_nil info(Invoice, :number).enum_type
     end
 
+    # `badge?` is the status-badge convention: an ActiveRecord enum, or a
+    # string column named status/state, renders as a Badge pill by default.
+    test "badge? is true for enums and string status columns" do
+      assert info(Client, :status).badge?
+      assert info(User, :status).badge?
+    end
+
+    test "badge? is false for everything else" do
+      refute info(Client, :name).badge?
+      refute info(Invoice, :number).badge?
+      refute info(Invoice, :paid).badge?
+    end
+
     # A `belongs_to` select must not load the whole target table — `collection`
     # caps the rows at `CafeCar.max_collection_options` on the SQL relation, so a
     # 10k-row association renders at most that many `<option>`s.

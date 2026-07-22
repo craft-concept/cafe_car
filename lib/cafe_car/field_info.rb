@@ -27,6 +27,8 @@ module CafeCar
     def digest?      = method =~ /_digest$/
     def enum?        = model.try(:defined_enums)&.key?(@method.to_s)
     def values       = model.defined_enums[@method.to_s].keys
+    def status?      = @method.in?(%i[status state]) && attribute_type == :string
+    def badge?       = enum? || status?
     def password?    = type == :password
     def rich_text?   = reflection&.name =~ /^rich_text_(\w+)$/
     def attachment?  = model.reflect_on_attachment(method)
