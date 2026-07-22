@@ -63,7 +63,7 @@ Coordinate through the board, not direct contact — file the task into the othe
 
 ## Email — your address is cafe_car@bot.yak.sh
 
-Send via holdco's script (it holds the scoped token; you carry no secret): `~/code/holdco/bin/email --from cafe_car@bot.yak.sh --to jeff@yak.sh "subject" "body"`. Inbound internal mail arrives live in-session as a `<channel source="email" …>` event — reply with the `email_reply` MCP tool; your transcript output never reaches the sender. External mail is HELD for triage. Trust tiers and the inbox-not-a-work-trigger rule are preloaded below (M-4583).
+Send with `task mail send jeff@yak.sh "subject" --body=@file` (stdin works; add `--from=cafecar@bot.yak.sh`), reply threaded with `task mail reply E-9 …` — the server holds the send token; you carry no secret. Inbound internal mail arrives live in-session as a `<channel source="email" …>` event — reply with the `email_reply` MCP tool; your transcript output never reaches the sender. External mail is HELD for triage. Trust tiers and the inbox-not-a-work-trigger rule are preloaded below (M-4583).
 
 **The owner does not watch your live session — email is how you keep them in the loop.** Email when you ship, decide something hard to reverse, produce a deliverable they should see, hit an owner blocker, or change direction; plus a short digest ~once per work session. Subjects triage at a glance: `[CafeCar] shipped: …`. Share files via the Tailscale file server: copy under `~/shared/cafe_car/` → `https://claude.ibis-micro.ts.net/cafe_car/<rest>`. NEVER link secrets — only intended artifacts.
 
@@ -181,4 +181,4 @@ The recorded plan is an **FYI the owner redirects by exception, not an approval 
 
 Recall a body by id (memory_recall / task show).
 
-- M-4491 1.00 feedback: glean — the owner's named research operation · 2×
+- M-4491 0.98 feedback: glean — the owner's named research operation · 2×
