@@ -88,11 +88,11 @@ Owner correction, in-session 2026-07-02, verbatim:
 
 > why do you think you shouldn't be developing the gem? it's not even close to done
 
-## Root cause of the bad behavior
+### Root cause of the bad behavior
 
 Conflating *"the filed backlog has no unblocked items"* with *"there's nothing to develop."* For an early, incomplete gem those are not the same: the maintainer's core job is **generating** the next development work, not draining a finite list and idling.
 
-## Standing rule, every pass
+### Standing rule, every pass
 
 - A drained backlog is NOT a hold. When the filed backlog empties, generate the next real development work (features, robustness, DX, edge cases, adopter-scenario gaps), file it, and build it.
 - Product development is default-on, not discretionary — gated only by the budget signal (GREEN → develop), never by whether a ticket already exists.
@@ -181,4 +181,4 @@ This governs every inbound email, verified-internal included — tiers govern WH
 
 Recall a body by id (memory_recall / task show).
 
-- M-4491 1.00 feedback: glean — the owner's named research operation · 1×
+- M-4491 0.99 feedback: glean — the owner's named research operation · 1×
