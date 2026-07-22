@@ -185,4 +185,4 @@ The recorded plan is an **FYI the owner redirects by exception, not an approval 
 
 Recall a body by id (memory_recall / task show).
 
-- M-4491 0.95 feedback: glean — the owner's named research operation · 2×
+- M-4491 feedback: glean — the owner's named research operation · 2×
