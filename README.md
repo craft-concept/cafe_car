@@ -10,8 +10,8 @@
 [![Gem Version](https://img.shields.io/gem/v/cafe_car)](https://rubygems.org/gems/cafe_car)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
-> 🚀 **[Live demo →](https://cafe-car-demo.up.railway.app)** — click straight
-> into a real admin, rendered from plain models (clients, invoices, articles, users, notes).
+> 🚀 **[Live demo →](https://cafe-car-demo.up.railway.app)** — a back-office
+> rendered from plain models (clients, invoices, articles, users, notes).
 > No signup; the data resets periodically.
 
 <p align="center">
@@ -28,18 +28,25 @@
 </p>
 
 Your model already knows its columns, types, and associations — a full
-description of a resource. Rails still makes you hand-write a controller, seven
-actions, and a folder of view templates before any of it renders in a browser.
-CafeCar closes that gap. It's a composable view extension for Rails — an
-extension of the view and controller layer that renders index, show, new, and
-edit straight from the model, with Pundit authorization, filtering, and Hotwire,
-from one line of controller code. It's how Rails ought to work out of the box:
-render something for your models by default, then get out of the way. Every
-default is a starting point — override any view, presenter, or policy with
-ordinary Rails when the default is wrong.
+description of a resource. CafeCar is a composable view extension for Rails
+that puts that description to work across the view layer: presenters that
+format any value, a form builder that renders typed fields from the schema, UI
+components, Pundit policies that drive what renders, and a query grammar on
+every model. Use each piece wherever it deletes view code — customer-facing
+pages as much as the back office.
 
-**Perfect for**: Rails developers who need a working admin this week — not a
-second framework to learn and configure.
+The pieces also compose all the way up. Point the `cafe_car` controller macro
+at a model and it renders index, show, new, and edit straight from the model,
+with authorization, filtering, and Hotwire — a complete admin from one line of
+controller code. That's one payoff of the composition, not the whole gem.
+
+It's how Rails ought to work out of the box: render something for your models
+by default, then get out of the way. Every default is a starting point —
+override any view, presenter, or policy with ordinary Rails when the default
+is wrong.
+
+**Reach for it when**: you're about to hand-write a form, a table, a
+formatting helper, or an admin — CafeCar probably already renders it.
 
 ## Try it in 60 seconds
 
@@ -66,12 +73,50 @@ class ProductPolicy < ApplicationPolicy
 end
 ```
 
-Visit `/products`: index, show, new, and edit, all generated from the model.
+Visit `/products`: index, show, new, and edit, all rendered from the model.
 When a default is wrong, override that one piece — see
 [Getting Started](#getting-started).
 
+## Use the pieces anywhere
+
+The `cafe_car` macro is one composition of the modules; each works alone, on
+any page. The installer includes `CafeCar::Controller` in your
+`ApplicationController`, so every controller gets the form builder as its
+default and every view gets the helpers — no per-page setup.
+
+Format values on a customer-facing page with the presenters:
+
+```erb
+<%# app/views/orders/show.html.erb — a public page, no cafe_car macro %>
+<p>Placed <%= present(@order.placed_at, as: :date) %></p>
+<p>Total <%= present(@order.total, as: :currency) %></p>
+```
+
+Render a public form from the schema — each `f.field` is the labeled, typed
+input with hint and error markup you'd otherwise hand-write:
+
+```erb
+<%= form_with model: @review do |f| %>
+  <%= f.field :rating %>
+  <%= f.field :body %>
+  <%= f.submit %>
+<% end %>
+```
+
+Query any model with the same grammar the index URLs use
+([Filtering & Sorting](#filtering--sorting)) — it returns a relation:
+
+```ruby
+@articles = Article.query("published" => true, "title~" => params[:q])
+```
+
+None of this needs an admin namespace or the `cafe_car` macro — the modules
+stand alone, and the macro is what you add when a resource deserves the full
+CRUD surface.
+
 ## Table of Contents
 
+- [Use the pieces anywhere](#use-the-pieces-anywhere)
 - [How CafeCar compares](#how-cafecar-compares)
 - [How CafeCar relates to ViewComponent & Phlex](#how-cafecar-relates-to-viewcomponent--phlex)
 - [Features](#features)
@@ -101,11 +146,12 @@ When a default is wrong, override that one piece — see
 
 ## How CafeCar compares
 
-CafeCar is convention-first. Rather than a separate admin app with its own DSL,
-it extends Rails' own view layer: a plain model renders a working admin with
-essentially no configuration, and you extend it with the Rails you already know
-— controllers, Pundit policies, presenters, and ERB. There's no new query
-language or admin framework to learn; you stay in Rails.
+The gems people compare CafeCar to are admin frameworks, so this table compares
+on that ground — the admin that falls out of CafeCar's composition. The
+difference in kind: where they mount a separate admin app with its own DSL,
+CafeCar stays inside Rails' own view layer. A plain model renders a working
+admin with essentially no configuration, and you extend it with the Rails you
+already know — controllers, Pundit policies, presenters, and ERB.
 
 The established alternatives are all solid, and each fits a different taste.
 Reach for one of them when its model matches how you want to work:
@@ -118,8 +164,8 @@ Reach for one of them when its model matches how you want to work:
 | **RailsAdmin** | You want an admin mounted as an engine with almost zero setup. | Heavy runtime introspection and less conventional customization. |
 | **Trestle** | You like a modular, DSL-driven admin with a built-in UI toolkit. | Another admin DSL to learn alongside Rails. |
 
-Reach for CafeCar when you want a Rails-native, convention-over-configuration
-admin that you extend with ordinary Rails code.
+Reach for CafeCar when you want view tools that are ordinary Rails everywhere
+in the app — and an admin that falls out of them.
 
 ## How CafeCar relates to ViewComponent & Phlex
 
@@ -1120,7 +1166,8 @@ $ rails generate cafe_car:agents
 
 This copies the skill to `.claude/skills/cafe_car/` (Claude Code) and
 `.agents/skills/cafe_car/` (Codex, Copilot, and other agents), and adds a marker-delimited
-pointer block to your `AGENTS.md` so agents read the skill before hand-rolling admin UI.
+pointer block to your `AGENTS.md` so agents read the skill before hand-rolling views,
+forms, or formatting code.
 Safe to re-run: only the marked block is replaced; the rest of your `AGENTS.md` is never
 touched.
 

@@ -8,8 +8,8 @@ layout: default
 [![Gem Version](https://img.shields.io/gem/v/cafe_car)](https://rubygems.org/gems/cafe_car)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
-> 🚀 **[Live demo →](https://cafe-car-demo.up.railway.app)** — click straight
-> into a real admin, rendered from plain models (clients, invoices, articles, users, notes).
+> 🚀 **[Live demo →](https://cafe-car-demo.up.railway.app)** — a back-office
+> rendered from plain models (clients, invoices, articles, users, notes).
 > No signup; the data resets periodically.
 
 <p align="center">
@@ -25,13 +25,16 @@ layout: default
   <a href="https://cafe-car-demo.up.railway.app">Try the live demo →</a></em>
 </p>
 
-**CafeCar is a composable view extension for Rails** — an extension of the view and
-controller layer that renders complete index, show, new, and edit interfaces straight
-from your models, with no boilerplate. Sensible defaults cover authorization, presenters,
-filtering, keyword search, sorting, pagination, CSV export, and Hotwire-ready forms, and
-every default can be overridden application-wide or per model.
+**CafeCar is a composable view extension for Rails** — presenters that format any
+value, a form builder that renders typed fields from the schema, UI components,
+Pundit policies that drive what renders, and a query grammar on every model. Use
+each piece wherever it deletes view code, customer-facing pages as much as the
+back office.
 
-**Perfect for** admin panels, internal tools, and rapid prototyping.
+The pieces also compose all the way up: one line of controller code renders index,
+show, new, and edit straight from the model, with authorization, filtering, keyword
+search, sorting, pagination, CSV export, and Hotwire-ready forms. Every default can
+be overridden application-wide or per model.
 
 **Using ViewComponent or Phlex?** They pick the unit of reuse for the UI you
 write; CafeCar renders the CRUD boilerplate you'd otherwise hand-write. They
@@ -50,6 +53,22 @@ $ bundle install
 $ rails generate cafe_car:install
 ```
 
+## The pieces, on any page
+
+The installer includes `CafeCar::Controller` in `ApplicationController`, so the
+presenters and form builder work in every view — no `cafe_car` macro required:
+
+```erb
+<%# a customer-facing page %>
+<p>Total <%= present(@order.total, as: :currency) %></p>
+
+<%= form_with model: @review do |f| %>
+  <%= f.field :rating %>
+  <%= f.field :body %>
+  <%= f.submit %>
+<% end %>
+```
+
 ## One line to a working admin
 
 ```ruby
@@ -58,9 +77,10 @@ class ProductsController < ApplicationController
 end
 ```
 
-That single line gives you all seven RESTful actions, Pundit authorization, filtering,
-keyword search, sorting, pagination, CSV export, and JSON / HTML / Turbo Stream
-responses. Or scaffold a complete resource at once:
+When a resource deserves the full CRUD surface, that single line gives you all seven
+RESTful actions, Pundit authorization, filtering, keyword search, sorting, pagination,
+CSV export, and JSON / HTML / Turbo Stream responses. Or scaffold a complete resource
+at once:
 
 ```bash
 $ rails generate cafe_car:resource Product name:string price:decimal description:text
