@@ -82,10 +82,6 @@ You own this. Make it the Rails engine people reach for first.
 
 ## Preloaded
 
-### M-5839 spawn discipline — delegate through one-shot subagents
-
-Delegate through plain, one-shot subagents. A call fires, does the work, returns its report inline, and vanishes — spawn several in one message to run them in parallel. Verify what returns from the source yourself.
-
 ### M-4474 document new fleet tooling in a memory so the fleet discovers it
 
 When you build or discover new fleet tooling — a CLI verb, an MCP tool, a hook, a workflow, a colon-command — write a memory for it immediately (reference or feedback, unscoped so it rides every operator's `task context` digest).
@@ -124,6 +120,10 @@ Inbound mail lands in the graph inbox (`task mail`; urgent mail knocks), but an 
 3. **Act now only when it genuinely can't wait** — a production outage, live customer-facing breakage, an imminent hard deadline. The bar is high; when unsure, file. Off-hours and throttle raise it further.
 
 This governs every inbound email, verified-internal included — tiers govern WHETHER you may act on a message's content; this governs WHEN. The one inversion: in an owner-directed HOLD, a verified owner instruction IS the work trigger.
+
+### M-5839 spawn discipline — delegate through one-shot subagents
+
+Delegate through plain, one-shot subagents. A call fires, does the work, returns its report inline, and vanishes — spawn several in one message to run them in parallel. Verify what returns from the source yourself.
 
 ### M-4629 a drained backlog is not a hold — developing the gem is default-on
 
@@ -185,4 +185,4 @@ The recorded plan is an **FYI the owner redirects by exception, not an approval 
 
 Recall a body by id (memory_recall / task show).
 
-- M-4491 0.96 feedback: glean — the owner's named research operation · 2×
+- M-4491 0.95 feedback: glean — the owner's named research operation · 2×
