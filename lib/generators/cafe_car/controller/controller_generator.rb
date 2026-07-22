@@ -13,7 +13,7 @@ class CafeCar::ControllerGenerator < Rails::Generators::NamedBase
 
   def add_resource_route
     return if options.skip_routes?
-    route "#{resources} :#{file_name}", namespace: regular_class_path
+    route "#{route_macro} :#{file_name}", namespace: regular_class_path
   end
 
   private
@@ -21,6 +21,8 @@ class CafeCar::ControllerGenerator < Rails::Generators::NamedBase
   def class_name           = file_name.camelize
   def plural?              = file_name == plural_file_name
   def plural_count         = plural? ? 2 : 1
-  def resources            = "resource".pluralize(plural_count)
+  # `cafe_car` (resources + CafeCar's endpoints — see CafeCar::Routing) for a
+  # plural resource; CafeCar's endpoints don't apply to a singleton.
+  def route_macro          = plural? ? "cafe_car" : "resource"
   def base_controller_name = "ApplicationController"
 end

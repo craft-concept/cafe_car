@@ -50,6 +50,9 @@ module CafeCar
       end
     end
 
+    # Adds the `cafe_car` routes macro (see CafeCar::Routing) — purely additive:
+    # `resources` and the rest of the routing DSL are untouched, so a host
+    # resource gets CafeCar endpoints only by drawing them with `cafe_car`.
     initializer "cafe_car.routing" do |app|
       app.reloader.to_prepare do
         ::ActionDispatch::Routing::Mapper.include(Routing)

@@ -87,8 +87,15 @@ controller context around `object.save!` / `object.destroy!`.)
 
 ## Extra endpoints
 
-Host routes drawn with `resources` automatically gain four routes
-(`lib/cafe_car/routing.rb`):
+Draw a CafeCar resource's routes with the `cafe_car` macro — `resources` plus
+four endpoints (`lib/cafe_car/routing.rb`); a plain `resources` call draws
+exactly Rails' routes and gains nothing:
+
+```ruby
+# config/routes.rb
+cafe_car :products                       # resources :products + the four below
+cafe_car :products, only: %i[index show] # only:/except: filter these too
+```
 
 - `POST /products/batch` — applies a bulk action to selected ids. The action name
   must be in the policy's `permitted_bulk_actions`; each record is authorized

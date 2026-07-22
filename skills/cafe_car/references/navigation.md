@@ -8,8 +8,9 @@ and `_navigation_links.html.haml` (in the gem).
 The sidebar lists every named `index` route in the app (Rails internals excluded),
 grouped by namespace (`admin/…` routes render under an "Admin" heading). So:
 
-- **Add a sidebar link:** add `resources :things` to the routes. That's it.
-- **Remove one:** don't draw an index route (`resources :things, except: :index`
+- **Add a sidebar link:** add `cafe_car :things` (or any `resources`) to the
+  routes. That's it.
+- **Remove one:** don't draw an index route (`cafe_car :things, except: :index`
   or `only:` what you need).
 
 The current page's link highlights automatically (`current`/`ancestor` classes).

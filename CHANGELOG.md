@@ -21,6 +21,12 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Changed
 
+- **Breaking:** CafeCar no longer injects its endpoints into every host
+  `resources` call. Draw a CafeCar resource with the new routes macro —
+  `cafe_car :products` in place of `resources :products` — to get the
+  `batch`/`options`/custom-action routes; a plain `resources` now draws exactly
+  Rails' routes. `only:`/`except:` on `cafe_car` filter the CafeCar endpoints
+  along with the RESTful ones.
 - Sessions now use browser cookies with 30-day absolute and two-hour idle
   server-side lifetimes. Successful authentication rotates both the CafeCar and
   Rails sessions; stale or expired cookies are cleared safely.

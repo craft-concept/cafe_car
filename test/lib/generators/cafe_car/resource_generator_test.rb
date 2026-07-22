@@ -119,7 +119,7 @@ class CafeCar::ResourceGeneratorInlineTest < Rails::Generators::TestCase
 
     # The controller's route landed in the destination's routes file...
     assert_file "config/routes.rb" do |routes|
-      assert_match(/resources :widgets/, routes)
+      assert_match(/cafe_car :widgets/, routes)
     end
   end
 

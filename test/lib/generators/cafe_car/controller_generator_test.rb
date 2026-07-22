@@ -20,12 +20,12 @@ class CafeCar::ControllerGeneratorTest < Rails::Generators::TestCase
     end
   end
 
-  test "adds a plural resources route in the namespace" do
+  test "adds a plural cafe_car route in the namespace" do
     run_generator [ "admin/products" ]
 
     assert_file "config/routes.rb" do |routes|
       assert_match(/namespace :admin do/, routes)
-      assert_match(/resources :products/, routes)
+      assert_match(/cafe_car :products/, routes)
     end
   end
 
@@ -33,7 +33,7 @@ class CafeCar::ControllerGeneratorTest < Rails::Generators::TestCase
     run_generator [ "admin/products", "--skip-routes" ]
 
     assert_file "config/routes.rb" do |routes|
-      assert_no_match(/resources :products/, routes)
+      assert_no_match(/:products/, routes)
     end
   end
 
