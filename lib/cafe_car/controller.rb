@@ -7,9 +7,10 @@ module CafeCar
     INDEX_VIEWS = %w[table grid chart].freeze
 
     # Everything the `cafe_car` macro wires — the RESTful seven plus CafeCar's
-    # endpoints. `only:`/`except:` narrow this whole surface (see the macro).
-    ACTIONS = %i[index show new edit create update destroy
-                 batch options member_action collection_action].freeze
+    # routed endpoints, DERIVED from the routing macro's list so a new endpoint
+    # can never dodge the narrowing. `only:`/`except:` gate this whole surface
+    # (see the macro).
+    ACTIONS = (%i[index show new edit create update destroy] + Routing::ENDPOINTS).freeze
 
     include Pundit::Authorization
     include Filtering, AssociationAuthorization, Authentication
