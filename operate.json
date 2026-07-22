@@ -4,8 +4,7 @@
     "title": "CafeCar",
     "model": "opus",
     "effort": "high",
-    "mode": "cold",
-    "channels": "plugin:email@holdco-fleet"
+    "mode": "cold"
   },
   "tokens": {
     "usage_dir": "~/.cache/claude-usage",

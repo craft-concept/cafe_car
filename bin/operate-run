@@ -22,9 +22,7 @@
 #   OP_MODEL      / run.model     model alias           (default: opus)
 #   OP_EFFORT     / run.effort    reasoning effort      (default: high)
 #   OP_MODE       / run.mode      loop cadence: long-loop | cold | cron (default: long-loop)
-#   OP_WORK       / run.work      standing-work text    (default: "Continue <name> operation.")
-#                                 Keep it PHASE-AGNOSTIC — a thin pointer to the persona, never a
-#                                 phase-specific task (e.g. "write BUSINESS-PLAN.md"), which goes stale.
+#   OP_WORK                       standing-work text    (default: "Continue <name> operation.")
 #   OP_REMOTE_NAME / run.title    --remote-control conversation name
 #   run.channels                  --channels value      (default: plugin:email@holdco-fleet)
 #   OP_REMOTE=0                   disable --remote-control
@@ -39,6 +37,7 @@ CONFIG="${OPERATE_CONFIG:-$REPO/operate.json}"
 cfg() { [ -n "$JQ" ] && [ -f "$CONFIG" ] && "$JQ" -r ".$1 // empty" "$CONFIG" 2>/dev/null || true; }
 
 cd "$REPO"
+export PATH="$HOME/.deno/bin:$PATH"   # the `task` CLI lives here
 
 PERSONA="$REPO/.claude/agents/operator.md"
 [ -f "$PERSONA" ] || { echo "operate-run: missing persona $PERSONA" >&2; exit 1; }
@@ -49,17 +48,17 @@ name="$(cfg run.title)"; name="${name:-${venture:-this venture}}"
 model="${OP_MODEL:-$(cfg run.model)}";     model="${model:-opus}"
 effort="${OP_EFFORT:-$(cfg run.effort)}";  effort="${effort:-high}"
 mode="${OP_MODE:-$(cfg run.mode)}";        mode="${mode:-long-loop}"
-channels="$(cfg run.channels)";            channels="${channels:-plugin:email@holdco-fleet}"
 remote_name="${OP_REMOTE_NAME:-$name Operator}"
-work="${OP_WORK:-$(cfg run.work)}"; work="${work:-Continue $name operation.}"
+work="${OP_WORK:-Continue $name operation.}"
 
-# Assemble the claude invocation. Kept byte-identical to the pre-rename
-# ventures:run path (persona, model, effort, --dangerously-skip-permissions,
-# email channel, --remote-control, /loop prompt) — this is a relocation.
+# Assemble the operator invocation. Launched via `task claude`, which adds
+# --dangerously-skip-permissions, the tasks channel, and one bound TASKS_SESSION
+# that the SessionStart hook, the MCP tools, and the channel all share. Email is
+# in the graph now — no email channel. We pass persona, model, effort,
+# --remote-control, and the /loop standing-work prompt through.
 args=()
 [ "${OP_REMOTE:-1}" != 0 ] && args+=( --remote-control "$remote_name" )
-args+=( --model "$model" --effort "$effort" --dangerously-skip-permissions
-        --channels "$channels" --append-system-prompt-file "$PERSONA" )
+args+=( --model "$model" --effort "$effort" --append-system-prompt-file "$PERSONA" )
 [ "${OP_RESUME:-0}" = 1 ] && args+=( --continue )
 
 # Opening prompt: explicit args win (a one-off prompt, no standing driver — e.g.
@@ -74,10 +73,10 @@ else
 fi
 
 if [ "${DRY_RUN:-0}" = 1 ] || [ "${HOLDCO_DEBUG:-0}" = 1 ]; then
-	printf 'claude'
+	printf 'task claude'
 	for a in "${args[@]}"; do printf ' %q' "$a"; done
 	printf '\n'
 	exit 0
 fi
 
-exec claude "${args[@]}"
+exec task claude "${args[@]}"
