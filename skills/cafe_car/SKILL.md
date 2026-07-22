@@ -95,7 +95,7 @@ templates. Styles live in component CSS, not global stylesheets.
 ```ruby
 # config/routes.rb
 namespace :admin do
-  resources :products      # also adds batch, options, and generic custom-action routes
+  cafe_car :products       # resources plus the batch, options, and custom-action routes
 end
 
 # app/controllers/admin/products_controller.rb

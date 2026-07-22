@@ -105,7 +105,7 @@ bin/rails generate cafe_car:install
 ```
 
 ```ruby
-# 2. Point a controller at a model (add `resources :products` to your routes)
+# 2. Point a controller at a model (add `cafe_car :products` to your routes)
 class ProductsController < ApplicationController
   cafe_car
 end
