@@ -26,5 +26,5 @@ end
 task default: %i[rubocop test brakeman]
 
 # Load the gem's own rake tasks under lib/tasks/ (the backlog now lives on the
-# holdco-tasks board — see `bin/operate tasks`).
+# holdco-tasks board — see `task list .project=cafe_car`).
 Dir.glob(File.expand_path("lib/tasks/*.rake", __dir__)).sort.each { |f| load f }

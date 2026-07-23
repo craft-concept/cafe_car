@@ -35,7 +35,7 @@ a `.md` file with YAML frontmatter; `MEMORY.md` is the one-line-per-file index
 > **VERIFIED ACTION-LOG — read before writing the journal:**
 > The journal is a **verified action-log**, never a narration of intended-but-unconfirmed work.
 > Before writing "filed task X" / "committed Y" / "fixed Z" / "appended decision W" anywhere in the
-> journal, confirm it actually landed — a board read-back (`bin/operate tasks show <id>`) for a filed task,
+> journal, confirm it actually landed — a board read-back (`task show <id>`) for a filed task,
 > `git status` / `git log -1` for a commit, re-`grep` the file you claim to have patched. Same
 > failure class as **`reconstitute-before-you-answer`** (don't equate "I meant to do X" with "X is
 > confirmed to exist") — holdco's own dream once claimed it filed a task that was never actually
@@ -117,7 +117,7 @@ way (wrong dir, missing dep). Classify each:
   guessing its args.
 - **Usage error** (the tool is correct; the agent keeps calling it wrong) → add the right
   invocation to the persona or `AGENTS.md`.
-- **Too complex for a dream pass** → file a task: `bin/operate tasks file "Title" --priority P2`.
+- **Too complex for a dream pass** → file a task: `task new P2 .project=cafe_car .title="Title"`.
 
 ## 4. Persona hygiene review + decision-drift audit
 Read the main operator persona in `.claude/agents/`. The filename varies by venture (e.g.
@@ -125,7 +125,7 @@ Read the main operator persona in `.claude/agents/`. The filename varies by vent
 `.md` file that is NOT any of: `dream.md`, `README.md`, `coder.md`, `designer.md`,
 `graybeard.md`, `hipster.md`, `green-eyeshade.md`, `counsel.md`, `bullhorn.md`, `redteam.md`.
 **Do NOT edit the persona** — just FLAG bloat, contradictions, and dead rules.
-Flagged items become filed "consider" tasks (`bin/operate tasks file "Consider: ..."`) for
+Flagged items become filed "consider" tasks (`task new P2 .project=cafe_car .title="Consider: ..."`) for
 deliberate review; they are never trimmed in the same pass that surfaces them. Note: overlap with
 global `~/.claude/CLAUDE.md` guidance is not automatically bloat — local restatement can be
 intentional emphasis; flag only pure duplication.
@@ -139,7 +139,7 @@ yourself here.
 ## 5. Board hygiene — entropy scrub
 The board accretes entropy: duplicate/overlapping tasks, umbrella tasks whose descriptions are
 checklists, lengthy "Follow-ups" sections, bloated titles. Scrub THIS venture's open tasks
-(`bin/operate tasks`). **Shape only, substance never** — never change what a task asks for, its
+(`task list .project=cafe_car .status=open`). **Shape only, substance never** — never change what a task asks for, its
 priority, assignee, or status (beyond cancelling true dups):
 - Merge duplicates: fold unique detail into the survivor, cancel the loser with
   `--reason "dup of <survivor-id>"`.
@@ -174,14 +174,10 @@ AGGRESSIVE envelope in `AGENTS.md` → "Ideation":**
   the outcome). Pass the 3-line rubric first: *in the cheap envelope? smallest test? how we'd
   know it worked?*
 - **Consequential** (irreversible, money out, brand pivot, legal, or an owner-only resource) →
-  **file a 💡 proposal** so it reaches the owner: POST a `kind=proposal` task to the holdco-tasks
-  board (as `/propose` does — one-paragraph *thesis · cost · expected value*), and add a
-  `proposed` row to `IDEAS.md`.
+  **file a 💡 proposal** so it reaches the owner (one-paragraph *thesis · cost · expected value*),
+  and add a `proposed` row to `IDEAS.md`.
 ```bash
-source .env 2>/dev/null
-curl -sf -X POST "${TASKS_WORKER_URL:-https://holdco-tasks.yaks.workers.dev}/api/v1/tasks" \
-  -H "Authorization: Bearer ${TASKS_AGENT_TOKEN}" -H "Content-Type: application/json" \
-  -d '{"venture_id":"cafe_car","kind":"proposal","priority":"P2","status":"open","title":"<thesis>","description":"<cost · expected value>"}'
+task new P2 .project=cafe_car .title="<thesis>" .body="<cost · expected value>"
 ```
 Don't over-produce: a few grounded, deduped ideas beat a slop list. Skip anything already in
 `IDEAS.md` (**killed rows stay listed precisely so you don't re-propose them**).

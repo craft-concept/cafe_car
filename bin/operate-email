@@ -4,7 +4,7 @@
 #
 # Read-only client for the fleet-mail store (the holdco-inbox Worker's HTTP API).
 # Standalone bash+curl+jq — no holdco repo on the box; config comes from this
-# venture's own operate.json + .env (same pattern as operate-tasks).
+# venture's own operate.json + .env.
 #
 #   operate email                    unread inbox (this operator's own address)
 #   operate email --all              full inbound history, newest last
