@@ -45,6 +45,12 @@ Upgrading? See [UPGRADING.md](UPGRADING.md) for symptom-keyed migration steps.
 
 ### Fixed
 
+- Presenter lookup now only adopts constants that inherit `CafeCar::Presenter`.
+  A host class that merely ends in `Presenter` (a common Rails name for other
+  purposes) used to be instantiated as a presenter and crash rendering with a
+  confusing `ArgumentError`; it is now skipped — with a one-time
+  `Rails.logger.warn` breadcrumb — and lookup falls through to the shipped
+  defaults.
 - A `has_many_attached` attribute now renders as a compact, counted list of its
   attachments instead of the raw `#<ActiveStorage::Attached::Many...>` inspect
   string; a non-image attachment (`has_one_attached` included) renders as a

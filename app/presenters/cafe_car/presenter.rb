@@ -23,7 +23,23 @@ module CafeCar
     end
 
     def self.find(klass)
-      candidates(klass).filter_map { CafeCar[_1] }.first or raise "Could not find presenter"
+      candidates(klass).filter_map { resolve(_1) }.first or raise "Could not find presenter"
+    end
+
+    # A candidate constant only counts as a presenter when it inherits from us —
+    # an unrelated host class that happens to end in "Presenter" is skipped (with
+    # a breadcrumb, in case it *meant* to hook in) and lookup continues down the
+    # ancestor chain to the shipped defaults.
+    def self.resolve(name)
+      found = CafeCar[name] or return
+      return found if found <= Presenter
+
+      @skipped ||= Set.new
+      if @skipped.add?(found.name)
+        Rails.logger.warn("[CafeCar] #{found.name} does not inherit CafeCar::Presenter — " \
+                          "skipping it during presenter lookup")
+      end
+      nil
     end
 
     def self.candidates(klass)

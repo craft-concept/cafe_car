@@ -19,8 +19,9 @@ partials).
 ## How a presenter is chosen
 
 The value's ancestor chain is walked and the first `<Ancestor>Presenter` constant
-found wins — a host `InvoicePresenter` beats the gem's `RecordPresenter` by
-existing; nothing is registered. Force a type with `as:`:
+that inherits `CafeCar::Presenter` wins — a host `InvoicePresenter` beats the
+gem's `RecordPresenter` by existing; nothing is registered. Force a type with
+`as:`:
 
 ```ruby
 present(@invoice)                    # InvoicePresenter, else RecordPresenter
@@ -33,9 +34,13 @@ colored `Badge` pill wherever the attribute appears — tables, show pages, card
 `as: :badge` forces it for anything else; per-value styles live in the locale
 under `badge.styles` (unlisted values render the neutral badge).
 
-Note: constants the gem defines under `CafeCar::` (e.g. `CafeCar::StringPresenter`)
-resolve engine-first — a same-named top-level constant does *not* shadow them.
-Override per model (`ProductPresenter`) or per ancestor the gem doesn't claim.
+The contract: a host presenter **must inherit `CafeCar::Presenter`** to hook in.
+A same-named class that doesn't (an unrelated `ArticlePresenter` serving some
+other purpose) is skipped with a `Rails.logger.warn` breadcrumb and lookup falls
+through to the shipped defaults. For gem-shipped names (e.g. `StringPresenter`)
+the `CafeCar::` constant resolves engine-first, so a top-level presenter of the
+same name doesn't shadow it — override per model (`ProductPresenter`) or per
+ancestor the gem doesn't claim.
 
 ## Writing one
 
