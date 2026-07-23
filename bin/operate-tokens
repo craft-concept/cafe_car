@@ -352,10 +352,14 @@ fi
 # ---- per-venture signal (this venture's registry status) ----------------------
 # Resolve THIS venture's registry status from tokens.registry_file (operate.json,
 # a ventures/<id>.md path) and adjust the FLEET signal for this one operator:
-#   hold → owner-directed holding pattern: pins YELLOW with the long sleep,
-#          regardless of budget — the operator executes owner instructions only.
-# Per-venture *softening* (a launch venture getting a faster signal) belongs here
-# too. No config / missing file / unknown status → the fleet signal passes through
+#   hold      → owner-directed holding pattern: pins YELLOW with the long sleep,
+#               regardless of budget — the operator executes owner instructions only.
+#   launching → a launch venture skips PRUDENCE throttle: a computed YELLOW (over the
+#               day's glide allowance, or weekend) softens to GREEN so revenue-first
+#               work keeps pace. It does NOT soften the hard-cap RED — that wall is
+#               shared across the whole fleet, so a launch venture still stops there
+#               (the owner lever is the only thing that pushes past it, by design).
+# No config / missing file / unknown status → the fleet signal passes through
 # unchanged (fail open) — and on a holdco-less box the key is simply absent.
 if [ "$MODE" = "pace" ]; then
 	reg="$(untilde "$(cfg tokens.registry_file)")"
@@ -363,6 +367,7 @@ if [ "$MODE" = "pace" ]; then
 		vstatus="$(sed -n 's/^status:[[:space:]]*//p' "$reg" 2>/dev/null | head -n1)"
 		case "$vstatus" in
 		hold) pace_signal="YELLOW" pace_sleep="$BUSY_SLEEP" ;;
+		launching) [ "$pace_signal" = "YELLOW" ] && { pace_signal="GREEN"; pace_sleep="$GREEN_SLEEP"; } ;;
 		esac
 	fi
 fi
