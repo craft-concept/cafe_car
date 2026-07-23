@@ -1,0 +1,5 @@
+Meeting notes — sample attachment for the CafeCar live demo.
+
+Attendees: everyone who mattered.
+Decision: ship it.
+Action items: see the onboarding checklist.

@@ -5,8 +5,8 @@ AVATARS = Rails.root.join("db/seeds/avatars").glob("*.png").freeze
 
 FactoryBot.define do
   factory :user do
-    name     { Faker::Religion::Bible.character }
-    email    { "#{name.parameterize}@#{Faker::Internet.domain_name}" }
+    name     { Faker::Name.name }
+    email    { "#{name.parameterize(separator: ".")}@#{Faker::Internet.domain_name}" }
     password { @pw = Faker::Internet.password }
     password_confirmation { @pw }
     avatar do
@@ -54,8 +54,8 @@ FactoryBot.define do
   end
 
   factory :note do
-    notable { Client.first || create(:client) }
-    author { User.first || create(:user) }
-    body { Faker::Lorem.paragraph }
+    notable { Client.sample or create(:client) }
+    author  { User.sample or create(:user) }
+    body    { Faker::Lorem.paragraph }
   end
 end
