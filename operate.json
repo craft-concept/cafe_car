@@ -17,12 +17,7 @@
     "red_at_pct": 90
   },
   "context": {
-    "projects_dir": "~/.claude/projects",
-    "reset_ratio": 1.5,
-    "reset_fallback_tokens": 25000
-  },
-  "self_clear": {
-    "bloat_threshold_tokens": 160000
+    "projects_dir": "~/.claude/projects"
   },
   "sync": {
     "source": "~/code/holdco/templates/new-venture/bin"
