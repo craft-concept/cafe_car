@@ -66,6 +66,7 @@ be agreed on first.
 A good PR:
 
 - **Adds tests** for new behavior or a regression test for a fix.
+- **Matches the code style** — [docs/STYLE.md](docs/STYLE.md) is normative for all Ruby here.
 - **Keeps `rake` green** — RuboCop, tests, and Brakeman all pass.
 - **Updates `CHANGELOG.md`** — add a bullet under `[Unreleased]` describing your
   change ([Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format).
