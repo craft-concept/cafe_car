@@ -1,5 +1,8 @@
 require "chronic"
-require "haml-rails"
+# The bare renderer only: haml's own railtie registers the :haml template
+# handler for the engine's views. (haml-rails would also flip the HOST app's
+# generators to Haml — a side effect on its codegen we must not ship.)
+require "haml"
 require "kaminari"
 require "image_processing"
 require "propshaft"

@@ -4,7 +4,7 @@ PATH
     cafe_car (0.3.1)
       activerecord_where_assoc (>= 1.3, < 2)
       chronic (>= 0.10, < 1)
-      haml-rails (>= 3.0, < 4)
+      haml (>= 6.0, < 8)
       image_processing (>= 1.13, < 3)
       importmap-rails (>= 2.0, < 3)
       kaminari (>= 1.2, < 2)
@@ -125,15 +125,10 @@ GEM
     ffi (1.17.4-x86_64-linux-musl)
     globalid (1.4.0)
       activesupport (>= 6.1)
-    haml (7.2.0)
+    haml (6.0.0)
       temple (>= 0.8.2)
       thor
       tilt
-    haml-rails (3.0.0)
-      actionpack (>= 5.1)
-      activesupport (>= 5.1)
-      haml (>= 4.0.6)
-      railties (>= 5.1)
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
     image_processing (1.13.0)
@@ -364,7 +359,7 @@ DEPENDENCIES
   activerecord_where_assoc (= 1.3.0)
   cafe_car!
   chronic (= 0.10.0)
-  haml-rails (= 3.0.0)
+  haml (= 6.0.0)
   image_processing (= 1.13.0)
   importmap-rails (= 2.0.0)
   kaminari (= 1.2.0)
@@ -414,8 +409,7 @@ CHECKSUMS
   ffi (1.17.4-x86_64-linux-gnu) sha256=9d3db14c2eae074b382fa9c083fe95aec6e0a1451da249eab096c34002bc752d
   ffi (1.17.4-x86_64-linux-musl) sha256=3fdf9888483de005f8ef8d1cf2d3b20d86626af206cbf780f6a6a12439a9c49e
   globalid (1.4.0) sha256=037f12fbf1d9d7a014d501c2d5c77356fd4ddd96d7a7991d6700bba96706f427
-  haml (7.2.0) sha256=87fd2b71f7feab1724337b090a7d767f5ab2d42f08c974f3ead673f18cfcd55a
-  haml-rails (3.0.0) sha256=091fe496a85ca521d9cac87fb50f1ecf77a57974a99aa7e267130add81a5585f
+  haml (6.0.0) sha256=b6b53995c9d2ff406c11861d82185dddec8c0908f28617021731d72d7637b2ca
   i18n (1.15.2) sha256=00f9eb62412fe593b2a65a97daa75300d37abb8f7202ec748e94b6d46a9dd1b5
   image_processing (1.13.0) sha256=71cffe2707573b16a4800b10619dc851add8cf9e667931ae900b7cac1d9cdd65
   importmap-rails (2.0.0) sha256=a9c0543cf1caa5f222c0fef2bfa75c066d21e5c832ac39d31ac309c81f1da675

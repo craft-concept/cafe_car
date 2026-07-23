@@ -16,6 +16,11 @@ class CafeCarTest < ActiveSupport::TestCase
     end
   end
 
+  test "haml is a renderer only — host generators keep their template engine" do
+    assert_kind_of Haml::RailsTemplate, ActionView::Template.handler_for_extension(:haml)
+    assert_not_equal :haml, Rails.application.config.app_generators.options[:rails][:template_engine]
+  end
+
   test "user_class defaults to User and is configurable" do
     assert_equal User, CafeCar.user_class
 

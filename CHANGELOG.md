@@ -56,6 +56,11 @@ Upgrading? See [UPGRADING.md](UPGRADING.md) for symptom-keyed migration steps.
 
 ### Fixed
 
+- Adding cafe_car no longer flips your app's generator template engine to Haml.
+  The gem now depends on `haml` (the renderer its own views need) instead of
+  `haml-rails`, whose railtie silently defaulted the host's
+  scaffold/controller/mailer generators to `.haml` output. Host codegen keeps
+  its configured template engine; the engine's views render exactly as before.
 - Presenter lookup now only adopts constants that inherit `CafeCar::Presenter`.
   A host class that merely ends in `Presenter` (a common Rails name for other
   purposes) used to be instantiated as a presenter and crash rendering with a

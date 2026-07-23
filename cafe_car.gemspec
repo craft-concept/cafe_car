@@ -36,7 +36,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "responders", ">= 3.0", "< 4"
   spec.add_dependency "activerecord_where_assoc", ">= 1.3", "< 2"
   spec.add_dependency "propshaft", ">= 1.0", "< 2"
-  spec.add_dependency "haml-rails", ">= 3.0", "< 4"
+  spec.add_dependency "haml", ">= 6.0", "< 8"
   spec.add_dependency "image_processing", ">= 1.13", "< 3"
   spec.add_dependency "importmap-rails", ">= 2.0", "< 3"
   spec.add_dependency "turbo-rails", ">= 2.0", "< 3"
