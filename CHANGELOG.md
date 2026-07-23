@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Dates are sourced from the project's git history. CafeCar predates this changelog,
 so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustive.
 
+Upgrading? See [UPGRADING.md](UPGRADING.md) for symptom-keyed migration steps.
+
 ## [Unreleased]
 
 ### Added
