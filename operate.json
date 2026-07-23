@@ -10,7 +10,7 @@
     "usage_dir": "~/.cache/claude-usage",
     "registry_file": "~/code/holdco/ventures/cafe_car.md",
     "tz": "America/Detroit",
-    "day_budget_pct": 15,
+    "day_budget_pct": 5,
     "night_budget_pct": 1,
     "green_sleep_s": 900,
     "busy_sleep_s": 3600,
