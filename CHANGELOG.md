@@ -43,6 +43,10 @@ so the `0.1.1` entry was reconstructed from commit logs and may not be exhaustiv
 
 ### Fixed
 
+- A `has_many_attached` attribute now renders as a compact, counted list of its
+  attachments instead of the raw `#<ActiveStorage::Attached::Many...>` inspect
+  string; a non-image attachment (`has_one_attached` included) renders as a
+  filename link instead of a broken image tag.
 - `cafe_car only:/except:` now gates every action, the `batch`/`options`/custom-
   action endpoints included: an excluded action responds 404 instead of crashing
   with an unhandled "nothing to authorize!" error (a raw 500).
