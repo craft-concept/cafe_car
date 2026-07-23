@@ -47,7 +47,7 @@ module CafeCar
 
     attr_reader :flags, :options, :attributes
 
-    delegate :render, :capture, :safe_join, :ui_class, :context?, to: :@template
+    delegate :render, :safe_join, :ui_class, :context?, to: :@template
 
     option :tag, default: :div
     option :class, accessor: false
@@ -116,6 +116,14 @@ module CafeCar
 
     def content
       @content ||= safe_join [ *children, *@args, *(capture(self, &@block) if @block) ]
+    end
+
+    # Rails' capture keeps only String results, so a block returning a bare
+    # component would vanish — unwrap html_safe objects to markup first. This
+    # keeps components whole on the safe helper surface (CafeCar::Formatting),
+    # where the view-wide unwrap in Helpers#capture isn't mixed in.
+    def capture(*args, &block)
+      @template.capture(*args) { block.(*args).then { _1.try(:html_safe?) ? _1.to_s : _1 } }
     end
 
     def context(&)

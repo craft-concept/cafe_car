@@ -4,7 +4,8 @@ Source: `app/presenters/cafe_car/presenter.rb` in the gem, plus per-type present
 alongside it (`CurrencyPresenter`, `DatePresenter`, `RecordPresenter`,
 `ActiveRecord::RelationPresenter`, `ActiveStorage::AttachmentPresenter`, …).
 
-`present(value)` (aliased `p` in views) wraps anything in a presenter and returns
+`present(value)` (aliased `p` in CafeCar-rendered views — the alias is
+admin-only, in `CafeCar::Helpers`) wraps anything in a presenter and returns
 an html-safe object. Records render as a linked preview (logo + title); dates,
 currency, rich text, attachments, and collections each render through their type's
 presenter.

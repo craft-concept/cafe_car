@@ -54,7 +54,9 @@ The `cafe_car` macro is one composition of the modules; each works alone, on
 any page. The installer (`bundle add cafe_car && bin/rails generate
 cafe_car:install`) includes `CafeCar::Controller` in your
 `ApplicationController`, so every controller gets the form builder as its
-default and every view gets the helpers — no per-page setup.
+default and every view gets the safe helper surface — `present`, components
+via `ui`, `href_for` — with no per-page setup and nothing overriding a Rails
+or Ruby method in your views.
 
 Format values on a customer-facing page with the presenters — the view code
 you delete, then what's left:

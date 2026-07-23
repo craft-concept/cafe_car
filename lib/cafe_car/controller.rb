@@ -46,6 +46,11 @@ module CafeCar
 
         append_cafe_car_views
 
+        # The macro renders CafeCar's own views, which are written against the
+        # full admin helper set — overrides included (see the `included` block
+        # for the split).
+        helper Helpers
+
         respond_to :json, :html, :turbo_stream, :csv
 
         # `only:`/`except:` gate the WHOLE surface, CafeCar endpoints included:
@@ -108,7 +113,14 @@ module CafeCar
       helper_method :model, :model_name, :object, :objects
       helper_method :action, :scope, :view, :default_view
 
-      helper Helpers
+      # The bare include — the installer puts it in the host's
+      # ApplicationController — wires only the safe helper surface into views:
+      # `present`, components via `ui`, `href_for`, `link` (see Formatting).
+      # The admin-only overrides in Helpers (link_to, capture, method_missing,
+      # `p`) ride along solely with the `cafe_car` macro, which renders
+      # CafeCar's own views; a host view wanting them opts in with
+      # `helper CafeCar::Helpers`.
+      helper Formatting
       delegate :present, :href_for, :namespace, to: :helpers
     end
 

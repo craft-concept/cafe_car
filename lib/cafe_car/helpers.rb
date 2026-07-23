@@ -1,40 +1,11 @@
 module CafeCar
   module Helpers
-    # The safe formatting subset (`present`). Everything else in this module —
+    # The safe surface (`present`, `ui`, `href_for`, `link`, …) lives in
+    # CafeCar::Formatting — every host view gets it. Everything defined HERE —
     # the link_to/capture/method_missing/`p` overrides especially — is admin-only
-    # and unsafe app-wide; a host wanting formatting uses CafeCar::Formatting.
+    # and unsafe app-wide, so it ships only with the `cafe_car` macro or an
+    # explicit `helper CafeCar::Helpers`.
     include Formatting
-
-    # Returns a new `Context`. Used for instantiating components: `ui.Button(:primary, "Submit")`
-    def ui(*args, **, &)
-      # For now, this must be defined in a helper instead of in the controller. Passing `view_context` or `helpers`
-      # from the controller somehow breaks `capture`. `capture` will return the captured content, but the content
-      # _also_ gets appended to the original output buffer.
-      # This can be tested in a view by comparing the behavior of `= capture do` with
-      # `= controller.view_context.capture do`; the latter outputs the content twice.
-      if args.any?
-        present(*args, **, &)
-      elsif block_given?
-        capture(&)
-      else
-        @ui ||= CafeCar::Context.new(self)
-      end
-    end
-
-    def ui_class(names, *args, **opts)
-      names  = [ *names ].map(&:camelize)
-      name   = names.join("_")
-      args.flatten!
-      args.compact_blank!
-      opts.compact_blank!
-      opts.merge!(*args.extract!(Hash))
-
-      flags = args.extract!(Symbol)
-      flags |= opts.extract_if! { _1.is_a? Symbol }.keys
-      flags.map! { "#{name}-#{_1}" }
-
-      [ *name, *flags, *args, *opts.keys ].join(" ")
-    end
 
     def body_classes = [ *controller_path.split(?/), action_name, *@body_class ]
 
@@ -80,13 +51,6 @@ module CafeCar
     # `p` aliases `present` for terse view code — a deliberate shadow of Kernel#p
     # that is admin-only (it stays out of CafeCar::Formatting).
     alias_method :p, :present
-
-    def current_href?(*, check_parameters: false, **) = current_page?(href_for(*, **), check_parameters:)
-    def ancestor_href?(...) = URI(href_for(...)) < URI(url_for(request.url))
-
-    def href_for(*parts, namespace: self.namespace, **params)
-      HrefBuilder.new(*parts, namespace:, template: self, **params).to_s
-    end
 
     def view_url(view)
       view = view.to_s
@@ -173,32 +137,6 @@ module CafeCar
       method          = parent if leaf == "id" && parent.present?
       field           = CafeCar["Filter::FieldInfo"].new(model: klass, method:)
       field.reflection&.klass if field.type.in?(%i[belongs_to has_many has_one])
-    end
-
-    def context(name = nil, &)
-      @context ||= []
-
-      if block_given?
-        @context << name
-        r = capture(&)
-        @context.pop
-        r
-      else
-        @context
-      end
-    end
-
-    def context?(*names)
-      context.reverse_each do |ctx|
-        return true if names.empty?
-        names.pop if ctx == names.last
-      end
-      names.empty?
-    end
-
-    def link(object)
-      @links         ||= {}
-      @links[object] ||= CafeCar[:LinkBuilder].new(self, object)
     end
 
     def link_to(...)
@@ -359,16 +297,6 @@ module CafeCar
       "<!-- #{text} -->".html_safe
     end
 
-    def partial?(path)
-      prefixes = path.include?(?/) ? [] : lookup_context.prefixes
-      lookup_context.any?(path, prefixes, true)
-    end
-
-    def get_partial(path)
-      prefixes = path.include?(?/) ? [] : lookup_context.prefixes
-      lookup_context.find(path, prefixes, true)
-    end
-
     def template_glob(glob)
       lookup_context.view_paths
         .flat_map { _1.send(:template_glob, glob) }
@@ -377,10 +305,6 @@ module CafeCar
 
     def navigation
       @navigation ||= CafeCar::Navigation.new(self)
-    end
-
-    def namespace
-      @namespace ||= controller_path.split("/").tap(&:pop).map(&:to_sym)
     end
 
     def method_missing(name, ...)

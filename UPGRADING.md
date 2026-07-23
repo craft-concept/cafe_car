@@ -7,6 +7,46 @@ the full record — this file covers only the changes that can break a host app.
 
 ## Unreleased
 
+### Host views lose the admin helper overrides by default
+
+**What you'll see.** In views of a controller that includes
+`CafeCar::Controller` (the installer wires it into `ApplicationController`)
+but doesn't use the `cafe_car` macro:
+
+- A bare Capitalized component call raises:
+
+  ```
+  NoMethodError (undefined method 'Button' for an instance of ActionView::Base)
+  ```
+
+- A nested `link_to` renders (invalid HTML, but Rails' own behavior) instead
+  of raising `ArgumentError (Links cannot be nested)`.
+- `p` is `Kernel#p` again — it logs to stdout and renders nothing, instead of
+  aliasing `present`.
+
+**Why.** The include used to mix the full `CafeCar::Helpers` into every host
+view, and its overrides of `link_to`, `capture`, `method_missing`, and `p`
+have app-wide blast radius — a typo'd `Foo()` silently rendered
+`<div class="Foo">`, and every nested `link_to` in your own views raised. The
+include now wires only the safe, purely-additive surface
+(`CafeCar::Formatting`): `present`, components via `ui`, `href_for`, `link`,
+and friends. Views rendered by the `cafe_car` macro are unchanged.
+
+**Fix.** Call components through `ui` — it's on every view:
+
+```diff
+-= Button :primary, "Save"
++= ui.Button :primary, "Save"
+```
+
+Or, if a controller's views relied on the old behavior wholesale, opt back in:
+
+```ruby
+class PagesController < ApplicationController
+  helper CafeCar::Helpers
+end
+```
+
 ### CafeCar routes now come from the `cafe_car` macro, not `resources`
 
 **What you'll see.** With a plain `resources :products` in your routes, any
@@ -101,8 +141,11 @@ controller method of the action's name.
 
 Not breakage, but a better seam: if you exposed `CafeCar::Helpers` app-wide
 just for the `present` formatting helper, switch to
-`helper CafeCar::Formatting`. It carries `present` without the admin-only
-`link_to`/`capture`/`method_missing`/`p` overrides.
+`helper CafeCar::Formatting`. It carries `present` — and the component surface
+(`ui`, `href_for`, `link`) — without the admin-only
+`link_to`/`capture`/`method_missing`/`p` overrides. With
+`include CafeCar::Controller` in place you need neither: the include wires
+`CafeCar::Formatting` already.
 
 ### Sessions: cookie lifetimes and rotation
 

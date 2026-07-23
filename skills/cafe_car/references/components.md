@@ -2,8 +2,11 @@
 
 Source: `lib/cafe_car/component.rb`, declarations in `app/ui/cafe_car/ui/*.rb`,
 styles in `app/assets/stylesheets/` (all in the gem). This is CafeCar's own
-component system — not ViewComponent or Phlex. Any capitalized call in a view is a
-component.
+component system — not ViewComponent or Phlex. Components render in any view:
+the `ui` helper is on the safe surface (`CafeCar::Formatting`) every host view
+gets from `include CafeCar::Controller`. Inside CafeCar-rendered views (the
+`cafe_car` macro, or an explicit `helper CafeCar::Helpers`) any capitalized
+call is a component too — `Button` for `ui.Button`.
 
 ## Using components
 
@@ -13,6 +16,13 @@ component.
   = card.Foot do
     = Button :primary, href: href_for(record) do
       = t(:show)
+```
+
+On the safe surface (a host view outside the macro), call through `ui`:
+
+```haml
+= ui.Card title: @product.name do |card|
+  = card.Section present(@product.price, as: :currency)
 ```
 
 - **Flags** are bare symbols: `Button :primary`, `Button :danger`, `Card :slim`,

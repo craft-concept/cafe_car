@@ -34,5 +34,22 @@ module CafeCar
         assert_includes CafeCar::Helpers.instance_methods, m
       end
     end
+
+    test "components render on a Formatting-only view" do
+      view.extend CafeCar::Formatting
+
+      html = view.ui.Button(:primary, "Save", href: "/products").to_html
+      assert_includes html, "Button-primary"
+      assert_includes html, "Save"
+      assert_includes html, %(href="/products")
+    end
+
+    test "a component block returning a bare component still renders on Formatting alone" do
+      view.extend CafeCar::Formatting
+
+      html = view.ui.Box { view.ui.Chip("New") }.to_html
+      assert_includes html, "Box"
+      assert_includes html, %(<div class="Chip">New</div>)
+    end
   end
 end

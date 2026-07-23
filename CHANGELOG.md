@@ -35,6 +35,17 @@ Upgrading? See [UPGRADING.md](UPGRADING.md) for symptom-keyed migration steps.
   `batch`/`options`/custom-action routes; a plain `resources` now draws exactly
   Rails' routes. `only:`/`except:` on `cafe_car` filter the CafeCar endpoints
   along with the RESTful ones.
+- **Breaking:** `include CafeCar::Controller` (the installer's wiring in the
+  host `ApplicationController`) now exposes only the safe helper surface —
+  `CafeCar::Formatting`: `present`, components via `ui`, `href_for`, `link` —
+  to host views. The admin-only overrides in `CafeCar::Helpers` (the
+  nested-`link_to` guard, the `capture` unwrap, Capitalized `method_missing` →
+  component routing, and the `p` alias) ship only with the `cafe_car`
+  controller macro, or per controller with `helper CafeCar::Helpers`. Bare
+  Capitalized component calls in a non-CafeCar view become `ui.Button …`, or
+  take the opt-in. Components now render on the safe surface — `ui`,
+  `ui_class`, `href_for`, `context?`, and `partial?` all live in
+  `CafeCar::Formatting`.
 - Sessions now use browser cookies with 30-day absolute and two-hour idle
   server-side lifetimes. Successful authentication rotates both the CafeCar and
   Rails sessions; stale or expired cookies are cleared safely.

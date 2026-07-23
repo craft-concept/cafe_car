@@ -1,0 +1,6 @@
+-# A host view on the safe surface: presenters format, components render via
+-# `ui`, and Rails' own link_to is untouched (nesting must not raise).
+%p.price= present(9.5, as: :currency)
+= ui.Button :primary, "Components work", href: "/elsewhere"
+= link_to "/outer" do
+  = link_to "inner", "/inner"

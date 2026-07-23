@@ -40,7 +40,9 @@ which the default views carry for free.
 
 The macro is one composition; each module works on any page. The installer includes
 `CafeCar::Controller` in the host's `ApplicationController`, so every controller has
-the form builder as its default and every view has the helpers — no per-page setup:
+the form builder as its default and every view has the safe helper surface
+(`CafeCar::Formatting`: `present`, components via `ui`, `href_for`, `link`) — no
+per-page setup, and nothing overriding a Rails or Ruby method:
 
 ```erb
 <%# a customer-facing page — no cafe_car macro anywhere %>
@@ -64,10 +66,12 @@ the form builder as its default and every view has the helpers — no per-page s
 ([presenters](references/presenters.md)); `f.field` renders the labeled, typed
 input with hint and error markup ([forms](references/forms.md));
 `Model.query`/`Model.sorted` give any relation the URL grammar
-([filtering](references/filtering.md)); capitalized calls build component UI
-([components](references/components.md)). A host that keeps CafeCar's helper set
-out of `ApplicationController` can still take formatting alone with
-`helper CafeCar::Formatting`.
+([filtering](references/filtering.md)); `ui.Button`/`ui.Card` build component UI
+([components](references/components.md)). The admin-only helper overrides in
+`CafeCar::Helpers` — bare Capitalized calls, the nested-`link_to` guard, the `p`
+alias — ship only with the `cafe_car` macro, or per controller via
+`helper CafeCar::Helpers`. A host that skips the include entirely can still take
+the safe surface with `helper CafeCar::Formatting`.
 
 ## The mental model: the policy declares, the UI renders
 

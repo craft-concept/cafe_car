@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   # (see routing_test.rb).
   resources :passwords, param: :token, only: %i[ new create edit update ]
   resources :denials, only: :index
+  # A host page on the default `include CafeCar::Controller` wiring — only the
+  # safe helper surface (see helper_exposure_test.rb).
+  get "plain" => "plain#show"
   # mount ActiveStorage::Engine => '/'
 
   get "up" => "rails/health#show", as: :rails_health_check
