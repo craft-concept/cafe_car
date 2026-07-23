@@ -262,6 +262,9 @@ This will:
 The core installer does not change your Gemfile. Optional features add only the
 dependency they need; for example, `cafe_car:sessions` adds bcrypt.
 
+Upgrading from an earlier version? [UPGRADING.md](UPGRADING.md) lists each
+release's breakage — symptom, cause, and fix.
+
 ## Getting Started
 
 ### Quick Start: Generate a Complete Resource
