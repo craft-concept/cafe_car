@@ -77,6 +77,11 @@ Upgrading? See [UPGRADING.md](UPGRADING.md) for symptom-keyed migration steps.
 - Corrected stale public API guidance for custom actions, responder overrides,
   view override paths, generator output, supported versions, and the canonical
   live-demo URL.
+- Row hrefs for a namespaced resource are no longer hijacked by an unrelated
+  top-level singular `resource` sharing the model's name: the singular-route
+  fallback now probes helpers under the namespace, so `/admin/sessions` renders
+  instead of raising `UrlGenerationError` whenever a sign-in `resource :session`
+  coexists with an admin sessions index.
 
 ## [0.3.1] - 2026-07-13
 

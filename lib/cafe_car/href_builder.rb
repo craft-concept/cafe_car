@@ -18,8 +18,8 @@ module CafeCar
         @template.url_for(@params)
       else
         namespace = collapsed_namespace
-        parts     = @parts.map { singular_resource(_1) }
         begin
+          parts = @parts.map { singular_resource(_1, namespace) }
           @template.url_for([ *namespace, *parts, @params ])
         rescue NoMethodError
           raise if namespace.empty?
@@ -53,13 +53,18 @@ module CafeCar
 
     # Records route polymorphically via the plural `route_key`. For a singular
     # resource (`resource :session`) that helper doesn't exist, so fall back to
-    # the singular route key. Leaves non-records (symbols, strings) untouched.
-    def singular_resource(part)
+    # the singular route key. Probes under the namespace so an unrelated
+    # top-level singular resource can't hijack a namespaced record's routes.
+    # Leaves non-records (symbols, strings) untouched.
+    def singular_resource(part, namespace)
       name = model_name_for(part) or return part
-      return part if @template.respond_to?("#{name.route_key}_path")
+      return part if helper?(namespace, name.route_key)
 
-      @template.respond_to?("#{name.singular_route_key}_path") ?
-        name.singular_route_key.to_sym : part
+      helper?(namespace, name.singular_route_key) ? name.singular_route_key.to_sym : part
+    end
+
+    def helper?(namespace, route_key)
+      @template.respond_to? "#{[ *namespace, route_key ].join("_")}_path"
     end
 
     def model_name_for(part)
