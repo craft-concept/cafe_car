@@ -1,4 +1,4 @@
-<!-- GENERATED from N-4655 (cafe_car baseline) — edit in the graph (http://127.0.0.1:5173/N-4655, memory_save), never here: the
+<!-- GENERATED from N-4655 (cafe_car common persona) — edit in the graph (http://127.0.0.1:5173/N-4655, memory_save), never here: the
 next sync overwrites hand edits. -->
 
 # Working on CafeCar
