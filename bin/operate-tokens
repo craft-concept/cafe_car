@@ -25,9 +25,7 @@
 #                             [MONDAY-BURN …] codex=<SIG> [claude_forced=<SIG>] ADVICE: <text>"
 #                            SIGNAL (field 2) is the CLAUDE signal — the operator's own
 #                            pace. `cap=` is the 7-day HARD-CAP % used (0..100) — distinct
-#                            from the allowance-relative used=/alloc=/left=. The email
-#                            channel reads cap= for its >95%-only hold gate (deliver
-#                            mail unless the fleet is over 95% of the 7-day cap).
+#                            from the allowance-relative used=/alloc=/left=.
 #                            The 6-field prefix through cap= is byte-stable; codex=/
 #                            ADVICE: are ADDITIVE trailing tokens (like MONDAY-BURN).
 #                            The signal folds in this venture's registry status when
@@ -84,6 +82,8 @@ JQ="$(command -v jq 2>/dev/null || true)"
 CONFIG="${OPERATE_CONFIG:-$(cd "$(dirname "$0")/.." 2>/dev/null && pwd)/operate.json}"
 cfg() { [ -n "$JQ" ] && [ -f "$CONFIG" ] && "$JQ" -r ".$1 // empty" "$CONFIG" 2>/dev/null || true; }
 untilde() { case "$1" in "~/"*) printf '%s' "$HOME/${1#\~/}" ;; *) printf '%s' "$1" ;; esac; }
+die() { echo "operate-tokens: $*" >&2; exit 2; }
+need() { case "${2:-}" in "" | -*) die "$1 needs a value" ;; esac; }
 
 CACHE_DIR="${CLAUDE_USAGE_DIR:-}"
 [ -n "$CACHE_DIR" ] || CACHE_DIR="$(untilde "$(cfg tokens.usage_dir)")"
@@ -107,9 +107,9 @@ while [ $# -gt 0 ]; do
 	case "$1" in
 	--tmux) MODE="tmux" ;;
 	--pace) MODE="pace" ;;
-	--set-signal) MODE="set-signal"; SET_SPEC="${2:-}"; shift ;;
+	--set-signal) need "$@"; MODE="set-signal"; SET_SPEC="$2"; shift ;;
 	--clear-signal) MODE="clear-signal"; case "${2:-}" in claude | codex) CLEAR_PROV="$2"; shift ;; esac ;;
-	--until) UNTIL_RAW="${2:-}"; shift ;;
+	--until) need "$@"; UNTIL_RAW="$2"; shift ;;
 	--watch)
 		MODE="watch"
 		case "${2:-}" in [0-9]*) WATCH_IVAL="$2"; shift ;; esac
@@ -421,9 +421,7 @@ fi
 if [ "$MODE" = "pace" ]; then
 	# cap= is the raw 7-day HARD-CAP % used (= pace_used; RED fires at cap >= HARD).
 	# It is appended AFTER alloc= (before any Monday hint) so positional parsers of
-	# the first fields are untouched; the email channel greps cap= for its >95% hold
-	# gate. When there's no cap data (pace_have=0) cap=0 — the channel fails open
-	# (delivers) rather than holding on an unknown budget.
+	# the first fields are untouched. When there's no cap data (pace_have=0), cap=0.
 	# ADDITIVE tail (after the byte-stable 6-field prefix): codex=<lever>, an optional
 	# claude_forced=<SIG> marker, then a trailing human ADVICE: to end-of-line. No
 	# consumer reads past cap= positionally, so fields 1-2 + left/used/alloc/cap stay

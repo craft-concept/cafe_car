@@ -10,7 +10,7 @@
 # (./bindery, ./conductor, ./cbloom, ./homelab, ./trader).
 #
 # holdco resolves the venture's settings from the registry and passes them via env
-# (OP_MODEL, OP_EFFORT, OP_MODE, OP_WORK, OP_REMOTE_NAME, EMAIL_CHANNEL_ADDR). Run
+# (OP_MODEL, OP_EFFORT, OP_MODE, OP_WORK, OP_REMOTE_NAME). Run
 # standalone, it falls back to operate.json `run.*` then built-in defaults, so a
 # venture repo launches with no holdco repo on the box.
 #
