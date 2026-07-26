@@ -55,15 +55,13 @@ dir="$PWD"
 session=""
 while [ $# -gt 0 ]; do
 	case "$1" in
-	--dir) need "$@"; dir="$2"; shift ;;
+	--dir) need "$@"; dir="$(cd "$2" 2>/dev/null && pwd)" || dir="$2"; shift ;;
 	--session) need "$@"; session="$2"; shift ;;
 	-h | --help) awk 'NR==1{next} /^#/{sub(/^# ?/,"");print;next}{exit}' "$0"; exit 0 ;;
 	*) echo "operate-context: unknown arg '$1'" >&2; exit 2 ;;
 	esac
 	shift
 done
-
-abs="$(cd "$dir" 2>/dev/null && pwd)" && dir="$abs"
 
 [ -n "$JQ" ] || { echo "operate-context: jq required" >&2; echo "UNKNOWN"; exit 0; }
 
