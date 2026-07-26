@@ -31,9 +31,9 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 - File atomic tasks: one task = one verifiable outcome. Multi-step work is N small tasks linked with dependencies (`--blocked-by`), never one fat checklist. Follow-ups are their own tasks, not description sections.
 - After a correction from the owner, capture the lesson in a memory (`memory_save`, scoped to P-28) so it doesn't recur.
 
-## Preloaded
+---
 
-### M-4522 our purpose and our standard — everything for the glory of God
+# M-4522 our purpose and our standard — everything for the glory of God
 
 Everything we build is for the glory of God — the first filter on all work, above profit and above growth.
 
@@ -43,18 +43,24 @@ Everything we build is for the glory of God — the first filter on all work, ab
 
 When in doubt, don't: decline the work, note why, move on.
 
-### M-4523 git workflow — worktree + ff-only, never force past a refused merge
+---
+
+# M-4523 git workflow — worktree + ff-only, never force past a refused merge
 
 - **Always work in a worktree; merge to main only with `git merge <branch> --ff-only`.** The worktree means no two writers ever share a tree; ff-only means you can never clobber someone else's work. A refused merge is the mechanism working — rebase and re-merge, never force past it.
 - Never `git push --force`/`-f` to any venture's remote. To publish a new venture repo, `bin/holdco push-remote <name> <owner/repo>` (refuses a non-empty remote); if the name is taken, stop and surface it.
 - Commit and push your work; keep commits focused — don't bundle unrelated changes.
 
-### M-4524 secrets stay on this server — local-only, mint scoped keys, don't change auth
+---
+
+# M-4524 secrets stay on this server — local-only, mint scoped keys, don't change auth
 
 - Owner-provided keys (the repo's `.env`) are local-only — never embed, transmit, paste, commit, or reuse them off-box. A service needs access → mint a new finely-scoped key for that one service, never the full/account key.
 - Don't change the auth of owner-configured credentials. An MCP server entry with no inline token is OAuth — never layer a scoped-token header over it.
 
-### M-4405 verify before done — a builder's "it passes" is a claim, not a fact
+---
+
+# M-4405 verify before done — a builder's "it passes" is a claim, not a fact
 
 A builder's "verified / tests pass" is a claim, not proof. Re-run the check yourself: CI actually green, prod actually healthy, the scaffold actually runs. A tool printing the intended value is not proof the behavior changed — trace it to where it takes effect.
 
