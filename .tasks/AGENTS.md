@@ -33,6 +33,20 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
+# M-7048 task inbox — one door for everything addressed to you (comments, knocks, mail)
+
+`task inbox` lists every item addressed to you — comments on your session, comments on tasks you claim, knocks to you or your actor, and project mail — unread first (`●` unread, `·` read).
+
+- `task inbox` — the list
+- `task inbox show <id>` — render it whole; reading stamps it opened
+- `task inbox archive <id>` — the one act that hides an item
+
+Archiving is the only thing that removes an item, so no sweep, subagent, or other reader can drain your inbox behind you.
+
+This is the door for "is anything waiting for me?" — worth a look when you start a pass, and again when you pick up a task, since something may already be waiting on it.
+
+---
+
 # M-6995 personas & memories live in the graph — the files are generated, edit the graph
 
 Your persona, and every memory preloaded into it, are **entities in the Task Graph** — not the `.md` file you are reading. That file (`AGENTS.md`, `.claude/agents/*`) is a **generated projection**: a materializer renders it from the graph and overwrites it on the next sync, so a hand-edit to the file is lost. The banner at the top of each file names its source node (`N-…`).
