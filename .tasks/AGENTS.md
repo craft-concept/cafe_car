@@ -49,6 +49,15 @@ PrintBound 2026-07-28: a review reported "65 commits and 7 D1 migrations that ha
 
 Ask of any claim that's about to change a decision: **is this derived from the repo, or from the system it describes?** If a decision rests on it, go look.
 
+## Your own helpful output is a claim too
+
+The failure that costs the most is not the silent no-op — nobody writes one on purpose. It is the tool that **guesses helpfully and never checks its guess**, handed to someone at the moment they are already confused. A suggestion, a "did you mean", an error message naming the door to use instead: each asserts something about the system, and owes the same verification as any other output. Saying nothing is cheaper than spending the user's trust on a wrong answer.
+
+Tasks 2026-07-29: `task new --blocked-by=T-1` was refused with *"did you mean `.blocked-by=T-1`?"* — a spelling `strayFlag` composed mechanically and never validated. It routed nowhere, and the token landed in the task's **title**. The correction pointed straight at the corruption. Two rules fall out, both cheap:
+
+- **Check a suggestion against the grammar before offering it.** If nothing valid exists, say so plainly.
+- **An error that names a working door owes proof that door works** — round-trip it. An error naming a broken door is the same bug one level up.
+
 ## Ask whether your check *could* fail for the bug you fear
 
 A green check proves nothing if it is structurally blind to the failure mode. This is worse than no check, because it manufactures confidence.
@@ -60,6 +69,8 @@ So: name the failure mode, then ask what evidence would actually distinguish it.
 **The mechanical form, for any check that asserts an absence** — no mail sent, no error logged, no request made: **prove the presence case on the same fixture first, or you are measuring your setup.** Run the unsuppressed version, watch it produce the thing, then run the suppressed one. A suppression test with no positive control cannot tell a working gate from a quiet minute, and it passes before the feature exists.
 
 Tasks 2026-07-29: verifying that `--event` stops a comment from fanning out as mail, the control didn't fire — a fresh probe session is reified with the *target task's* actor, which is the project, and `fanout()` skips a comment authored by the project itself. Both "no mail" results were noise. holdco's parallel probe dodged it only by luck of fixture.
+
+**Build the fixture the common path uses.** A probe that reaches for the explicit, careful form tests a path few callers take. The same day, a probe passing `.title=` explicitly saw a clean no-op where a bare-word title — the form in every shipped example — got silently corrupted.
 
 ## Verify the whole surface after a change, not the part you touched
 
