@@ -33,6 +33,36 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
+# M-4405 verify before done — a builder's "it passes" is a claim, not a fact
+
+A builder's "verified / tests pass" is a claim, not proof. Re-run the check yourself: CI actually green, prod actually healthy, the scaffold actually runs. A tool printing the intended value is not proof the behavior changed — trace it to where it takes effect.
+
+Spot-check thin research before baking it in anywhere it compounds fleet-wide. And verify a restricted agent's story of *why* something failed before believing it — a "the tool wasn't available" excuse is a claim too.
+
+## Check claims about production against production, not against the repo
+
+A reviewer's *factual* claims deserve the same scrutiny as a builder's — and a careful, well-sourced review is the easiest kind to wave through, because the reasoning is good. The reasoning can be impeccable and the premise still false.
+
+The specific trap: an agent reads the repo's own docs, infers the state of the live system, and reports it as fact. Docs go stale silently. When a claim is about **production** — what's deployed, what migrated, how much data exists, which credentials work — the system of record is the live account, and querying it usually takes one command.
+
+PrintBound 2026-07-28: a review reported "65 commits and 7 D1 migrations that have never touched production," and that held a deploy for a pass. Cloudflare said otherwise — migrations all applied five days earlier, last deploy five days ago not eighteen, real delta 9 commits, orders table empty. One `wrangler d1 migrations list --remote` would have caught it before the decision, not after.
+
+Ask of any claim that's about to change a decision: **is this derived from the repo, or from the system it describes?** If a decision rests on it, go look.
+
+## Ask whether your check *could* fail for the bug you fear
+
+A green check proves nothing if it is structurally blind to the failure mode. This is worse than no check, because it manufactures confidence.
+
+PrintBound 2026-07-29: PostHog had never once worked on the live site — the analytics proxy dropped `Access-Control-Allow-Origin`, so browsers discarded every response. It survived a month because **every cheap signal was blind in a different way**: `curl` gets a clean 200 (curl doesn't enforce CORS); Cloudflare counted 4,823 requests and **zero errors** (nothing *failed* — the browser threw the response away afterward); the jsdom tests passed (jsdom doesn't enforce CORS either); and the runbook's own verify step curled `/static/array.js`, which carries a fixed `ACAO: *` and passes even when the broken path is fully broken. The runbook was actively certifying health.
+
+So: name the failure mode, then ask what evidence would actually distinguish it. Behavior enforced by a browser needs a browser. Behavior enforced by a real client needs that client. When a check has never failed, suspect that it *cannot*.
+
+## Verify the whole surface after a change, not the part you touched
+
+A partial failure can move something you weren't aiming at. PrintBound 2026-07-28: routes failed to attach *and* a wrangler default silently disabled the other hostname, so the Worker had no reachable origin at all — while the error message named only the routes. Curl every origin, not the one you were changing.
+
+---
+
 # M-7048 task inbox — one door for everything addressed to you (comments, knocks, mail)
 
 `task inbox` lists every item addressed to you — comments on your session, comments on tasks you claim, comments said to your actor, knocks to you or your actor, and project mail — unread first (`●` unread, `·` read).
@@ -50,35 +80,6 @@ This is the door for "is anything waiting for me?" — worth a look when you sta
 **It reads for whoever your cwd makes you.** Your actor is resolved from the directory you are standing in, so running `task inbox` inside another venture's repo shows *that venture's* inbox, not yours. Nothing is wrong when the list looks foreign — check where you are.
 
 **The web has one too, on the canvas.** Open a venture (or a person) and pick the **Inbox** tab: the same items, same predicate, same read state — opening a row there marks it read here. A venture's inbox is the substantial one; a person's is nearly empty by design, because letters to an external address leave the graph for a real mailbox and only what arrives is ever stamped as arrived.
-
----
-
-# M-4405 verify before done — a builder's "it passes" is a claim, not a fact
-
-A builder's "verified / tests pass" is a claim, not proof. Re-run the check yourself: CI actually green, prod actually healthy, the scaffold actually runs. A tool printing the intended value is not proof the behavior changed — trace it to where it takes effect.
-
-Spot-check thin research before baking it in anywhere it compounds fleet-wide. And verify a restricted agent's story of *why* something failed before believing it — a "the tool wasn't available" excuse is a claim too.
-
-## Check claims about production against production, not against the repo
-
-A reviewer's *factual* claims deserve the same scrutiny as a builder's — and a careful, well-sourced review is the easiest kind to wave through, because the reasoning is good. The reasoning can be impeccable and the premise still false.
-
-The specific trap: an agent reads the repo's own docs, infers the state of the live system, and reports it as fact. Docs go stale silently. When a claim is about **production** — what's deployed, what migrated, how much data exists, which credentials work — the system of record is the live account, and querying it usually takes one command.
-
-PrintBound 2026-07-28: a review reported "65 commits and 7 D1 migrations that have never touched production," and that held a deploy for a pass. Cloudflare said otherwise — migrations all applied five days earlier, last deploy five days ago not eighteen, real delta 9 commits, orders table empty. One `wrangler d1 migrations list --remote` would have caught it before the decision, not after.
-
-Ask of any claim that's about to change a decision: **is this derived from the repo, or from the system it describes?** If a decision rests on it, go look.
-
-## Verify the whole surface after a change, not the part you touched
-
-A partial failure can move something you weren't aiming at. Same deploy: the routes failed to attach *and* a wrangler default silently disabled the other hostname, so the Worker had no reachable origin at all — while the error message named only the routes. Curl every origin, not the one you were changing.
-
-## Prove a test can fail — and check that the restore landed where it started
-
-The strongest evidence a test is worth anything is watching it fail: break the fix, see red, put it back. Two things make that check lie to you.
-
-- **A test that passes either way proves nothing.** It usually means the fixture never reaches the code path — a fallback that returns null in the test database, an assertion on a value the scenario never produces. If reverting the fix leaves the test green, fix the test, not the code.
-- **The restore is itself an edit.** A first-match search-and-replace can put the line back in the wrong function, and the suite then fails for a reason that looks like the test's fault. Re-read the restored line in place before believing either result.
 
 ---
 
