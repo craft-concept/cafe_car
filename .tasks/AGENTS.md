@@ -33,43 +33,6 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
-# M-9273 @file is the DOOR's convention, not the verb's — every door with a filesystem reads it, the web bar and MCP take it literally
-
-A dot-param value that starts with `@` is read by the tool: `@file` is a file, `@-` is piped stdin, `@@` escapes a literal leading `@`. That convention belongs to the **door**, and every door with a filesystem speaks it — the same reading, whichever spelling you reach for:
-
-| door | `.body=@file` |
-| --- | --- |
-| `task new … .body=@file` | reads the file |
-| `task set <id> .body=@file` | reads the file |
-| `task <id> :set .body=@file` | reads the file |
-| `task <id> :new … .body=@file` | reads the file |
-| the TUI's `:` bar | reads the file |
-| the web command bar | literal |
-| MCP `command` | literal |
-
-**A missing file is loud** — `task: .body=@/no/such/file: no such file`, exit 1, and the previous body untouched. An empty pipe is refused the same way rather than clearing the column.
-
-**Only `@` is special.** `.body=-` writes the single character `-`; the stdin door is spelled `@-`.
-
-## Why the two literal doors
-
-Neither has the caller's filesystem. In the web bar there is no disk to read. In MCP `command` the line is spoken to the **server's** process, so `@/etc/passwd` would read the server's disk and not the caller's — that door stays shut on purpose. An MCP caller passes a long body as a plain string instead: `graph_apply` with `{eid, name: "doc", comp: {body: "…"}}`, or `task_new` / `memory_save`, where `body` is a real parameter.
-
-## Write a long body this way
-
-- **`task set <id> .body=@file`** or **`task <id> :set .body=@file`** — the shortest doors from a shell.
-- **`graph_apply`** (MCP `tasks`) — the body is a normal JSON string, so newlines and markdown survive intact.
-- **`POST http://127.0.0.1:5173/apply`** with `[{eid, name:"doc", comp:{body}}]` — the same door over HTTP. Build the JSON from a file with a script and the body never passes through an agent's context, which matters for anything large.
-- **`memory_save`** for memories. Replacing an existing memory's body also needs the `was:` token `memory_recall` prints above it.
-
-## The habit that catches the rest of this class
-
-Any write that REPLACES a body destroys what was there, so read the node to a file (`task show <id> --json` → `comps.doc.body`), patch the file, write it back, then **verify by reading the node again** — never by trusting the success message. This bites hardest on **persona and memory nodes**: blanking the `N-…` for a repo's common persona empties that repo's `AGENTS.md` on the next materialize, and the materializer auto-commits, so the damage lands in git within seconds.
-
-`task history <id> --json` holds every prior body verbatim, so recovery is a read plus one write even when you did not save a copy first.
-
----
-
 # M-4405 verify before done — a builder's "it passes" is a claim, not a fact
 
 A builder's "verified / tests pass" is a claim, not proof. Re-run the check yourself: CI actually green, prod actually healthy, the scaffold actually runs. A tool printing the intended value is not proof the behavior changed — trace it to where it takes effect.
@@ -115,6 +78,43 @@ That failure is easy to walk into: verifying that a flag stopped a comment from 
 ## Verify the whole surface after a change, not the part you touched
 
 A partial failure can move something you weren't aiming at: routes once failed to attach *while* a tool default silently disabled the other hostname, leaving no reachable origin at all — and the error named only the routes. Curl every origin, not the one you were changing.
+
+---
+
+# M-9273 @file is the DOOR's convention, not the verb's — every door with a filesystem reads it, the web bar and MCP take it literally
+
+A dot-param value that starts with `@` is read by the tool: `@file` is a file, `@-` is piped stdin, `@@` escapes a literal leading `@`. That convention belongs to the **door**, and every door with a filesystem speaks it — the same reading, whichever spelling you reach for:
+
+| door | `.body=@file` |
+| --- | --- |
+| `task new … .body=@file` | reads the file |
+| `task set <id> .body=@file` | reads the file |
+| `task <id> :set .body=@file` | reads the file |
+| `task <id> :new … .body=@file` | reads the file |
+| the TUI's `:` bar | reads the file |
+| the web command bar | literal |
+| MCP `command` | literal |
+
+**A missing file is loud** — `task: .body=@/no/such/file: no such file`, exit 1, and the previous body untouched. An empty pipe is refused the same way rather than clearing the column.
+
+**Only `@` is special.** `.body=-` writes the single character `-`; the stdin door is spelled `@-`.
+
+## Why the two literal doors
+
+Neither has the caller's filesystem. In the web bar there is no disk to read. In MCP `command` the line is spoken to the **server's** process, so `@/etc/passwd` would read the server's disk and not the caller's — that door stays shut on purpose. An MCP caller passes a long body as a plain string instead: `graph_apply` with `{eid, name: "doc", comp: {body: "…"}}`, or `task_new` / `memory_save`, where `body` is a real parameter.
+
+## Write a long body this way
+
+- **`task set <id> .body=@file`** or **`task <id> :set .body=@file`** — the shortest doors from a shell.
+- **`graph_apply`** (MCP `tasks`) — the body is a normal JSON string, so newlines and markdown survive intact.
+- **`POST http://127.0.0.1:5173/apply`** with `[{eid, name:"doc", comp:{body}}]` — the same door over HTTP. Build the JSON from a file with a script and the body never passes through an agent's context, which matters for anything large.
+- **`memory_save`** for memories. Replacing an existing memory's body also needs the `was:` token `memory_recall` prints above it.
+
+## The habit that catches the rest of this class
+
+Any write that REPLACES a body destroys what was there, so read the node to a file (`task show <id> --json` → `comps.doc.body`), patch the file, write it back, then **verify by reading the node again** — never by trusting the success message. This bites hardest on **persona and memory nodes**: blanking the `N-…` for a repo's common persona empties that repo's `AGENTS.md` on the next materialize, and the materializer auto-commits, so the damage lands in git within seconds.
+
+`task history <id> --json` holds every prior body verbatim, so recovery is a read plus one write even when you did not save a copy first.
 
 ---
 

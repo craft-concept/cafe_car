@@ -175,6 +175,16 @@ The recorded plan is an **FYI the owner redirects by exception, not an approval 
 
 ---
 
+# M-4474 document new fleet tooling in a memory so the fleet discovers it
+
+When you build or discover new fleet tooling — a CLI verb, an MCP tool, a hook, a workflow, a colon-command — write a memory for it immediately (reference or feedback, unscoped so it rides every operator's `task context` digest).
+
+Tooling nobody memorializes is invisible: the next operator learns it by accident, or the owner has to tell them. A one-line index in the digest is how the fleet finds out **passively** — put the knowledge where the need arises.
+
+Applies to what you ship AND to what you notice someone else shipped.
+
+---
+
 # M-7323 pacing is mechanical, not advisory — YELLOW parks the fleet, a GREEN knock wakes it
 
 An operator that keeps waking on a timer during YELLOW keeps *deciding* whether to work — and a fleet of operators each independently judging "is this discretionary?" overshoots the budget even when every one of them judges correctly. Nobody sees the aggregate. So the throttle is mechanical instead of advisory: at YELLOW there is no wakeup, so there is no decision to get wrong.
@@ -207,16 +217,6 @@ It is also self-correcting: knock an operator during YELLOW by mistake and it ta
 ## Persona changes need a restart
 
 A persona reaches an operator via `--append-system-prompt-file`, read at **claude launch** — so a persona edit does nothing until `bin/holdco restart <id>` (the closing step of a durable persona edit). Memories are different: they ride the `task context` digest and land on the next clear, which is why a new memory can change behavior before a restart does.
-
----
-
-# M-4474 document new fleet tooling in a memory so the fleet discovers it
-
-When you build or discover new fleet tooling — a CLI verb, an MCP tool, a hook, a workflow, a colon-command — write a memory for it immediately (reference or feedback, unscoped so it rides every operator's `task context` digest).
-
-Tooling nobody memorializes is invisible: the next operator learns it by accident, or the owner has to tell them. A one-line index in the digest is how the fleet finds out **passively** — put the knowledge where the need arises.
-
-Applies to what you ship AND to what you notice someone else shipped.
 
 ---
 
