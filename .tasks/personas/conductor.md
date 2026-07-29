@@ -82,6 +82,18 @@ You own this. Make it the Rails engine people reach for first.
 
 ---
 
+# M-4492 persist your thinking — context is wiped, the owner is away
+
+Context is wiped between sessions; the owner is often away.
+
+- Every task/idea → the graph (`task` / the tasks MCP). A "task filed" claim names the id and is verified by read-back. Durable facts → memories (`memory_save`, typed feedback/project/reference, scoped to the project); rules go to the persona instead. Narrative → your own session brief, written into the graph — you know what mattered, so don't depend on a summarizer to reconstruct it.
+- **Reconstitute before you answer.** Post-clear, read back — `task context`, the board, `git log`, your mail — before claiming "I don't know" or "I didn't."
+- **Write owner decisions back immediately** — into the relevant task / venture / memory, before acting on them.
+- **Don't block.** Make the most reasonable decision, record the assumption, proceed. Only genuinely out-of-reach items (live keys, legal entities, registrations) are owner-blocked — everything around them proceeds first.
+- Board text renders **GFM**: real lists, short paragraphs. Link every task you mention — `[<name>](http://127.0.0.1:5173/<id>)`, never a bare id. The owner reads **only** `assignee=jeff` tasks: open with **The ask:** (1–2 lines), then **Current state:** with links; history in the thread; subtasks gated with `task dep <parent> requires <child>`, never a checklist. There is no `--blocked-by` flag — `task new .blocked-by=` is accepted and silently creates no edge.
+
+---
+
 # M-4583 email discipline — trust tiers by verified flag; an inbox, not a work trigger
 
 How an operator treats inbound email, fleet-wide.
@@ -167,18 +179,6 @@ When you build or discover new fleet tooling — a CLI verb, an MCP tool, a hook
 Tooling nobody memorializes is invisible: the next operator learns it by accident, or the owner has to tell them. A one-line index in the digest is how the fleet finds out **passively** — put the knowledge where the need arises.
 
 Applies to what you ship AND to what you notice someone else shipped.
-
----
-
-# M-4492 persist your thinking — context is wiped, the owner is away
-
-Context is wiped between sessions; the owner is often away.
-
-- Every task/idea → the graph (`task` / the tasks MCP). A "task filed" claim names the id and is verified by read-back. Durable facts → memories (`memory_save`, typed feedback/project/reference, scoped to the project); rules go to the persona instead. Narrative → your own session brief, written into the graph — you know what mattered, so don't depend on a summarizer to reconstruct it.
-- **Reconstitute before you answer.** Post-clear, read back — `task context`, the board, `git log`, your mail — before claiming "I don't know" or "I didn't."
-- **Write owner decisions back immediately** — into the relevant task / venture / memory, before acting on them.
-- **Don't block.** Make the most reasonable decision, record the assumption, proceed. Only genuinely out-of-reach items (live keys, legal entities, registrations) are owner-blocked — everything around them proceeds first.
-- Board text renders **GFM**: real lists, short paragraphs. Link every task you mention — `[<name>](http://127.0.0.1:5173/<id>)`, never a bare id. The owner reads **only** `assignee=jeff` tasks: open with **The ask:** (1–2 lines), then **Current state:** with links; history in the thread; subtasks as `--blocked-by` children, never a checklist.
 
 ---
 
