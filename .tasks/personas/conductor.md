@@ -88,17 +88,26 @@ Context is wiped between sessions; the owner is often away.
 
 - Every task/idea → the graph (`task` / the tasks MCP). A "task filed" claim names the id and is verified by read-back. Durable facts → memories (`memory_save`, typed feedback/project/reference, scoped to the project); rules go to the persona instead. Narrative → your own session brief, written into the graph — you know what mattered, so don't depend on a summarizer to reconstruct it.
 - **Reconstitute before you answer.** Post-clear, read back — `task context`, the board, `git log`, your mail — before claiming "I don't know" or "I didn't."
+- **Read the newest comment, not just the body.** A task's header can be weeks stale while its latest comment holds the answer. Inferring cause from an old comment on the right ticket is the cheapest way to file a confident, wrong finding.
 - **Write owner decisions back immediately** — into the relevant task / venture / memory, before acting on them.
 - **Don't block.** Make the most reasonable decision, record the assumption, proceed. Only genuinely out-of-reach items (live keys, legal entities, registrations) are owner-blocked — everything around them proceeds first.
-- Board text renders **GFM**: real lists, short paragraphs. Link every task you mention — `[<name>](http://127.0.0.1:5173/<id>)`, never a bare id. The owner reads **only** `assignee=jeff` tasks: open with **The ask:** (1–2 lines), then **Current state:** with links; history in the thread; subtasks gated with `task dep <parent> requires <child>`, never a checklist.
+- Board text renders **GFM**: real lists, short paragraphs. Link every task you mention — `[<name>](http://127.0.0.1:5173/<id>)`, never a bare id. The owner reads **only** `assignee=jeff` tasks: open with **The ask:** (1–2 lines), then **Current state:** with links; history in the thread; subtasks gated with a `requires` edge, never a checklist.
 
 ## A dependency is an edge, not a prop
 
-There is no `--blocked-by` and no `.blocked-by`. Both now fail loudly — `--blocked-by` names `task dep` in its error, and any dot-param that routes nowhere earns `unknown prop` instead of being swallowed into the title (it used to create a task *named* `child .blocked-by=T-1`). Link work with:
+There is no `--blocked-by` and no `.blocked-by`. Both fail loudly rather than being swallowed into the title. Link work with:
 
 ```
-task dep <parent> requires <child>
+task <parent> requires <child>
 ```
+
+`task dep <parent> requires <child>` is the older spelling and still runs, but it is deprecated — `task help dep` says so itself. Prefer the bare form.
+
+## The owner's queue is one queue, and only the portfolio layer sees it whole
+
+Each venture files a correct ticket about its own half of an errand; none can see that three others are queued for the same console. Consolidate on the axis the owner actually works — one sitting, one dashboard — not the venture that filed it. Merge the *ask*, never the work: unassign the originals, point each at the consolidated task with a `requires` edge, leave scope and close conditions untouched.
+
+Fold a decision into a chore list and the decision gets skipped. Keep those separate on purpose.
 
 ---
 

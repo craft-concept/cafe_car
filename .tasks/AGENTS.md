@@ -33,6 +33,40 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
+# M-7048 task inbox — one door for everything addressed to you (comments, knocks, mail)
+
+`task inbox` lists every item addressed to you — comments on your session, comments on tasks you claim, comments said to your actor, knocks to you or your actor, and project mail — unread first (`●` unread, `·` read).
+
+- `task inbox` — the list
+- `task inbox --all` — archived items too, marked `×`
+- `task inbox show <id>` — render it whole; reading stamps it opened
+- `task inbox archive <id>` — the one act that hides an item
+
+Archiving is the only thing that removes an item, so no sweep, subagent, or other reader can drain your inbox behind you.
+
+This is the door for "is anything waiting for me?" — worth a look when you start a pass, and again when you pick up a task, since something may already be waiting on it.
+
+## Closing a task closes its correspondence
+
+When a task goes `done` or `cancelled`, the letters and comments about it are archived automatically. Nothing is waiting in a letter about a closed task, and without this the inbox fills with archaeology — it was 91% closed-task mail before the sweep.
+
+Two things follow:
+
+- **What arrives *after* a close is untouched.** A letter questioning a closure still lands in your inbox. The archive happens at the moment of closing; it is not a rule about the target's status.
+- **`--all` is where it went.** Archived is hidden, never deleted, and comment threads on the task still show everything — only the inbox filters on it.
+
+## Two things that surprise people
+
+**It reads for whoever your cwd makes you.** Your actor is resolved from the directory you are standing in, so running `task inbox` inside another venture's repo shows *that venture's* inbox, not yours. Nothing is wrong when the list looks foreign — check where you are.
+
+**The web has one too, on the canvas.** Open a venture (or a person) and pick the **Inbox** tab: the same items, same predicate, same read state — opening a row there marks it read here. A venture's inbox is the substantial one; a person's is nearly empty by design, because letters to an external address leave the graph for a real mailbox and only what arrives is ever stamped as arrived.
+
+## Your boot digest already tells you
+
+Every session's `task context` opens with `## inbox — N unread (task inbox)`. That N is counted with the inbox's own predicate, so the number and the list can't disagree — if the line is there, something is waiting; if it's absent, nothing is.
+
+---
+
 # M-4405 verify before done — a builder's "it passes" is a claim, not a fact
 
 A builder's "verified / tests pass" is a claim, not proof. Re-run the check yourself: CI actually green, prod actually healthy, the scaffold actually runs. A tool printing the intended value is not proof the behavior changed — trace it to where it takes effect.
@@ -75,40 +109,6 @@ Tasks 2026-07-29: verifying that `--event` stops a comment from fanning out as m
 ## Verify the whole surface after a change, not the part you touched
 
 A partial failure can move something you weren't aiming at. PrintBound 2026-07-28: routes failed to attach *and* a wrangler default silently disabled the other hostname, so the Worker had no reachable origin at all — while the error message named only the routes. Curl every origin, not the one you were changing.
-
----
-
-# M-7048 task inbox — one door for everything addressed to you (comments, knocks, mail)
-
-`task inbox` lists every item addressed to you — comments on your session, comments on tasks you claim, comments said to your actor, knocks to you or your actor, and project mail — unread first (`●` unread, `·` read).
-
-- `task inbox` — the list
-- `task inbox --all` — archived items too, marked `×`
-- `task inbox show <id>` — render it whole; reading stamps it opened
-- `task inbox archive <id>` — the one act that hides an item
-
-Archiving is the only thing that removes an item, so no sweep, subagent, or other reader can drain your inbox behind you.
-
-This is the door for "is anything waiting for me?" — worth a look when you start a pass, and again when you pick up a task, since something may already be waiting on it.
-
-## Closing a task closes its correspondence
-
-When a task goes `done` or `cancelled`, the letters and comments about it are archived automatically. Nothing is waiting in a letter about a closed task, and without this the inbox fills with archaeology — it was 91% closed-task mail before the sweep.
-
-Two things follow:
-
-- **What arrives *after* a close is untouched.** A letter questioning a closure still lands in your inbox. The archive happens at the moment of closing; it is not a rule about the target's status.
-- **`--all` is where it went.** Archived is hidden, never deleted, and comment threads on the task still show everything — only the inbox filters on it.
-
-## Two things that surprise people
-
-**It reads for whoever your cwd makes you.** Your actor is resolved from the directory you are standing in, so running `task inbox` inside another venture's repo shows *that venture's* inbox, not yours. Nothing is wrong when the list looks foreign — check where you are.
-
-**The web has one too, on the canvas.** Open a venture (or a person) and pick the **Inbox** tab: the same items, same predicate, same read state — opening a row there marks it read here. A venture's inbox is the substantial one; a person's is nearly empty by design, because letters to an external address leave the graph for a real mailbox and only what arrives is ever stamped as arrived.
-
-## Your boot digest already tells you
-
-Every session's `task context` opens with `## inbox — N unread (task inbox)`. That N is counted with the inbox's own predicate, so the number and the list can't disagree — if the line is there, something is waiting; if it's absent, nothing is.
 
 ---
 
