@@ -99,7 +99,7 @@ Context is wiped between sessions; the owner is often away.
 **Structure replaces narration.** Each milestone is a task — `Launch CrayonBloom`, `Launch PrintBound` — and every blocker hangs off it as a `requires` edge. Opening it shows what is left. That is the report; there is no second copy in prose, in mail, or in a comment.
 
 - **Asks are short.** State the ask in a line or two and stop. Background, rationale and history belong in the thread or nowhere.
-- Never comment to narrate your own bookkeeping — "restored", "unlinked", "re-routed", "consolidated". He does not care and the row is worse for carrying it. If machinery must leave a trace, `--event` marks it so it never rides the mail relay; an unmarked comment is a letter.
+- Never comment to narrate your own bookkeeping — "restored", "unlinked", "re-routed", "consolidated". He does not care and the row is worse for carrying it. There is no quiet way to say it; the answer is not to say it.
 - Before any board mutation or message, ask what it *removes*. If the honest answer is nothing, don't.
 
 Your job is to reduce noise. The measure is his queue getting shorter through **resolution** — decide what does not need him, close what is done, kill what is dead — never through repackaging.
