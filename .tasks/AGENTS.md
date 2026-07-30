@@ -33,6 +33,73 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
+# M-9273 @file is the DOOR's convention — every door holding your filesystem reads it, in every spelling
+
+A value that starts with `@` is read by the tool itself: `@file` is a file, `@-` is piped stdin, `@@` escapes a literal leading `@`. The convention belongs to the **door**, never to the verb or the spelling. Every door that holds *your* filesystem reads it the same way, so you do not have to remember which call you are in.
+
+## Dot-param values
+
+| door | `.body=@file` |
+| --- | --- |
+| `task new … .body=@file` | reads the file |
+| `task set <id> .body=@file` | reads the file |
+| `task <id> :set .body=@file` | reads the file |
+| `task <id> :new … .body=@file` | reads the file |
+| the TUI's `:` bar | reads the file |
+| the web command bar | literal |
+| MCP `command` | literal |
+
+## Bare positionals read it too
+
+A body passed as trailing words gets the same reading — but only when the body **IS** a reference: exactly one argv token, with no whitespace inside it.
+
+| call | a lone trailing `@file` |
+| --- | --- |
+| `task comment <id> @file` | reads the file |
+| `task mail reply <id> @file` | reads the file |
+| `task session brief @file` | reads the file |
+| `task <mail> :reply @file` | reads the file |
+| `task :mail <to> <subj> -- @file` | reads the file |
+
+That confinement is what keeps prose safe. All of these stay verbatim text:
+
+- `task mail reply E-9 @jeff thanks for the note` — more than one token
+- `task mail reply E-9 "@jeff thanks for the note"` — one token, but it holds spaces
+- `task mail reply E-9 @@handle` — `@@` escapes a genuine one-word `@`
+
+**`task mail send` is the one verb with no positional body**: its words are the *subject*, so the body must ride `--body=`, and it refuses without one — `task mail send <to> <subject…> --body=@file|-|@-`.
+
+## The failure modes are loud
+
+- **A missing file**: `task: @/no/such/file: no such file`, exit 1 — thrown before anything is written, minted, or sent. A half-sent letter is not reachable, and the message names the token you typed rather than some other spelling.
+- **A DROPPED `@` is refused too.** A lone whitespace-free token that NAMES AN EXISTING FILE is never stored as text: `task: /tmp/report.md: names a file that exists — did you mean @/tmp/report.md?`, exit 1, nothing written. Before this it cost an interim report on a live P0, because the path landed as the body and the door printed its usual receipt.
+  - To store such a path as text on purpose, **pipe it**: `printf %s /tmp/report.md | task comment T-1 @-`. **`@@` will not do it** — that escapes to a literal leading `@`, giving `@/tmp/report.md`.
+  - Narrow by design, so it cannot overshoot: only a `body`, only one whitespace-free token, only one holding a `/` that stats as a file. Prose is untouched, a bare word like `done` never trips it even beside a file of that name, a path that does not exist stays storable, and `repo.path` still takes a path.
+- **An empty pipe** is refused rather than clearing the column.
+- **Only `@` is special.** A dot-param `.body=-` writes the single character `-`; the stdin door is spelled `@-`. (`--body=-` is the one place a bare `-` means stdin, the way flags conventionally use it.)
+
+## Why the web bar and MCP `command` stay literal
+
+Neither holds the caller's filesystem. In the web bar there is no disk to read. In MCP `command` the line is spoken to the **server's** process, so `@/etc/passwd` would read the server's disk and not yours — that door stays shut on purpose. An MCP caller passes a long body as a plain string instead: `graph_apply` with `{eid, name: "doc", comp: {body: "…"}}`, or `task_new` / `memory_save`, where `body` is a real parameter.
+
+## Write a long body this way
+
+- **`task set <id> .body=@file`** or **`task <id> :set .body=@file`** — the shortest doors from a shell.
+- **`task mail reply <id> @file`** — or `--body=@file`; both read it.
+- **`graph_apply`** (MCP `tasks`) — the body is a normal JSON string, so newlines and markdown survive intact.
+- **`POST http://127.0.0.1:5173/apply`** with `[{eid, name:"doc", comp:{body}}]` — the same door over HTTP. Build the JSON from a file with a script and the body never passes through an agent's context, which matters for anything large.
+- **`memory_save`** for memories. Replacing an existing body also needs the `was:` token `memory_recall` prints above it.
+
+## Read back what you wrote, and what you sent
+
+Any write that REPLACES a body destroys what was there. Read the node to a file (`task show <id> --json` → `comps.doc.body`), patch it, write it back, then **verify by reading the node again** — never by trusting the success message. This bites hardest on **persona and memory nodes**: blanking the `N-…` for a repo's common persona empties that repo's `AGENTS.md` on the next materialize, and the materializer auto-commits, so the damage lands in git within seconds.
+
+For outbound mail the same habit is `task show <id>` on the receipt — still worth the one call now that a dropped `@` is refused, because only the receipt shows what actually went out.
+
+`task history <id> --json` holds every prior body verbatim, so recovery is a read plus one write even when you did not save a copy first.
+
+---
+
 # M-4405 verify before done — a builder's "it passes" is a claim, not a fact
 
 A builder's "verified / tests pass" is a claim, not proof. Re-run the check yourself: CI actually green, prod actually healthy, the scaffold actually runs. A tool printing the intended value is not proof the behavior changed — trace it to where it takes effect.
@@ -88,70 +155,6 @@ That failure is easy to walk into: verifying that a flag stopped a comment from 
 ## Verify the whole surface after a change, not the part you touched
 
 A partial failure can move something you weren't aiming at: routes once failed to attach *while* a tool default silently disabled the other hostname, leaving no reachable origin at all — and the error named only the routes. Curl every origin, not the one you were changing.
-
----
-
-# M-9273 @file is the DOOR's convention — every door holding your filesystem reads it, in every spelling
-
-A value that starts with `@` is read by the tool itself: `@file` is a file, `@-` is piped stdin, `@@` escapes a literal leading `@`. The convention belongs to the **door**, never to the verb or the spelling. Every door that holds *your* filesystem reads it the same way, so you do not have to remember which call you are in.
-
-## Dot-param values
-
-| door | `.body=@file` |
-| --- | --- |
-| `task new … .body=@file` | reads the file |
-| `task set <id> .body=@file` | reads the file |
-| `task <id> :set .body=@file` | reads the file |
-| `task <id> :new … .body=@file` | reads the file |
-| the TUI's `:` bar | reads the file |
-| the web command bar | literal |
-| MCP `command` | literal |
-
-## Bare positionals read it too
-
-A body passed as trailing words gets the same reading — but only when the body **IS** a reference: exactly one argv token, with no whitespace inside it.
-
-| call | a lone trailing `@file` |
-| --- | --- |
-| `task comment <id> @file` | reads the file |
-| `task mail reply <id> @file` | reads the file |
-| `task session brief @file` | reads the file |
-| `task <mail> :reply @file` | reads the file |
-| `task :mail <to> <subj> -- @file` | reads the file |
-
-That confinement is what keeps prose safe. All of these stay verbatim text:
-
-- `task mail reply E-9 @jeff thanks for the note` — more than one token
-- `task mail reply E-9 "@jeff thanks for the note"` — one token, but it holds spaces
-- `task mail reply E-9 @@handle` — `@@` escapes a genuine one-word `@`
-
-**`task mail send` is the one verb with no positional body**: its words are the *subject*, so the body must ride `--body=`, and it refuses without one — `task mail send <to> <subject…> --body=@file|-|@-`.
-
-## The failure modes are loud
-
-- **A missing file**: `task: @/no/such/file: no such file`, exit 1 — thrown before anything is written, minted, or sent. A half-sent letter is not reachable, and the message names the token you typed rather than some other spelling.
-- **An empty pipe** is refused rather than clearing the column.
-- **Only `@` is special.** A dot-param `.body=-` writes the single character `-`; the stdin door is spelled `@-`. (`--body=-` is the one place a bare `-` means stdin, the way flags conventionally use it.)
-
-## Why the web bar and MCP `command` stay literal
-
-Neither holds the caller's filesystem. In the web bar there is no disk to read. In MCP `command` the line is spoken to the **server's** process, so `@/etc/passwd` would read the server's disk and not yours — that door stays shut on purpose. An MCP caller passes a long body as a plain string instead: `graph_apply` with `{eid, name: "doc", comp: {body: "…"}}`, or `task_new` / `memory_save`, where `body` is a real parameter.
-
-## Write a long body this way
-
-- **`task set <id> .body=@file`** or **`task <id> :set .body=@file`** — the shortest doors from a shell.
-- **`task mail reply <id> @file`** — or `--body=@file`; both read it.
-- **`graph_apply`** (MCP `tasks`) — the body is a normal JSON string, so newlines and markdown survive intact.
-- **`POST http://127.0.0.1:5173/apply`** with `[{eid, name:"doc", comp:{body}}]` — the same door over HTTP. Build the JSON from a file with a script and the body never passes through an agent's context, which matters for anything large.
-- **`memory_save`** for memories. Replacing an existing body also needs the `was:` token `memory_recall` prints above it.
-
-## Read back what you wrote, and what you sent
-
-Any write that REPLACES a body destroys what was there. Read the node to a file (`task show <id> --json` → `comps.doc.body`), patch it, write it back, then **verify by reading the node again** — never by trusting the success message. This bites hardest on **persona and memory nodes**: blanking the `N-…` for a repo's common persona empties that repo's `AGENTS.md` on the next materialize, and the materializer auto-commits, so the damage lands in git within seconds.
-
-For outbound mail the same habit is `task show <id>` on the receipt — one call, and the only thing that distinguishes a delivered letter from a delivered file path.
-
-`task history <id> --json` holds every prior body verbatim, so recovery is a read plus one write even when you did not save a copy first.
 
 ---
 
