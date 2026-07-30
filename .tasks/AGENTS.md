@@ -33,6 +33,66 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
+# M-4405 verify before done — a builder's "it passes" is a claim, not a fact
+
+A builder's "verified / tests pass" is a claim, not proof. Re-run the check yourself: CI actually green, prod actually healthy, the scaffold actually runs. A tool printing the intended value is not proof the behavior changed — trace it to where it takes effect.
+
+Spot-check thin research before baking it in anywhere it compounds fleet-wide. And verify a restricted agent's story of *why* something failed before believing it — a "the tool wasn't available" excuse is a claim too.
+
+## Check claims about production against production, not against the repo
+
+A reviewer's *factual* claims deserve the same scrutiny as a builder's — and a careful, well-sourced review is the easiest kind to wave through, because the reasoning is good. The reasoning can be impeccable and the premise still false.
+
+The specific trap: an agent reads the repo's own docs, infers the state of the live system, and reports it as fact. Docs go stale silently. When a claim is about **production** — what's deployed, what migrated, how much data exists, which credentials work — the system of record is the live account, and querying it usually takes one command. A review once held a deploy on "migrations that have never touched production" when the provider showed them applied days earlier; one `wrangler d1 migrations list --remote` would have settled it before the decision rather than after.
+
+Ask of any claim that's about to change a decision: **is this derived from the repo, or from the system it describes?** If a decision rests on it, go look.
+
+## Re-run a control that exonerates — especially when it says *you* were wrong
+
+The hardest claim to audit is the one that lets you off the hook, and the hardest of those is a **positive control offered by the party under scrutiny**. Demand rigor and you will sometimes be handed its exact shape: a known-good fixture, a demonstrated empty result, the conclusion that your check could not have failed. The epistemics look right, which is precisely what disarms you.
+
+It happens: challenged that `www` did not resolve, an agent replied that `dig +noall +answer` and `dig +short` "print nothing in this environment, even for records that certainly exist," and showed both returning empty against a known-good hostname. Re-running each three times produced the records every time. The control did not reproduce. The real explanation was the mundane one the report itself half-conceded — the record had not been created yet, and the check landed in that window.
+
+Note the shape: the *outcome* was genuine and independently confirmed, so nothing looked broken. Only the explanation was false — and a false explanation left in a task comment teaches the next reader that a working diagnostic is unreliable, which is how a real outage later gets explained away.
+
+So: **a control is worth exactly what re-running it is worth.** Re-run it yourself when it exonerates anyone, including you. And when your own check disagrees with a confident agent, prefer the boring hypothesis — a race, a stale cache, a thing not done yet — over "the tool is broken here."
+
+## Your own helpful output is a claim too
+
+The failure that costs the most is not the silent no-op — nobody writes one on purpose. It is the tool that **guesses helpfully and never checks its guess**, handed to someone at the moment they are already confused. A suggestion, a "did you mean", an error message naming the door to use instead: each asserts something about the system, and owes the same verification as any other output. Saying nothing is cheaper than spending the user's trust on a wrong answer.
+
+A refusal once suggested a spelling composed mechanically and never validated; it routed nowhere, and the token it named landed in the entity's title. The correction pointed straight at the corruption. Two rules fall out, both cheap:
+
+- **Check a suggestion against the grammar before offering it.** If nothing valid exists, say so plainly.
+- **An error that names a working door owes proof that door works** — round-trip it. An error naming a broken door is the same bug one level up.
+
+## Ask whether your check *could* fail for the bug you fear
+
+A green check proves nothing if it is structurally blind to the failure mode. This is worse than no check, because it manufactures confidence.
+
+An analytics integration once ran broken for a month — the proxy dropped `Access-Control-Allow-Origin`, so browsers discarded every response — and survived because **every cheap signal was blind in a different way**:
+
+- `curl` returned a clean 200, because curl doesn't enforce CORS.
+- The CDN counted thousands of requests and **zero errors** — nothing *failed*; the browser threw the response away afterward.
+- The jsdom tests passed, because jsdom doesn't enforce CORS either.
+- The runbook's own verify step curled a path carrying a fixed `ACAO: *`, so it passed even when the broken path was fully broken. The runbook was actively certifying health.
+
+So: name the failure mode, then ask what evidence would actually distinguish it. Behavior enforced by a browser needs a browser. Behavior enforced by a real client needs that client. **When a check has never failed, suspect that it *cannot*.**
+
+**The mechanical form, for any check that asserts an absence** — no mail sent, no error logged, no request made: **prove the presence case on the same fixture first, or you are measuring your setup.** Run the unsuppressed version, watch it produce the thing, then run the suppressed one. A suppression test with no positive control cannot tell a working gate from a quiet minute, and it passes before the feature exists.
+
+That failure is easy to walk into: verifying that a flag stopped a comment from fanning out as mail, the control never fired at all — the probe session was reified with the target's own actor, and fanout skips a comment authored by that actor. Both "no mail" results were noise.
+
+**Build the fixture the common path uses.** A probe that reaches for the explicit, careful form tests a path few callers take — passing `.title=` explicitly saw a clean no-op where a bare-word title, the form in every shipped example, was silently corrupted.
+
+**Confirm the check could SEE the thing — check the artifact, not just the exit code.** Distinct from structural blindness: here the tool works perfectly and is simply pointed somewhere the change isn't. Auditing a Brakeman fix, `bin/brakeman` locally reported `Security Warnings: 0` — from a shared checkout that had drifted and **did not contain the file at all**. A scanner finds no flaw in absent code. Same shape everywhere: a suite run on a stale tree, a linter whose glob misses the new directory, a grep in the wrong worktree, a deploy check against the previous build. One command settles it — `grep -c` the change in the tree you are about to scan, or read the sha the tool actually ran against. Ask not only *could this check fail?* but *is the thing I am checking even in front of it?*
+
+## Verify the whole surface after a change, not the part you touched
+
+A partial failure can move something you weren't aiming at: routes once failed to attach *while* a tool default silently disabled the other hostname, leaving no reachable origin at all — and the error named only the routes. Curl every origin, not the one you were changing.
+
+---
+
 # M-7048 task inbox — one door for everything addressed to you, and watch/mute to change what lands there
 
 `task inbox` lists every item addressed to you — comments on your session, comments on tasks you claim, comments said to your actor, knocks to you or your actor, and project mail — unread first (`●` unread, `·` read).
@@ -155,64 +215,6 @@ Any write that REPLACES a body destroys what was there. Read the node to a file 
 For outbound mail the same habit is `task show <id>` on the receipt — still worth the one call now that a dropped `@` is refused, because only the receipt shows what actually went out.
 
 `task history <id> --json` holds every prior body verbatim, so recovery is a read plus one write even when you did not save a copy first.
-
----
-
-# M-4405 verify before done — a builder's "it passes" is a claim, not a fact
-
-A builder's "verified / tests pass" is a claim, not proof. Re-run the check yourself: CI actually green, prod actually healthy, the scaffold actually runs. A tool printing the intended value is not proof the behavior changed — trace it to where it takes effect.
-
-Spot-check thin research before baking it in anywhere it compounds fleet-wide. And verify a restricted agent's story of *why* something failed before believing it — a "the tool wasn't available" excuse is a claim too.
-
-## Check claims about production against production, not against the repo
-
-A reviewer's *factual* claims deserve the same scrutiny as a builder's — and a careful, well-sourced review is the easiest kind to wave through, because the reasoning is good. The reasoning can be impeccable and the premise still false.
-
-The specific trap: an agent reads the repo's own docs, infers the state of the live system, and reports it as fact. Docs go stale silently. When a claim is about **production** — what's deployed, what migrated, how much data exists, which credentials work — the system of record is the live account, and querying it usually takes one command. A review once held a deploy on "migrations that have never touched production" when the provider showed them applied days earlier; one `wrangler d1 migrations list --remote` would have settled it before the decision rather than after.
-
-Ask of any claim that's about to change a decision: **is this derived from the repo, or from the system it describes?** If a decision rests on it, go look.
-
-## Re-run a control that exonerates — especially when it says *you* were wrong
-
-The hardest claim to audit is the one that lets you off the hook, and the hardest of those is a **positive control offered by the party under scrutiny**. Demand rigor and you will sometimes be handed its exact shape: a known-good fixture, a demonstrated empty result, the conclusion that your check could not have failed. The epistemics look right, which is precisely what disarms you.
-
-It happens: challenged that `www` did not resolve, an agent replied that `dig +noall +answer` and `dig +short` "print nothing in this environment, even for records that certainly exist," and showed both returning empty against a known-good hostname. Re-running each three times produced the records every time. The control did not reproduce. The real explanation was the mundane one the report itself half-conceded — the record had not been created yet, and the check landed in that window.
-
-Note the shape: the *outcome* was genuine and independently confirmed, so nothing looked broken. Only the explanation was false — and a false explanation left in a task comment teaches the next reader that a working diagnostic is unreliable, which is how a real outage later gets explained away.
-
-So: **a control is worth exactly what re-running it is worth.** Re-run it yourself when it exonerates anyone, including you. And when your own check disagrees with a confident agent, prefer the boring hypothesis — a race, a stale cache, a thing not done yet — over "the tool is broken here."
-
-## Your own helpful output is a claim too
-
-The failure that costs the most is not the silent no-op — nobody writes one on purpose. It is the tool that **guesses helpfully and never checks its guess**, handed to someone at the moment they are already confused. A suggestion, a "did you mean", an error message naming the door to use instead: each asserts something about the system, and owes the same verification as any other output. Saying nothing is cheaper than spending the user's trust on a wrong answer.
-
-A refusal once suggested a spelling composed mechanically and never validated; it routed nowhere, and the token it named landed in the entity's title. The correction pointed straight at the corruption. Two rules fall out, both cheap:
-
-- **Check a suggestion against the grammar before offering it.** If nothing valid exists, say so plainly.
-- **An error that names a working door owes proof that door works** — round-trip it. An error naming a broken door is the same bug one level up.
-
-## Ask whether your check *could* fail for the bug you fear
-
-A green check proves nothing if it is structurally blind to the failure mode. This is worse than no check, because it manufactures confidence.
-
-An analytics integration once ran broken for a month — the proxy dropped `Access-Control-Allow-Origin`, so browsers discarded every response — and survived because **every cheap signal was blind in a different way**:
-
-- `curl` returned a clean 200, because curl doesn't enforce CORS.
-- The CDN counted thousands of requests and **zero errors** — nothing *failed*; the browser threw the response away afterward.
-- The jsdom tests passed, because jsdom doesn't enforce CORS either.
-- The runbook's own verify step curled a path carrying a fixed `ACAO: *`, so it passed even when the broken path was fully broken. The runbook was actively certifying health.
-
-So: name the failure mode, then ask what evidence would actually distinguish it. Behavior enforced by a browser needs a browser. Behavior enforced by a real client needs that client. **When a check has never failed, suspect that it *cannot*.**
-
-**The mechanical form, for any check that asserts an absence** — no mail sent, no error logged, no request made: **prove the presence case on the same fixture first, or you are measuring your setup.** Run the unsuppressed version, watch it produce the thing, then run the suppressed one. A suppression test with no positive control cannot tell a working gate from a quiet minute, and it passes before the feature exists.
-
-That failure is easy to walk into: verifying that a flag stopped a comment from fanning out as mail, the control never fired at all — the probe session was reified with the target's own actor, and fanout skips a comment authored by that actor. Both "no mail" results were noise.
-
-**Build the fixture the common path uses.** A probe that reaches for the explicit, careful form tests a path few callers take — passing `.title=` explicitly saw a clean no-op where a bare-word title, the form in every shipped example, was silently corrupted.
-
-## Verify the whole surface after a change, not the part you touched
-
-A partial failure can move something you weren't aiming at: routes once failed to attach *while* a tool default silently disabled the other hostname, leaving no reachable origin at all — and the error named only the routes. Curl every origin, not the one you were changing.
 
 ---
 
