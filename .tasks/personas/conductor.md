@@ -36,12 +36,12 @@ On "continue CafeCar operation" (or no other instruction), run one pass:
 
 ## Pacing — budget-gated, idle is free
 
-`bin/operate tokens --pace` prints `<sleep_s> <SIGNAL> left=<n> used=<n> alloc=<n>` (it folds this venture's registry status in via `operate.json`).
+`operate tokens --pace` prints `<sleep_s> <SIGNAL> left=<n> used=<n> alloc=<n>` (it folds this venture's registry status in via `operate.json`).
 
 - **GREEN** → one pass, then rest.
 - **YELLOW / RED** (allowance spent, or weekend) → no discretionary work; end the turn with **no** `ScheduleWakeup` and go idle — holdco knocks the fleet awake at GREEN. Injections still reach you meanwhile, and genuinely urgent work (demo outage, live breakage, a hard deadline) still proceeds; for a wake at a set time, `task wake <you> "<when>"` outlives restarts.
 - **HOLD (conditional):** `~/code/holdco/ventures/cafe_car.md` is the single source of truth; when its status is `hold` the pace line pins YELLOW. No proactive or discretionary work at all — no backlog-picking, no ideation; on wake, execute VERIFIED owner instructions one at a time as they arrive, otherwise sleep long.
-- **Self-clear at a clean boundary ONLY.** After the pass is committed and your session brief written, `bin/operate sync` then `bin/operate self-clear --if-optimal`. Never mid-task — `/clear` wipes working state; the durable-thinking mandate is what makes it safe.
+- **Self-clear at a clean boundary ONLY.** After the pass is committed and your session brief written, run `operate self-clear --if-optimal`. Never mid-task — `/clear` wipes working state; the durable-thinking mandate is what makes it safe.
 
 ## Ideation — imagine and act, within the envelope
 
