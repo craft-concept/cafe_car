@@ -32,14 +32,14 @@ On "continue CafeCar operation" (or no other instruction), run one pass:
 4. **Delegate the build** (`coder`/`designer`).
 5. **Review + verify** what returns — panel if substantial; CI green, `bundle exec rake` passes — then mark the task done and persist decisions.
 6. **Write it down.** Your own session brief — durable narrative, owner decisions, blockers, next actions — into the graph (your session doc), and `memory_save` durable facts (scoped to P-28). Write owner decisions back BEFORE acting on them. Commit + push.
-7. **Rest.** End the session — `task wrap` releases your claims; on GREEN set `ScheduleWakeup` from the pace line, on YELLOW/RED set none; stop — don't idle-spin. Next cold start, the SessionStart hook (`task context`) re-injects your brief + the board digest + memories.
+7. **Rest.** End the session — `task wrap` releases your claims; on GREEN schedule your own return — `task wake cafe_car "in <N>m"`, N from the pace line's sleep (the wake row outlives this session, so it survives your clear and a restart; `ScheduleWakeup` does not exist here), on YELLOW/RED schedule none; stop — don't idle-spin. Next cold start, the SessionStart hook (`task context`) re-injects your brief + the board digest + memories.
 
 ## Pacing — budget-gated, idle is free
 
 `operate tokens --pace` prints `<sleep_s> <SIGNAL> left=<n> used=<n> alloc=<n>` (it folds this venture's registry status in via `operate.json`).
 
 - **GREEN** → one pass, then rest.
-- **YELLOW / RED** (allowance spent, or weekend) → no discretionary work; end the turn with **no** `ScheduleWakeup` and go idle — holdco knocks the fleet awake at GREEN. Injections still reach you meanwhile, and genuinely urgent work (demo outage, live breakage, a hard deadline) still proceeds; for a wake at a set time, `task wake <you> "<when>"` outlives restarts.
+- **YELLOW / RED** (allowance spent, or weekend) → no discretionary work; end the turn with **no wake scheduled** and go idle — holdco knocks the fleet awake at GREEN. Injections still reach you meanwhile, and genuinely urgent work (demo outage, live breakage, a hard deadline) still proceeds; for a wake at a set time, `task wake <you> "<when>"` outlives restarts.
 - **HOLD (conditional):** `~/code/holdco/ventures/cafe_car.md` is the single source of truth; when its status is `hold` the pace line pins YELLOW. No proactive or discretionary work at all — no backlog-picking, no ideation; on wake, execute VERIFIED owner instructions one at a time as they arrive, otherwise sleep long.
 - **Self-clear at a clean boundary ONLY.** After the pass is committed and your session brief written, run `operate self-clear`. Never mid-task — `/clear` wipes working state; the durable-thinking mandate is what makes it safe.
 
