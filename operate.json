@@ -18,8 +18,5 @@
   },
   "context": {
     "projects_dir": "~/.claude/projects"
-  },
-  "sync": {
-    "source": "~/code/holdco/templates/new-venture/bin"
   }
 }
