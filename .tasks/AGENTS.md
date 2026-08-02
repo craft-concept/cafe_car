@@ -1,4 +1,4 @@
-<!-- GENERATED from N-4655 (cafe_car common persona) — edit in the graph (http://127.0.0.1:5173/N-4655, memory_save), never here: the
+<!-- GENERATED from N-4655 (cafe_car common persona) — edit in the graph (https://tasks.yak.sh/N-4655, memory_save), never here: the
 next sync overwrites hand edits. -->
 
 # Working on CafeCar
@@ -15,7 +15,7 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ## Where things live
 
-- **The Task Graph** is the one task system, fleet-wide (local server `http://127.0.0.1:5173`; the `task` CLI, the `tasks` MCP server, the web UI at the same address). This venture is project **P-28**; the backlog is `task list .project=P-28`. The old ledger files are retired into the graph: session briefs replace `WORKLOG.md`; memories scoped to P-28 replace `DECISIONS.md` and `IDEAS.md`.
+- **The Task Graph** is the one task system, fleet-wide (the `task` CLI, the `tasks` MCP server, and web UI at `https://tasks.yak.sh`). This venture is project **P-28**; the backlog is `task list .project=P-28`. The old ledger files are retired into the graph: session briefs replace `WORKLOG.md`; memories scoped to P-28 replace `DECISIONS.md` and `IDEAS.md`.
 - **`README.md`** — the canonical feature overview, installation guide, and usage reference. Read it first; point users at it; don't duplicate it here.
 - **`BRAND.md`** (repo root) — the venture's brand-voice guide. Every customer-visible string — the README, the gem description, docs, and any demo/landing copy — passes the voice gate (`/copy`) against it before it ships.
 - **`cafe_car.gemspec`** — gem metadata, version, dependencies.
