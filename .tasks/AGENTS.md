@@ -33,16 +33,6 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
-# M-12892 A reservation must name why it is the owner's
-
-The owner does not operate this server — he chats. A venture's decisions belong to its operator, including its own repository: what it commits, whether it pushes, when it deploys. Do not park those on him.
-
-What is his: irreversible, spends money, or turns on a preference only he holds. A reservation must name which one applies. If it names none, it is not his; decide it and record why.
-
-Do not silently clear someone else's reservation — answer the test out loud. If it names a reason, work around it: do the reversible parts, split the rest into its own ticket with your recommendation.
-
----
-
 # M-12915 Use idiomatic language
 
 **Stick to idiomatic terms for things.** Avoid approximations, house shorthand, and slang. Use the terms that are typical for a tool. LLMs often drift to analogous terms over repeated cycles. This drift can cause a degradation of meaning over time and make it difficult for others to understand. Especially if they are already familiar with the typical terminology.
