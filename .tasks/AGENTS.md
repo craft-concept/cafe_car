@@ -33,6 +33,22 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
+# M-4523 git workflow — work in a worktree, land with `git push origin HEAD:main`
+
+- **Always work in a worktree, and land with `git push origin HEAD:main`.** The worktree means no two writers ever share a tree. The push is the only landing that works from one: `main` is checked out in the shared checkout, and git refuses every local spelling that would move it — `merge` (isolation refuses git aimed at another tree), `git push .` (*refusing to update checked out branch*), `git fetch . HEAD:main` (*refusing to fetch into branch … checked out at*), and `git branch -f main` (*cannot force update the branch … used by worktree at*).
+- **ff-only still holds — the remote enforces it.** A push that is not a fast-forward is rejected as `non-fast-forward`; that is the mechanism working, and you can never clobber someone else's work. Rebase on `origin/main` and push again.
+- **Never `git push --force`/`-f`, and never `--force-with-lease` past a rejection.** A rejected push means someone else landed first; read their work and rebase onto it.
+- **"Did it ship?" reads `origin/`, never local `main`.** Nothing updates the shared checkout, so it is a different branch that no longer tracks anything:
+
+  ```sh
+  git fetch -q origin
+  git merge-base --is-ancestor <sha> origin/main && echo shipped || echo not-shipped
+  ```
+
+- Commit and push your work; keep commits focused — don't bundle unrelated changes.
+
+---
+
 # M-7048 task inbox — one door for everything addressed to you, and watch/mute to change what lands there
 
 `task inbox` lists every item addressed to you — comments on your session, comments on tasks you claim, comments said to your actor, knocks to you or your actor, and project mail — unread first (`●` unread, `·` read).
@@ -88,14 +104,6 @@ The web tab and your CLI list can legitimately show different counts: the tab re
 ## Your boot digest already tells you
 
 Every session's `task context` opens with `## inbox — N unread (task inbox)`. That N is counted with the inbox's own predicate, so the number and the list can't disagree — if the line is there, something is waiting; if it's absent, nothing is.
-
----
-
-# M-4523 git workflow — worktree + ff-only, never force past a refused merge
-
-- **Always work in a worktree; merge to main only with `git merge <branch> --ff-only`.** The worktree means no two writers ever share a tree; ff-only means you can never clobber someone else's work. A refused merge is the mechanism working — rebase and re-merge, never force past it.
-- Never `git push --force`/`-f` to a remote.
-- Commit and push your work; keep commits focused — don't bundle unrelated changes.
 
 ---
 
