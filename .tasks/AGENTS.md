@@ -33,6 +33,16 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
+# M-12892 Owner reservations are binding
+
+When a ticket says a decision is the owner's, it stays his until he answers. A later operator with better information still may not clear it — the value of escalating is that he can trust an escalation to still be waiting.
+
+You may narrow a reservation, never dissolve it: do the reversible parts, split the irreversible one into its own ticket with your recommendation. That leaves him less to decide.
+
+The tell is building the case for why it was fine *after* noticing it was reserved. That is deciding, not discovering.
+
+---
+
 # M-12915 Use idiomatic language
 
 **Stick to idiomatic terms for things.** Avoid approximations, house shorthand, and slang. Use the terms that are typical for a tool. LLMs often drift to analogous terms over repeated cycles. This drift can cause a degradation of meaning over time and make it difficult for others to understand. Especially if they are already familiar with the typical terminology.
