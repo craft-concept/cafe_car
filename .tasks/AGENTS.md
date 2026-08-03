@@ -111,7 +111,7 @@ Every session's `task context` opens with `## inbox — N unread (task inbox)`. 
 
 Your persona, and every memory preloaded into it, are **entities in the Task Graph** — not the `.md` file you are reading. That file (`AGENTS.md`, `.claude/agents/*`) is a **generated projection**: a materializer renders it from the graph and overwrites it on the next sync, so a hand-edit to the file is lost. The banner at the top of each file names its source node (`N-…`).
 
-**The shape.** A **persona** is a node (`kind: persona`, id `N-…`) whose doc body is the persona text. A **memory** is an entity (`kind: memory`, id `M-…`) — one distilled fact, `type` one of user | feedback | project | reference. A persona **preloads** a memory by holding a `contains` edge to it; the materializer renders each contained memory's whole body into that persona's `## Preloaded` block, warmest first. One memory can be preloaded by many personas.
+**The shape.** A **persona** is a node (`kind: persona`, id `N-…`) whose doc body is the persona text. A **memory** is an entity (`kind: memory`, id `M-…`) — one distilled fact, scoped to a project by `scope_eid` (unscoped = a principle every operator carries) and tagged `feedback` when it records someone's correction, with `feedback.by` naming who gave it. A persona **preloads** a memory by holding a `contains` edge to it; the materializer renders each contained memory's whole body into that persona's `## Preloaded` block, warmest first. One memory can be preloaded by many personas.
 
 **Changing it — in the graph, never the file:**
 
