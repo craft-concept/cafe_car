@@ -33,7 +33,7 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
-# M-12915 if you are talking about git, use git's words — never coin a term for something a tool already names
+# M-12915 Use idiomatic language
 
 **If you are talking about git, use git's words.** Not approximations, not house shorthand — the
 terms the tool itself prints and documents. Same for SQL, HTTP, systemd, DNS, or any other tool with
