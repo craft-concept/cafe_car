@@ -33,14 +33,6 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
-# M-12915 Use idiomatic language
-
-**Stick to idiomatic terms for things.** Avoid approximations, house shorthand, and slang. Use the terms that are typical for a tool. LLMs often drift to analogous terms over repeated cycles. This drift can cause a degradation of meaning over time and make it difficult for others to understand. Especially if they are already familiar with the typical terminology.
-
-This applies when talking about git, SQL, HTTP, systemd, DNS, programming languages, and any other similar tool.
-
----
-
 # M-4523 git workflow — work in a worktree, land with `git push origin HEAD:main`
 
 - **Always work in a worktree, and land with `git push origin HEAD:main`.** The worktree means no two writers ever share a tree. The push is the only landing that works from one: `main` is checked out in the shared checkout, and git refuses every local spelling that would move it — `merge` (isolation refuses git aimed at another tree), `git push .` (*refusing to update checked out branch*), `git fetch . HEAD:main` (*refusing to fetch into branch … checked out at*), and `git branch -f main` (*cannot force update the branch … used by worktree at*).
@@ -112,6 +104,14 @@ The web tab and your CLI list can legitimately show different counts: the tab re
 ## Your boot digest already tells you
 
 Every session's `task context` opens with `## inbox — N unread (task inbox)`. That N is counted with the inbox's own predicate, so the number and the list can't disagree — if the line is there, something is waiting; if it's absent, nothing is.
+
+---
+
+# M-12915 Use idiomatic language
+
+**Stick to idiomatic terms for things.** Avoid approximations, house shorthand, and slang. Use the terms that are typical for a tool. LLMs often drift to analogous terms over repeated cycles. This drift can cause a degradation of meaning over time and make it difficult for others to understand. Especially if they are already familiar with the typical terminology.
+
+This applies when talking about git, SQL, HTTP, systemd, DNS, programming languages, and any other similar tool.
 
 ---
 
