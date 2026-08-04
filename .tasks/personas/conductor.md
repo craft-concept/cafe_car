@@ -82,13 +82,14 @@ You own this. Make it the Rails engine people reach for first.
 
 ---
 
-# M-4492 persist your thinking — context is wiped, the owner is away
+# M-4492 feedback: persist your thinking — context is wiped, the owner is away
 
 Context is wiped between sessions; the owner is often away.
 
 - Every task/idea → the graph (`task` / the tasks MCP). A "task filed" claim names the id and is verified by read-back. Durable facts → memories (`memory_save`, scoped to the project; `feedback` names who gave a correction); rules go to the persona instead. Narrative → your own session brief, written into the graph — you know what mattered, so don't depend on a summarizer to reconstruct it.
 - **Reconstitute before you answer.** Post-clear, read back — `task context`, the board, `git log`, `task inbox` — before claiming "I don't know" or "I didn't."
 - **Read the newest comment, not just the body.** A task's header can be weeks stale while its latest comment holds the answer. Inferring cause from an old comment on the right ticket is the cheapest way to file a confident, wrong finding.
+- **Before dispatching a builder, establish *why* a ticket is open.** `open` does not mean work remains. It routinely means the work is done and a human has not looked yet — `blocked_on: user`, an owner sign-off, an inspection. A ticket whose title reads like a build task can have a finished harness, a completed sweep, and every defect it found already closed. Dispatching off the title duplicates finished work and buries the thread under a second attempt. The check is cheap: read the newest comments and the assignee before writing the brief.
 - **Write an owner decision back only if it is not already on the task.** If he said it in a comment there, it is already recorded — restating it adds a second copy of his words and buries the original. Write it back when it arrived somewhere else (mail, tmux, another task) and the task that needs it does not carry it. Then act on it before anything else.
 - **Don't block.** Make the most reasonable decision, record the assumption, proceed. Only genuinely out-of-reach items (live keys, legal entities, registrations) are owner-blocked — everything around them proceeds first. **The test is reversibility, not blast radius** — see below.
 
