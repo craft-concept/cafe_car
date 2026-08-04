@@ -33,19 +33,18 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
-# M-4523 git workflow — work in a worktree, land with `git push origin HEAD:main`
+# M-4523 git workflow — work in a worktree, land with `task land`
 
-- **Always work in a worktree, and land with `git push origin HEAD:main`.** The worktree means no two writers ever share a tree. The push is the only landing that works from one: `main` is checked out in the shared checkout, and git refuses every local spelling that would move it — `merge` (isolation refuses git aimed at another tree), `git push .` (*refusing to update checked out branch*), `git fetch . HEAD:main` (*refusing to fetch into branch … checked out at*), and `git branch -f main` (*cannot force update the branch … used by worktree at*).
-- **ff-only still holds — the remote enforces it.** A push that is not a fast-forward is rejected as `non-fast-forward`; that is the mechanism working, and you can never clobber someone else's work. Rebase on `origin/main` and push again.
-- **Never `git push --force`/`-f`, and never `--force-with-lease` past a rejection.** A rejected push means someone else landed first; read their work and rebase onto it.
-- **"Did it ship?" reads `origin/`, never local `main`.** Nothing updates the shared checkout, so it is a different branch that no longer tracks anything:
+- **Work in your own worktree, and land with `task land`.** The worktree means no two writers ever share a tree. `task land` rebases your branch on `main`, re-runs the gate on the exact rebased commit, and fast-forward merges it into the shared checkout's `main` — the tree the server runs from. Landing is what makes a change take effect.
+- **Origin is publication, not landing.** A push moves bytes to a remote and changes nothing anyone is executing. Publishing is its own act, after the land — never a way around worktree isolation.
+- **ff-only is the compare-and-swap.** If another lander moved `main` between your rebase and the merge, the merge is no longer a fast-forward and git refuses. Rebase on `main`, re-gate, land again. Never `--force`/`-f`, and never `--force-with-lease` past a refusal: a refusal means someone landed first, so read their work and rebase onto it.
+- **"Did it land?" asks the shared checkout's `main`.** Worktrees share one ref store, so it is readable from yours:
 
   ```sh
-  git fetch -q origin
-  git merge-base --is-ancestor <sha> origin/main && echo shipped || echo not-shipped
+  git merge-base --is-ancestor <sha> main && echo landed || echo not-landed
   ```
 
-- Commit and push your work; keep commits focused — don't bundle unrelated changes.
+- Keep commits focused — don't bundle unrelated changes.
 
 ---
 
