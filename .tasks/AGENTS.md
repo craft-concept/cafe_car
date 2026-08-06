@@ -33,6 +33,26 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
+# M-14370 tickets carry signal — file the irreducible ask and pointers, never derived restatement
+
+The owner reads the board with a full queue. Most tickets are too long to read at all, and a ticket nobody reads carries zero signal. Worse: **derived information is a snapshot, and snapshots rot** — restated code analysis, current-behavior descriptions, and copied measurements quietly disagree with reality the moment the repo moves. A pointer never rots.
+
+## A task body carries
+
+- **The irreducible ask** — the outcome wanted and the constraint that matters, in a few lines.
+- **Pointers to ground truth, not copies of it** — `file:line`, a failing test, a commit sha, a log path. The reader follows the pointer and sees current truth, not your snapshot.
+- **Nothing the graph already holds** — status, dependencies, priority, landed shas live in fields and edges; restating them in prose creates a second copy that drifts.
+
+## Comments earn their length the same way
+
+Working analysis belongs in a comment at the moment it is produced — dated there, its staleness is at least honest. Lead with the conclusion; spend a paragraph on reasoning only when someone would decide differently because of it.
+
+## The test before writing
+
+What does the reader need in order to act? Write that. Everything else is noise — and every comment is a letter someone receives.
+
+---
+
 # M-4523 git workflow — work in a worktree, land with `task land`
 
 - **Work in your own worktree, and land with `task land`.** The worktree means no two writers ever share a tree. `task land` rebases your branch on `main`, re-runs the gate on the exact rebased commit, and fast-forward merges it into the shared checkout's `main` — the tree the server runs from. Landing is what makes a change take effect.
