@@ -33,6 +33,23 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
+# M-4523 git workflow — work in a worktree, land with `task land`
+
+- **Work in your own worktree, and land with `task land`.** The worktree means no two writers ever share a tree. `task land` rebases your branch on `main`, re-runs the gate on the exact rebased commit, and fast-forward merges it into the shared checkout's `main`.
+- **Landing reaches the shared checkout — that is not always the same tree as production.** `task land` was built for this graph's own server, which runs directly off that checkout: for a project shaped that way, landing IS deploying, full stop. But a venture hosted elsewhere — Railway, a Cloudflare Worker behind CI, anything that redeploys only when ITS remote sees new commits — can sit on stale code all night even though `task land` succeeded, because nothing pushed to the remote that actually serves traffic. The shared checkout moving forward and production moving forward are two different facts; don't infer one from the other.
+- **Don't rely on remembering to push — wire it in.** `cafe_car`, `bindery`, and `coloring-book-maker` (CrayonBloom) each carry a `post-commit`/`post-merge` hook (installed 2026-08-06, after a landed fix sat unpushed overnight) that pushes `main` to `origin` on every advance, so landing and publishing happen in one motion for push-to-deploy ventures. A venture that deploys on `wrangler deploy`, `bin/promote`, or anything else non-push still needs that step done by hand — read its persona/AGENTS.md for the exact command. A new push-to-deploy venture should get the same hook at scaffold time, not a note to self (T-14783).
+- **ff-only is the compare-and-swap.** If another lander moved `main` between your rebase and the merge, the merge is no longer a fast-forward and git refuses. Rebase on `main`, re-gate, land again. Never `--force`/`-f`, and never `--force-with-lease` past a refusal: a refusal means someone landed first, so read their work and rebase onto it.
+- **"Did it land?" asks the shared checkout's `main`** — not "is it live." Worktrees share one ref store, so it is readable from yours:
+
+  ```sh
+  git merge-base --is-ancestor <sha> main && echo landed || echo not-landed
+  ```
+
+  For a push-to-deploy venture, "is it live" is `git merge-base --is-ancestor <sha> origin/main`.
+- Keep commits focused — don't bundle unrelated changes.
+
+---
+
 # M-14370 tickets carry signal — file the irreducible ask and pointers, never derived restatement
 
 The owner reads the board with a full queue. Most tickets are too long to read at all, and a ticket nobody reads carries zero signal. Worse: **derived information is a snapshot, and snapshots rot** — restated code analysis, current-behavior descriptions, and copied measurements quietly disagree with reality the moment the repo moves. A pointer never rots.
@@ -54,22 +71,6 @@ What does the reader need in order to act? Write that. Everything else is noise 
 ## This is enforced mechanically, not just remembered
 
 This principle sat in context (materialized into holdco's `CLAUDE.md`) and still got violated twice — a raw ~200-line log pasted into a `task_comment` body. A memory in context is guidance an agent can apply; it isn't a stop at the moment of the mistake. `holdco/.claude/hooks/task-comment-size-gate.sh` (a PreToolUse hook on `task_comment`, wired in `holdco/.claude/settings.json`) now denies any comment body over 40 lines with a reason pointing back here. If this keeps happening anyway, the fix is a better hook (smarter detection, different threshold), not a stronger version of this memory.
-
----
-
-# M-4523 git workflow — work in a worktree, land with `task land` — and check what makes YOUR venture's production move
-
-- **Work in your own worktree, and land with `task land`.** The worktree means no two writers ever share a tree. `task land` rebases your branch on `main`, re-runs the gate on the exact rebased commit, and fast-forward merges it into the shared checkout's `main`.
-- **Landing reaches the shared checkout — that is not always the same tree as production.** `task land` was built for this graph's own server, which runs directly off that checkout: for a project shaped that way, landing IS deploying, full stop. But a venture hosted elsewhere — Railway, a Cloudflare Worker behind CI, anything that redeploys only when ITS remote sees new commits — can sit on stale code all night even though `task land` succeeded, because nothing pushed to the remote that actually serves traffic. The shared checkout moving forward and production moving forward are two different facts; don't infer one from the other. Read the venture's own persona/AGENTS.md for how it ships (`git push`, `wrangler deploy`, `bin/promote`, …) and do that too, every time — `task land` finishing is not evidence it happened.
-- **ff-only is the compare-and-swap.** If another lander moved `main` between your rebase and the merge, the merge is no longer a fast-forward and git refuses. Rebase on `main`, re-gate, land again. Never `--force`/`-f`, and never `--force-with-lease` past a refusal: a refusal means someone landed first, so read their work and rebase onto it.
-- **"Did it land?" asks the shared checkout's `main`** — not "is it live." Worktrees share one ref store, so it is readable from yours:
-
-  ```sh
-  git merge-base --is-ancestor <sha> main && echo landed || echo not-landed
-  ```
-
-  Whether it's *live* is a separate question with a venture-specific answer.
-- Keep commits focused — don't bundle unrelated changes.
 
 ---
 
