@@ -33,14 +33,6 @@ Owner-directed invariants for how this codebase works — hold them in any code 
 
 ---
 
-# M-12915 Use idiomatic language
-
-**Stick to idiomatic terms for things.** Avoid approximations, house shorthand, and slang. Use the terms that are typical for a tool. LLMs often drift to analogous terms over repeated cycles. This drift can cause a degradation of meaning over time and make it difficult for others to understand. Especially if they are already familiar with the typical terminology.
-
-This applies when talking about git, SQL, HTTP, systemd, DNS, programming languages, and any other similar tool.
-
----
-
 # M-4523 git workflow — work in a worktree, land with `task land`
 
 - **Work in your own worktree, and land with `task land`.** The worktree means no two writers ever share a tree. `task land` rebases your branch on `main`, re-runs the gate on the exact rebased commit, and fast-forward merges it into the shared checkout's `main`.
@@ -56,6 +48,14 @@ This applies when talking about git, SQL, HTTP, systemd, DNS, programming langua
 
   For a push-to-deploy venture, "is it live" is `git merge-base --is-ancestor <sha> origin/main`.
 - Keep commits focused — don't bundle unrelated changes.
+
+---
+
+# M-12915 Use idiomatic language
+
+**Stick to idiomatic terms for things.** Avoid approximations, house shorthand, and slang. Use the terms that are typical for a tool. LLMs often drift to analogous terms over repeated cycles. This drift can cause a degradation of meaning over time and make it difficult for others to understand. Especially if they are already familiar with the typical terminology.
+
+This applies when talking about git, SQL, HTTP, systemd, DNS, programming languages, and any other similar tool.
 
 ---
 
