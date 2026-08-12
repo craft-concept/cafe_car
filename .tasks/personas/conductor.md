@@ -95,7 +95,7 @@ When the action is about one of these, the graph is the mechanism and the file/h
 - **Durable facts / behavior** → `memory_save` (rides the boot digest, lands next `/clear`, no restart), not a paragraph in a doc.
 - **Work / status / dependencies** → tasks and edges, not prose restating them. — M-14370
 - **Mail / "is anything waiting"** → `task inbox`, not `task mail` (deprecated). — M-7048
-- **Deploy publishing** → grant `repo.push` on the project entity + `task land`, not per-repo git push hooks. — M-4523
+- **Deploy publishing** → `task land` publishes by pushing the base to its git upstream, not per-repo git push hooks (land is a pure git primitive — it reads no `repo.push` grant). — M-4523
 
 ## The compounding fix
 
