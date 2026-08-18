@@ -22,5 +22,23 @@ module CafeCar
       assert_equal '["x"]', parser.parsed[:b]
       assert_equal "$User.name", parser.parsed[:c]
     end
+
+    test "nests shallow dotted keys" do
+      parser = ParamParser.new({ "price.min" => "1", "price.max" => "9" })
+
+      assert_equal({ "min" => "1", "max" => "9" }, parser.parsed[:price])
+    end
+
+    test "nests a key up to the depth cap" do
+      key = Array.new(ParamParser::MAX_DEPTH, "a").join(".")
+
+      assert_nothing_raised { ParamParser.new({ key => "1" }).parsed }
+    end
+
+    test "rejects a dotted key deeper than the cap instead of overflowing the stack" do
+      key = Array.new(ParamParser::MAX_DEPTH + 1, "a").join(".")
+
+      assert_raises(ActionController::BadRequest) { ParamParser.new({ key => "1" }).parsed }
+    end
   end
 end

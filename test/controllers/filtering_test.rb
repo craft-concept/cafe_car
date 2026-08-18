@@ -114,6 +114,14 @@ class FilteringTest < ActionDispatch::IntegrationTest
     assert_equal [ 5, 15, 25 ], numbers("bogus" => "1")
   end
 
+  test "a pathologically deep dotted filter key is a 400, not a 500" do
+    # Rack's param_depth_limit doesn't guard dot-nesting, so an attacker-sized
+    # key would overflow the stack in the parser. It's rejected as a bad request.
+    deep = Array.new(CafeCar::ParamParser::MAX_DEPTH + 1, "a").join(".")
+    get "/admin/invoices.json", params: { deep => "1" }
+    assert_response :bad_request
+  end
+
   test "a column a policy leaves off permitted_filters is ignored, not filtered" do
     # UserPolicy narrows permitted_filters to name/created_at — email is off it.
     # A filter naming email must not narrow the set: were it honored, this
