@@ -30,6 +30,7 @@ WORKDIR /app
 # explicit WEB_CONCURRENCY > 1 is provided. This keeps the demo within the
 # Railway memory cap (one worker per host core was the original 3GB+ RSS bug).
 ENV RAILS_ENV=production \
+    CAFE_CAR_DEMO=1 \
     BUNDLE_DEPLOYMENT=1 \
     BUNDLE_WITHOUT=development \
     BUNDLE_PATH=/usr/local/bundle \
