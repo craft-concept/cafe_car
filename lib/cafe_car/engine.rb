@@ -163,8 +163,7 @@ module CafeCar
 
           logger.info "SQL logs enabled."
 
-          ApplicationController.allow_forgery_protection = false
-          logger.info "CSRF disabled to enable app.post calls."
+          CafeCar.disable_console_forgery_protection
 
           def present(...) = CafeCar[:Presenter].present(helper, ...)
           def ui(...) = helper.ui(...)

@@ -30,6 +30,13 @@ module CafeCar
   # the effective per-page is silently capped, not rejected.
   mattr_accessor :max_per_page, default: 200
 
+  # Whether a `rails console` may disable the host app's forgery protection so
+  # `app.post`/`app.put` calls work without a CSRF token. Off by default: a
+  # view-layer gem must not silently toggle a consumer's CSRF protection. Opt in
+  # per host (`CafeCar.console_disable_forgery_protection = true`) to restore the
+  # convenience — it only ever affects an interactive console session.
+  mattr_accessor :console_disable_forgery_protection, default: false
+
   # Upper bound on the number of `<option>`s an association select loads. Bounds
   # the memory/latency cost of rendering a `belongs_to`/`has_many` field on every
   # form and filter sidebar; without it a 10k-row association loads the whole
@@ -68,5 +75,15 @@ module CafeCar
     CafeCar[:Session].table_exists?
   rescue StandardError
     false
+  end
+
+  # The one console convenience that mutates host security: disabling forgery
+  # protection so `app.post`/`app.put` work without a CSRF token. Gated on the
+  # host's opt-in, so mounting CafeCar never silently toggles it. Called from
+  # the engine's console hook.
+  def self.disable_console_forgery_protection
+    return unless console_disable_forgery_protection
+    ::ApplicationController.allow_forgery_protection = false
+    Rails.logger.info "CafeCar: CSRF disabled to enable console app.post calls."
   end
 end
