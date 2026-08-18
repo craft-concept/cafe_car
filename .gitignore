@@ -22,3 +22,7 @@ docs/dreams/.last
 # dream-cycle local cursors (plain-file state, never committed)
 docs/dreams/.floor
 docs/dreams/.last
+
+# Tasks CLI local materialization (AGENTS.md + personas projected from the
+# graph on sync) — generated tooling state, never committed.
+/.tasks/
