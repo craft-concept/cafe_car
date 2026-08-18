@@ -79,5 +79,11 @@ module CafeCar
       assert_equal %w[email name status], User.searchable_columns.sort
       refute_includes User.searchable_columns, "password_digest"
     end
+
+    test "sample returns a member record, or nil on an empty relation" do
+      assert_includes Article.all, Article.sample
+      assert_nil Article.where(title: "nope").sample
+      assert_nil Client.sample # empty table: no rand(0) float offset
+    end
   end
 end

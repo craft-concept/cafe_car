@@ -7,7 +7,15 @@ module CafeCar::Queryable
       super
     end
 
-    def sample = offset(rand(count)).first
+    # A random member of the relation, or nil when it's empty. Backs the
+    # `Model.sample or create(:x)` seeding idiom (see test/dummy/factories.rb):
+    # pick an existing row, else make one. The guard is load-bearing — on a
+    # zero-row table `rand(0)` returns a Float, and `offset(<float>)` is
+    # adapter-dependent nonsense, so an empty relation must short-circuit to nil.
+    def sample
+      return if (n = count).zero?
+      offset(rand(n)).first
+    end
 
     def query(params)  = query_builder.query(params).scope
     def query!(params) = query_builder.query!(params).scope
