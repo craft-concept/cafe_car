@@ -82,5 +82,47 @@ The `field` local is a `FieldBuilder`: `field.label` / `field.input` / `field.hi
 above: `string`, `text`, `integer`, `boolean`, `date`, `datetime`, `password`,
 `attachment`, `nested`, `belongs_to`, `has_many`, `json`.
 
-(`lib/cafe_car/inputs/` exists in the gem but is dormant — the live path is
-FieldBuilder + FieldInfo + these partials.)
+A field type has two override points, then: the `_<type>_field` partial above
+(its layout) and its **input component** (the input element itself). `field.input`
+— like `f.input` directly — renders through a small per-type component under
+`lib/cafe_car/inputs/`: `FieldInfo#input` resolves the field's type to a key, and
+`Inputs::BaseInput.classes` maps that key to the component that emits the bound
+input (`StringInput`, `NumberInput`, `AssociationInput`, `NestedInput`, …). This
+is the live default input path — not the partials alone. An explicit `as:` naming
+a helper the family doesn't own (e.g. `as: :hidden_field`) falls through to that
+plain form helper instead, preserving `#input`'s "render via any form helper"
+contract.
+
+## Standalone vs admin-coupled
+
+The builder is on every `form_for`/`form_with`, customer-facing pages included.
+Most methods are drop-in anywhere; a few pull in the Pundit policy or the admin
+view/CSS layer for their *full* render:
+
+| Method | Drop-in | Full render also needs |
+|---|---|---|
+| `label`, `hint`, `error`, `error_text` | yes | nothing — plain `<label>`/`<small>`/`<span>`, copy from the locale (`label` falls back to the humanized name) |
+| `input` (scalar types) | yes | a native Rails form helper; `ui/Input.css` styles it and degrades to an unstyled input without |
+| `hidden` | yes | nothing |
+| `association`, and `input` for a `belongs_to`/`has_many` | no | the associated model's Pundit policy scope (its options obey it) |
+| `field` | no | the `_<type>_field`/`_field` partials and the `Field` component (`.Field` layout CSS) |
+| `remaining_fields`, `remaining_attributes` | no | the record's Pundit policy (`attributes.editable`) |
+| `submit` | no | the `ui` button class (styling only) |
+
+So a customer-facing form that just renders and validates a couple of fields —
+no admin partials, `.Field` CSS, or policy — is the standalone surface:
+
+```haml
+= form_with model: @review do |f|
+  = f.label :rating
+  = f.input :rating
+  = f.error :rating          -# validation errors for one field, a plain <span>
+  = f.submit
+```
+
+For read-only values on that page, `present(val, as: :currency)` is
+`CafeCar::Presenter.present(view, val, as:)` under the hood (see
+[presenters.md](presenters.md)) — html-safe, type-picked formatting with no admin
+partials or CSS. A host that skips the `CafeCar::Controller` include can still
+expose that scalar `as:` path alone with `helper CafeCar::Formatting` — Rails' own
+number/date helpers, nothing else.

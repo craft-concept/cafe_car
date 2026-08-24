@@ -53,6 +53,23 @@ default by defining a `search` scope:
 scope :search, ->(term) { query("title~": term) }
 ```
 
+## Model scopes as filters
+
+`?published=true` (and `Model.query("published" => true)`) calls a model scope by
+name. The machinery: `CafeCar::Queryable` is mixed into `ActiveRecord::Base`, and
+it wraps the `scope` macro — every `scope :name, body` records `body` in a
+per-model registry, then calls bare `super`. Defining a scope is therefore
+identical to stock Rails; the registry is the only addition, and it's what lets
+the grammar reach a scope at all.
+
+That registry carries each scope's arity, so the value is applied correctly: a
+zero-arity scope fires with no argument on `?published=true`, while a one-arg
+scope takes the value as its argument
+(`scope :priced_over, ->(n) { where("price > ?", n) }` → `?priced_over=100`).
+Reachable names are limited to the model's own class methods — inherited
+`ActiveRecord::Base` methods are excluded — so the grammar can't call arbitrary
+internals.
+
 ## Programmatic: `Model.query`
 
 The same engine, from Ruby — available on every model with no opt-in:

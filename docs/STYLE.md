@@ -160,8 +160,18 @@ Kaminari (pagination), Responders (respond_with), Turbo, Haml, Propshaft +
 importmap-rails (no bundler, no Node build).
 
 Small gaps in Ruby or Rails get a focused monkeypatch in
-`lib/cafe_car/core_ext/` (`array.rb`, `hash.rb`, `module.rb`) — never a
-grab-bag utility gem.
+`lib/cafe_car/core_ext/` — never a grab-bag utility gem. The full set an adopting
+app inherits, all *new* methods (none overriding an existing Ruby/Rails method, so
+no collision today):
+
+- `Array#overlap(other)` — merge two arrays where self's tail meets other's head,
+  worst case a plain concatenation (`array.rb`).
+- `Array#extract!(pattern = nil, &block)` — destructively remove and return the
+  matching elements (`array.rb`).
+- `Hash#extract_if! { |k, v| … }` — destructively remove and return the pairs the
+  block accepts (`hash.rb`).
+- `Module#define_class(name, *parents, **macros, &)` — `const_set` + `Class.new`
+  shorthand for macros; how `component` mints each subclass (`module.rb`).
 
 JavaScript stays unsettled on purpose: Turbo, delegated listeners, progressive
 enhancement. No framework layer until one earns its place.
