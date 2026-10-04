@@ -10,7 +10,7 @@ gem "brakeman"
 gem "puma"
 gem "sqlite3"
 gem "solid_cable"
-gem "image_processing", "~> 2.0"
+gem "image_processing", "~> 2.2"
 # ruby-vips is image_processing's :vips backend (the Rails 8 default variant
 # processor). Without it, generating an Active Storage image variant/preview
 # 500s even though libvips (the native lib) is installed — so demo avatars
